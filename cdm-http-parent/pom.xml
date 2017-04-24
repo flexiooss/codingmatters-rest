@@ -31,7 +31,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-bom</artifactId>
