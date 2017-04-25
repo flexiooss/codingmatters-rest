@@ -72,6 +72,12 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.codingmatters.value.objects</groupId>
+                    <artifactId>cdm-value-objects-maven-plugin</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.5.1</version>

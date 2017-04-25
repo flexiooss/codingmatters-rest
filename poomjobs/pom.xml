@@ -15,10 +15,12 @@
     <artifactId>poomjobs</artifactId>
     <packaging>pom</packaging>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>Poor Man's Jobs Queue</name>
 
     <modules>
         <module>poomjobs-spec</module>
+        <module>poomjobs-types</module>
+        <module>poomjobs-http</module>
     </modules>
 
 </project>

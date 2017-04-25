@@ -1,0 +1,44 @@
+JobCollectionPostRequest:
+  payload:
+    $value-object: org.codingmatters.poomjobs.types.types.Job
+
+JobCollectionPostResponse:
+  status201:
+    location: string
+  status500:
+    paload:
+      $value-object: org.codingmatters.poomjobs.types.types.Error
+
+
+JobResourceGetRequest:
+  jobId: string
+
+JobResourceGetResponse:
+  status200:
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Job
+  status404:
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Error
+  status500:
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Error
+
+
+
+JobResourcePutRequest:
+  jobId: string
+  payload:
+    $value-object: org.codingmatters.poomjobs.types.types.Job
+
+JobResourcePutResponse:
+  status200:
+    location: string
+  status404:
+    location: string
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Error
+  status500:
+    location: string
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Error

@@ -22,6 +22,18 @@
                 <artifactId>cdm-http-parent</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.codingmatters.poomjobs</groupId>
+                <artifactId>poomjobs-spec</artifactId>
+                <version>${parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codingmatters.poomjobs</groupId>
+                <artifactId>poomjobs-types</artifactId>
+                <version>${parent.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
