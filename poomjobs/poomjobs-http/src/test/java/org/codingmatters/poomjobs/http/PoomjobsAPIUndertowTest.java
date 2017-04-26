@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 4/25/17.
  */
-public class UndertowExploreTest {
+public class PoomjobsAPIUndertowTest {
 
     private Undertow server;
     private OkHttpClient client = new OkHttpClient();
