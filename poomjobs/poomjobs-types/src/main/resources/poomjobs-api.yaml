@@ -6,7 +6,7 @@ JobCollectionPostResponse:
   status201:
     location: string
   status500:
-    paload:
+    payload:
       $value-object: org.codingmatters.poomjobs.types.types.Error
 
 
@@ -33,12 +33,11 @@ JobResourcePutRequest:
 
 JobResourcePutResponse:
   status200:
-    location: string
+    payload:
+      $value-object: org.codingmatters.poomjobs.types.types.Job
   status404:
-    location: string
     payload:
       $value-object: org.codingmatters.poomjobs.types.types.Error
   status500:
-    location: string
     payload:
       $value-object: org.codingmatters.poomjobs.types.types.Error

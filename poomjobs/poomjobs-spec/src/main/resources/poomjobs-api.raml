@@ -38,8 +38,7 @@ mediaType: application/json
             responses:
                 200:
                     description: the job update was successful
-                    headers:
-                        Location: string
+                    body: Job
                 404:
                     description: no job found with the given jobId. Code : JOB_NOT_FOUND.
                     body: Error
