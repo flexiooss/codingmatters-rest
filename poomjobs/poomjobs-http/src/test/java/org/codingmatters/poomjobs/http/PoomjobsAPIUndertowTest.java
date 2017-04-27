@@ -4,19 +4,18 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
 import okhttp3.*;
-import org.codingmatters.poomjobs.types.api.*;
+import org.codingmatters.http.CdmHttpUndertowHandler;
+import org.codingmatters.poomjobs.types.api.JobCollectionPostResponse;
+import org.codingmatters.poomjobs.types.api.JobResourceGetResponse;
+import org.codingmatters.poomjobs.types.api.JobResourcePutResponse;
+import org.codingmatters.poomjobs.types.api.PoomjobsAPIHandlers;
 import org.codingmatters.poomjobs.types.api.jobcollectionpostresponse.Status201;
 import org.codingmatters.poomjobs.types.api.jobcollectionpostresponse.Status500;
 import org.codingmatters.poomjobs.types.api.jobresourcegetresponse.Status200;
 import org.codingmatters.poomjobs.types.api.jobresourcegetresponse.Status404;
 import org.codingmatters.poomjobs.types.types.Error;
 import org.codingmatters.poomjobs.types.types.Job;
-import org.codingmatters.poomjobs.types.types.json.ErrorWriter;
 import org.codingmatters.poomjobs.types.types.json.JobReader;
 import org.codingmatters.poomjobs.types.types.json.JobWriter;
 import org.junit.After;
@@ -25,8 +24,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.net.ServerSocket;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -132,134 +129,9 @@ public class PoomjobsAPIUndertowTest {
                 )
                 .build();
 
-        JsonFactory factory = new JsonFactory();
-        String apiRelativePath = "poomjobs";
-
         this.server = Undertow.builder()
                 .addHttpListener(port, "localhost")
-                .setHandler(new HttpHandler() {
-                    @Override
-                    public void handleRequest(HttpServerExchange exchange) throws Exception {
-                        if (exchange.isInIoThread()) {
-                            exchange.dispatch(this);
-                            return;
-                        }
-                        exchange.startBlocking();
-
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-
-                        if (exchange.getRelativePath().matches("/" + apiRelativePath + "/jobs/?")) {
-                            if (exchange.getRequestMethod().toString().toUpperCase().equals("POST")) {
-                                JsonParser parser = factory.createParser(exchange.getInputStream());
-                                JobCollectionPostResponse response = handlers.jobCollectionPostHandler().apply(
-                                        JobCollectionPostRequest.Builder.builder()
-                                                .payload(new JobReader().read(parser))
-                                                .build()
-                                );
-                                if (response.status201() != null) {
-                                    exchange.setStatusCode(201);
-
-                                    exchange.getResponseHeaders().add(
-                                            HttpString.tryFromString("Location"),
-                                            String.format("%s://%s/%s%s",
-                                                    exchange.getRequestScheme(),
-                                                    exchange.getHostAndPort(),
-                                                    apiRelativePath,
-                                                    response.status201().location()
-                                            )
-                                    );
-                                } else if (response.status500() != null) {
-                                    exchange.setStatusCode(500);
-                                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                                            new ErrorWriter().write(generator, response.status500().payload());
-                                        }
-                                        exchange.getResponseSender().send(out.toString());
-                                    }
-                                }
-                            }
-                        } else if (exchange.getRelativePath().matches("/" + apiRelativePath + "/jobs/[^/]+/?")) {
-                            Matcher matcher = Pattern.compile("/" + apiRelativePath + "/jobs/([^/]+)/?").matcher(exchange.getRelativePath());
-                            matcher.matches();
-                            String jobIdUriParameter = matcher.group(1);
-                            if (exchange.getRequestMethod().toString().toUpperCase().equals("GET")) {
-                                JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
-                                        JobResourceGetRequest.Builder.builder()
-                                            .jobId(jobIdUriParameter)
-                                            .build()
-                                );
-                                if (response.status200() != null) {
-                                    exchange.setStatusCode(200);
-                                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                                            new JobWriter().write(generator, response.status200().payload());
-                                        }
-                                        exchange.getResponseSender().send(out.toString());
-                                    }
-                                } else if (response.status404() != null) {
-                                    exchange.setStatusCode(404);
-                                    if(response.status404().payload() != null) {
-                                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                                new ErrorWriter().write(generator, response.status404().payload());
-                                            }
-                                            exchange.getResponseSender().send(out.toString());
-                                        }
-                                    }
-                                } else if (response.status500() != null) {
-                                    exchange.setStatusCode(500);
-                                    if(response.status500().payload() != null) {
-                                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                                new ErrorWriter().write(generator, response.status500().payload());
-                                            }
-                                            exchange.getResponseSender().send(out.toString());
-                                        }
-                                    }
-                                }
-                            } else if (exchange.getRequestMethod().toString().toUpperCase().equals("PUT")) {
-                                JsonParser parser = factory.createParser(exchange.getInputStream());
-                                JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
-                                        JobResourcePutRequest.Builder.builder()
-                                                .jobId(jobIdUriParameter)
-                                                .payload(new JobReader().read(parser))
-                                                .build()
-                                );
-                                if(response.status200() != null) {
-                                    exchange.setStatusCode(200);
-                                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                                            new JobWriter().write(generator, response.status200().payload());
-                                        }
-                                        exchange.getResponseSender().send(out.toString());
-                                    }
-                                } else if(response.status404() != null) {
-                                    exchange.setStatusCode(404);
-                                    if(response.status404().payload() != null) {
-                                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                                new ErrorWriter().write(generator, response.status404().payload());
-                                            }
-                                            exchange.getResponseSender().send(out.toString());
-                                        }
-                                    }
-                                } else if(response.status500() != null) {
-                                    exchange.setStatusCode(500);
-                                    if(response.status500().payload() != null) {
-                                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                                new ErrorWriter().write(generator, response.status500().payload());
-                                            }
-                                            exchange.getResponseSender().send(out.toString());
-                                        }
-                                    }
-                                }
-                            }
-
-
-                        }
-                    }
-                }).build();
+                .setHandler(new CdmHttpUndertowHandler(new PoomjobsAPIProcessor("poomjobs", new JsonFactory(), handlers))).build();
         this.server.start();
 
         this.baseUrl = "http://localhost:" + port;

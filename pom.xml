@@ -47,6 +47,8 @@
     <modules>
         <module>cdm-http-parent</module>
         <module>cdm-http-bom</module>
+        <module>cdm-http-api</module>
+        <module>cdm-http-undertow</module>
 
         <module>poomjobs</module>
     </modules>
