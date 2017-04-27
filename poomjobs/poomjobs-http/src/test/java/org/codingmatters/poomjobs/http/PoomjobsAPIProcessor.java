@@ -13,7 +13,7 @@ import org.codingmatters.poomjobs.types.types.json.JobWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.regex.Matcher;
+import java.util.Map;
 
 /**
  * Created by nelt on 4/27/17.
@@ -58,13 +58,11 @@ public class PoomjobsAPIProcessor implements Processor {
                 }
             }
         } else if (requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
-            Matcher matcher = requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/([^/]+)/?");
-            matcher.matches();
-            String jobIdUriParameter = matcher.group(1);
+            Map<String, String> pathParameters = requestDeleguate.pathParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
             if(requestDeleguate.method().equals(RequestDeleguate.Method.GET)) {
                 JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
                         JobResourceGetRequest.Builder.builder()
-                                .jobId(jobIdUriParameter)
+                                .jobId(pathParameters.get("jobId"))
                                 .build()
                 );
                 if (response.status200() != null) {
@@ -97,7 +95,7 @@ public class PoomjobsAPIProcessor implements Processor {
                 JsonParser parser = factory.createParser(requestDeleguate.payload());
                 JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
                         JobResourcePutRequest.Builder.builder()
-                                .jobId(jobIdUriParameter)
+                                .jobId(pathParameters.get("jobId"))
                                 .payload(new JobReader().read(parser))
                                 .build()
                 );
