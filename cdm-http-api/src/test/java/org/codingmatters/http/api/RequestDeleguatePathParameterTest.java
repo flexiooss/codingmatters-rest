@@ -17,6 +17,16 @@ import static org.junit.Assert.assertThat;
 public class RequestDeleguatePathParameterTest {
 
     @Test
+    public void noParameter() throws Exception {
+        RequestDeleguate deleguate = this.withPath("/start/param-value");
+        Map<String, String> parameters = deleguate.pathParameters("/blop/blop");
+
+        System.out.println(parameters);
+
+        assertThat(parameters.size(), is(0));
+    }
+
+    @Test
     public void noMatch() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param-value");
         Map<String, String> parameters = deleguate.pathParameters("/blop/{param-name}");
