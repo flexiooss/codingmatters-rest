@@ -1,9 +1,11 @@
 package org.codingmatters.http.api.generator;
 
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
-import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.PropertyTypeSpec;
+import org.codingmatters.value.objects.spec.Spec;
+import org.codingmatters.value.objects.spec.ValueSpec;
 import org.raml.v2.api.RamlModelResult;
-import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -12,6 +14,8 @@ import org.raml.v2.api.model.v10.resources.Resource;
  * Created by nelt on 5/2/17.
  */
 public class ApiSpecGenerator {
+    private final TypeHelper typeHelper = new TypeHelper();
+
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
         for (Resource resource : ramlModel.getApiV10().resources()) {
@@ -49,35 +53,11 @@ public class ApiSpecGenerator {
     }
 
     private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
-        PropertyTypeSpec.Builder typeSpec = this.typeSpecFromDeclaration(typeDeclaration);
+        PropertyTypeSpec.Builder typeSpec = this.typeHelper.typeSpecFromDeclaration(typeDeclaration);
         result.addProperty(PropertySpec.property()
                 .name(typeDeclaration.name())
                 .type(typeSpec)
                 .build());
-    }
-
-    private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {
-        PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
-        if(typeDeclaration.type().equals("array")) {
-            typeSpec.cardinality(PropertyCardinality.LIST)
-                    .typeKind(TypeKind.JAVA_TYPE)
-                    .typeRef(this.javaType(((ArrayTypeDeclaration)typeDeclaration).items().type()));
-        } else {
-            typeSpec.cardinality(PropertyCardinality.SINGLE)
-                    .typeKind(TypeKind.JAVA_TYPE)
-                    .typeRef(this.javaType(typeDeclaration.type()));
-        }
-        return typeSpec;
-    }
-
-    private String javaType(String ramlType) throws RamlSpecException {
-        switch (ramlType) {
-            case "string":
-                return String.class.getName();
-            case "integer":
-                return Long.class.getName();
-        }
-        throw new RamlSpecException("not implemented type : " + ramlType);
     }
 
     private ValueSpec generateMethodResponseValue(String resourceName, Method method) {
