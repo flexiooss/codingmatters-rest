@@ -77,6 +77,12 @@
                 <artifactId>okhttp</artifactId>
                 <version>3.7.0</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.raml</groupId>
+                <artifactId>raml-parser-2</artifactId>
+                <version>1.0.8</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     

@@ -1,0 +1,24 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+/root:
+    displayName: RootResource
+    get:
+    post:
+    put:
+    delete:
+    head:
+    patch:
+    options:
+    /middle:
+        displayName: MiddleResource
+        get:
+        /leaf-1:
+            displayName: FirstResource
+            get:
+        /leaf-2:
+            displayName: SecondResource
+            get:
