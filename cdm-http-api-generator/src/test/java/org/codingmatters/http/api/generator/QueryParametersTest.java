@@ -1,6 +1,7 @@
 package org.codingmatters.http.api.generator;
 
 import org.codingmatters.value.objects.spec.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
@@ -14,12 +15,20 @@ import static org.junit.Assert.assertThat;
  */
 public class QueryParametersTest {
 
+    private Spec spec;
+
+    @Before
+    public void setUp() throws Exception {
+        this.spec = new ApiSpecGenerator().generate(new RamlModelBuilder().buildApi(fileResource("query-parameters.raml")));
+    }
+
     @Test
-    public void parameters() throws Exception {
-        Spec spec = new ApiSpecGenerator().generate(new RamlModelBuilder().buildApi(fileResource("query-parameters.raml")));
+    public void propertyCount() throws Exception {
+        assertThat(this.spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(4));
+    }
 
-        assertThat(spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(2));
-
+    @Test
+    public void singleParameters() throws Exception {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
                 is(PropertySpec.property().name("stringParam")
@@ -35,6 +44,30 @@ public class QueryParametersTest {
                 is(PropertySpec.property().name("intParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(Long.class.getName())
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void arrayParameters() throws Exception {
+        assertThat(
+                spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
+                is(PropertySpec.property().name("stringArrayParam")
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.LIST)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
+                        )
+                        .build())
+        );
+        assertThat(
+                spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
+                is(PropertySpec.property().name("intArrayParam")
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.LIST)
                                 .typeKind(TypeKind.JAVA_TYPE)
                                 .typeRef(Long.class.getName())
                         )

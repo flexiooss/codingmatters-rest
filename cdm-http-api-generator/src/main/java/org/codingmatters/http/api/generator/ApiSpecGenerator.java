@@ -3,6 +3,7 @@ package org.codingmatters.http.api.generator;
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -36,14 +37,25 @@ public class ApiSpecGenerator {
                 .name(resourceName + this.upperCaseFirst(method.method()) + "Request");
 
         for (TypeDeclaration parameter : method.queryParameters()) {
-            System.out.println(parameter.type());
+            PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
+            if(parameter.type().equals("array")) {
+                typeSpec.cardinality(PropertyCardinality.LIST)
+                        .typeKind(TypeKind.JAVA_TYPE)
+                        .typeRef(this.javaType(((ArrayTypeDeclaration)parameter).items().type()));
+            } else {
+                typeSpec.cardinality(PropertyCardinality.SINGLE)
+                        .typeKind(TypeKind.JAVA_TYPE)
+                        .typeRef(this.javaType(parameter.type()));
+            }
+
+
+//            System.out.println(parameter.type());
+//            if(parameter.type().equals("array")) {
+//                System.out.println(((ArrayTypeDeclaration)parameter).items().type());
+//            }
             result.addProperty(PropertySpec.property()
                     .name(parameter.name())
-                    .type(PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.JAVA_TYPE)
-                            .typeRef(this.javaType(parameter.type()))
-                    )
+                    .type(typeSpec)
                     .build());
         }
 
