@@ -13,13 +13,13 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/2/17.
  */
-public class QueryHeadersTest {
+public class RequestQueryParametersTest {
 
     private Spec spec;
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiSpecGenerator().generate(new RamlModelBuilder().buildApi(fileResource("query-headers.raml")));
+        this.spec = new ApiSpecGenerator().generate(new RamlModelBuilder().buildApi(fileResource("request-query-parameters.raml")));
     }
 
     @Test
