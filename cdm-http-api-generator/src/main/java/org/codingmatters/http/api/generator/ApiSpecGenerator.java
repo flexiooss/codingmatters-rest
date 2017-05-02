@@ -36,31 +36,38 @@ public class ApiSpecGenerator {
         ValueSpec.Builder result = ValueSpec.valueSpec()
                 .name(resourceName + this.upperCaseFirst(method.method()) + "Request");
 
-        for (TypeDeclaration parameter : method.queryParameters()) {
-            PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
-            if(parameter.type().equals("array")) {
-                typeSpec.cardinality(PropertyCardinality.LIST)
-                        .typeKind(TypeKind.JAVA_TYPE)
-                        .typeRef(this.javaType(((ArrayTypeDeclaration)parameter).items().type()));
-            } else {
-                typeSpec.cardinality(PropertyCardinality.SINGLE)
-                        .typeKind(TypeKind.JAVA_TYPE)
-                        .typeRef(this.javaType(parameter.type()));
-            }
-
-
-//            System.out.println(parameter.type());
-//            if(parameter.type().equals("array")) {
-//                System.out.println(((ArrayTypeDeclaration)parameter).items().type());
-//            }
-            result.addProperty(PropertySpec.property()
-                    .name(parameter.name())
-                    .type(typeSpec)
-                    .build());
+        for (TypeDeclaration typeDeclaration : method.queryParameters()) {
+            this.addPropertyFromTypeDeclaration(result, typeDeclaration);
         }
+        for (TypeDeclaration typeDeclaration : method.headers()) {
+            this.addPropertyFromTypeDeclaration(result, typeDeclaration);
+        }
+
 
         return result
                 .build();
+    }
+
+    private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
+        PropertyTypeSpec.Builder typeSpec = this.typeSpecFromDeclaration(typeDeclaration);
+        result.addProperty(PropertySpec.property()
+                .name(typeDeclaration.name())
+                .type(typeSpec)
+                .build());
+    }
+
+    private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {
+        PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
+        if(typeDeclaration.type().equals("array")) {
+            typeSpec.cardinality(PropertyCardinality.LIST)
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    .typeRef(this.javaType(((ArrayTypeDeclaration)typeDeclaration).items().type()));
+        } else {
+            typeSpec.cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    .typeRef(this.javaType(typeDeclaration.type()));
+        }
+        return typeSpec;
     }
 
     private String javaType(String ramlType) throws RamlSpecException {
