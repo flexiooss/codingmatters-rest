@@ -4,6 +4,7 @@ import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.http.api.generator.type.RamlType;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -61,22 +62,44 @@ public class ApiSpecGenerator {
             );
         }
 
-        return result
-                .build();
+        return result.build();
+    }
+
+    private ValueSpec generateMethodResponseValue(String resourceName, Method method) throws RamlSpecException {
+        ValueSpec.Builder result = ValueSpec.valueSpec()
+                .name(resourceName + this.upperCaseFirst(method.method()) + "Response");
+
+        for (Response response : method.responses()) {
+            AnonymousValueSpec.Builder responseSpec = AnonymousValueSpec.anonymousValueSpec();
+            for (TypeDeclaration typeDeclaration : response.headers()) {
+                responseSpec.addProperty(PropertySpec.property()
+                        .name(typeDeclaration.name())
+                        .type(this.typeSpecFromDeclaration(typeDeclaration))
+                        .build());
+            }
+
+            PropertySpec.Builder responseProp = PropertySpec.property()
+                    .name("status" + response.code().value())
+                    .type(PropertyTypeSpec.type()
+                            .typeKind(TypeKind.EMBEDDED)
+                            .cardinality(PropertyCardinality.SINGLE)
+                            .embeddedValueSpec(responseSpec)
+                    )
+                    ;
+
+
+            result.addProperty(responseProp);
+        }
+
+
+        return result.build();
     }
 
     private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
-        PropertyTypeSpec.Builder typeSpec = this.typeSpecFromDeclaration(typeDeclaration);
         result.addProperty(PropertySpec.property()
                 .name(typeDeclaration.name())
-                .type(typeSpec)
+                .type(this.typeSpecFromDeclaration(typeDeclaration))
                 .build());
-    }
-
-    private ValueSpec generateMethodResponseValue(String resourceName, Method method) {
-        return ValueSpec.valueSpec()
-                .name(resourceName + this.upperCaseFirst(method.method()) + "Response")
-                .build();
     }
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {

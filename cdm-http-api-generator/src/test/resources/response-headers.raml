@@ -1,0 +1,21 @@
+#%RAML 1.0
+title: QueryHeaders API
+version: v1
+baseUri: https://api.codingmatters.org/query-headers
+mediaType: application/json
+
+/root:
+    displayName: RootResource
+    get:
+        responses:
+            200:
+                headers:
+                    stringParam:
+                        type: string
+                    stringArrayParam:
+                        type: array
+                        items: string
+                    intParam: integer
+                    intArrayParam:
+                        type: array
+                        items: integer
