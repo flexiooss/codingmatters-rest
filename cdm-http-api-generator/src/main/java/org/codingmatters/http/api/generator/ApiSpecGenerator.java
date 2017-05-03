@@ -1,11 +1,10 @@
 package org.codingmatters.http.api.generator;
 
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
-import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.PropertyTypeSpec;
-import org.codingmatters.value.objects.spec.Spec;
-import org.codingmatters.value.objects.spec.ValueSpec;
+import org.codingmatters.http.api.generator.type.RamlType;
+import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -14,7 +13,6 @@ import org.raml.v2.api.model.v10.resources.Resource;
  * Created by nelt on 5/2/17.
  */
 public class ApiSpecGenerator {
-    private final TypeHelper typeHelper = new TypeHelper();
 
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
@@ -53,7 +51,7 @@ public class ApiSpecGenerator {
     }
 
     private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
-        PropertyTypeSpec.Builder typeSpec = this.typeHelper.typeSpecFromDeclaration(typeDeclaration);
+        PropertyTypeSpec.Builder typeSpec = this.typeSpecFromDeclaration(typeDeclaration);
         result.addProperty(PropertySpec.property()
                 .name(typeDeclaration.name())
                 .type(typeSpec)
@@ -64,6 +62,20 @@ public class ApiSpecGenerator {
         return ValueSpec.valueSpec()
                 .name(resourceName + this.upperCaseFirst(method.method()) + "Response")
                 .build();
+    }
+
+    private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {
+        PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
+        if(typeDeclaration.type().equals("array")) {
+            typeSpec.cardinality(PropertyCardinality.LIST)
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    .typeRef(RamlType.from(((ArrayTypeDeclaration)typeDeclaration).items()).javaType());
+        } else {
+            typeSpec.cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    .typeRef(RamlType.from(typeDeclaration).javaType());
+        }
+        return typeSpec;
     }
 
     private String upperCaseFirst(String str) {

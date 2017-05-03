@@ -1,6 +1,7 @@
 package org.codingmatters.http.api.generator;
 
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
+import org.codingmatters.http.api.generator.type.RamlType;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -11,7 +12,6 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
  * Created by nelt on 5/2/17.
  */
 public class ApiTypesGenerator {
-    private final TypeHelper typeHelper = new TypeHelper();
 
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
@@ -43,7 +43,7 @@ public class ApiTypesGenerator {
                 return PropertyTypeSpec.type()
                         .cardinality(PropertyCardinality.LIST)
                         .typeKind(TypeKind.JAVA_TYPE)
-                        .typeRef(this.typeHelper.javaType(((ArrayTypeDeclaration)declaration).items().type()));
+                        .typeRef(RamlType.from(((ArrayTypeDeclaration)declaration).items()).javaType());
             }
         }
 
@@ -57,7 +57,7 @@ public class ApiTypesGenerator {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.JAVA_TYPE)
-                    .typeRef(this.typeHelper.javaType(declaration.type()));
+                    .typeRef(RamlType.from(declaration).javaType());
         }
     }
 
