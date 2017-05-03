@@ -14,6 +14,12 @@ import org.raml.v2.api.model.v10.resources.Resource;
  */
 public class ApiSpecGenerator {
 
+    private final String typesPackage;
+
+    public ApiSpecGenerator(String typesPackage) {
+        this.typesPackage = typesPackage;
+    }
+
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
         for (Resource resource : ramlModel.getApiV10().resources()) {
@@ -44,7 +50,16 @@ public class ApiSpecGenerator {
         for (TypeDeclaration typeDeclaration : method.headers()) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);
         }
-
+        if(method.body() != null && ! method.body().isEmpty()) {
+            result.addProperty(PropertySpec.property()
+                    .name("payload")
+                    .type(PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.SINGLE)
+                            .typeKind(TypeKind.JAVA_TYPE)
+                            .typeRef(this.typesPackage + "." + method.body().get(0).type())
+                    )
+            );
+        }
 
         return result
                 .build();
