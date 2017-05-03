@@ -77,7 +77,16 @@ public class ApiSpecGenerator {
                         .type(this.typeSpecFromDeclaration(typeDeclaration))
                         .build());
             }
-
+            if(response.body() != null && ! response.body().isEmpty()) {
+                responseSpec.addProperty(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(this.typesPackage + "." + response.body().get(0).type())
+                        )
+                );
+            }
             PropertySpec.Builder responseProp = PropertySpec.property()
                     .name("status" + response.code().value())
                     .type(PropertyTypeSpec.type()
@@ -86,7 +95,6 @@ public class ApiSpecGenerator {
                             .embeddedValueSpec(responseSpec)
                     )
                     ;
-
 
             result.addProperty(responseProp);
         }
