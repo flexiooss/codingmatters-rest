@@ -26,7 +26,7 @@ public class TypeHelper {
         return typeSpec;
     }
 
-    private String javaType(String ramlType) throws RamlSpecException {
+    public String javaType(String ramlType) throws RamlSpecException {
         switch (ramlType) {
             case "string":
                 return String.class.getName();

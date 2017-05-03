@@ -17,3 +17,21 @@ types:
             intArrayProp:
                 type: array
                 items: integer
+
+    NestedType:
+        type: object
+        properties:
+            nested:
+                type: object
+                properties:
+                    stringProp: string
+                    nested:
+                        type: object
+                        properties:
+                            stringProp: string
+            nestedArray:
+                type: array
+                items:
+                    type: object
+                    properties:
+                        stringProp: string
