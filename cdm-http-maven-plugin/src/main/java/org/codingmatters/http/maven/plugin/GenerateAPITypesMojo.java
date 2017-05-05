@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codingmatters.http.api.generator.ApiTypesGenerator;
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
+import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
@@ -47,6 +48,18 @@ public class GenerateAPITypesMojo extends AbstractMojo {
         File apiFile = this.resolveApiFile();
         this.getLog().info("API : " + apiFile.getAbsolutePath());
 
+        Spec spec = buildSpec(apiFile);
+
+        try {
+            new SpecCodeGenerator(spec, this.destinationPackage, this.outputDirectory).generate();
+            new JsonFrameworkGenerator(spec, this.destinationPackage, this.outputDirectory).generate();
+        } catch (IOException e) {
+            throw new MojoExecutionException("error generating code from spec", e);
+        }
+    }
+
+    private Spec buildSpec(File apiFile) throws MojoExecutionException {
+        Spec spec;
         try {
             RamlModelResult ramlModel = new RamlModelBuilder().buildApi(apiFile);
             if(ramlModel.hasErrors()) {
@@ -55,14 +68,11 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                 }
                 throw new MojoExecutionException("failed parsing raml api, see logs");
             }
-            Spec spec = new ApiTypesGenerator().generate(ramlModel);
-            new SpecCodeGenerator(spec, this.destinationPackage, this.outputDirectory).generate();
+            spec = new ApiTypesGenerator().generate(ramlModel);
         } catch (RamlSpecException e) {
             throw new MojoExecutionException("error generating value object spec from raml api", e);
-        } catch (IOException e) {
-            throw new MojoExecutionException("error generating code from spec", e);
         }
-
+        return spec;
     }
 
     private File resolveApiFile() throws MojoFailureException {

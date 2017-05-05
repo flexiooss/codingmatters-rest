@@ -31,18 +31,6 @@
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
                     <executions>
                         <execution>
-                            <id>types</id>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>generate</goal>
-                                <goal>json</goal>
-                            </goals>
-                            <configuration>
-                                <destinationPackage>org.codingmatters.poomjobs.types.types</destinationPackage>
-                                <inputSpecification>src/main/resources/poomjobs-types.yaml</inputSpecification>
-                            </configuration>
-                        </execution>
-                        <execution>
                             <id>spec1</id>
                             <phase>generate-sources</phase>
                             <goals>
@@ -73,31 +61,31 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>-->
-                <!--<groupId>org.codingmatters.http</groupId>-->
-                <!--<artifactId>cdm-http-maven-plugin</artifactId>-->
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.codingmatters.poomjobs</groupId>-->
-                        <!--<artifactId>poomjobs-spec</artifactId>-->
-                        <!--<version>0.0.1-SNAPSHOT</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>spec1</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>generate-api-types</goal>-->
-                            <!--&lt;!&ndash;<goal>json</goal>&ndash;&gt;-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<destinationPackage>org.codingmatters.poomjobs.types.types</destinationPackage>-->
-                            <!--<api-spec-resource>poomjobs-api.raml</api-spec-resource>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codingmatters.http</groupId>
+                <artifactId>cdm-http-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codingmatters.poomjobs</groupId>
+                        <artifactId>poomjobs-spec</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>spec1</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-api-types</goal>
+                            <!--<goal>json</goal>-->
+                        </goals>
+                        <configuration>
+                            <destinationPackage>org.codingmatters.poomjobs.types.types</destinationPackage>
+                            <api-spec-resource>poomjobs-api.raml</api-spec-resource>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
