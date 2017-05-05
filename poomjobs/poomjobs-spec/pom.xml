@@ -13,5 +13,4 @@
     <artifactId>poomjobs-spec</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
 
-
 </project>

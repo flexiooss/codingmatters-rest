@@ -51,6 +51,7 @@
         <module>cdm-http-undertow</module>
 
         <module>cdm-http-api-generator</module>
+        <module>cdm-http-maven-plugin</module>
 
         <module>poomjobs</module>
     </modules>

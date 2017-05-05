@@ -7,7 +7,7 @@ mediaType: application/json
 /jobs:
     displayName: JobCollection
     post:
-        body: JobResource
+        body: Job
         responses:
             201:
                 description: new job created
@@ -28,7 +28,7 @@ mediaType: application/json
                     description: a job with the given jobId is found and returned
                     body: Job
                 404:
-                    description: no job found with the given jobId. Code : JOB_NOT_FOUND.
+                    description: no job found with the given jobId. Code JOB_NOT_FOUND.
                     body: Error
                 500:
                     description: UNEXPECTED_ERROR.
@@ -40,7 +40,7 @@ mediaType: application/json
                     description: the job update was successful
                     body: Job
                 404:
-                    description: no job found with the given jobId. Code : JOB_NOT_FOUND.
+                    description: no job found with the given jobId. Code JOB_NOT_FOUND.
                     body: Error
                 500:
                     description: UNEXPECTED_ERROR.
@@ -54,7 +54,9 @@ types:
 
             category: string
             type: string
-            arguments: string[]
+            arguments:
+                type: array
+                items: string
             result: string
 
             accounting:

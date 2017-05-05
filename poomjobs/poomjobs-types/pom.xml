@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.codingmatters.poomjobs</groupId>
+            <artifactId>poomjobs-spec</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
@@ -68,6 +72,32 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>org.codingmatters.http</groupId>-->
+                <!--<artifactId>cdm-http-maven-plugin</artifactId>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.codingmatters.poomjobs</groupId>-->
+                        <!--<artifactId>poomjobs-spec</artifactId>-->
+                        <!--<version>0.0.1-SNAPSHOT</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>spec1</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>generate-api-types</goal>-->
+                            <!--&lt;!&ndash;<goal>json</goal>&ndash;&gt;-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<destinationPackage>org.codingmatters.poomjobs.types.types</destinationPackage>-->
+                            <!--<api-spec-resource>poomjobs-api.raml</api-spec-resource>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 </project>
