@@ -7,6 +7,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codingmatters.http.api.generator.ApiGenerator;
 import org.codingmatters.http.api.generator.ApiTypesGenerator;
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
@@ -48,31 +49,49 @@ public class GenerateAPITypesMojo extends AbstractMojo {
         File apiFile = this.resolveApiFile();
         this.getLog().info("API : " + apiFile.getAbsolutePath());
 
-        Spec spec = buildSpec(apiFile);
 
+        RamlModelResult ramlModel = this.buildRamlModel(apiFile);
+        this.generateTypes(ramlModel);
+        this.generateApi(ramlModel);
+    }
+
+    private void generateTypes(RamlModelResult ramlModel) throws MojoExecutionException {
         try {
-            new SpecCodeGenerator(spec, this.destinationPackage, this.outputDirectory).generate();
-            new JsonFrameworkGenerator(spec, this.destinationPackage, this.outputDirectory).generate();
+            Spec spec = new ApiTypesGenerator().generate(ramlModel);
+            this.generateCodeFromSpec(spec, this.destinationPackage + ".types");
+        } catch (RamlSpecException e) {
+            throw new MojoExecutionException("error generating value object spec from raml api types", e);
+        }
+    }
+
+    private void generateApi(RamlModelResult ramlModel) throws MojoExecutionException {
+        try {
+            Spec spec = new ApiGenerator(this.destinationPackage + ".types").generate(ramlModel);
+            this.generateCodeFromSpec(spec, this.destinationPackage + ".api");
+        } catch (RamlSpecException e) {
+            throw new MojoExecutionException("error generating value object spec from raml api types", e);
+        }
+    }
+
+    private void generateCodeFromSpec(Spec spec, String packageName) throws MojoExecutionException {
+        try {
+            new SpecCodeGenerator(spec, packageName, this.outputDirectory).generate();
+            new JsonFrameworkGenerator(spec, packageName, this.outputDirectory).generate();
         } catch (IOException e) {
             throw new MojoExecutionException("error generating code from spec", e);
         }
     }
 
-    private Spec buildSpec(File apiFile) throws MojoExecutionException {
-        Spec spec;
-        try {
-            RamlModelResult ramlModel = new RamlModelBuilder().buildApi(apiFile);
-            if(ramlModel.hasErrors()) {
-                for (ValidationResult validationResult : ramlModel.getValidationResults()) {
-                    this.getLog().error(validationResult.getMessage());
-                }
-                throw new MojoExecutionException("failed parsing raml api, see logs");
+    private RamlModelResult buildRamlModel(File apiFile) throws MojoExecutionException {
+        RamlModelResult ramlModel;
+        ramlModel = new RamlModelBuilder().buildApi(apiFile);
+        if(ramlModel.hasErrors()) {
+            for (ValidationResult validationResult : ramlModel.getValidationResults()) {
+                this.getLog().error(validationResult.getMessage());
             }
-            spec = new ApiTypesGenerator().generate(ramlModel);
-        } catch (RamlSpecException e) {
-            throw new MojoExecutionException("error generating value object spec from raml api", e);
+            throw new MojoExecutionException("failed parsing raml api, see logs");
         }
-        return spec;
+        return ramlModel;
     }
 
     private File resolveApiFile() throws MojoFailureException {

@@ -19,7 +19,7 @@ public class ResponseHeadersTest {
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiSpecGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("response-headers.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("response-headers.raml")));
     }
 
     @Test

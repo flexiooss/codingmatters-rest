@@ -26,23 +26,23 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codingmatters.value.objects</groupId>
-                <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>spec1</id>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                            <configuration>
-                                <destinationPackage>org.codingmatters.poomjobs.types.api</destinationPackage>
-                                <inputSpecification>src/main/resources/poomjobs-api.yaml</inputSpecification>
-                            </configuration>
-                        </execution>
-                    </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.codingmatters.value.objects</groupId>-->
+                <!--<artifactId>cdm-value-objects-maven-plugin</artifactId>-->
+                    <!--<executions>-->
+                        <!--<execution>-->
+                            <!--<id>spec1</id>-->
+                            <!--<phase>generate-sources</phase>-->
+                            <!--<goals>-->
+                                <!--<goal>generate</goal>-->
+                            <!--</goals>-->
+                            <!--<configuration>-->
+                                <!--<destinationPackage>org.codingmatters.poomjobs.types.api</destinationPackage>-->
+                                <!--<inputSpecification>src/main/resources/poomjobs-api.yaml</inputSpecification>-->
+                            <!--</configuration>-->
+                        <!--</execution>-->
+                    <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -80,7 +80,7 @@
                             <!--<goal>json</goal>-->
                         </goals>
                         <configuration>
-                            <destinationPackage>org.codingmatters.poomjobs.types.types</destinationPackage>
+                            <destinationPackage>org.codingmatters.poomjobs.types</destinationPackage>
                             <api-spec-resource>poomjobs-api.raml</api-spec-resource>
                         </configuration>
                     </execution>

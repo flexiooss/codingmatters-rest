@@ -1,0 +1,12 @@
+#%RAML 1.0
+title: QueryParameters API
+version: v1
+baseUri: https://api.codingmatters.org/query-parameters
+mediaType: application/json
+
+/root/{param}:
+    displayName: RootResource
+    uriParameters:
+         param:
+           type: string
+    get:
