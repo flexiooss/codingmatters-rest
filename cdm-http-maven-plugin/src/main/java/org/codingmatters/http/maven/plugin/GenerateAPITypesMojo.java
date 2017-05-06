@@ -102,11 +102,12 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                 Artifact artifact = null;
                 for (Artifact anArtifact : this.plugin.getArtifacts()) {
                     try {
-                        System.out.println("artifact file : " + anArtifact.getFile());
-                        JarFile jar = new JarFile(anArtifact.getFile().getAbsolutePath());
-                        JarEntry entry = jar.getJarEntry(this.apiSpecResource);
-                        if (entry != null) {
-                            artifact = anArtifact;
+                        if(anArtifact.getFile().isFile() && anArtifact.getFile().getName().endsWith(".jar")) {
+                            JarFile jar = new JarFile(anArtifact.getFile().getAbsolutePath());
+                            JarEntry entry = jar.getJarEntry(this.apiSpecResource);
+                            if (entry != null) {
+                                artifact = anArtifact;
+                            }
                         }
                     } catch (IOException e) {
                         throw new MojoFailureException("error looking up for input specification resource : " + this.apiSpecResource, e);
