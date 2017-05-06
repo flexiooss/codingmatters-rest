@@ -35,10 +35,10 @@ public class GenerateAPITypesMojo extends AbstractMojo {
     @Parameter(required = true, alias = "destination-package")
     private String destinationPackage;
 
-    @Parameter(name = "api-spec-file")
+    @Parameter(alias = "api-spec-file")
     private File apiSpecFile;
 
-    @Parameter(name = "api-spec-resource")
+    @Parameter(alias = "api-spec-resource")
     private String apiSpecResource;
 
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
