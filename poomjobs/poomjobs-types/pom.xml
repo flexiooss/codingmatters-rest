@@ -80,7 +80,7 @@
                             <!--<goal>json</goal>-->
                         </goals>
                         <configuration>
-                            <destination-package>org.codingmatters.poomjobs.types</destination-package>
+                            <destinationPackage>org.codingmatters.poomjobs.types</destinationPackage>
                             <api-spec-resource>poomjobs-api.raml</api-spec-resource>
                         </configuration>
                     </execution>
