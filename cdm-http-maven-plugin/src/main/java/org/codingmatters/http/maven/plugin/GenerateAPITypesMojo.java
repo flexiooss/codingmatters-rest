@@ -32,7 +32,7 @@ public class GenerateAPITypesMojo extends AbstractMojo {
     private PluginDescriptor plugin;
 
 
-    @Parameter(required = true)
+    @Parameter(required = true, name = "destination-package")
     private String destinationPackage;
 
     @Parameter(name = "api-spec-file")
@@ -107,6 +107,12 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                             JarEntry entry = jar.getJarEntry(this.apiSpecResource);
                             if (entry != null) {
                                 artifact = anArtifact;
+                                break;
+                            }
+                        } else if(anArtifact.getFile().isDirectory()) {
+                            if(new File(anArtifact.getFile(), this.apiSpecResource).exists()) {
+                                artifact = anArtifact;
+                                break;
                             }
                         }
                     } catch (IOException e) {
@@ -117,22 +123,26 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                     throw new MojoFailureException("input specification resource not found : " + this.apiSpecResource);
                 }
 
-                File temp = File.createTempFile("spec", ".raml");
-                temp.deleteOnExit();
+                if (artifact.getFile().isDirectory()) {
+                    return new File(artifact.getFile(), this.apiSpecResource);
+                } else {
+                    File temp = File.createTempFile("spec", ".raml");
+                    temp.deleteOnExit();
 
-                URL url = new URL("jar:file:" + artifact.getFile().getAbsolutePath() + "!/" + this.apiSpecResource);
-                try(
-                        InputStream in = url.openStream() ;
-                        Reader reader = new InputStreamReader(in, "UTF-8");
-                        Writer writer = new FileWriter(temp);
-                ) {
-                    char[] buffer = new char[1024];
-                    for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-                        writer.write(buffer, 0, read);
+                    URL url = new URL("jar:file:" + artifact.getFile().getAbsolutePath() + "!/" + this.apiSpecResource);
+                    try (
+                            InputStream in = url.openStream();
+                            Reader reader = new InputStreamReader(in, "UTF-8");
+                            Writer writer = new FileWriter(temp);
+                    ) {
+                        char[] buffer = new char[1024];
+                        for (int read = reader.read(buffer); read != -1; read = reader.read(buffer)) {
+                            writer.write(buffer, 0, read);
+                        }
+                        writer.flush();
                     }
-                    writer.flush();
+                    return temp;
                 }
-                return temp;
             } catch (IOException e) {
                 throw new MojoFailureException("error getting specification file from resource", e);
             }
