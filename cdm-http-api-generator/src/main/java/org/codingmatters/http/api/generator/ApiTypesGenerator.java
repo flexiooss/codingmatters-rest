@@ -2,6 +2,7 @@ package org.codingmatters.http.api.generator;
 
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.http.api.generator.type.RamlType;
+import org.codingmatters.http.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -13,15 +14,17 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
  */
 public class ApiTypesGenerator {
 
+    private final Naming naming = new Naming();
+
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
             if(typeDeclaration.type().equals("object")) {
                 ValueSpec.Builder valueSpec = ValueSpec.valueSpec()
-                        .name(typeDeclaration.name());
+                        .name(this.naming.type(typeDeclaration.name()));
                 for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
                     valueSpec.addProperty(PropertySpec.property()
-                            .name(declaration.name())
+                            .name(this.naming.property(declaration.name()))
                             .type(this.typeSpecFromDeclaration(declaration))
                     );
                 }
@@ -66,7 +69,7 @@ public class ApiTypesGenerator {
         for (TypeDeclaration objectProp : declaration.properties()) {
             if(objectProp.type().equals("object")) {
                 embedded.addProperty(PropertySpec.property()
-                        .name(objectProp.name())
+                        .name(this.naming.property(objectProp.name()))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.EMBEDDED)
@@ -75,7 +78,7 @@ public class ApiTypesGenerator {
                 );
             } else {
                 embedded.addProperty(PropertySpec.property()
-                        .name(objectProp.name())
+                        .name(this.naming.property(objectProp.name()))
                         .type(this.typeSpecFromDeclaration(objectProp))
                 );
             }

@@ -2,6 +2,7 @@ package org.codingmatters.http.api.generator;
 
 import org.codingmatters.http.api.generator.exception.RamlSpecException;
 import org.codingmatters.http.api.generator.type.RamlType;
+import org.codingmatters.http.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
@@ -16,6 +17,7 @@ import org.raml.v2.api.model.v10.resources.Resource;
 public class ApiGenerator {
 
     private final String typesPackage;
+    private final Naming naming = new Naming();
 
     public ApiGenerator(String typesPackage) {
         this.typesPackage = typesPackage;
@@ -42,7 +44,7 @@ public class ApiGenerator {
 
     private ValueSpec generateMethodRequestValue(Resource resource, Method method) throws RamlSpecException {
         ValueSpec.Builder result = ValueSpec.valueSpec()
-                .name(resource.displayName().value() + this.upperCaseFirst(method.method()) + "Request");
+                .name(this.naming.type(resource.displayName().value(), method.method(), "Request"));
 
         for (TypeDeclaration typeDeclaration : method.queryParameters()) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);
@@ -70,13 +72,13 @@ public class ApiGenerator {
 
     private ValueSpec generateMethodResponseValue(Resource resource, Method method) throws RamlSpecException {
         ValueSpec.Builder result = ValueSpec.valueSpec()
-                .name(resource.displayName().value() + this.upperCaseFirst(method.method()) + "Response");
+                .name(this.naming.type(resource.displayName().value(), method.method(), "Response"));
 
         for (Response response : method.responses()) {
             AnonymousValueSpec.Builder responseSpec = AnonymousValueSpec.anonymousValueSpec();
             for (TypeDeclaration typeDeclaration : response.headers()) {
                 responseSpec.addProperty(PropertySpec.property()
-                        .name(this.lowerCaseFirst(typeDeclaration.name()))
+                        .name(this.naming.property(typeDeclaration.name()))
                         .type(this.typeSpecFromDeclaration(typeDeclaration))
                         .build());
             }
@@ -91,7 +93,7 @@ public class ApiGenerator {
                 );
             }
             PropertySpec.Builder responseProp = PropertySpec.property()
-                    .name("status" + response.code().value())
+                    .name(this.naming.property("status", response.code().value()))
                     .type(PropertyTypeSpec.type()
                             .typeKind(TypeKind.EMBEDDED)
                             .cardinality(PropertyCardinality.SINGLE)
@@ -108,7 +110,7 @@ public class ApiGenerator {
 
     private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
         result.addProperty(PropertySpec.property()
-                .name(this.lowerCaseFirst(typeDeclaration.name()))
+                .name(this.naming.property(typeDeclaration.name()))
                 .type(this.typeSpecFromDeclaration(typeDeclaration))
                 .build());
     }
@@ -125,12 +127,5 @@ public class ApiGenerator {
                     .typeRef(RamlType.from(typeDeclaration).javaType());
         }
         return typeSpec;
-    }
-
-    private String upperCaseFirst(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-    private String lowerCaseFirst(String str) {
-        return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
 }
