@@ -26,24 +26,6 @@
 
     <build>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.codingmatters.value.objects</groupId>-->
-                <!--<artifactId>cdm-value-objects-maven-plugin</artifactId>-->
-                    <!--<executions>-->
-                        <!--<execution>-->
-                            <!--<id>spec1</id>-->
-                            <!--<phase>generate-sources</phase>-->
-                            <!--<goals>-->
-                                <!--<goal>generate</goal>-->
-                            <!--</goals>-->
-                            <!--<configuration>-->
-                                <!--<destinationPackage>org.codingmatters.poomjobs.types.api</destinationPackage>-->
-                                <!--<inputSpecification>src/main/resources/poomjobs-api.yaml</inputSpecification>-->
-                            <!--</configuration>-->
-                        <!--</execution>-->
-                    <!--</executions>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.codingmatters.http</groupId>
                 <artifactId>cdm-http-maven-plugin</artifactId>
@@ -60,7 +42,6 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-api-types</goal>
-                            <!--<goal>json</goal>-->
                         </goals>
                         <configuration>
                             <destination-package>org.codingmatters.poomjobs.types</destination-package>
