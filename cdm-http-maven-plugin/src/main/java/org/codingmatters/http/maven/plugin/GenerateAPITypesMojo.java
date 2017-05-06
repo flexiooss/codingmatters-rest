@@ -32,7 +32,7 @@ public class GenerateAPITypesMojo extends AbstractMojo {
     private PluginDescriptor plugin;
 
 
-    @Parameter(required = true, name = "destination-package")
+    @Parameter(required = true, alias = "destination-package")
     private String destinationPackage;
 
     @Parameter(name = "api-spec-file")
