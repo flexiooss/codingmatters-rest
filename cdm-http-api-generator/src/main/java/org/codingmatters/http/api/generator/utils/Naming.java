@@ -1,5 +1,6 @@
 package org.codingmatters.http.api.generator.utils;
 
+import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
@@ -17,12 +18,23 @@ public class Naming {
     private String name(Function<String, String> firstPartTransformer,  String ... parts) {
         if(parts == null) return null;
         if(parts.length == 0) return "";
+        parts = this.normalize(parts);
 
         StringBuilder result = new StringBuilder(firstPartTransformer.apply(parts[0]));
         for(int i = 1 ; i < parts.length ; i++) {
             result.append(this.upperCaseFirst(parts[i]));
         }
         return result.toString();
+    }
+
+    private final String [] normalize(String ... parts) {
+        LinkedList<String> result = new LinkedList<>();
+        for (String part : parts) {
+            for (String subpart : part.split("(\\s+)|(-+)")) {
+                result.add(subpart);
+            }
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     private String upperCaseFirst(String str) {
