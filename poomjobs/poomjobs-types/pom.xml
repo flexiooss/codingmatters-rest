@@ -73,7 +73,7 @@
                 </dependencies>
                 <executions>
                     <execution>
-                        <id>spec1</id>
+                        <id>api-gen</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-api-types</goal>

@@ -102,6 +102,7 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                 Artifact artifact = null;
                 for (Artifact anArtifact : this.plugin.getArtifacts()) {
                     try {
+                        System.out.println("artifact file : " + anArtifact.getFile());
                         JarFile jar = new JarFile(anArtifact.getFile().getAbsolutePath());
                         JarEntry entry = jar.getJarEntry(this.apiSpecResource);
                         if (entry != null) {
@@ -127,7 +128,6 @@ public class GenerateAPITypesMojo extends AbstractMojo {
                     char[] buffer = new char[1024];
                     for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
                         writer.write(buffer, 0, read);
-                        System.out.println(new String(buffer, 0, read));
                     }
                     writer.flush();
                 }
