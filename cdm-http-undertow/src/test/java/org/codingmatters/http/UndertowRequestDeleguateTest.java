@@ -1,10 +1,7 @@
 package org.codingmatters.http;
 
 import io.undertow.Undertow;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.codingmatters.http.api.Processor;
 import org.codingmatters.http.api.RequestDeleguate;
 import org.codingmatters.http.api.ResponseDeleguate;
@@ -13,9 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.ServerSocket;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -26,11 +20,10 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/7/17.
  */
-public class UndertowRequestDeleguateTest {
+public class UndertowRequestDeleguateTest extends AbstractUndertowTest {
 
     private Undertow server;
     private OkHttpClient client = new OkHttpClient();
-    private String baseUrl;
     private Processor testProcessor;
 
     @Before
@@ -133,32 +126,4 @@ public class UndertowRequestDeleguateTest {
         assertThat(payload.get(), is(requestPayload));
     }
 
-    private Request.Builder requestBuilder() {
-        return this.requestBuilder("");
-    }
-
-    private Request.Builder requestBuilder(String path) {
-        return new Request.Builder()
-                .url(this.baseUrl + path);
-    }
-
-    private RequestBody emptyJsonBody() {
-        String payload = "{}";
-        return jsonBody(payload);
-    }
-
-    private RequestBody jsonBody(String payload) {
-        return RequestBody.create(MediaType.parse("application/json"), payload);
-    }
-
-    private String readAsString(RequestDeleguate requestDeleguate) throws IOException {
-        StringBuilder payloadAsString = new StringBuilder();
-        try(InputStream in = requestDeleguate.payload(); Reader reader = new InputStreamReader(in)) {
-            char [] buffer = new char[1024];
-            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-                payloadAsString.append(buffer, 0, read);
-            }
-        }
-        return payloadAsString.toString();
-    }
 }
