@@ -58,11 +58,11 @@ public class PoomjobsAPIProcessor implements Processor {
                 }
             }
         } else if (requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
-            Map<String, String> pathParameters = requestDeleguate.pathParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+            Map<String, String> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
             if(requestDeleguate.method().equals(RequestDeleguate.Method.GET)) {
                 JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
                         JobResourceGetRequest.Builder.builder()
-                                .jobId(pathParameters.get("jobId"))
+                                .jobId(uriParameters.get("jobId"))
                                 .build()
                 );
                 if (response.status200() != null) {
@@ -95,7 +95,7 @@ public class PoomjobsAPIProcessor implements Processor {
                 JsonParser parser = factory.createParser(requestDeleguate.payload());
                 JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
                         JobResourcePutRequest.Builder.builder()
-                                .jobId(pathParameters.get("jobId"))
+                                .jobId(uriParameters.get("jobId"))
                                 .payload(new JobReader().read(parser))
                                 .build()
                 );

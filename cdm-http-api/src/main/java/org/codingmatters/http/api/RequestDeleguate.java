@@ -16,7 +16,7 @@ public interface RequestDeleguate {
 
     String absolutePath(String relative);
 
-    default Map<String,String> pathParameters(String pathExpression) {
+    default Map<String,String> uriParameters(String pathExpression) {
         return new PathParameterProcessor(this).process(pathExpression);
     }
 

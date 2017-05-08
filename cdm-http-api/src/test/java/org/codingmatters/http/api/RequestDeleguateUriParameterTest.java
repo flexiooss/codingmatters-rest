@@ -14,12 +14,12 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 4/27/17.
  */
-public class RequestDeleguatePathParameterTest {
+public class RequestDeleguateUriParameterTest {
 
     @Test
     public void noParameter() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param-value");
-        Map<String, String> parameters = deleguate.pathParameters("/blop/blop");
+        Map<String, String> parameters = deleguate.uriParameters("/blop/blop");
 
         System.out.println(parameters);
 
@@ -29,7 +29,7 @@ public class RequestDeleguatePathParameterTest {
     @Test
     public void noMatch() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param-value");
-        Map<String, String> parameters = deleguate.pathParameters("/blop/{param-name}");
+        Map<String, String> parameters = deleguate.uriParameters("/blop/{param-name}");
 
         System.out.println(parameters);
 
@@ -40,7 +40,7 @@ public class RequestDeleguatePathParameterTest {
     @Test
     public void lastPart() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param-value");
-        Map<String, String> parameters = deleguate.pathParameters("/start/{param-name}");
+        Map<String, String> parameters = deleguate.uriParameters("/start/{param-name}");
 
         System.out.println(parameters);
 
@@ -51,7 +51,7 @@ public class RequestDeleguatePathParameterTest {
     @Test
     public void middlePart() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param-value/end");
-        Map<String, String> parameters = deleguate.pathParameters("/start/{param-name}/end");
+        Map<String, String> parameters = deleguate.uriParameters("/start/{param-name}/end");
 
         System.out.println(parameters);
 
@@ -62,7 +62,7 @@ public class RequestDeleguatePathParameterTest {
     @Test
     public void startPart() throws Exception {
         RequestDeleguate deleguate = this.withPath("/param-value/end");
-        Map<String, String> parameters = deleguate.pathParameters("/{param-name}/end");
+        Map<String, String> parameters = deleguate.uriParameters("/{param-name}/end");
 
         System.out.println(parameters);
 
@@ -73,7 +73,7 @@ public class RequestDeleguatePathParameterTest {
     @Test
     public void multiplePart() throws Exception {
         RequestDeleguate deleguate = this.withPath("/start/param1-value/middle/param2-value/end");
-        Map<String, String> parameters = deleguate.pathParameters("/start/{param1-name}/middle/{param2-name}/end");
+        Map<String, String> parameters = deleguate.uriParameters("/start/{param1-name}/middle/{param2-name}/end");
 
         System.out.println(parameters);
 
