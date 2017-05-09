@@ -1,8 +1,10 @@
-package org.codingmatters.http.api;
+package org.codingmatters.http.api.internal;
 
+import org.codingmatters.http.api.RequestDeleguate;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,6 +113,11 @@ public class RequestDeleguateUriParameterTest {
 
         @Override
         public String absolutePath(String relative) {
+            return null;
+        }
+
+        @Override
+        public Map<String, List<String>> queryParameters() {
             return null;
         }
     }

@@ -4,6 +4,10 @@ import io.undertow.server.HttpServerExchange;
 import org.codingmatters.http.api.RequestDeleguate;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +17,7 @@ import java.util.regex.Pattern;
 public class UndertowRequestDeleguate implements RequestDeleguate {
 
     private final HttpServerExchange exchange;
+    private Map<String, List<String>> queryParamsCache = null;
 
     public UndertowRequestDeleguate(HttpServerExchange exchange) {
         this.exchange = exchange;
@@ -50,5 +55,18 @@ public class UndertowRequestDeleguate implements RequestDeleguate {
                 exchange.getHostAndPort(),
                 relative
         );
+    }
+
+    @Override
+    public synchronized Map<String, List<String>> queryParameters() {
+        if(this.queryParamsCache == null) {
+            this.queryParamsCache = new HashMap<>();
+            for (String name : this.exchange.getQueryParameters().keySet()) {
+                if (this.exchange.getQueryParameters().get(name) != null) {
+                    this.queryParamsCache.put(name, new LinkedList<>(this.exchange.getQueryParameters().get(name)));
+                }
+            }
+        }
+        return this.queryParamsCache;
     }
 }

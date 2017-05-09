@@ -1,8 +1,9 @@
 package org.codingmatters.http.api;
 
-import org.codingmatters.http.api.internal.PathParameterProcessor;
+import org.codingmatters.http.api.internal.UriParameterProcessor;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -17,8 +18,10 @@ public interface RequestDeleguate {
     String absolutePath(String relative);
 
     default Map<String,String> uriParameters(String pathExpression) {
-        return new PathParameterProcessor(this).process(pathExpression);
+        return new UriParameterProcessor(this).process(pathExpression);
     }
+
+    Map<String,List<String>> queryParameters();
 
     enum Method {
         GET, POST, PUT, PATCH, DELETE, UNIMPLEMENTED;

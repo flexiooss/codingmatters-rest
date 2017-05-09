@@ -11,10 +11,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -126,4 +128,44 @@ public class UndertowRequestDeleguateTest extends AbstractUndertowTest {
         assertThat(payload.get(), is(requestPayload));
     }
 
+    @Test
+    public void queryParameters_singleParams() throws Exception {
+        AtomicReference<Map<String, List<String>>> queryParameters = new AtomicReference<>();
+        this.testProcessor = (requestDeleguate, responseDeleguate) -> {queryParameters.set(requestDeleguate.queryParameters());};
+
+        this.client.newCall(this.requestBuilder("?n1=v1&n2=v2").get().build()).execute();
+        assertThat(queryParameters.get().size(), is(2));
+        assertThat(queryParameters.get().get("n1"), contains("v1"));
+        assertThat(queryParameters.get().get("n2"), contains("v2"));
+    }
+
+    @Test
+    public void queryParameters_multipleParams() throws Exception {
+        AtomicReference<Map<String, List<String>>> queryParameters = new AtomicReference<>();
+        this.testProcessor = (requestDeleguate, responseDeleguate) -> {queryParameters.set(requestDeleguate.queryParameters());};
+
+        this.client.newCall(this.requestBuilder("?n=v1&n=v2").get().build()).execute();
+        assertThat(queryParameters.get().size(), is(1));
+        assertThat(queryParameters.get().get("n"), contains("v1", "v2"));
+    }
+
+    @Test
+    public void queryParameters_undefined() throws Exception {
+        AtomicReference<Map<String, List<String>>> queryParameters = new AtomicReference<>();
+        this.testProcessor = (requestDeleguate, responseDeleguate) -> {queryParameters.set(requestDeleguate.queryParameters());};
+
+        this.client.newCall(this.requestBuilder("?n=v").get().build()).execute();
+        assertThat(queryParameters.get().size(), is(1));
+        assertThat(queryParameters.get().get("undefined"), is(nullValue()));
+    }
+
+    @Test
+    public void queryParameters_emptyParam() throws Exception {
+        AtomicReference<Map<String, List<String>>> queryParameters = new AtomicReference<>();
+        this.testProcessor = (requestDeleguate, responseDeleguate) -> {queryParameters.set(requestDeleguate.queryParameters());};
+
+        this.client.newCall(this.requestBuilder("?n=").get().build()).execute();
+        assertThat(queryParameters.get().size(), is(1));
+        assertThat(queryParameters.get().get("n"), contains(""));
+    }
 }

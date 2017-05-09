@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 /**
  * Created by nelt on 4/27/17.
  */
-public class PathParameterProcessor {
+public class UriParameterProcessor {
     private final RequestDeleguate requestDeleguate;
 
-    public PathParameterProcessor(RequestDeleguate requestDeleguate) {
+    public UriParameterProcessor(RequestDeleguate requestDeleguate) {
         this.requestDeleguate = requestDeleguate;
     }
 
