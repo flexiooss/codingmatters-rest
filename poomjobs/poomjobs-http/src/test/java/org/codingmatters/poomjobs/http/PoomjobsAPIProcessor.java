@@ -3,13 +3,13 @@ package org.codingmatters.poomjobs.http;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import org.codingmatters.http.api.Processor;
-import org.codingmatters.http.api.RequestDeleguate;
-import org.codingmatters.http.api.ResponseDeleguate;
 import org.codingmatters.poomjobs.types.api.*;
 import org.codingmatters.poomjobs.types.types.json.ErrorWriter;
 import org.codingmatters.poomjobs.types.types.json.JobReader;
 import org.codingmatters.poomjobs.types.types.json.JobWriter;
+import org.codingmatters.rest.api.Processor;
+import org.codingmatters.rest.api.RequestDeleguate;
+import org.codingmatters.rest.api.ResponseDeleguate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
