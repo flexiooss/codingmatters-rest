@@ -3,7 +3,11 @@ package org.codingmatters.http;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.codingmatters.http.api.Processor;
 import org.codingmatters.http.api.RequestDeleguate;
+import org.codingmatters.http.api.ResponseDeleguate;
+import org.codingmatters.http.support.UndertowResource;
+import org.junit.Rule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +18,23 @@ import java.io.Reader;
  * Created by nelt on 5/7/17.
  */
 public class AbstractUndertowTest {
-    protected String baseUrl;
+
+    @Rule
+    public UndertowResource undertow = new UndertowResource(new CdmHttpUndertowHandler(this::process));
+
+    private Processor testProcessor;
+
+    public String baseUrl() {
+        return this.undertow.baseUrl();
+    }
+
+    private void process(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
+        this.testProcessor.process(requestDeleguate, responseDeleguate);
+    }
+
+    protected void withProcessor(Processor processor) {
+        this.testProcessor = processor;
+    }
 
 
     protected Request.Builder requestBuilder() {
@@ -23,7 +43,7 @@ public class AbstractUndertowTest {
 
     protected Request.Builder requestBuilder(String path) {
         return new Request.Builder()
-                .url(this.baseUrl + path);
+                .url(this.undertow.baseUrl() + path);
     }
 
     protected RequestBody emptyJsonBody() {
@@ -44,4 +64,5 @@ public class AbstractUndertowTest {
             }
         }
         return payloadAsString.toString();
-    }}
+    }
+}
