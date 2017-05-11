@@ -15,7 +15,7 @@ public class UndertowResource extends ExternalResource {
     private final HttpHandler handler;
 
     private Undertow server;
-    private Processor testProcessor;
+    private Processor testProcessor = null;
     private String baseUrl;
 
     public UndertowResource(HttpHandler handler) {

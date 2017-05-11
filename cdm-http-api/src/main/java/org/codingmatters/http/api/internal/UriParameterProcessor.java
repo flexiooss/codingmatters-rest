@@ -3,6 +3,7 @@ package org.codingmatters.http.api.internal;
 import org.codingmatters.http.api.RequestDeleguate;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -18,8 +19,8 @@ public class UriParameterProcessor {
         this.requestDeleguate = requestDeleguate;
     }
 
-    public Map<String, String> process(String pathExpression) {
-        Map<String, String> result = new TreeMap<>();
+    public Map<String, List<String>> process(String pathExpression) {
+        Map<String, List<String>> result = new TreeMap<>();
         LinkedList<String> names = new LinkedList<>();
 
         StringBuilder regex = new StringBuilder();
@@ -34,14 +35,14 @@ public class UriParameterProcessor {
             ;
             lastEnd = matcher.end();
             names.add(matcher.group(1));
-            result.put(matcher.group(1), null);
+            result.put(matcher.group(1), new LinkedList<>());
         }
         regex.append(pathExpression.substring(lastEnd, pathExpression.length()));
 
         Matcher pathMatcher = this.requestDeleguate.pathMatcher(regex.toString());
         if(pathMatcher.matches()) {
             for(int i = 1 ; i <= pathMatcher.groupCount() ; i++) {
-                result.put(names.get(i - 1), pathMatcher.group(i));
+                result.get(names.get(i - 1)).add(pathMatcher.group(i));
             }
         }
         return result;

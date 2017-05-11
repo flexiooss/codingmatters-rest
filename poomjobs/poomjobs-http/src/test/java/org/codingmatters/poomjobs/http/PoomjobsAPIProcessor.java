@@ -13,6 +13,7 @@ import org.codingmatters.poomjobs.types.types.json.JobWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,11 +59,11 @@ public class PoomjobsAPIProcessor implements Processor {
                 }
             }
         } else if (requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
-            Map<String, String> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+            Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
             if(requestDeleguate.method().equals(RequestDeleguate.Method.GET)) {
                 JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
                         JobResourceGetRequest.Builder.builder()
-                                .jobId(uriParameters.get("jobId"))
+                                .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
                                 .build()
                 );
                 if (response.status200() != null) {
@@ -95,7 +96,7 @@ public class PoomjobsAPIProcessor implements Processor {
                 JsonParser parser = factory.createParser(requestDeleguate.payload());
                 JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
                         JobResourcePutRequest.Builder.builder()
-                                .jobId(uriParameters.get("jobId"))
+                                .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
                                 .payload(new JobReader().read(parser))
                                 .build()
                 );
