@@ -15,36 +15,45 @@ import java.util.regex.Pattern;
 public class UriParameterProcessor {
     private final RequestDeleguate requestDeleguate;
 
+    private final TreeMap<String, List<String>> parameters;
+    private final LinkedList<String> names;
+    private final StringBuilder regex;
+
     public UriParameterProcessor(RequestDeleguate requestDeleguate) {
         this.requestDeleguate = requestDeleguate;
+        this.parameters = new TreeMap<>();
+        this.names = new LinkedList<>();
+        this.regex = new StringBuilder();
     }
 
     public Map<String, List<String>> process(String pathExpression) {
-        Map<String, List<String>> result = new TreeMap<>();
-        LinkedList<String> names = new LinkedList<>();
+        this.parseTemplateExpression(pathExpression);
+        this.gatherParameters();
+        return this.parameters;
+    }
 
-        StringBuilder regex = new StringBuilder();
-
+    private void parseTemplateExpression(String pathExpression) {
         Matcher matcher = Pattern.compile("\\{([^}]+)}").matcher(pathExpression);
         int lastEnd = 0;
         while(matcher.find()) {
             int start = matcher.start();
-            regex
+            this.regex
                     .append(pathExpression.substring(lastEnd, start))
                     .append("([^/]*)")
             ;
             lastEnd = matcher.end();
-            names.add(matcher.group(1));
-            result.put(matcher.group(1), new LinkedList<>());
+            this.names.add(matcher.group(1));
+            this.parameters.put(matcher.group(1), new LinkedList<>());
         }
-        regex.append(pathExpression.substring(lastEnd, pathExpression.length()));
+        this.regex.append(pathExpression.substring(lastEnd, pathExpression.length()));
+    }
 
-        Matcher pathMatcher = this.requestDeleguate.pathMatcher(regex.toString());
+    private void gatherParameters() {
+        Matcher pathMatcher = this.requestDeleguate.pathMatcher(this.regex.toString());
         if(pathMatcher.matches()) {
             for(int i = 1 ; i <= pathMatcher.groupCount() ; i++) {
-                result.get(names.get(i - 1)).add(pathMatcher.group(i));
+                this.parameters.get(this.names.get(i - 1)).add(pathMatcher.group(i));
             }
         }
-        return result;
     }
 }
