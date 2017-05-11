@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.http</groupId>
-        <artifactId>codingmatters-http</artifactId>
+        <groupId>org.codingmatters.rest</groupId>
+        <artifactId>codingmatters-rest</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
-    <artifactId>cdm-http-parent</artifactId>
+    <artifactId>cdm-rest-parent</artifactId>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -40,8 +40,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.codingmatters.http</groupId>
-                <artifactId>cdm-http-bom</artifactId>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-bom</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>

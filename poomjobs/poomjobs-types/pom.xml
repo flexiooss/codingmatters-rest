@@ -27,8 +27,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codingmatters.http</groupId>
-                <artifactId>cdm-http-maven-plugin</artifactId>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
                         <groupId>org.codingmatters.poomjobs</groupId>

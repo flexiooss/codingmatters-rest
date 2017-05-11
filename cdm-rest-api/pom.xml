@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.http</groupId>
-        <artifactId>cdm-http-parent</artifactId>
+        <groupId>org.codingmatters.rest</groupId>
+        <artifactId>cdm-rest-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../cdm-http-parent</relativePath>
+        <relativePath>../cdm-rest-parent</relativePath>
     </parent>
 
-    <artifactId>cdm-http-api</artifactId>
+    <artifactId>cdm-rest-api</artifactId>
     <name>${project.groupId}${project.artifactId}</name>
     
 </project>

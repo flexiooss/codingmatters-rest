@@ -4,8 +4,8 @@
                       https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.codingmatters.http</groupId>
-    <artifactId>codingmatters-http</artifactId>
+    <groupId>org.codingmatters.rest</groupId>
+    <artifactId>codingmatters-rest</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -45,13 +45,13 @@
     </distributionManagement>
 
     <modules>
-        <module>cdm-http-parent</module>
-        <module>cdm-http-bom</module>
-        <module>cdm-http-api</module>
-        <module>cdm-http-undertow</module>
+        <module>cdm-rest-parent</module>
+        <module>cdm-rest-bom</module>
+        <module>cdm-rest-api</module>
+        <module>cdm-rest-undertow</module>
 
-        <module>cdm-http-api-generator</module>
-        <module>cdm-http-maven-plugin</module>
+        <module>cdm-rest-api-generator</module>
+        <module>cdm-rest-maven-plugin</module>
 
         <module>poomjobs</module>
     </modules>

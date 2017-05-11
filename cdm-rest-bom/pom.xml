@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.http</groupId>
-        <artifactId>codingmatters-http</artifactId>
+        <groupId>org.codingmatters.rest</groupId>
+        <artifactId>codingmatters-rest</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>cdm-http-bom</artifactId>
+    <artifactId>cdm-rest-bom</artifactId>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -19,22 +19,22 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cdm-http-parent</artifactId>
+                <artifactId>cdm-rest-parent</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cdm-http-api</artifactId>
+                <artifactId>cdm-rest-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cdm-http-api-generator</artifactId>
+                <artifactId>cdm-rest-api-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cdm-http-undertow</artifactId>
+                <artifactId>cdm-rest-undertow</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
