@@ -18,7 +18,7 @@ public class ResponsePayloadTest {
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("response-payload.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("types/response-payload.raml")));
     }
 
     @Test

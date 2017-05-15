@@ -19,7 +19,7 @@ public class RequestQueryParametersTest {
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("request-query-parameters.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("types/request-query-parameters.raml")));
     }
 
     @Test

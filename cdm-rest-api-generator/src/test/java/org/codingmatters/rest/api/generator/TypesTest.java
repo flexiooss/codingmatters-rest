@@ -18,7 +18,7 @@ public class TypesTest {
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiTypesGenerator().generate(new RamlModelBuilder().buildApi(fileResource("types.raml")));
+        this.spec = new ApiTypesGenerator().generate(new RamlModelBuilder().buildApi(fileResource("types/types.raml")));
     }
 
     @Test

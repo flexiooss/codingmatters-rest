@@ -19,7 +19,7 @@ public class RequestURIParameterTest {
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("request-uri-parameters.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(fileResource("types/request-uri-parameters.raml")));
     }
 
     @Test

@@ -18,7 +18,7 @@ public class SimpleResourcesTest {
 
     @Test
     public void rootResource() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
         for(String method : Arrays.asList("Get", "Post", "Put", "Delete", "Head", "Patch", "Options")) {
             String request = "RootResource" + method + "Request";
             String response = "RootResource" + method + "Response";
@@ -29,7 +29,7 @@ public class SimpleResourcesTest {
 
     @Test
     public void middleResource() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
 
         assertThat(spec.valueSpec("MiddleResourceGetRequest"), is(notNullValue()));
         assertThat(spec.valueSpec("MiddleResourceGetResponse"), is(notNullValue()));
@@ -37,7 +37,7 @@ public class SimpleResourcesTest {
 
     @Test
     public void leafs() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
 
         assertThat(spec.valueSpec("FirstResourceGetRequest"), is(notNullValue()));
         assertThat(spec.valueSpec("FirstResourceGetResponse"), is(notNullValue()));
