@@ -33,98 +33,110 @@ public class PoomjobsAPIProcessor implements Processor {
     @Override
     public void process(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
         responseDeleguate.contenType("application/json; charset=utf-8");
-
         if(requestDeleguate.pathMatcher("/" + this.apiRelativePath + "/jobs/?").matches()) {
             if(requestDeleguate.method().equals(RequestDeleguate.Method.POST)) {
-                JsonParser parser = this.factory.createParser(requestDeleguate.payload());
-                JobCollectionPostResponse response = this.handlers.jobCollectionPostHandler().apply(
-                        JobCollectionPostRequest.Builder.builder()
-                                .payload(new JobReader().read(parser))
-                                .build()
-                );
-                if (response.status201() != null) {
-                    responseDeleguate
-                            .status(201)
-                            .addHeader(
-                                    "Location",
-                                    requestDeleguate.absolutePath(apiRelativePath + response.status201().location())
-                            );
-                } else if (response.status500() != null) {
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                            new ErrorWriter().write(generator, response.status500().payload());
-                        }
-                        responseDeleguate.status(500).payload(out.toString(), "utf-8");
-                    }
-                }
+                this.processJobCollectionPostRequest(requestDeleguate, responseDeleguate);
             }
         } else if (requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
-            Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
             if(requestDeleguate.method().equals(RequestDeleguate.Method.GET)) {
-                JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
-                        JobResourceGetRequest.Builder.builder()
-                                .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
-                                .build()
-                );
-                if (response.status200() != null) {
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                            new JobWriter().write(generator, response.status200().payload());
-                        }
-                        responseDeleguate.status(200).payload(out.toString(), "utf-8");
-                    }
-                } else if (response.status404() != null) {
-                    if (response.status404().payload() != null) {
-                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                new ErrorWriter().write(generator, response.status404().payload());
-                            }
-                            responseDeleguate.status(404).payload(out.toString(), "utf-8");
-                        }
-                    }
-                } else if (response.status500() != null) {
-                    if (response.status500().payload() != null) {
-                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                new ErrorWriter().write(generator, response.status500().payload());
-                            }
-                            responseDeleguate.status(500).payload(out.toString(), "utf-8");
-                        }
-                    }
-                }
+                this.processJobResourceGetRequest(requestDeleguate, responseDeleguate);
             } else if (requestDeleguate.method().equals(RequestDeleguate.Method.PUT)) {
-                JsonParser parser = factory.createParser(requestDeleguate.payload());
-                JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
-                        JobResourcePutRequest.Builder.builder()
-                                .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
-                                .payload(new JobReader().read(parser))
-                                .build()
-                );
-                if (response.status200() != null) {
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                        try (JsonGenerator generator = factory.createGenerator(out)) {
-                            new JobWriter().write(generator, response.status200().payload());
-                        }
-                        responseDeleguate.status(200).payload(out.toString(), "utf-8");
+                this.processJobResourcePutRequest(requestDeleguate, responseDeleguate);
+            }
+        }
+    }
+
+    private void processJobCollectionPostRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
+        JsonParser parser = this.factory.createParser(requestDeleguate.payload());
+        JobCollectionPostResponse response = this.handlers.jobCollectionPostHandler().apply(
+                JobCollectionPostRequest.Builder.builder()
+                        .payload(new JobReader().read(parser))
+                        .build()
+        );
+        if (response.status201() != null) {
+            responseDeleguate
+                    .status(201)
+                    .addHeader(
+                            "Location",
+                            requestDeleguate.absolutePath(apiRelativePath + response.status201().location())
+                    );
+        } else if (response.status500() != null) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                try (JsonGenerator generator = factory.createGenerator(out)) {
+                    new ErrorWriter().write(generator, response.status500().payload());
+                }
+                responseDeleguate.status(500).payload(out.toString(), "utf-8");
+            }
+        }
+    }
+
+    private void processJobResourceGetRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
+        Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+        JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
+                JobResourceGetRequest.Builder.builder()
+                        .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
+                        .build()
+        );
+        if (response.status200() != null) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                try (JsonGenerator generator = factory.createGenerator(out)) {
+                    new JobWriter().write(generator, response.status200().payload());
+                }
+                responseDeleguate.status(200).payload(out.toString(), "utf-8");
+            }
+        } else if (response.status404() != null) {
+            if (response.status404().payload() != null) {
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    try (JsonGenerator generator = factory.createGenerator(out)) {
+                        new ErrorWriter().write(generator, response.status404().payload());
                     }
-                } else if (response.status404() != null) {
-                    if (response.status404().payload() != null) {
-                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                new ErrorWriter().write(generator, response.status404().payload());
-                            }
-                            responseDeleguate.status(404).payload(out.toString(), "utf-8");
-                        }
+                    responseDeleguate.status(404).payload(out.toString(), "utf-8");
+                }
+            }
+        } else if (response.status500() != null) {
+            if (response.status500().payload() != null) {
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    try (JsonGenerator generator = factory.createGenerator(out)) {
+                        new ErrorWriter().write(generator, response.status500().payload());
                     }
-                } else if (response.status500() != null) {
-                    if (response.status500().payload() != null) {
-                        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                            try (JsonGenerator generator = factory.createGenerator(out)) {
-                                new ErrorWriter().write(generator, response.status500().payload());
-                            }
-                            responseDeleguate.status(500).payload(out.toString(), "utf-8");
-                        }
+                    responseDeleguate.status(500).payload(out.toString(), "utf-8");
+                }
+            }
+        }
+    }
+
+    private void processJobResourcePutRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
+        Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+        JsonParser parser = factory.createParser(requestDeleguate.payload());
+        JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
+                JobResourcePutRequest.Builder.builder()
+                        .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
+                        .payload(new JobReader().read(parser))
+                        .build()
+        );
+        if (response.status200() != null) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                try (JsonGenerator generator = factory.createGenerator(out)) {
+                    new JobWriter().write(generator, response.status200().payload());
+                }
+                responseDeleguate.status(200).payload(out.toString(), "utf-8");
+            }
+        } else if (response.status404() != null) {
+            if (response.status404().payload() != null) {
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    try (JsonGenerator generator = factory.createGenerator(out)) {
+                        new ErrorWriter().write(generator, response.status404().payload());
                     }
+                    responseDeleguate.status(404).payload(out.toString(), "utf-8");
+                }
+            }
+        } else if (response.status500() != null) {
+            if (response.status500().payload() != null) {
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    try (JsonGenerator generator = factory.createGenerator(out)) {
+                        new ErrorWriter().write(generator, response.status500().payload());
+                    }
+                    responseDeleguate.status(500).payload(out.toString(), "utf-8");
                 }
             }
         }
