@@ -12,6 +12,7 @@ import org.raml.v2.api.model.v10.resources.Resource;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
@@ -55,17 +56,48 @@ public class HandlersGenerator {
                 String methodName = method.method();
                 result.addMethod(MethodSpec.methodBuilder(this.naming.property(resourceName, methodName, "Handler"))
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                        .returns(ParameterizedTypeName.get(
-                                ClassName.get(Function.class),
-                                ClassName.get(this.apiPackage, this.naming.type(resourceName, methodName, "Request")),
-                                ClassName.get(this.apiPackage, this.naming.type(resourceName, methodName, "Response"))
-                                )
-                        )
+                        .returns(this.handlerFunctionType(resourceName, methodName))
                         .build());
             }
         }
 
+        result.addType(this.createHandlersBuilder(ramlModel.getApiV10().resources()));
+
         return result;
+    }
+
+    private ParameterizedTypeName handlerFunctionType(String resourceName, String methodName) {
+        return ParameterizedTypeName.get(
+                ClassName.get(Function.class),
+                ClassName.get(this.apiPackage, this.naming.type(resourceName, methodName, "Request")),
+                ClassName.get(this.apiPackage, this.naming.type(resourceName, methodName, "Response"))
+                );
+    }
+
+    private TypeSpec createHandlersBuilder(List<Resource> resources) {
+        TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
+                .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                ;
+
+        for (Resource resource : resources) {
+            String resourceName = resource.displayName().value();
+            for (Method method : resource.methods()) {
+                String methodName = method.method();
+
+                result.addField(this.handlerFunctionType(resourceName, methodName), this.naming.property(resourceName, methodName, "Handler"));
+
+                result.addMethod(MethodSpec.methodBuilder(this.naming.property(resourceName, methodName, "Handler"))
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(this.handlerFunctionType(resourceName, methodName), "handler")
+                        .returns(ClassName.bestGuess("Builder"))
+                        .addStatement("this.$L = $L", this.naming.property(resourceName, methodName, "Handler"), "handler")
+                        .addStatement("return this")
+                        .build());
+            }
+        }
+
+
+        return result.build();
     }
 
     private String handlersInterfaceName(RamlModelResult ramlModel) {

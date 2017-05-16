@@ -46,34 +46,60 @@ public class HandlersGeneratorTest {
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
 
         this.printContent("", this.dir.getRoot());
+        this.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
     }
 
     @Test
     public void interface_() throws Exception {
-        this.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
-
         assertThat(
             this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers"),
-                is(aPublic().interface_()
-                        .with(aPublic().method()
-                                .named("rootGetHandler")
-                                .returning(genericType()
+            is(aPublic().interface_()
+                    .with(aPublic().method()
+                            .named("rootGetHandler")
+                            .returning(genericType()
+                                    .baseClass(Function.class)
+                                    .withParameters(
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetRequest")),
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetResponse"))
+                                    ))
+                    )
+                    .with(aPublic().method()
+                            .named("rootPostHandler")
+                            .returning(genericType()
+                                    .baseClass(Function.class)
+                                    .withParameters(
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
+                                    ))
+                    )
+
+            )
+        );
+    }
+
+    @Test
+    public void builder() throws Exception {
+        assertThat(
+                this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"),
+                is(aStatic().public_().class_()
+                        .with(aPublic().method().named("rootGetHandler")
+                                .withParameters(genericType()
                                         .baseClass(Function.class)
                                         .withParameters(
                                                 classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetRequest")),
                                                 classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetResponse"))
                                         ))
+                                .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"))
                         )
-                        .with(aPublic().method()
-                                .named("rootPostHandler")
-                                .returning(genericType()
+                        .with(aPublic().method().named("rootPostHandler")
+                                .withParameters(genericType()
                                         .baseClass(Function.class)
                                         .withParameters(
                                                 classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
                                                 classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
                                         ))
+                                .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"))
                         )
-
                 )
         );
     }
