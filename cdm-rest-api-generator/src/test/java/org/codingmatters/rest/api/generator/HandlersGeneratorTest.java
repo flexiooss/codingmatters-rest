@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator;
 
 import org.codingmatters.rest.api.generator.util.Helper;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 import org.junit.Before;
@@ -100,6 +101,45 @@ public class HandlersGeneratorTest {
                                         ))
                                 .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"))
                         )
+                )
+        );
+    }
+
+    @Test
+    public void defaultImplementation() throws Exception {
+        assertThat(
+                this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder$DefaultImpl"),
+                is(
+                        aStatic().private_().class_()
+                                .implementing(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers"))
+                                .with(aPrivate().constructor().withParameters(
+                                        genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetResponse"))
+                                                ),
+                                        genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
+                                                )
+                                ))
+                                .with(ReflectMatchers.aPrivate().field().named("rootGetHandler")
+                                        .withType(genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootGetResponse"))
+                                                )))
+                                .with(ReflectMatchers.aPrivate().field().named("rootPostHandler")
+                                        .withType(genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
+                                                )))
                 )
         );
     }

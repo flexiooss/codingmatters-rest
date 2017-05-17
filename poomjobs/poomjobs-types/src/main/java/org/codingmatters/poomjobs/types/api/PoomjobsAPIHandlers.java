@@ -33,19 +33,19 @@ public interface PoomjobsAPIHandlers {
         }
 
         public PoomjobsAPIHandlers build() {
-            return new PoomjobsAPIHandlersImpl(
+            return new DefaultImpl(
                     this.jobCollectionPostHandler,
                     this.jobResourceGetHandler,
                     this.jobResourcePutHandler
             );
         }
 
-        private class PoomjobsAPIHandlersImpl implements PoomjobsAPIHandlers {
+        static private class DefaultImpl implements PoomjobsAPIHandlers {
             private final Function<JobCollectionPostRequest, JobCollectionPostResponse> jobCollectionPostHandler;
             private final Function<JobResourceGetRequest, JobResourceGetResponse> jobResourceGetHandler;
             private final Function<JobResourcePutRequest, JobResourcePutResponse> jobResourcePutHandler;
 
-            private PoomjobsAPIHandlersImpl(Function<JobCollectionPostRequest, JobCollectionPostResponse> jobCollectionPostHandler, Function<JobResourceGetRequest, JobResourceGetResponse> jobResourceGetHandler, Function<JobResourcePutRequest, JobResourcePutResponse> jobResourcePutHandler) {
+            private DefaultImpl(Function<JobCollectionPostRequest, JobCollectionPostResponse> jobCollectionPostHandler, Function<JobResourceGetRequest, JobResourceGetResponse> jobResourceGetHandler, Function<JobResourcePutRequest, JobResourcePutResponse> jobResourcePutHandler) {
                 this.jobCollectionPostHandler = jobCollectionPostHandler;
                 this.jobResourceGetHandler = jobResourceGetHandler;
                 this.jobResourcePutHandler = jobResourcePutHandler;

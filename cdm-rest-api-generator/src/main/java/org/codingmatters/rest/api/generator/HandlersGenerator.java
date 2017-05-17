@@ -12,7 +12,6 @@ import org.raml.v2.api.model.v10.resources.Resource;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.function.Function;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
@@ -61,8 +60,7 @@ public class HandlersGenerator {
             }
         }
 
-        result.addType(this.createHandlersBuilder(ramlModel.getApiV10().resources()));
-
+        result.addType(this.createHandlersBuilder(ramlModel));
         return result;
     }
 
@@ -74,12 +72,12 @@ public class HandlersGenerator {
                 );
     }
 
-    private TypeSpec createHandlersBuilder(List<Resource> resources) {
+    private TypeSpec createHandlersBuilder(RamlModelResult ramlModel) {
         TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
                 ;
 
-        for (Resource resource : resources) {
+        for (Resource resource : ramlModel.getApiV10().resources()) {
             String resourceName = resource.displayName().value();
             for (Method method : resource.methods()) {
                 String methodName = method.method();
@@ -96,8 +94,59 @@ public class HandlersGenerator {
             }
         }
 
+        result.addType(this.createDefaultImplementation(ramlModel));
 
         return result.build();
+    }
+
+
+    private TypeSpec createDefaultImplementation(RamlModelResult ramlModel) {
+        TypeSpec.Builder result = TypeSpec.classBuilder("DefaultImpl")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+                .addSuperinterface(ClassName.bestGuess(this.handlersInterfaceName(ramlModel)));
+
+        result.addMethod(this.createDefaultImplementationConctructor(ramlModel).build());
+
+        for (Resource resource : ramlModel.getApiV10().resources()) {
+            String resourceName = resource.displayName().value();
+            for (Method method : resource.methods()) {
+                String methodName = method.method();
+
+                result.addField(
+                        this.handlerFunctionType(resourceName, methodName),
+                        this.naming.property(resourceName, methodName, "Handler"),
+                        Modifier.PRIVATE, Modifier.FINAL
+                );
+
+                result.addMethod(
+                        MethodSpec.methodBuilder(this.naming.property(resourceName, methodName, "Handler"))
+                                .addModifiers(Modifier.PUBLIC)
+                                .addAnnotation(Override.class)
+                                .returns(this.handlerFunctionType(resourceName, methodName))
+                                .addStatement("return this.$L", this.naming.property(resourceName, methodName, "Handler"))
+                                .build()
+                );
+            }
+        }
+
+        return result.build();
+    }
+
+    private MethodSpec.Builder createDefaultImplementationConctructor(RamlModelResult ramlModel) {
+        MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE);
+        for (Resource resource : ramlModel.getApiV10().resources()) {
+            String resourceName = resource.displayName().value();
+            for (Method method : resource.methods()) {
+                String methodName = method.method();
+                constructor.addParameter(this.handlerFunctionType(resourceName, methodName), this.naming.property(resourceName, methodName, "Handler"));
+                constructor.addStatement("this.$L = $L",
+                        this.naming.property(resourceName, methodName, "Handler"),
+                        this.naming.property(resourceName, methodName, "Handler")
+                );
+            }
+        }
+        return constructor;
     }
 
     private String handlersInterfaceName(RamlModelResult ramlModel) {
