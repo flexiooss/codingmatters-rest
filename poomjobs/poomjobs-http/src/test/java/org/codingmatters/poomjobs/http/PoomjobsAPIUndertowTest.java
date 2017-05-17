@@ -8,7 +8,6 @@ import okhttp3.*;
 import org.codingmatters.poomjobs.types.api.JobCollectionPostResponse;
 import org.codingmatters.poomjobs.types.api.JobResourceGetResponse;
 import org.codingmatters.poomjobs.types.api.JobResourcePutResponse;
-import org.codingmatters.poomjobs.types.api.PoomjobsAPIHandlers;
 import org.codingmatters.poomjobs.types.api.jobcollectionpostresponse.Status201;
 import org.codingmatters.poomjobs.types.api.jobcollectionpostresponse.Status500;
 import org.codingmatters.poomjobs.types.api.jobresourcegetresponse.Status200;
@@ -45,7 +44,7 @@ public class PoomjobsAPIUndertowTest {
             port = socket.getLocalPort();
         }
 
-        PoomjobsAPIHandlers handlers = PoomjobsAPIHandlers.Builder.builder()
+        PoomjobsAPIHandlers handlers = new PoomjobsAPIHandlers.Builder()
                 .jobCollectionPostHandler(
                         request -> {
                             if(request.payload().category().equals("failure")) {

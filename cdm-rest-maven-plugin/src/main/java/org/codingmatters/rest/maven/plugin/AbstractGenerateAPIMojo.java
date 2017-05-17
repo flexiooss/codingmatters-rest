@@ -29,7 +29,7 @@ public abstract class AbstractGenerateAPIMojo extends AbstractMojo {
     @Parameter(alias = "api-spec-resource")
     private String apiSpecResource;
 
-    protected RamlModelResult getRamlModel() throws MojoFailureException, MojoExecutionException {
+    protected RamlModelResult resolveRamlModel() throws MojoFailureException, MojoExecutionException {
         File apiFile = this.resolveApiFile();
         this.getLog().info("API : " + apiFile.getAbsolutePath());
         return this.buildRamlModel(apiFile);

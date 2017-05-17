@@ -73,6 +73,15 @@ public class HandlersGeneratorTest {
                                             classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
                                     ))
                     )
+                    .with(aPublic().method()
+                            .named("subGetHandler")
+                            .returning(genericType()
+                                    .baseClass(Function.class)
+                                    .withParameters(
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetRequest")),
+                                            classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetResponse"))
+                                    ))
+                    )
 
             )
         );
@@ -101,6 +110,18 @@ public class HandlersGeneratorTest {
                                         ))
                                 .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"))
                         )
+                        .with(aPublic().method().named("subGetHandler")
+                                .withParameters(genericType()
+                                        .baseClass(Function.class)
+                                        .withParameters(
+                                                classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetRequest")),
+                                                classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetResponse"))
+                                        ))
+                                .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers$Builder"))
+                        )
+                        .with(aPublic().method().named("build")
+                                .withoutParameters()
+                                .returning(this.compiled.getClass(SERVER_PACK + ".TestAPIHandlers")))
                 )
         );
     }
@@ -124,6 +145,12 @@ public class HandlersGeneratorTest {
                                                 .withParameters(
                                                         classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
                                                         classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
+                                                ),
+                                        genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetResponse"))
                                                 )
                                 ))
                                 .with(ReflectMatchers.aPrivate().field().named("rootGetHandler")
@@ -139,6 +166,13 @@ public class HandlersGeneratorTest {
                                                 .withParameters(
                                                         classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostRequest")),
                                                         classTypeParameter(this.compiled.getClass(API_PACK + ".RootPostResponse"))
+                                                )))
+                                .with(ReflectMatchers.aPrivate().field().named("subGetHandler")
+                                        .withType(genericType()
+                                                .baseClass(Function.class)
+                                                .withParameters(
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetRequest")),
+                                                        classTypeParameter(this.compiled.getClass(API_PACK + ".SubGetResponse"))
                                                 )))
                 )
         );

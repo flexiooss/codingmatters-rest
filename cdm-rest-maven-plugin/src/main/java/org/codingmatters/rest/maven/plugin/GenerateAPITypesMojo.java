@@ -29,7 +29,7 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        RamlModelResult ramlModel = this.getRamlModel();
+        RamlModelResult ramlModel = this.resolveRamlModel();
 
         this.generateTypes(ramlModel);
         this.generateApi(ramlModel);
