@@ -1,6 +1,6 @@
 package org.codingmatters.rest.api.internal;
 
-import org.codingmatters.rest.api.RequestDeleguate;
+import org.codingmatters.rest.api.RequestDelegate;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 4/27/17.
  */
-public class RequestDeleguateUriParameterTest {
+public class RequestDelegateUriParameterTest {
 
     @Test
     public void noParameter() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param-value");
+        RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/blop/blop");
 
         System.out.println(parameters);
@@ -29,7 +29,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void noMatch() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param-value");
+        RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/blop/{param-name}");
 
         System.out.println(parameters);
@@ -40,7 +40,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void lastPart() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param-value");
+        RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param-name}");
 
         System.out.println(parameters);
@@ -51,7 +51,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void middlePart() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param-value/end");
+        RequestDelegate deleguate = this.withPath("/start/param-value/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param-name}/end");
 
         System.out.println(parameters);
@@ -62,7 +62,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void startPart() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/param-value/end");
+        RequestDelegate deleguate = this.withPath("/param-value/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/{param-name}/end");
 
         System.out.println(parameters);
@@ -73,7 +73,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void manyParams() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param1-value/middle/param2-value/end");
+        RequestDelegate deleguate = this.withPath("/start/param1-value/middle/param2-value/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param1-name}/middle/{param2-name}/end");
 
         System.out.println(parameters);
@@ -85,7 +85,7 @@ public class RequestDeleguateUriParameterTest {
 
     @Test
     public void listParam() throws Exception {
-        RequestDeleguate deleguate = this.withPath("/start/param-value1/middle/param-value2/end");
+        RequestDelegate deleguate = this.withPath("/start/param-value1/middle/param-value2/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param}/middle/{param}/end");
 
         System.out.println(parameters);
@@ -94,15 +94,15 @@ public class RequestDeleguateUriParameterTest {
         assertThat(parameters.get("param"), contains("param-value1", "param-value2"));
     }
 
-    private RequestDeleguate withPath(String path) {
-        return new TestRequestDeleguate(path);
+    private RequestDelegate withPath(String path) {
+        return new TestRequestDelegate(path);
     }
 
-    class TestRequestDeleguate implements RequestDeleguate {
+    class TestRequestDelegate implements RequestDelegate {
 
         private final String path;
 
-        TestRequestDeleguate(String path) {
+        TestRequestDelegate(String path) {
             this.path = path;
         }
 

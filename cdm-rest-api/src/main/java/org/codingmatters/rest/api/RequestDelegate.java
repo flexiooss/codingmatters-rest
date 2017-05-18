@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 /**
  * Created by nelt on 4/27/17.
  */
-public interface RequestDeleguate {
+public interface RequestDelegate {
     Matcher pathMatcher(String regex);
     Method method();
     InputStream payload();

@@ -1,6 +1,6 @@
 package org.codingmatters.rest.api.internal;
 
-import org.codingmatters.rest.api.RequestDeleguate;
+import org.codingmatters.rest.api.RequestDelegate;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,14 +13,14 @@ import java.util.regex.Pattern;
  * Created by nelt on 4/27/17.
  */
 public class UriParameterProcessor {
-    private final RequestDeleguate requestDeleguate;
+    private final RequestDelegate requestDelegate;
 
     private final TreeMap<String, List<String>> parameters;
     private final LinkedList<String> names;
     private final StringBuilder regex;
 
-    public UriParameterProcessor(RequestDeleguate requestDeleguate) {
-        this.requestDeleguate = requestDeleguate;
+    public UriParameterProcessor(RequestDelegate requestDelegate) {
+        this.requestDelegate = requestDelegate;
         this.parameters = new TreeMap<>();
         this.names = new LinkedList<>();
         this.regex = new StringBuilder();
@@ -49,7 +49,7 @@ public class UriParameterProcessor {
     }
 
     private void gatherParameters() {
-        Matcher pathMatcher = this.requestDeleguate.pathMatcher(this.regex.toString());
+        Matcher pathMatcher = this.requestDelegate.pathMatcher(this.regex.toString());
         if(pathMatcher.matches()) {
             for(int i = 1 ; i <= pathMatcher.groupCount() ; i++) {
                 this.parameters.get(this.names.get(i - 1)).add(pathMatcher.group(i));

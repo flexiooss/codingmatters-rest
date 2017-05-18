@@ -8,8 +8,8 @@ import org.codingmatters.poomjobs.types.types.json.ErrorWriter;
 import org.codingmatters.poomjobs.types.types.json.JobReader;
 import org.codingmatters.poomjobs.types.types.json.JobWriter;
 import org.codingmatters.rest.api.Processor;
-import org.codingmatters.rest.api.RequestDeleguate;
-import org.codingmatters.rest.api.ResponseDeleguate;
+import org.codingmatters.rest.api.RequestDelegate;
+import org.codingmatters.rest.api.ResponseDelegate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,47 +31,47 @@ public class PoomjobsAPIProcessor implements Processor {
     }
 
     @Override
-    public void process(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
-        responseDeleguate.contenType("application/json; charset=utf-8");
-        if(requestDeleguate.pathMatcher("/" + this.apiRelativePath + "/jobs/?").matches()) {
-            if(requestDeleguate.method().equals(RequestDeleguate.Method.POST)) {
-                this.processJobCollectionPostRequest(requestDeleguate, responseDeleguate);
+    public void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
+        responseDelegate.contenType("application/json; charset=utf-8");
+        if(requestDelegate.pathMatcher("/" + this.apiRelativePath + "/jobs/?").matches()) {
+            if(requestDelegate.method().equals(RequestDelegate.Method.POST)) {
+                this.processJobCollectionPostRequest(requestDelegate, responseDelegate);
             }
-        } else if (requestDeleguate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
-            if(requestDeleguate.method().equals(RequestDeleguate.Method.GET)) {
-                this.processJobResourceGetRequest(requestDeleguate, responseDeleguate);
-            } else if (requestDeleguate.method().equals(RequestDeleguate.Method.PUT)) {
-                this.processJobResourcePutRequest(requestDeleguate, responseDeleguate);
+        } else if (requestDelegate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
+            if(requestDelegate.method().equals(RequestDelegate.Method.GET)) {
+                this.processJobResourceGetRequest(requestDelegate, responseDelegate);
+            } else if (requestDelegate.method().equals(RequestDelegate.Method.PUT)) {
+                this.processJobResourcePutRequest(requestDelegate, responseDelegate);
             }
         }
     }
 
-    private void processJobCollectionPostRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
-        JsonParser parser = this.factory.createParser(requestDeleguate.payload());
+    private void processJobCollectionPostRequest(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
+        JsonParser parser = this.factory.createParser(requestDelegate.payload());
         JobCollectionPostResponse response = this.handlers.jobCollectionPostHandler().apply(
                 JobCollectionPostRequest.Builder.builder()
                         .payload(new JobReader().read(parser))
                         .build()
         );
         if (response.status201() != null) {
-            responseDeleguate
+            responseDelegate
                     .status(201)
                     .addHeader(
                             "Location",
-                            requestDeleguate.absolutePath(apiRelativePath + response.status201().location())
+                            requestDelegate.absolutePath(apiRelativePath + response.status201().location())
                     );
         } else if (response.status500() != null) {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 try (JsonGenerator generator = factory.createGenerator(out)) {
                     new ErrorWriter().write(generator, response.status500().payload());
                 }
-                responseDeleguate.status(500).payload(out.toString(), "utf-8");
+                responseDelegate.status(500).payload(out.toString(), "utf-8");
             }
         }
     }
 
-    private void processJobResourceGetRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
-        Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+    private void processJobResourceGetRequest(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
+        Map<String, List<String>> uriParameters = requestDelegate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
         JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
                 JobResourceGetRequest.Builder.builder()
                         .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
@@ -82,7 +82,7 @@ public class PoomjobsAPIProcessor implements Processor {
                 try (JsonGenerator generator = factory.createGenerator(out)) {
                     new JobWriter().write(generator, response.status200().payload());
                 }
-                responseDeleguate.status(200).payload(out.toString(), "utf-8");
+                responseDelegate.status(200).payload(out.toString(), "utf-8");
             }
         } else if (response.status404() != null) {
             if (response.status404().payload() != null) {
@@ -90,7 +90,7 @@ public class PoomjobsAPIProcessor implements Processor {
                     try (JsonGenerator generator = factory.createGenerator(out)) {
                         new ErrorWriter().write(generator, response.status404().payload());
                     }
-                    responseDeleguate.status(404).payload(out.toString(), "utf-8");
+                    responseDelegate.status(404).payload(out.toString(), "utf-8");
                 }
             }
         } else if (response.status500() != null) {
@@ -99,15 +99,15 @@ public class PoomjobsAPIProcessor implements Processor {
                     try (JsonGenerator generator = factory.createGenerator(out)) {
                         new ErrorWriter().write(generator, response.status500().payload());
                     }
-                    responseDeleguate.status(500).payload(out.toString(), "utf-8");
+                    responseDelegate.status(500).payload(out.toString(), "utf-8");
                 }
             }
         }
     }
 
-    private void processJobResourcePutRequest(RequestDeleguate requestDeleguate, ResponseDeleguate responseDeleguate) throws IOException {
-        Map<String, List<String>> uriParameters = requestDeleguate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
-        JsonParser parser = factory.createParser(requestDeleguate.payload());
+    private void processJobResourcePutRequest(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
+        Map<String, List<String>> uriParameters = requestDelegate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+        JsonParser parser = factory.createParser(requestDelegate.payload());
         JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
                 JobResourcePutRequest.Builder.builder()
                         .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
@@ -119,7 +119,7 @@ public class PoomjobsAPIProcessor implements Processor {
                 try (JsonGenerator generator = factory.createGenerator(out)) {
                     new JobWriter().write(generator, response.status200().payload());
                 }
-                responseDeleguate.status(200).payload(out.toString(), "utf-8");
+                responseDelegate.status(200).payload(out.toString(), "utf-8");
             }
         } else if (response.status404() != null) {
             if (response.status404().payload() != null) {
@@ -127,7 +127,7 @@ public class PoomjobsAPIProcessor implements Processor {
                     try (JsonGenerator generator = factory.createGenerator(out)) {
                         new ErrorWriter().write(generator, response.status404().payload());
                     }
-                    responseDeleguate.status(404).payload(out.toString(), "utf-8");
+                    responseDelegate.status(404).payload(out.toString(), "utf-8");
                 }
             }
         } else if (response.status500() != null) {
@@ -136,7 +136,7 @@ public class PoomjobsAPIProcessor implements Processor {
                     try (JsonGenerator generator = factory.createGenerator(out)) {
                         new ErrorWriter().write(generator, response.status500().payload());
                     }
-                    responseDeleguate.status(500).payload(out.toString(), "utf-8");
+                    responseDelegate.status(500).payload(out.toString(), "utf-8");
                 }
             }
         }

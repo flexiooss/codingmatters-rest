@@ -1,7 +1,7 @@
 package org.codingmatters.rest.undertow;
 
 import okhttp3.OkHttpClient;
-import org.codingmatters.rest.api.RequestDeleguate;
+import org.codingmatters.rest.api.RequestDelegate;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,53 +15,53 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/7/17.
  */
-public class UndertowRequestDeleguateTest extends AbstractUndertowTest {
+public class UndertowRequestDelegateTest extends AbstractUndertowTest {
 
     private OkHttpClient client = new OkHttpClient();
 
     @Test
     public void method_get() throws Exception {
-        AtomicReference<RequestDeleguate.Method> method = new AtomicReference<>();
+        AtomicReference<RequestDelegate.Method> method = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {method.set(requestDeleguate.method());});
 
         this.client.newCall(this.requestBuilder().get().build()).execute();
-        assertThat(method.get(), is(RequestDeleguate.Method.GET));
+        assertThat(method.get(), is(RequestDelegate.Method.GET));
     }
 
     @Test
     public void method_post() throws Exception {
-        AtomicReference<RequestDeleguate.Method> method = new AtomicReference<>();
+        AtomicReference<RequestDelegate.Method> method = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {method.set(requestDeleguate.method());});
 
         this.client.newCall(this.requestBuilder().post(this.emptyJsonBody()).build()).execute();
-        assertThat(method.get(), is(RequestDeleguate.Method.POST));
+        assertThat(method.get(), is(RequestDelegate.Method.POST));
     }
 
     @Test
     public void method_put() throws Exception {
-        AtomicReference<RequestDeleguate.Method> method = new AtomicReference<>();
+        AtomicReference<RequestDelegate.Method> method = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {method.set(requestDeleguate.method());});
 
         this.client.newCall(this.requestBuilder().put(this.emptyJsonBody()).build()).execute();
-        assertThat(method.get(), is(RequestDeleguate.Method.PUT));
+        assertThat(method.get(), is(RequestDelegate.Method.PUT));
     }
 
     @Test
     public void method_patch() throws Exception {
-        AtomicReference<RequestDeleguate.Method> method = new AtomicReference<>();
+        AtomicReference<RequestDelegate.Method> method = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {method.set(requestDeleguate.method());});
 
         this.client.newCall(this.requestBuilder().patch(this.emptyJsonBody()).build()).execute();
-        assertThat(method.get(), is(RequestDeleguate.Method.PATCH));
+        assertThat(method.get(), is(RequestDelegate.Method.PATCH));
     }
 
     @Test
     public void method_delete() throws Exception {
-        AtomicReference<RequestDeleguate.Method> method = new AtomicReference<>();
+        AtomicReference<RequestDelegate.Method> method = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {method.set(requestDeleguate.method());});
 
         this.client.newCall(this.requestBuilder().delete().build()).execute();
-        assertThat(method.get(), is(RequestDeleguate.Method.DELETE));
+        assertThat(method.get(), is(RequestDelegate.Method.DELETE));
     }
 
     @Test

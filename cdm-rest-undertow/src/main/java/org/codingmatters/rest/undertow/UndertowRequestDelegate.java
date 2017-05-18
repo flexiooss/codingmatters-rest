@@ -1,7 +1,7 @@
 package org.codingmatters.rest.undertow;
 
 import io.undertow.server.HttpServerExchange;
-import org.codingmatters.rest.api.RequestDeleguate;
+import org.codingmatters.rest.api.RequestDelegate;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 /**
  * Created by nelt on 4/27/17.
  */
-public class UndertowRequestDeleguate implements RequestDeleguate {
+public class UndertowRequestDelegate implements RequestDelegate {
 
     private final HttpServerExchange exchange;
     private Map<String, List<String>> queryParamsCache = null;
 
-    public UndertowRequestDeleguate(HttpServerExchange exchange) {
+    public UndertowRequestDelegate(HttpServerExchange exchange) {
         this.exchange = exchange;
     }
 

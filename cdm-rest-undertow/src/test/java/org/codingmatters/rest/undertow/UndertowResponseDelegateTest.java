@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/7/17.
  */
-public class UndertowResponseDeleguateTest extends AbstractUndertowTest {
+public class UndertowResponseDelegateTest extends AbstractUndertowTest {
 
     private OkHttpClient client = new OkHttpClient();
 
