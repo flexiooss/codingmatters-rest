@@ -21,6 +21,6 @@ public class CdmHttpUndertowHandler implements HttpHandler {
             return;
         }
 
-        this.processor.process(new UndertowRequestDeleguate(exchange), new UndertowResponseDeleguate(exchange));
+        this.processor.process(new UndertowRequestDelegate(exchange), new UndertowResponseDelegate(exchange));
     }
 }
