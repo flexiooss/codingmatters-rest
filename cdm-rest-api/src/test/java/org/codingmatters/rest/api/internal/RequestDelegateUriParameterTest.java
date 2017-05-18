@@ -127,6 +127,11 @@ public class RequestDelegateUriParameterTest {
         }
 
         @Override
+        public Map<String, List<String>> uriParameters(String pathExpression) {
+            return new UriParameterProcessor(this).process(pathExpression);
+        }
+
+        @Override
         public Map<String, List<String>> queryParameters() {
             return null;
         }

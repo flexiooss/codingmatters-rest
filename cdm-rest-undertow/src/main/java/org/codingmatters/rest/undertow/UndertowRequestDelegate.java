@@ -2,6 +2,7 @@ package org.codingmatters.rest.undertow;
 
 import io.undertow.server.HttpServerExchange;
 import org.codingmatters.rest.api.RequestDelegate;
+import org.codingmatters.rest.api.internal.UriParameterProcessor;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 public class UndertowRequestDelegate implements RequestDelegate {
 
     private final HttpServerExchange exchange;
+    private Map<String, List<String>> uriParamsCache = null;
     private Map<String, List<String>> queryParamsCache = null;
 
     public UndertowRequestDelegate(HttpServerExchange exchange) {
@@ -55,6 +57,14 @@ public class UndertowRequestDelegate implements RequestDelegate {
                 exchange.getHostAndPort(),
                 relative
         );
+    }
+
+    @Override
+    public Map<String, List<String>> uriParameters(String pathExpression) {
+        if(this.uriParamsCache == null) {
+            this.uriParamsCache = new UriParameterProcessor(this).process(pathExpression);
+        }
+        return this.uriParamsCache;
     }
 
     @Override

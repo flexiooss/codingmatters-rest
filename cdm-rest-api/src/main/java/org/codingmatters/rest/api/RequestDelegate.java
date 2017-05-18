@@ -1,7 +1,5 @@
 package org.codingmatters.rest.api;
 
-import org.codingmatters.rest.api.internal.UriParameterProcessor;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +15,7 @@ public interface RequestDelegate {
 
     String absolutePath(String relative);
 
-    default Map<String,List<String>> uriParameters(String pathExpression) {
-        return new UriParameterProcessor(this).process(pathExpression);
-    }
+    Map<String,List<String>> uriParameters(String pathExpression);
 
     Map<String,List<String>> queryParameters();
 
