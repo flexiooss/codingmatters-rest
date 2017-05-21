@@ -1,7 +1,8 @@
 package org.codingmatters.rest.api.generator;
 
-import org.codingmatters.rest.api.generator.util.Helper;
+import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.value.objects.spec.Spec;
+import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
@@ -16,9 +17,12 @@ import static org.junit.Assert.assertThat;
  */
 public class SimpleResourcesTest {
 
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
+
     @Test
     public void rootResource() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/simple-resources.raml")));
         for(String method : Arrays.asList("Get", "Post", "Put", "Delete", "Head", "Patch", "Options")) {
             String request = "RootResource" + method + "Request";
             String response = "RootResource" + method + "Response";
@@ -29,7 +33,7 @@ public class SimpleResourcesTest {
 
     @Test
     public void middleResource() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/simple-resources.raml")));
 
         assertThat(spec.valueSpec("MiddleResourceGetRequest"), is(notNullValue()));
         assertThat(spec.valueSpec("MiddleResourceGetResponse"), is(notNullValue()));
@@ -37,7 +41,7 @@ public class SimpleResourcesTest {
 
     @Test
     public void leafs() throws Exception {
-        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/simple-resources.raml")));
+        Spec spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/simple-resources.raml")));
 
         assertThat(spec.valueSpec("FirstResourceGetRequest"), is(notNullValue()));
         assertThat(spec.valueSpec("FirstResourceGetResponse"), is(notNullValue()));

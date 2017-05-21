@@ -1,6 +1,6 @@
 package org.codingmatters.rest.api.generator;
 
-import org.codingmatters.rest.api.generator.util.Helper;
+import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
@@ -31,11 +31,15 @@ public class HandlersGeneratorTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
+
     private CompiledCode compiled;
 
     @Before
     public void setUp() throws Exception {
-        RamlModelResult raml = new RamlModelBuilder().buildApi(Helper.fileResource("handlers/handlers.raml"));
+        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("handlers/handlers.raml"));
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, TYPES_PACK, this.dir.getRoot()).generate();
 

@@ -1,8 +1,9 @@
 package org.codingmatters.rest.api.generator;
 
-import org.codingmatters.rest.api.generator.util.Helper;
+import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
@@ -17,9 +18,12 @@ public class RequestHeadersTest {
 
     private Spec spec;
 
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
+
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(Helper.fileResource("types/request-headers.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/request-headers.raml")));
     }
 
     @Test

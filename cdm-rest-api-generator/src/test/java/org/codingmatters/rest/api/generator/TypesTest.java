@@ -1,11 +1,12 @@
 package org.codingmatters.rest.api.generator;
 
+import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
-import static org.codingmatters.rest.api.generator.util.Helper.fileResource;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -14,11 +15,14 @@ import static org.junit.Assert.assertThat;
  */
 public class TypesTest {
 
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
+
     private Spec spec;
 
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiTypesGenerator().generate(new RamlModelBuilder().buildApi(fileResource("types/types.raml")));
+        this.spec = new ApiTypesGenerator().generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/types.raml")));
     }
 
     @Test

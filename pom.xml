@@ -53,6 +53,8 @@
         <module>cdm-rest-api-generator</module>
         <module>cdm-rest-maven-plugin</module>
 
+        <module>cdm-rest-tests</module>
+
         <module>poomjobs</module>
     </modules>
 
