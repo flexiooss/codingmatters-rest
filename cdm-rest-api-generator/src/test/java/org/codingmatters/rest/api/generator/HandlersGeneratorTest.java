@@ -12,7 +12,6 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
-import java.io.*;
 import java.util.function.Function;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
@@ -50,8 +49,8 @@ public class HandlersGeneratorTest {
 
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
 
-        this.printContent("", this.dir.getRoot());
-        this.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
     }
 
     @Test
@@ -182,34 +181,4 @@ public class HandlersGeneratorTest {
         );
     }
 
-    private void printContent(String prefix, File root) {
-        if(root.isDirectory()) {
-            System.out.println(prefix + " + " + root.getName());
-            for (File file : root.listFiles()) {
-                this.printContent(prefix + "   ", file);
-            }
-
-        } else if(root.getName().endsWith(".java")){
-            System.out.println(prefix + "   " + root.getName());
-        }
-    }
-
-    private void printFile(File root, String name) throws IOException {
-        if(root.getName().equals(name)) {
-            System.out.println("FILE CONTENT - " + root.getAbsolutePath());
-            try(InputStream in = new FileInputStream(root) ; Reader reader = new InputStreamReader(in)) {
-                char [] buffer = new char[1024];
-                StringBuilder content = new StringBuilder();
-                for(int read  = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-                    content.append(buffer, 0, read);
-                }
-                System.out.println(content);
-            }
-            System.out.println("--------------------------------");
-        } else if(root.listFiles() != null) {
-            for (File file : root.listFiles()) {
-                this.printFile(file, name);
-            }
-        }
-    }
 }

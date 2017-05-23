@@ -54,4 +54,34 @@ public class FileHelper extends ExternalResource {
             return result;
         }
     }
+
+    public void printFile(File root, String name) throws IOException {
+        if(root.getName().equals(name)) {
+            System.out.println("FILE CONTENT - " + root.getAbsolutePath());
+            try(InputStream in = new FileInputStream(root) ; Reader reader = new InputStreamReader(in)) {
+                char [] buffer = new char[1024];
+                StringBuilder content = new StringBuilder();
+                for(int read  = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
+                    content.append(buffer, 0, read);
+                }
+                System.out.println(content);
+            }
+            System.out.println("--------------------------------");
+        } else if(root.listFiles() != null) {
+            for (File file : root.listFiles()) {
+                this.printFile(file, name);
+            }
+        }
+    }
+
+    public void printJavaContent(String prefix, File root) {
+        if(root.isDirectory()) {
+            System.out.println(prefix + " + " + root.getName());
+            for (File file : root.listFiles()) {
+                this.printJavaContent(prefix + "   ", file);
+            }
+        } else if(root.getName().endsWith(".java")){
+            System.out.println(prefix + "   " + root.getName());
+        }
+    }
 }
