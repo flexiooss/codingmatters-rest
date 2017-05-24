@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.generator;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.tests.compile.CompiledCode;
@@ -12,6 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,6 +49,7 @@ public class ProcessorGeneratorTest {
 
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
+                .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())
                 .compile();
 
@@ -60,6 +63,26 @@ public class ProcessorGeneratorTest {
                 this.compiled.getClass("org.generated.server.TestAPIProcessor"),
                 is(
                         aPublic().class_().implementing(Processor.class)
+                                .with(aPublic().constructor()
+                                        .withParameters(
+                                                String.class,
+                                                JsonFactory.class,
+                                                this.compiled.getClass("org.generated.server.TestAPIHandlers")
+                                        )
+                                )
+                )
+        );
+    }
+
+    @Test
+    public void privateFields() throws Exception {
+        assertThat(
+                this.compiled.getClass("org.generated.server.TestAPIProcessor"),
+                is(
+                        aPublic().class_().implementing(Processor.class)
+                                .with(aPrivate().field().named("apiRelativePath").withType(String.class))
+                                .with(aPrivate().field().named("factory").withType(JsonFactory.class))
+                                .with(aPrivate().field().named("handlers").withType(this.compiled.getClass("org.generated.server.TestAPIHandlers")))
                 )
         );
     }
