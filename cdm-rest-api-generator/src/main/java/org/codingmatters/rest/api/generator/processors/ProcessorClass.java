@@ -35,7 +35,6 @@ public class ProcessorClass {
         return TypeSpec.classBuilder(this.naming.type(ramlModel.getApiV10().title().value(), "Processor"))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(Processor.class))
-                // void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException;
                 .addMethod(MethodSpec.methodBuilder("process")
                         .addModifiers(Modifier.PUBLIC)
                         .returns(TypeName.VOID)
@@ -43,15 +42,9 @@ public class ProcessorClass {
                         .addParameter(ClassName.get(ResponseDelegate.class), "responseDelegate")
                         .addException(ClassName.get(IOException.class))
                         .build())
-                /*
-                private final String apiRelativePath;
-                private final JsonFactory factory;
-                private final PoomjobsAPIHandlers handlers;
-                 */
                 .addField(ClassName.get(String.class), "apiRelativePath", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.get(JsonFactory.class), "factory", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.bestGuess(this.naming.type(ramlModel.getApiV10().title().value(), "Handlers")), "handlers", Modifier.PRIVATE, Modifier.FINAL)
-                //public PoomjobsAPIProcessor(String apiRelativePath, JsonFactory factory, PoomjobsAPIHandlers handlers)
                 .addMethod(MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(ClassName.get(String.class), "apiRelativePath")

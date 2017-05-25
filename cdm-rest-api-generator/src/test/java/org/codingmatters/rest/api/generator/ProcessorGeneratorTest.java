@@ -13,9 +13,12 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import java.util.function.Function;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -53,8 +56,9 @@ public class ProcessorGeneratorTest {
                 .source(this.dir.getRoot())
                 .compile();
 
-        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
     }
 
     @Test
@@ -84,6 +88,31 @@ public class ProcessorGeneratorTest {
                                 .with(aPrivate().field().named("factory").withType(JsonFactory.class))
                                 .with(aPrivate().field().named("handlers").withType(this.compiled.getClass("org.generated.server.TestAPIHandlers")))
                 )
+        );
+    }
+
+    @Test
+    public void instantiate() throws Exception {
+
+        this.fileHelper.printFile(this.dir.getRoot(), "RootGetResponse.java");
+
+        Function rootGetHandler = o -> {
+            try {
+                Object builder = this.compiled.getClass("org.generated.api.RootGetResponse$Builder").newInstance();
+                return this.compiled.on(builder).invoke("build");
+            } catch (Exception e) {
+                throw new AssertionError("error building response", e);
+            }
+        };
+
+        assertThat(rootGetHandler.apply(null), is(notNullValue()));
+
+        Object builder = this.compiled.getClass("org.generated.server.TestAPIHandlers$Builder").newInstance();
+        builder = this.compiled.on(builder).invoke("rootGetHandler", Function.class).with(rootGetHandler);
+        Object handlers = this.compiled.on(builder).invoke("build");
+        assertThat(
+                this.compiled.on(handlers).castedTo("org.generated.server.TestAPIHandlers").invoke("rootGetHandler"),
+                is(rootGetHandler)
         );
     }
 }
