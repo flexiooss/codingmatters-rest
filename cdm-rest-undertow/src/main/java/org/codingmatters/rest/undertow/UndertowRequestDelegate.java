@@ -52,6 +52,12 @@ public class UndertowRequestDelegate implements RequestDelegate {
 
     @Override
     public String absolutePath(String relative) {
+        if(relative == null) {
+            relative = "";
+        }
+        while(relative.startsWith("/")) {
+            relative = relative.substring(1);
+        }
         return String.format("%s://%s/%s",
                 exchange.getRequestScheme(),
                 exchange.getHostAndPort(),

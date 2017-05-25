@@ -20,12 +20,12 @@ import java.util.Map;
  * Created by nelt on 4/27/17.
  */
 public class PoomjobsAPIProcessor implements Processor {
-    private final String apiRelativePath;
+    private final String apiPath;
     private final JsonFactory factory;
     private final PoomjobsAPIHandlers handlers;
 
-    public PoomjobsAPIProcessor(String apiRelativePath, JsonFactory factory, PoomjobsAPIHandlers handlers) {
-        this.apiRelativePath = apiRelativePath;
+    public PoomjobsAPIProcessor(String apiPath, JsonFactory factory, PoomjobsAPIHandlers handlers) {
+        this.apiPath = apiPath;
         this.factory = factory;
         this.handlers = handlers;
     }
@@ -33,11 +33,11 @@ public class PoomjobsAPIProcessor implements Processor {
     @Override
     public void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
         responseDelegate.contenType("application/json; charset=utf-8");
-        if(requestDelegate.pathMatcher("/" + this.apiRelativePath + "/jobs/?").matches()) {
+        if(requestDelegate.pathMatcher(this.apiPath + "/jobs/?").matches()) {
             if(requestDelegate.method().equals(RequestDelegate.Method.POST)) {
                 this.processJobCollectionPostRequest(requestDelegate, responseDelegate);
             }
-        } else if (requestDelegate.pathMatcher("/" + apiRelativePath + "/jobs/[^/]+/?").matches()) {
+        } else if (requestDelegate.pathMatcher(this.apiPath + "/jobs/[^/]+/?").matches()) {
             if(requestDelegate.method().equals(RequestDelegate.Method.GET)) {
                 this.processJobResourceGetRequest(requestDelegate, responseDelegate);
             } else if (requestDelegate.method().equals(RequestDelegate.Method.PUT)) {
@@ -58,7 +58,7 @@ public class PoomjobsAPIProcessor implements Processor {
                     .status(201)
                     .addHeader(
                             "Location",
-                            requestDelegate.absolutePath(apiRelativePath + response.status201().location())
+                            requestDelegate.absolutePath(apiPath + response.status201().location())
                     );
         } else if (response.status500() != null) {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -71,7 +71,7 @@ public class PoomjobsAPIProcessor implements Processor {
     }
 
     private void processJobResourceGetRequest(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
-        Map<String, List<String>> uriParameters = requestDelegate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+        Map<String, List<String>> uriParameters = requestDelegate.uriParameters(this.apiPath + "/jobs/{jobId}/?");
         JobResourceGetResponse response = handlers.jobResourceGetHandler().apply(
                 JobResourceGetRequest.Builder.builder()
                         .jobId(uriParameters.get("jobId") != null && ! uriParameters.get("jobId").isEmpty() ? uriParameters.get("jobId").get(0) : null)
@@ -106,7 +106,7 @@ public class PoomjobsAPIProcessor implements Processor {
     }
 
     private void processJobResourcePutRequest(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
-        Map<String, List<String>> uriParameters = requestDelegate.uriParameters("/" + apiRelativePath + "/jobs/{jobId}/?");
+        Map<String, List<String>> uriParameters = requestDelegate.uriParameters(this.apiPath + "/jobs/{jobId}/?");
         JsonParser parser = factory.createParser(requestDelegate.payload());
         JobResourcePutResponse response = handlers.jobResourcePutHandler().apply(
                 JobResourcePutRequest.Builder.builder()

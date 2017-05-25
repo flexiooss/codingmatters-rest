@@ -130,7 +130,7 @@ public class PoomjobsAPIUndertowTest {
 
         this.server = Undertow.builder()
                 .addHttpListener(port, "localhost")
-                .setHandler(new CdmHttpUndertowHandler(new PoomjobsAPIProcessor("poomjobs", new JsonFactory(), handlers))).build();
+                .setHandler(new CdmHttpUndertowHandler(new PoomjobsAPIProcessor("/poomjobs", new JsonFactory(), handlers))).build();
         this.server.start();
 
         this.baseUrl = "http://localhost:" + port;

@@ -60,7 +60,7 @@ public class ProcessorGeneratorTest {
                 this.compiled.getClass("org.generated.server.TestAPIProcessor"),
                 is(
                         aPublic().class_().implementing(Processor.class)
-                                .with(aPrivate().field().named("apiRelativePath").withType(String.class))
+                                .with(aPrivate().field().named("apiPath").withType(String.class))
                                 .with(aPrivate().field().named("factory").withType(JsonFactory.class))
                                 .with(aPrivate().field().named("handlers").withType(this.compiled.getClass("org.generated.server.TestAPIHandlers")))
                 )
