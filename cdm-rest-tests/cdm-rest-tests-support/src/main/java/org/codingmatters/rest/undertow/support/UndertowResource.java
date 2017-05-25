@@ -2,7 +2,6 @@ package org.codingmatters.rest.undertow.support;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
-import org.codingmatters.rest.api.Processor;
 import org.junit.rules.ExternalResource;
 
 import java.net.ServerSocket;
@@ -15,7 +14,6 @@ public class UndertowResource extends ExternalResource {
     private final HttpHandler handler;
 
     private Undertow server;
-    private Processor testProcessor = null;
     private String baseUrl;
 
     public UndertowResource(HttpHandler handler) {
