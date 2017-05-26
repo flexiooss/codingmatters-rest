@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.generator;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -54,30 +55,16 @@ public class ProcessorHttpBaseTest {
     }
 
     @Test
-    public void root() throws Exception {
+    public void rootGet() throws Exception {
         this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
 
         AtomicLong hit = new AtomicLong(0);
-
-        Function handler = o -> {
-            hit.incrementAndGet();
-            return null;
-        };
-
-        Object builder = this.compiled.getClass("org.generated.server.TestAPIHandlers$Builder").newInstance();
-        builder = this.compiled.on(builder).invoke("rootGetHandler", Function.class).with(handler);
-        Object handlers = this.compiled.on(builder).invoke("build");
-        assertThat(
-                this.compiled.on(handlers).castedTo("org.generated.server.TestAPIHandlers").invoke("rootGetHandler"),
-                is(handler)
-        );
-
-        this.testProcessor = (Processor) this.compiled.getClass("org.generated.server.TestAPIProcessor")
-                .getConstructor(
-                        String.class,
-                        JsonFactory.class,
-                        this.compiled.getClass("org.generated.server.TestAPIHandlers"))
-                .newInstance("/api", new JsonFactory(), handlers);
+        this.setupProcessorWithHandler(
+                "rootGetHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
 
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/").build()).execute();
 
@@ -85,6 +72,80 @@ public class ProcessorHttpBaseTest {
         assertThat(response.body().contentType().type(), is("application"));
         assertThat(response.body().contentType().subtype(), is("json"));
         assertThat(response.body().contentType().charset().displayName(), is("UTF-8"));
+        assertThat(response.body().contentType(), is(MediaType.parse("application/json; charset=utf-8")));
         assertThat(hit.get(), is(1L));
+    }
+
+    @Test
+    public void rootDelete() throws Exception {
+        AtomicLong hit = new AtomicLong(0);
+        this.setupProcessorWithHandler(
+                "rootDeleteHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
+
+        this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/").delete().build()).execute();
+
+        assertThat(hit.get(), is(1L));
+    }
+
+    @Test
+    public void firstChild() throws Exception {
+        AtomicLong hit = new AtomicLong(0);
+        this.setupProcessorWithHandler(
+                "child1GetHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
+
+        this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/child1").get().build()).execute();
+
+        assertThat(hit.get(), is(1L));
+    }
+
+    @Test
+    public void secondChild() throws Exception {
+        AtomicLong hit = new AtomicLong(0);
+        this.setupProcessorWithHandler(
+                "child2GetHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
+
+        this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/child2").get().build()).execute();
+
+        assertThat(hit.get(), is(1L));
+    }
+
+    @Test
+    public void subchildChild() throws Exception {
+        AtomicLong hit = new AtomicLong(0);
+        this.setupProcessorWithHandler(
+                "subchildGetHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
+
+        this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/child1/subchild").get().build()).execute();
+
+        assertThat(hit.get(), is(1L));
+    }
+
+    private void setupProcessorWithHandler(String handlerMethod, Function handler) throws Exception {
+        Object builder = this.compiled.getClass("org.generated.server.TestAPIHandlers$Builder").newInstance();
+        builder = this.compiled.on(builder).invoke(handlerMethod, Function.class).with(handler);
+        Object handlers = this.compiled.on(builder).invoke("build");
+
+        this.testProcessor = (Processor) this.compiled.getClass("org.generated.server.TestAPIProcessor")
+                .getConstructor(
+                        String.class,
+                        JsonFactory.class,
+                        this.compiled.getClass("org.generated.server.TestAPIHandlers"))
+                .newInstance("/api", new JsonFactory(), handlers);
     }
 }
