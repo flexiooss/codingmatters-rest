@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator;
 import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
+import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
@@ -30,6 +31,7 @@ public class ProcessorGeneratorTestHelper {
         RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource(ramlRessource));
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
 
         Spec apiSpec = new ApiGenerator(ProcessorGeneratorTestHelper.TYPES_PACK).generate(raml);
         new SpecCodeGenerator(apiSpec, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate();
@@ -40,6 +42,7 @@ public class ProcessorGeneratorTestHelper {
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
+                .classpath(CompiledCode.findLibraryInClasspath("slf4j-api"))
                 .source(this.dir.getRoot())
                 .compile();
         return this;

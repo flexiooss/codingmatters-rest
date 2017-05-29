@@ -1,10 +1,8 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.fasterxml.jackson.core.JsonParser;
+import com.squareup.javapoet.*;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
@@ -13,9 +11,12 @@ import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,11 +38,15 @@ public class ProcessorClass {
     }
 
     public TypeSpec type(RamlModelResult ramlModel) {
-        return TypeSpec.classBuilder(this.naming.type(ramlModel.getApiV10().title().value(), "Processor"))
+        String processorTypeName = this.naming.type(ramlModel.getApiV10().title().value(), "Processor");
+        return TypeSpec.classBuilder(processorTypeName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(Processor.class))
                 .addMethod(this.buildProcessMethod(ramlModel))
                 .addMethods(this.buidMethodProcessingMethods(ramlModel))
+                .addField(FieldSpec.builder(Logger.class, "log", Modifier.STATIC, Modifier.PRIVATE)
+                        .initializer("$T.getLogger($T.class)", LoggerFactory.class, ClassName.bestGuess(processorTypeName))
+                        .build())
                 .addField(ClassName.get(String.class), "apiPath", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.get(JsonFactory.class), "factory", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.bestGuess(this.naming.type(ramlModel.getApiV10().title().value(), "Handlers")), "handlers", Modifier.PRIVATE, Modifier.FINAL)
@@ -80,7 +85,6 @@ public class ProcessorClass {
 
     private void addResourceProcessing(MethodSpec.Builder method, Resource resource) {
         if(resource.methods().isEmpty()) return;
-        //if(requestDelegate.pathMatcher("/" + this.apiPath + "/jobs/?").matches()) {
         method.beginControlFlow(
                 "if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
                 resource.resourcePath()
@@ -121,16 +125,39 @@ public class ProcessorClass {
                 .returns(TypeName.VOID)
                 .addParameter(ClassName.get(RequestDelegate.class), "requestDelegate")
                 .addParameter(ClassName.get(ResponseDelegate.class), "responseDelegate")
-                .addException(IOException.class)
-                .addStatement(
-                        "$T response = this.handlers.$L().apply($T.Builder.builder().build())",
-                        this.resourceMethodResponseClass(resourceMethod),
-                        this.resourceMethodHandlerMethod(resourceMethod),
-                        this.resourceMethodRequestClass(resourceMethod)
-                );
+                .addException(IOException.class);
 
+        this.addMethodProcessingMethodBody(resourceMethod, method);
 
         return method.build();
+    }
+
+    private void addMethodProcessingMethodBody(Method resourceMethod, MethodSpec.Builder method) {
+        method.addStatement("$T.Builder requestBuilder = $T.Builder.builder()",
+                this.resourceMethodRequestClass(resourceMethod),
+                this.resourceMethodRequestClass(resourceMethod)
+        );
+        if(! resourceMethod.body().isEmpty()) {
+            method.addStatement("$T payload = requestDelegate.payload()", InputStream.class);
+            method.beginControlFlow("try");
+            method.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
+            method.addStatement("requestBuilder.payload(new $T().read(parser))",
+                    ClassName.get(this.typesPackage + ".json", this.naming.type(resourceMethod.body().get(0).type(), "Reader"))
+            );
+            method.nextControlFlow("catch(IOException e)");
+            method
+                    .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
+                    .addStatement("log.info($S)", "malformed request")
+                    .addStatement("return");
+
+            method.endControlFlow();
+        }
+        method
+                .addStatement(
+                        "$T response = this.handlers.$L().apply(requestBuilder.build())",
+                        this.resourceMethodResponseClass(resourceMethod),
+                        this.resourceMethodHandlerMethod(resourceMethod)
+                );
     }
 
     private String resourceMethodHandlerMethod(Method resourceMethod) {
