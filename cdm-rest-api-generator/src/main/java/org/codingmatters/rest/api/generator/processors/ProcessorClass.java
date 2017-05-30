@@ -26,6 +26,9 @@ import java.util.List;
  * Created by nelt on 5/23/17.
  */
 public class ProcessorClass {
+
+    static private final Logger log = LoggerFactory.getLogger(ProcessorClass.class);
+
     private final String typesPackage;
     private final String apiPackage;
     private final Naming naming;
@@ -170,11 +173,8 @@ public class ProcessorClass {
 
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
-            if(typeDeclaration.type().equalsIgnoreCase("object")) {
+            if(typeDeclaration.type().equalsIgnoreCase("string")) {
 
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")) {
-
-            } else {
                 method
                         .addStatement(
                                 "$T $L = requestDelegate.queryParameters().get($S) != null " +
@@ -185,6 +185,8 @@ public class ProcessorClass {
                         .addStatement(
                                 "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
                         );
+            } else {
+                log.warn("not yet implemented : {} query parameter", typeDeclaration.type());
             }
         }
 

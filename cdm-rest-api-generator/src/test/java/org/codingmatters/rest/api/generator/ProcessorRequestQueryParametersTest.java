@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -10,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Created by nelt on 5/30/17.
@@ -45,5 +47,11 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
                 this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
                 is("val")
         );
+    }
+
+    @Ignore
+    @Test
+    public void arrayParameter() throws Exception {
+        fail("TODO");
     }
 }
