@@ -46,4 +46,33 @@ public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequ
                 is("val")
         );
     }
+
+    @Test
+    public void twoParameters() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        //TestAPIHandlers
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
+        this.setupProcessorWithHandler(
+                "twoUriParamsGetHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/uri-param/val/another/val2")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.TwoUriParamsGetRequest").invoke("param"),
+                is("val")
+        );
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.TwoUriParamsGetRequest").invoke("param2"),
+                is("val2")
+        );
+    }
 }

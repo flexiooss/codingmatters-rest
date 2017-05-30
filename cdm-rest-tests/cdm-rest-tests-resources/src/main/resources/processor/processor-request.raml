@@ -25,6 +25,15 @@ mediaType: application/json
          param:
            type: string
     get:
+    /another/{param2}:
+      displayName: TwoUriParams
+      uriParameters:
+        param:
+          type: string
+        param2:
+          type: string
+      get:
+
 
 types:
   Req:

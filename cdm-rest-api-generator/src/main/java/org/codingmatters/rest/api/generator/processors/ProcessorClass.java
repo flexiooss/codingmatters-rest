@@ -203,13 +203,13 @@ public class ProcessorClass {
     }
 
     private void addRequestUriParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
+        method.addStatement(
+                "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
+                Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
+            );
         for (TypeDeclaration typeDeclaration : resourceMethod.resource().uriParameters()) {
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method
-                        .addStatement(
-                                "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
-                                Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
-                        )
                         .addStatement(
                                 "$T $L = uriParameters.get($S) != null " +
                                         "&& ! uriParameters.get($S).isEmpty() ? " +
