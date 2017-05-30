@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/26/17.
  */
-public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
+public class ProcessorRequestPayloadTest extends AbstractProcessorHttpRequestTest {
 
     @Before
     public void setUp() throws Exception {
@@ -29,13 +29,13 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
     public void requestPayload() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "rootPostHandler",
+                "payloadPostHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/payload/")
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf_8"), "{\"prop\":\"val\"}"))
                 .build()).execute();
         Object request = requestHolder.get();
@@ -43,7 +43,7 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.RootPostRequest").invoke("payload"),
+                this.compiled.on(request).castedTo("org.generated.api.PayloadPostRequest").invoke("payload"),
                 isA(this.compiled.getClass("org.generated.types.Req"))
         );
     }
@@ -52,13 +52,13 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
     public void requestPayload_emptyPayload() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "rootPostHandler",
+                "payloadPostHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/payload/")
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf_8"), "{}"))
                 .build()).execute();
         Object request = requestHolder.get();
@@ -66,7 +66,7 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.RootPostRequest").invoke("payload"),
+                this.compiled.on(request).castedTo("org.generated.api.PayloadPostRequest").invoke("payload"),
                 isA(this.compiled.getClass("org.generated.types.Req"))
         );
     }
@@ -75,13 +75,13 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
     public void requestPayload_nullPayload() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "rootPostHandler",
+                "payloadPostHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/payload/")
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf_8"), "null"))
                 .build()).execute();
         Object request = requestHolder.get();
@@ -89,7 +89,7 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.RootPostRequest").invoke("payload"),
+                this.compiled.on(request).castedTo("org.generated.api.PayloadPostRequest").invoke("payload"),
                 is(nullValue())
         );
     }
@@ -98,13 +98,13 @@ public class ProcessorHttpRequestTest extends AbstractProcessorHttpRequestTest {
     public void requestPayload_unparseable() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "rootPostHandler",
+                "payloadPostHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/root/")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/payload/")
                 .post(RequestBody.create(MediaType.parse("application/json; charset=utf_8"), "yopyop tagada"))
                 .build()).execute();
         Object request = requestHolder.get();

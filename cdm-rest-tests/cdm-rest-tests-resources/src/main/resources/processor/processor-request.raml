@@ -4,10 +4,16 @@ version: v1
 baseUri: https://api.codingmatters.org/test
 mediaType: application/json
 
-/root:
-    displayName: Root
-    post:
-      body: Req
+/payload:
+  displayName: Payload
+  post:
+    body: Req
+
+/query-params:
+  displayName: QueryParams
+  get:
+    queryParameters:
+      prop: string
 
 types:
   Req:
