@@ -8,8 +8,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -46,6 +45,52 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
         assertThat(
                 this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
                 is("val")
+        );
+    }
+
+    @Test
+    public void singleParameter_empty() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        this.setupProcessorWithHandler(
+                "queryParamsGetHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params?stringParam=")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
+                is("")
+        );
+    }
+
+    @Test
+    public void singleParameter_notSet() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        this.setupProcessorWithHandler(
+                "queryParamsGetHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
+                is(nullValue())
         );
     }
 
