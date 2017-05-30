@@ -114,7 +114,7 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
         assertThat(request, is(notNullValue()));
         assertThat(
                 this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringArrayParam"),
-                is(contains("v1", "v2", "v3"))
+                contains("v1", "v2", "v3")
         );
     }
 }

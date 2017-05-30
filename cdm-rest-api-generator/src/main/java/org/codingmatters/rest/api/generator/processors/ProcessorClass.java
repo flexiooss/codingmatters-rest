@@ -208,7 +208,7 @@ public class ProcessorClass {
                                 "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
                         );
             } else {
-                log.warn("not yet implemented : {} query parameter", typeDeclaration.type());
+                log.warn("not yet implemented : {} query parameter", typeDeclaration);
             }
         }
     }
@@ -232,8 +232,18 @@ public class ProcessorClass {
                         .addStatement(
                                 "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
                         );
+            } else if(typeDeclaration.type().equalsIgnoreCase("array")
+                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
+                method
+                        .addStatement(
+                                "$T<$T> $L = uriParameters.get($S)",
+                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
             } else {
-                log.warn("not yet implemented : {} query parameter", typeDeclaration.type());
+                log.warn("not yet implemented : {} uri parameter", typeDeclaration);
             }
         }
     }

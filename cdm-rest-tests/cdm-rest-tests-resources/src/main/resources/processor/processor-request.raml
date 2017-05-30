@@ -33,6 +33,13 @@ mediaType: application/json
         param2:
           type: string
       get:
+    /another-one/{param}:
+      displayName: ArrayUriParams
+      uriParameters:
+        param:
+          type: array
+          items: string
+      get:
 
 
 types:

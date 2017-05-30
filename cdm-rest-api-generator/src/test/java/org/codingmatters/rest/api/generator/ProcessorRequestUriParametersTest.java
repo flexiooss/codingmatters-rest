@@ -7,8 +7,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -73,6 +72,29 @@ public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequ
         assertThat(
                 this.compiled.on(request).castedTo("org.generated.api.TwoUriParamsGetRequest").invoke("param2"),
                 is("val2")
+        );
+    }
+
+    @Test
+    public void arrayParameter() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        this.setupProcessorWithHandler(
+                "arrayUriParamsGetHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/uri-param/val/another-one/val2")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.ArrayUriParamsGetRequest").invoke("param"),
+                contains("val", "val2")
         );
     }
 }
