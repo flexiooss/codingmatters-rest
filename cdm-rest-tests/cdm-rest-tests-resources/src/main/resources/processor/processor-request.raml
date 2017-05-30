@@ -13,7 +13,11 @@ mediaType: application/json
   displayName: QueryParams
   get:
     queryParameters:
-      prop: string
+      stringParam:
+          type: string
+      stringArrayParam:
+          type: array
+          items: string
 
 types:
   Req:

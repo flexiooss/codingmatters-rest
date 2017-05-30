@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 import org.slf4j.Logger;
@@ -138,19 +139,10 @@ public class ProcessorClass {
                 this.resourceMethodRequestClass(resourceMethod)
         );
         if(! resourceMethod.body().isEmpty()) {
-            method.addStatement("$T payload = requestDelegate.payload()", InputStream.class);
-            method.beginControlFlow("try");
-            method.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
-            method.addStatement("requestBuilder.payload(new $T().read(parser))",
-                    ClassName.get(this.typesPackage + ".json", this.naming.type(resourceMethod.body().get(0).type(), "Reader"))
-            );
-            method.nextControlFlow("catch(IOException e)");
-            method
-                    .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
-                    .addStatement("log.info($S)", "malformed request")
-                    .addStatement("return");
-
-            method.endControlFlow();
+            this.addRequestPayloadProcessing(resourceMethod, method);
+        }
+        if(! resourceMethod.queryParameters().isEmpty()) {
+            this.addRequestQueryParametersProcessing(resourceMethod, method);
         }
         method
                 .addStatement(
@@ -158,6 +150,44 @@ public class ProcessorClass {
                         this.resourceMethodResponseClass(resourceMethod),
                         this.resourceMethodHandlerMethod(resourceMethod)
                 );
+    }
+
+    private void addRequestPayloadProcessing(Method resourceMethod, MethodSpec.Builder method) {
+        method.addStatement("$T payload = requestDelegate.payload()", InputStream.class);
+        method.beginControlFlow("try");
+        method.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
+        method.addStatement("requestBuilder.payload(new $T().read(parser))",
+                ClassName.get(this.typesPackage + ".json", this.naming.type(resourceMethod.body().get(0).type(), "Reader"))
+        );
+        method.nextControlFlow("catch(IOException e)");
+        method
+                .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
+                .addStatement("log.info($S)", "malformed request")
+                .addStatement("return");
+
+        method.endControlFlow();
+    }
+
+    private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
+        for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
+            if(typeDeclaration.type().equalsIgnoreCase("object")) {
+
+            } else if(typeDeclaration.type().equalsIgnoreCase("array")) {
+
+            } else {
+                method
+                        .addStatement(
+                                "$T $L = requestDelegate.queryParameters().get($S) != null " +
+                                        "&& ! requestDelegate.queryParameters().get($S).isEmpty() ? " +
+                                        "requestDelegate.queryParameters().get($S).get(0) : null",
+                                String.class, typeDeclaration.name(), typeDeclaration.name(), typeDeclaration.name(), typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
+            }
+        }
+
     }
 
     private String resourceMethodHandlerMethod(Method resourceMethod) {
