@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -192,6 +193,16 @@ public class ProcessorClass {
                                 String.class, typeDeclaration.name(), typeDeclaration.name(),
                                 typeDeclaration.name(),
                                 typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
+            } else if(typeDeclaration.type().equalsIgnoreCase("array")
+                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
+                method
+                        .addStatement(
+                                "$T<$T> $L = requestDelegate.queryParameters().get($S)",
+                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
                         )
                         .addStatement(
                                 "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
