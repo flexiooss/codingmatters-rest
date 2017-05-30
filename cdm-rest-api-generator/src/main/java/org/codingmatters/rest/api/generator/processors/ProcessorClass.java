@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nelt on 5/23/17.
@@ -89,10 +90,16 @@ public class ProcessorClass {
 
     private void addResourceProcessing(MethodSpec.Builder method, Resource resource) {
         if(resource.methods().isEmpty()) return;
-        method.beginControlFlow(
-                "if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
-                resource.resourcePath()
-        );
+
+        if(! resource.uriParameters().isEmpty()) {
+            String pathRegex = resource.resourcePath().replaceAll("\\{[^\\}]*}", "[^/]+");
+            method.beginControlFlow("if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())", pathRegex);
+        } else {
+            method.beginControlFlow(
+                    "if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
+                    resource.resourcePath()
+            );
+        }
         for (Method resourceMethod : resource.methods()) {
             method.beginControlFlow(
                     "if(requestDelegate.method().equals(RequestDelegate.Method.$L))",
@@ -147,6 +154,9 @@ public class ProcessorClass {
         if(! resourceMethod.queryParameters().isEmpty()) {
             this.addRequestQueryParametersProcessing(resourceMethod, method);
         }
+        if(! resourceMethod.resource().uriParameters().isEmpty()) {
+            this.addRequestUriParametersProcessing(resourceMethod, method);
+        }
         method
                 .addStatement(
                         "$T response = this.handlers.$L().apply(requestBuilder.build())",
@@ -174,13 +184,14 @@ public class ProcessorClass {
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
-
                 method
                         .addStatement(
                                 "$T $L = requestDelegate.queryParameters().get($S) != null " +
                                         "&& ! requestDelegate.queryParameters().get($S).isEmpty() ? " +
                                         "requestDelegate.queryParameters().get($S).get(0) : null",
-                                String.class, typeDeclaration.name(), typeDeclaration.name(), typeDeclaration.name(), typeDeclaration.name()
+                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                typeDeclaration.name(),
+                                typeDeclaration.name()
                         )
                         .addStatement(
                                 "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
@@ -189,7 +200,31 @@ public class ProcessorClass {
                 log.warn("not yet implemented : {} query parameter", typeDeclaration.type());
             }
         }
+    }
 
+    private void addRequestUriParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
+        for (TypeDeclaration typeDeclaration : resourceMethod.resource().uriParameters()) {
+            if(typeDeclaration.type().equalsIgnoreCase("string")) {
+                method
+                        .addStatement(
+                                "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
+                                Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
+                        )
+                        .addStatement(
+                                "$T $L = uriParameters.get($S) != null " +
+                                        "&& ! uriParameters.get($S).isEmpty() ? " +
+                                        "uriParameters.get($S).get(0) : null",
+                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                typeDeclaration.name(),
+                                typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
+            } else {
+                log.warn("not yet implemented : {} query parameter", typeDeclaration.type());
+            }
+        }
     }
 
     private String resourceMethodHandlerMethod(Method resourceMethod) {

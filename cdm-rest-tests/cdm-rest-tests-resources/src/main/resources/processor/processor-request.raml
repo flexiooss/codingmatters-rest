@@ -19,6 +19,13 @@ mediaType: application/json
           type: array
           items: string
 
+/uri-param/{param}:
+    displayName: UriParams
+    uriParameters:
+         param:
+           type: string
+    get:
+
 types:
   Req:
     type: object
