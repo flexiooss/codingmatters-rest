@@ -158,6 +158,9 @@ public class ProcessorClass {
         if(! resourceMethod.resource().uriParameters().isEmpty()) {
             this.addRequestUriParametersProcessing(resourceMethod, method);
         }
+        if(! resourceMethod.headers().isEmpty()) {
+            this.addRequestHeadersProcessing(resourceMethod, method);
+        }
         method
                 .addStatement(
                         "$T response = this.handlers.$L().apply(requestBuilder.build())",
@@ -180,6 +183,37 @@ public class ProcessorClass {
                 .addStatement("return");
 
         method.endControlFlow();
+    }
+
+    private void addRequestHeadersProcessing(Method resourceMethod, MethodSpec.Builder method) {
+        for (TypeDeclaration typeDeclaration : resourceMethod.headers()) {
+            if(typeDeclaration.type().equalsIgnoreCase("string")) {
+                method
+                        .addStatement(
+                                "$T $L = requestDelegate.headers().get($S) != null " +
+                                        "&& ! requestDelegate.headers().get($S).isEmpty() ? " +
+                                        "requestDelegate.headers().get($S).get(0) : null",
+                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                typeDeclaration.name(),
+                                typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
+            } else if(typeDeclaration.type().equalsIgnoreCase("array")
+                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
+                method
+                        .addStatement(
+                                "$T<$T> $L = requestDelegate.headers().get($S)",
+                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
+                        )
+                        .addStatement(
+                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                        );
+            } else {
+                log.warn("not yet implemented : {} query parameter", typeDeclaration);
+            }
+        }
     }
 
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {

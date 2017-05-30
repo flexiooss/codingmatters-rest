@@ -13,11 +13,11 @@ public interface RequestDelegate {
     Method method();
     InputStream payload();
 
-    String absolutePath(String relative);
-
     Map<String,List<String>> uriParameters(String pathExpression);
-
     Map<String,List<String>> queryParameters();
+    Map<String,List<String>> headers();
+
+    String absolutePath(String relative);
 
     enum Method {
         GET, POST, PUT, PATCH, DELETE, UNIMPLEMENTED;

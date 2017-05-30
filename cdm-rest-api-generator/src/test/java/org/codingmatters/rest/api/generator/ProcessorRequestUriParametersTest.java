@@ -20,7 +20,6 @@ public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequ
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-request.raml");
         this.compiled = helper.compiled();
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
     }
 
     @Test
@@ -49,8 +48,6 @@ public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequ
     @Test
     public void twoParameters() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
-        //TestAPIHandlers
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
         this.setupProcessorWithHandler(
                 "twoUriParamsGetHandler",
                 req -> {

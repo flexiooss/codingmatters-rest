@@ -1,12 +1,13 @@
 package org.codingmatters.rest.undertow;
 
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HeaderValues;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -20,6 +21,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     private final HttpServerExchange exchange;
     private Map<String, List<String>> uriParamsCache = null;
     private Map<String, List<String>> queryParamsCache = null;
+    private Map<String, List<String>> headersCache = null;
 
     public UndertowRequestDelegate(HttpServerExchange exchange) {
         this.exchange = exchange;
@@ -79,10 +81,23 @@ public class UndertowRequestDelegate implements RequestDelegate {
             this.queryParamsCache = new HashMap<>();
             for (String name : this.exchange.getQueryParameters().keySet()) {
                 if (this.exchange.getQueryParameters().get(name) != null) {
-                    this.queryParamsCache.put(name, new LinkedList<>(this.exchange.getQueryParameters().get(name)));
+                    this.queryParamsCache.put(name, new ArrayList<>(this.exchange.getQueryParameters().get(name)));
                 }
             }
         }
         return this.queryParamsCache;
     }
+
+    @Override
+    public synchronized Map<String, List<String>> headers() {
+        if(this.headersCache == null) {
+            this.headersCache = new HashMap<>();
+            for (HeaderValues headerValues : this.exchange.getRequestHeaders()) {
+                String headerName = headerValues.getHeaderName().toString();
+                this.headersCache.put(headerName, new ArrayList<>(headerValues));
+            }
+        }
+        return this.headersCache;
+    }
+
 }

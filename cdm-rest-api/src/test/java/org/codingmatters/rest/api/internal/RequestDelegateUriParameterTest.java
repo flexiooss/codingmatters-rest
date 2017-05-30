@@ -135,5 +135,10 @@ public class RequestDelegateUriParameterTest {
         public Map<String, List<String>> queryParameters() {
             return null;
         }
+
+        @Override
+        public Map<String, List<String>> headers() {
+            return null;
+        }
     }
 }
