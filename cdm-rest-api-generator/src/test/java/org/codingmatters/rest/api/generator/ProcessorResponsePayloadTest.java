@@ -18,9 +18,6 @@ public class ProcessorResponsePayloadTest extends AbstractProcessorHttpRequestTe
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-response.raml");
         this.compiled = helper.compiled();
-        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
-//        this.fileHelper.printFile(this.dir.getRoot(), "Resp.java");
     }
 
     @Test
