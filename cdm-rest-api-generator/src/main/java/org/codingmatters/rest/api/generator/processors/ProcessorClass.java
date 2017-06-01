@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -167,6 +168,9 @@ public class ProcessorClass {
                         this.resourceMethodResponseClass(resourceMethod),
                         this.resourceMethodHandlerMethod(resourceMethod)
                 );
+
+        this.addResponseProcessingStatements(resourceMethod, method);
+
     }
 
     private void addRequestPayloadProcessing(Method resourceMethod, MethodSpec.Builder method) {
@@ -279,6 +283,56 @@ public class ProcessorClass {
             } else {
                 log.warn("not yet implemented : {} uri parameter", typeDeclaration);
             }
+        }
+    }
+
+    private void addResponseProcessingStatements(Method resourceMethod, MethodSpec.Builder method) {
+        for (int i = 0; i < resourceMethod.responses().size(); i++) {
+            Response response = resourceMethod.responses().get(i);
+            if(i == 0) {
+                //if (response.status201() != null)
+                method.beginControlFlow("if (response.status$L() != null)", response.code().value());
+            } else {
+                method.nextControlFlow("if (response.status$L() != null)", response.code().value());
+            }
+            method.addStatement("responseDelegate.status($L)", response.code().value());
+
+            if(! response.headers().isEmpty()) {
+                this.addResponseHeadersProcessingStatements(response, method);
+            }
+
+            method.endControlFlow();
+        }
+    }
+
+    private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
+        for (TypeDeclaration typeDeclaration : response.headers()) {
+            method.beginControlFlow(
+                    "if(response.status$L().$L() != null)",
+                    response.code().value(),
+                    typeDeclaration.name()
+            );
+            if(typeDeclaration.type().equalsIgnoreCase("string")) {
+                method.addStatement(
+                        "responseDelegate.addHeader($S, response.status$L().$L())",
+                        typeDeclaration.name(),
+                        response.code().value(),
+                        typeDeclaration.name()
+                );
+            } else if(typeDeclaration.type().equalsIgnoreCase("array")
+                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
+                method.beginControlFlow(
+                        "for($T element: response.status$L().$L())",
+                        String.class,
+                        response.code().value(),
+                        typeDeclaration.name()
+                );
+                method.addStatement("responseDelegate.addHeader($S, element)", typeDeclaration.name());
+                method.endControlFlow();
+            } else {
+                log.warn("not yet implemented : {} response header type", typeDeclaration);
+            }
+            method.endControlFlow();
         }
     }
 

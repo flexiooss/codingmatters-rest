@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: Test API
+version: v1
+baseUri: https://api.codingmatters.org/test
+mediaType: application/json
+
+/headers:
+  displayName: Headers
+  get:
+    responses:
+      200:
+        headers:
+          stringParam:
+            type: string
+          arrayParam:
+            type: array
+            items: string
