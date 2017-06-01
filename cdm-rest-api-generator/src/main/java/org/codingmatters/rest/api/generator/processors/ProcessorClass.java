@@ -289,25 +289,27 @@ public class ProcessorClass {
     }
 
     private void addResponseProcessingStatements(Method resourceMethod, MethodSpec.Builder method) {
-        for (int i = 0; i < resourceMethod.responses().size(); i++) {
-            Response response = resourceMethod.responses().get(i);
-            if(i == 0) {
-                //if (response.status201() != null)
-                method.beginControlFlow("if (response.status$L() != null)", response.code().value());
-            } else {
-                method.nextControlFlow("if (response.status$L() != null)", response.code().value());
-            }
-            method.addStatement("responseDelegate.status($L)", response.code().value());
+        method.beginControlFlow("if(response != null)");
+        if(! resourceMethod.responses().isEmpty()) {
+            for (int i = 0; i < resourceMethod.responses().size(); i++) {
+                Response response = resourceMethod.responses().get(i);
+                if (i == 0) {
+                    method.beginControlFlow("if (response.status$L() != null)", response.code().value());
+                } else {
+                    method.nextControlFlow("else if (response.status$L() != null)", response.code().value());
+                }
+                method.addStatement("responseDelegate.status($L)", response.code().value());
 
-            if(! response.headers().isEmpty()) {
-                this.addResponseHeadersProcessingStatements(response, method);
+                if (!response.headers().isEmpty()) {
+                    this.addResponseHeadersProcessingStatements(response, method);
+                }
+                if (!response.body().isEmpty()) {
+                    this.addResponsePayloadProcessingStatements(response, method);
+                }
             }
-            if(! response.body().isEmpty()) {
-                this.addResponsePayloadProcessingStatements(response, method);
-            }
-
             method.endControlFlow();
         }
+        method.endControlFlow();
     }
 
     private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
@@ -352,7 +354,7 @@ public class ProcessorClass {
                 response.code().value()
         );
         method.endControlFlow();
-        method.addStatement("responseDelegate.status($L).payload(out.toString(), $S)", response.code().value(), "utf-8");
+        method.addStatement("responseDelegate.payload(out.toString(), $S)", "utf-8");
         method.endControlFlow();
         method.endControlFlow();
     }
