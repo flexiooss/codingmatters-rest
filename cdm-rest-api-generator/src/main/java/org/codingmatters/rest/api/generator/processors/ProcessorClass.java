@@ -343,6 +343,7 @@ public class ProcessorClass {
 
     private void addResponsePayloadProcessingStatements(Response response, MethodSpec.Builder method) {
         TypeDeclaration body = response.body().get(0);
+        method.beginControlFlow("if(response.status$L().payload() != null)", response.code().value());
         method.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
         method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
         method.addStatement(
@@ -352,6 +353,7 @@ public class ProcessorClass {
         );
         method.endControlFlow();
         method.addStatement("responseDelegate.status($L).payload(out.toString(), $S)", response.code().value(), "utf-8");
+        method.endControlFlow();
         method.endControlFlow();
     }
 
