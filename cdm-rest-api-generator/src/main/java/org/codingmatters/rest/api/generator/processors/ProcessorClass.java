@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.*;
 import org.codingmatters.rest.api.Processor;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -300,6 +302,9 @@ public class ProcessorClass {
             if(! response.headers().isEmpty()) {
                 this.addResponseHeadersProcessingStatements(response, method);
             }
+            if(! response.body().isEmpty()) {
+                this.addResponsePayloadProcessingStatements(response, method);
+            }
 
             method.endControlFlow();
         }
@@ -334,6 +339,20 @@ public class ProcessorClass {
             }
             method.endControlFlow();
         }
+    }
+
+    private void addResponsePayloadProcessingStatements(Response response, MethodSpec.Builder method) {
+        TypeDeclaration body = response.body().get(0);
+        method.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
+        method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
+        method.addStatement(
+                "new $T().write(generator, response.status$L().payload())",
+                ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer")),
+                response.code().value()
+        );
+        method.endControlFlow();
+        method.addStatement("responseDelegate.status($L).payload(out.toString(), $S)", response.code().value(), "utf-8");
+        method.endControlFlow();
     }
 
     private String resourceMethodHandlerMethod(Method resourceMethod) {

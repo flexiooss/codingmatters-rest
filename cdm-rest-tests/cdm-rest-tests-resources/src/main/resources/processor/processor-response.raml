@@ -15,3 +15,16 @@ mediaType: application/json
           arrayParam:
             type: array
             items: string
+/payload:
+  displayName: Payload
+  get:
+    responses:
+      200:
+        body: Resp
+
+
+types:
+  Resp:
+    type: object
+    properties:
+      prop: string
