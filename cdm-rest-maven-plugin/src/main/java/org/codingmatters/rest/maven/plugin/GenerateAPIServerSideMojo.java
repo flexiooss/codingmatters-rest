@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codingmatters.rest.api.generator.HandlersGenerator;
+import org.codingmatters.rest.api.generator.ProcessorGenerator;
 import org.raml.v2.api.RamlModelResult;
 
 import java.io.File;
@@ -37,7 +38,18 @@ public class GenerateAPIServerSideMojo extends AbstractGenerateAPIMojo {
                     this.outputDirectory
             ).generate(ramlModel);
         } catch (IOException e) {
-            throw new MojoExecutionException("error generating handler from raml model", e);
+            throw new MojoExecutionException("error generating handlers from raml model", e);
+        }
+
+        try {
+            new ProcessorGenerator(
+                    this.destinationPackage,
+                    this.typesPackage + ".types",
+                    this.typesPackage + ".api",
+                    this.outputDirectory
+            ).generate(ramlModel);
+        } catch (IOException e) {
+            throw new MojoExecutionException("error generating processor from raml model", e);
         }
     }
 }

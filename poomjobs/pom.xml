@@ -23,4 +23,16 @@
         <module>poomjobs-http</module>
     </modules>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codingmatters.rest</groupId>
+                    <artifactId>cdm-rest-maven-plugin</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
 </project>

@@ -193,28 +193,29 @@ public class ProcessorClass {
 
     private void addRequestHeadersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.headers()) {
+            String property = this.naming.property(typeDeclaration.name());
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T $L = requestDelegate.headers().get($S) != null " +
                                         "&& ! requestDelegate.headers().get($S).isEmpty() ? " +
                                         "requestDelegate.headers().get($S).get(0) : null",
-                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                String.class, property, typeDeclaration.name(),
                                 typeDeclaration.name(),
                                 typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else if(typeDeclaration.type().equalsIgnoreCase("array")
                     && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T<$T> $L = requestDelegate.headers().get($S)",
-                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
+                                List.class, String.class, property, typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else {
                 log.warn("not yet implemented : {} query parameter", typeDeclaration);
@@ -224,28 +225,29 @@ public class ProcessorClass {
 
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
+            String property = this.naming.property(typeDeclaration.name());
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T $L = requestDelegate.queryParameters().get($S) != null " +
                                         "&& ! requestDelegate.queryParameters().get($S).isEmpty() ? " +
                                         "requestDelegate.queryParameters().get($S).get(0) : null",
-                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                String.class, property, typeDeclaration.name(),
                                 typeDeclaration.name(),
                                 typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else if(typeDeclaration.type().equalsIgnoreCase("array")
                     && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T<$T> $L = requestDelegate.queryParameters().get($S)",
-                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
+                                List.class, String.class, property, typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else {
                 log.warn("not yet implemented : {} query parameter", typeDeclaration);
@@ -259,28 +261,29 @@ public class ProcessorClass {
                 Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
             );
         for (TypeDeclaration typeDeclaration : resourceMethod.resource().uriParameters()) {
+            String property = this.naming.property(typeDeclaration.name());
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T $L = uriParameters.get($S) != null " +
                                         "&& ! uriParameters.get($S).isEmpty() ? " +
                                         "uriParameters.get($S).get(0) : null",
-                                String.class, typeDeclaration.name(), typeDeclaration.name(),
+                                String.class, property, typeDeclaration.name(),
                                 typeDeclaration.name(),
                                 typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else if(typeDeclaration.type().equalsIgnoreCase("array")
                     && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
                 method
                         .addStatement(
                                 "$T<$T> $L = uriParameters.get($S)",
-                                List.class, String.class, typeDeclaration.name(), typeDeclaration.name()
+                                List.class, String.class, property, typeDeclaration.name()
                         )
                         .addStatement(
-                                "requestBuilder.$L($L)", typeDeclaration.name(), typeDeclaration.name()
+                                "requestBuilder.$L($L)", property, property
                         );
             } else {
                 log.warn("not yet implemented : {} uri parameter", typeDeclaration);
@@ -314,17 +317,18 @@ public class ProcessorClass {
 
     private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : response.headers()) {
+            String property = this.naming.property(typeDeclaration.name());
             method.beginControlFlow(
                     "if(response.status$L().$L() != null)",
                     response.code().value(),
-                    typeDeclaration.name()
+                    property
             );
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method.addStatement(
                         "responseDelegate.addHeader($S, response.status$L().$L())",
                         typeDeclaration.name(),
                         response.code().value(),
-                        typeDeclaration.name()
+                        property
                 );
             } else if(typeDeclaration.type().equalsIgnoreCase("array")
                     && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
@@ -332,7 +336,7 @@ public class ProcessorClass {
                         "for($T element: response.status$L().$L())",
                         String.class,
                         response.code().value(),
-                        typeDeclaration.name()
+                        property
                 );
                 method.addStatement("responseDelegate.addHeader($S, element)", typeDeclaration.name());
                 method.endControlFlow();
