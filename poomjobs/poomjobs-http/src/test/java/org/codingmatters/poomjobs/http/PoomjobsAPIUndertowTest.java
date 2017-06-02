@@ -59,7 +59,7 @@ public class PoomjobsAPIUndertowTest {
                             } else {
                                 return JobCollectionPostResponse.Builder.builder()
                                         .status201(Status201.Builder.builder()
-                                                .location("/jobs/121212")
+                                                .location("%API_PATH%/jobs/121212")
                                                 .build())
                                         .build();
                             }

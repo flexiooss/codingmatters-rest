@@ -38,6 +38,7 @@ public class ProcessorClass {
     private final String apiPackage;
     private final Naming naming;
     private final HandlersHelper helper;
+    private boolean needsSubstitutedMethod = false;
 
     public ProcessorClass(String typesPackage, String apiPackage, Naming naming, HandlersHelper helper) {
         this.typesPackage = typesPackage;
@@ -48,7 +49,7 @@ public class ProcessorClass {
 
     public TypeSpec type(RamlModelResult ramlModel) {
         String processorTypeName = this.naming.type(ramlModel.getApiV10().title().value(), "Processor");
-        return TypeSpec.classBuilder(processorTypeName)
+        TypeSpec.Builder processorBuilder = TypeSpec.classBuilder(processorTypeName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(Processor.class))
                 .addMethod(this.buildProcessMethod(ramlModel))
@@ -67,7 +68,11 @@ public class ProcessorClass {
                         .addStatement("this.$L = $L", "apiPath", "apiPath")
                         .addStatement("this.$L = $L", "factory", "factory")
                         .addStatement("this.$L = $L", "handlers", "handlers")
-                        .build())
+                        .build());
+        if(this.needsSubstitutedMethod) {
+            processorBuilder.addMethod(this.buildSubstitutedMethod());
+        }
+        return processorBuilder
                 .build();
     }
 
@@ -317,6 +322,7 @@ public class ProcessorClass {
 
     private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : response.headers()) {
+            this.needsSubstitutedMethod = true;
             String property = this.naming.property(typeDeclaration.name());
             method.beginControlFlow(
                     "if(response.status$L().$L() != null)",
@@ -325,7 +331,7 @@ public class ProcessorClass {
             );
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method.addStatement(
-                        "responseDelegate.addHeader($S, response.status$L().$L())",
+                        "responseDelegate.addHeader($S, this.substituted(requestDelegate, response.status$L().$L()))",
                         typeDeclaration.name(),
                         response.code().value(),
                         property
@@ -338,7 +344,7 @@ public class ProcessorClass {
                         response.code().value(),
                         property
                 );
-                method.addStatement("responseDelegate.addHeader($S, element)", typeDeclaration.name());
+                method.addStatement("responseDelegate.addHeader($S, this.substituted(requestDelegate, element))", typeDeclaration.name());
                 method.endControlFlow();
             } else {
                 log.warn("not yet implemented : {} response header type", typeDeclaration);
@@ -361,6 +367,22 @@ public class ProcessorClass {
         method.addStatement("responseDelegate.payload(out.toString(), $S)", "utf-8");
         method.endControlFlow();
         method.endControlFlow();
+    }
+
+    private MethodSpec buildSubstitutedMethod() {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("substituted")
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(RequestDelegate.class, "requestDelegate")
+                .addParameter(String.class, "str")
+                .returns(String.class);
+
+        method.beginControlFlow("if(str != null)")
+                .addStatement("str = str.replaceAll($S, requestDelegate.absolutePath(this.apiPath))", "%API_PATH%")
+                .endControlFlow();
+
+        return method
+                .addStatement("return str")
+                .build();
     }
 
     private String resourceMethodHandlerMethod(Method resourceMethod) {
