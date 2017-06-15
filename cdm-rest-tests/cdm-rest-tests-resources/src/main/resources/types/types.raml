@@ -17,6 +17,13 @@ types:
             intArrayProp:
                 type: array
                 items: integer
+            enumProp:
+              enum: [A, B, C]
+            enumArrayProp:
+              type: array
+              items:
+                enum: [A, B, C]
+
 
     NestedType:
         type: object
@@ -29,6 +36,12 @@ types:
                         type: object
                         properties:
                             stringProp: string
+                            enumProp:
+                              enum: [A, B, C]
+                            enumArrayProp:
+                              type: array
+                              items:
+                                enum: [A, B, C]
             nestedArray:
                 type: array
                 items:

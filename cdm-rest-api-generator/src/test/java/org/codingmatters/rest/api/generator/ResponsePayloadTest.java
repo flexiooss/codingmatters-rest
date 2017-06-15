@@ -33,7 +33,7 @@ public class ResponsePayloadTest {
                         .addProperty(PropertySpec.property()
                                 .name("payload")
                                 .type(PropertyTypeSpec.type()
-                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef("org.generated.types.AType")
                                 )
                         )

@@ -7,7 +7,10 @@ import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.StringTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+
+import java.util.List;
 
 /**
  * Created by nelt on 5/2/17.
@@ -43,25 +46,38 @@ public class ApiTypesGenerator {
                         .typeKind(TypeKind.EMBEDDED)
                         .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) ((ArrayTypeDeclaration)declaration).items()));
             } else {
-                return PropertyTypeSpec.type()
-                        .cardinality(PropertyCardinality.LIST)
-                        .typeKind(TypeKind.JAVA_TYPE)
-                        .typeRef(RamlType.from(((ArrayTypeDeclaration)declaration).items()).javaType());
+                return this.simpleProperty(((ArrayTypeDeclaration)declaration).items(), PropertyCardinality.LIST);
             }
         }
 
         if(declaration.type().equals("object")) {
             return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.EMBEDDED)
-                            .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) declaration)
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.EMBEDDED)
+                    .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) declaration)
                     );
         } else {
+            return this.simpleProperty(declaration, PropertyCardinality.SINGLE);
+        }
+    }
+
+    private PropertyTypeSpec.Builder simpleProperty(TypeDeclaration declaration, PropertyCardinality withCardinality) throws RamlSpecException {
+        if(this.isEnum(declaration)) {
+            List<String> values = ((StringTypeDeclaration) declaration).enumValues();
             return PropertyTypeSpec.type()
-                    .cardinality(PropertyCardinality.SINGLE)
+                    .cardinality(withCardinality)
+                    .typeKind(TypeKind.ENUM)
+                    .enumValues(values.toArray(new String[values.size()]));
+        } else {
+            return PropertyTypeSpec.type()
+                    .cardinality(withCardinality)
                     .typeKind(TypeKind.JAVA_TYPE)
                     .typeRef(RamlType.from(declaration).javaType());
         }
+    }
+
+    private boolean isEnum(TypeDeclaration declaration) {
+        return declaration instanceof StringTypeDeclaration && !((StringTypeDeclaration)declaration).enumValues().isEmpty();
     }
 
     private AnonymousValueSpec.Builder nestedType(ObjectTypeDeclaration declaration) throws RamlSpecException {

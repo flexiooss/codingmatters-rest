@@ -55,12 +55,8 @@ public class ApiGenerator {
         if(method.body() != null && ! method.body().isEmpty()) {
             result.addProperty(PropertySpec.property()
                     .name("payload")
-                    .type(PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.JAVA_TYPE)
-                            .typeRef(this.typesPackage + "." + method.body().get(0).type())
-                    )
-            );
+                    .type(this.payloadType(method.body().get(0))
+                    ));
         }
         for (TypeDeclaration typeDeclaration : resource.uriParameters()) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);
@@ -68,6 +64,13 @@ public class ApiGenerator {
 
 
         return result.build();
+    }
+
+    private PropertyTypeSpec.Builder payloadType(TypeDeclaration typeDeclaration) {
+        return PropertyTypeSpec.type()
+                .cardinality(PropertyCardinality.SINGLE)
+                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                .typeRef(this.typesPackage + "." + typeDeclaration.type());
     }
 
     private ValueSpec generateMethodResponseValue(Resource resource, Method method) throws RamlSpecException {
@@ -85,10 +88,7 @@ public class ApiGenerator {
             if(response.body() != null && ! response.body().isEmpty()) {
                 responseSpec.addProperty(PropertySpec.property()
                         .name("payload")
-                        .type(PropertyTypeSpec.type()
-                                .cardinality(PropertyCardinality.SINGLE)
-                                .typeKind(TypeKind.JAVA_TYPE)
-                                .typeRef(this.typesPackage + "." + response.body().get(0).type())
+                        .type(this.payloadType(response.body().get(0))
                         )
                 );
             }
