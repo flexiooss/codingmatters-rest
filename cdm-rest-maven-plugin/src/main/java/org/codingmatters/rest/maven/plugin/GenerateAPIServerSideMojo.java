@@ -34,7 +34,7 @@ public class GenerateAPIServerSideMojo extends AbstractGenerateAPIMojo {
             new HandlersGenerator(
                     this.destinationPackage,
                     this.typesPackage + ".types",
-                    this.typesPackage + ".api",
+                    this.typesPackage,
                     this.outputDirectory
             ).generate(ramlModel);
         } catch (IOException e) {
@@ -45,7 +45,7 @@ public class GenerateAPIServerSideMojo extends AbstractGenerateAPIMojo {
             new ProcessorGenerator(
                     this.destinationPackage,
                     this.typesPackage + ".types",
-                    this.typesPackage + ".api",
+                    this.typesPackage,
                     this.outputDirectory
             ).generate(ramlModel);
         } catch (IOException e) {

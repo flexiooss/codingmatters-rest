@@ -5,9 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.poomjobs</groupId>
+        <groupId>org.codingmatters.poom</groupId>
         <artifactId>poomjobs</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>poomjobs-types</artifactId>
@@ -44,7 +45,7 @@
                             <goal>generate-api-types</goal>
                         </goals>
                         <configuration>
-                            <destination-package>org.codingmatters.poomjobs.types</destination-package>
+                            <destination-package>org.codingmatters.poomjobs.api</destination-package>
                             <api-spec-resource>poomjobs-api.raml</api-spec-resource>
                         </configuration>
                     </execution>
