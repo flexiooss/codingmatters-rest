@@ -1,0 +1,23 @@
+#%RAML 1.0
+title: Test API
+version: v1
+baseUri: https://api.codingmatters.org/test
+mediaType: application/json
+
+/payload:
+  displayName: Payload
+  post:
+    body: Req
+    responses:
+      200:
+        body: Resp
+
+types:
+  Resp:
+    type: object
+    properties:
+      prop: string
+  Req:
+    type: object
+    properties:
+      prop: string
