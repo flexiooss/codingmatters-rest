@@ -153,7 +153,7 @@ public class ProcessorClass {
     }
 
     private void addMethodProcessingMethodBody(Method resourceMethod, MethodSpec.Builder method) {
-        method.addStatement("$T.Builder requestBuilder = $T.Builder.builder()",
+        method.addStatement("$T.Builder requestBuilder = $T.builder()",
                 this.resourceMethodRequestClass(resourceMethod),
                 this.resourceMethodRequestClass(resourceMethod)
         );
