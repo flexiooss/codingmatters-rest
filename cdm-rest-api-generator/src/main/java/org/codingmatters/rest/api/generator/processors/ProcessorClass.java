@@ -355,14 +355,29 @@ public class ProcessorClass {
 
     private void addResponsePayloadProcessingStatements(Response response, MethodSpec.Builder method) {
         TypeDeclaration body = response.body().get(0);
+
         method.beginControlFlow("if(response.status$L().payload() != null)", response.code().value());
         method.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
         method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
-        method.addStatement(
-                "new $T().write(generator, response.status$L().payload())",
-                ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer")),
-                response.code().value()
-        );
+        if(body instanceof ArrayTypeDeclaration) {
+            // TODO replace with list writer
+            String elementType = ((ArrayTypeDeclaration) body).items().name();
+            method.addStatement("generator.writeStartArray()");
+            method.beginControlFlow("for ($T element : response.status$L().payload())", ClassName.get(this.typesPackage, this.naming.type(elementType)), response.code().value())
+                    .beginControlFlow("if(element != null)")
+                        .addStatement("new $T().write(generator, element)", ClassName.get(this.typesPackage + ".json", this.naming.type(elementType, "Writer")))
+                    .nextControlFlow("else")
+                        .addStatement("generator.writeNull()")
+                    .endControlFlow()
+                    .endControlFlow();
+            method.addStatement("generator.writeEndArray()");
+        } else {
+            method.addStatement(
+                    "new $T().write(generator, response.status$L().payload())",
+                    ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer")),
+                    response.code().value()
+            );
+        }
         method.endControlFlow();
         method.addStatement("responseDelegate.payload(out.toString(), $S)", "utf-8");
         method.endControlFlow();

@@ -67,10 +67,17 @@ public class ApiGenerator {
     }
 
     private PropertyTypeSpec.Builder payloadType(TypeDeclaration typeDeclaration) {
-        return PropertyTypeSpec.type()
-                .cardinality(PropertyCardinality.SINGLE)
-                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                .typeRef(this.typesPackage + "." + typeDeclaration.type());
+        if(typeDeclaration instanceof  ArrayTypeDeclaration) {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.LIST)
+                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                    .typeRef(this.typesPackage + "." + ((ArrayTypeDeclaration)typeDeclaration).items().name());
+        } else {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                    .typeRef(this.typesPackage + "." + typeDeclaration.type());
+        }
     }
 
     private ValueSpec generateMethodResponseValue(Resource resource, Method method) throws RamlSpecException {
@@ -88,8 +95,7 @@ public class ApiGenerator {
             if(response.body() != null && ! response.body().isEmpty()) {
                 responseSpec.addProperty(PropertySpec.property()
                         .name("payload")
-                        .type(this.payloadType(response.body().get(0))
-                        )
+                        .type(this.payloadType(response.body().get(0)))
                 );
             }
             PropertySpec.Builder responseProp = PropertySpec.property()
