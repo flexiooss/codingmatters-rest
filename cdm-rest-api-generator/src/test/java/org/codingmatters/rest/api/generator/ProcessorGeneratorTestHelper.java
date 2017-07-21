@@ -9,6 +9,12 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Created by nelt on 5/25/17.
  */
@@ -21,10 +27,16 @@ public class ProcessorGeneratorTestHelper {
     public final TemporaryFolder dir;
     public final FileHelper fileHelper;
     private CompiledCode compiled;
+    private boolean printFileTree = false;
 
     public ProcessorGeneratorTestHelper(TemporaryFolder dir, FileHelper fileHelper) {
         this.dir = dir;
         this.fileHelper = fileHelper;
+    }
+
+    public ProcessorGeneratorTestHelper printFileTree(boolean print) {
+        this.printFileTree = print;
+        return this;
     }
 
     public ProcessorGeneratorTestHelper setUpWithResource(String ramlRessource) throws Exception {
@@ -35,9 +47,13 @@ public class ProcessorGeneratorTestHelper {
 
         Spec apiSpec = new ApiGenerator(ProcessorGeneratorTestHelper.TYPES_PACK).generate(raml);
         new SpecCodeGenerator(apiSpec, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate();
-        new HandlersGenerator(ProcessorGeneratorTestHelper.SERVER_PACK, ProcessorGeneratorTestHelper.TYPES_PACK, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate(raml);
+        new HandlersGenerator(ProcessorGeneratorTestHelper.API_PACK, ProcessorGeneratorTestHelper.TYPES_PACK, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate(raml);
 
         new ProcessorGenerator(ProcessorGeneratorTestHelper.SERVER_PACK, ProcessorGeneratorTestHelper.TYPES_PACK, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate(raml);
+
+        if(this.printFileTree) {
+            this.printTree(this.dir.getRoot(), "");
+        }
 
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
@@ -46,6 +62,20 @@ public class ProcessorGeneratorTestHelper {
                 .source(this.dir.getRoot())
                 .compile();
         return this;
+    }
+
+    private void printTree(File root, String prefix) {
+        if(root.isFile()) {
+            System.out.println(prefix + "- " + root.getName());
+        } else {
+            System.out.println(prefix + "+ " + root.getName());
+            List<File> files = Arrays.asList(root.listFiles());
+            Collections.sort(files, Comparator.comparing(o -> o.getName())) ;
+            for (File file : files) {
+                this.printTree(file, prefix + "\t");
+            }
+
+        }
     }
 
     public CompiledCode compiled() {

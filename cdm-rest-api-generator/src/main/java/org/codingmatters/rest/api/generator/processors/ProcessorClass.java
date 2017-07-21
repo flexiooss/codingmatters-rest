@@ -48,23 +48,24 @@ public class ProcessorClass {
     }
 
     public TypeSpec type(RamlModelResult ramlModel) {
-        String processorTypeName = this.naming.type(ramlModel.getApiV10().title().value(), "Processor");
-        TypeSpec.Builder processorBuilder = TypeSpec.classBuilder(processorTypeName)
+        TypeSpec.Builder processorBuilder = TypeSpec.classBuilder(this.naming.type(ramlModel.getApiV10().title().value(), "Processor"))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(Processor.class))
                 .addMethod(this.buildProcessMethod(ramlModel))
                 .addMethods(this.buidMethodProcessingMethods(ramlModel))
                 .addField(FieldSpec.builder(Logger.class, "log", Modifier.STATIC, Modifier.PRIVATE)
-                        .initializer("$T.getLogger($T.class)", LoggerFactory.class, ClassName.bestGuess(processorTypeName))
+                        .initializer("$T.getLogger($T.class)", LoggerFactory.class, this.processorClassName(ramlModel))
                         .build())
                 .addField(ClassName.get(String.class), "apiPath", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.get(JsonFactory.class), "factory", Modifier.PRIVATE, Modifier.FINAL)
-                .addField(ClassName.bestGuess(this.naming.type(ramlModel.getApiV10().title().value(), "Handlers")), "handlers", Modifier.PRIVATE, Modifier.FINAL)
+                .addField(this.handlersClassName(ramlModel), "handlers", Modifier.PRIVATE, Modifier.FINAL)
+
+
                 .addMethod(MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(ClassName.get(String.class), "apiPath")
                         .addParameter(ClassName.get(JsonFactory.class), "factory")
-                        .addParameter(ClassName.bestGuess(this.naming.type(ramlModel.getApiV10().title().value(), "Handlers")), "handlers")
+                        .addParameter(this.handlersClassName(ramlModel), "handlers")
                         .addStatement("this.$L = $L", "apiPath", "apiPath")
                         .addStatement("this.$L = $L", "factory", "factory")
                         .addStatement("this.$L = $L", "handlers", "handlers")
@@ -74,6 +75,14 @@ public class ProcessorClass {
         }
         return processorBuilder
                 .build();
+    }
+
+    private ClassName handlersClassName(RamlModelResult ramlModel) {
+        return ClassName.get(this.apiPackage, this.naming.type(ramlModel.getApiV10().title().value(), "Handlers"));
+    }
+
+    private ClassName processorClassName(RamlModelResult ramlModel) {
+        return ClassName.bestGuess(this.naming.type(ramlModel.getApiV10().title().value(), "Processor"));
     }
 
     private MethodSpec buildProcessMethod(RamlModelResult ramlModel) {

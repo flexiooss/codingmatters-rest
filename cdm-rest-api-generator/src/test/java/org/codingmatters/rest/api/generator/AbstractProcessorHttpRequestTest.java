@@ -37,7 +37,7 @@ public abstract class AbstractProcessorHttpRequestTest {
     }
 
     protected void setupProcessorWithHandler(String handlerMethod, Function handler) throws Exception {
-        Object builder = this.compiled.getClass("org.generated.server.TestAPIHandlers$Builder").newInstance();
+        Object builder = this.compiled.getClass("org.generated.api.TestAPIHandlers$Builder").newInstance();
         builder = this.compiled.on(builder).invoke(handlerMethod, Function.class).with(handler);
         Object handlers = this.compiled.on(builder).invoke("build");
 
@@ -45,7 +45,7 @@ public abstract class AbstractProcessorHttpRequestTest {
                 .getConstructor(
                         String.class,
                         JsonFactory.class,
-                        this.compiled.getClass("org.generated.server.TestAPIHandlers"))
+                        this.compiled.getClass("org.generated.api.TestAPIHandlers"))
                 .newInstance("/api", new JsonFactory(), handlers);
     }
 
