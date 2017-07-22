@@ -48,14 +48,15 @@
         <module>cdm-rest-parent</module>
         <module>cdm-rest-bom</module>
         <module>cdm-rest-api</module>
+        <module>cdm-rest-client-api</module>
+
         <module>cdm-rest-undertow</module>
+        <module>cdm-rest-client-okhttp</module>
 
         <module>cdm-rest-api-generator</module>
         <module>cdm-rest-maven-plugin</module>
 
         <module>cdm-rest-tests</module>
-
-        <!--<module>poomjobs</module>-->
     </modules>
 
     <prerequisites>
