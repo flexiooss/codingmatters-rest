@@ -40,6 +40,8 @@ public class BehaviouralUndertowResource extends ExternalResource {
 
     private void handle(HttpServerExchange exchange) {
         log.debug("handler with behaviours : {}", this.behaviours);
+        log.debug("called with exchange : {} ; query parameters : {}", exchange, exchange.getQueryParameters());
+
         boolean oneApplied = false;
         for (BehaviourImpl behaviour : this.behaviours) {
             boolean applied = behaviour.apply(exchange);
@@ -47,8 +49,6 @@ public class BehaviouralUndertowResource extends ExternalResource {
                 oneApplied = applied;
             }
         }
-
-        System.out.println(exchange.getStatusCode());
 
         if(! oneApplied) {
             exchange.setStatusCode(404);

@@ -1,7 +1,9 @@
 package org.codingmatters.rest.api.client.okhttp;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
@@ -25,14 +27,45 @@ public class OkHttpRequester extends Requester {
         return new OkHttpResponseDelegate(this.client.newCall(request).execute());
     }
 
+    public ResponseDelegate post(String contentType, byte[] body) throws IOException {
+        Request request = this.prepareRequestBuilder().post(RequestBody.create(MediaType.parse(contentType), body)).build();
+        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+    }
+
+    @Override
+    public ResponseDelegate put(String contentType, byte[] body) throws IOException {
+        Request request = this.prepareRequestBuilder().put(RequestBody.create(MediaType.parse(contentType), body)).build();
+        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+    }
+
+    @Override
+    public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
+        Request request = this.prepareRequestBuilder().patch(RequestBody.create(MediaType.parse(contentType), body)).build();
+        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+    }
+
+    @Override
+    public ResponseDelegate delete() throws IOException {
+        Request request = this.prepareRequestBuilder().delete().build();
+        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+    }
+
+    @Override
+    public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
+        Request request = this.prepareRequestBuilder().delete(RequestBody.create(MediaType.parse(contentType), body)).build();
+        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+    }
+
+
+
     private Request.Builder prepareRequestBuilder() throws UnsupportedEncodingException {
         String url = this.baseUrl + this.path();
 
-        boolean firts = true;
-        for (Map.Entry<String, String> queryParameterEntry : this.queryParameters().entrySet()) {
-            if(firts) {
+        boolean first = true;
+        for (Map.Entry<String, String> queryParameterEntry : this.parameters().entrySet()) {
+            if(first) {
                 url += "?";
-                firts = false;
+                first = false;
             } else {
                 url += "&";
             }
@@ -41,31 +74,14 @@ public class OkHttpRequester extends Requester {
             url += queryParameterEntry.getValue() != null ? this.encode(queryParameterEntry.getValue()) : "null";
         }
 
-        System.out.println("URL" + url);
+        Request.Builder result = new Request.Builder().url(url);
 
-        return new Request.Builder().url(url);
+        for (Map.Entry<String, String> headerEntry : this.headers().entrySet()) {
+            result.header(headerEntry.getKey(), headerEntry.getValue());
+        }
+
+        return result;
     }
-
-    @Override
-    public ResponseDelegate post() throws IOException {
-        return null;
-    }
-
-    @Override
-    public ResponseDelegate put() throws IOException {
-        return null;
-    }
-
-    @Override
-    public ResponseDelegate patch() throws IOException {
-        return null;
-    }
-
-    @Override
-    public ResponseDelegate delete() throws IOException {
-        return null;
-    }
-
 
     private String encode(String str) throws UnsupportedEncodingException {
         return URLEncoder.encode(str, "UTF-8");
