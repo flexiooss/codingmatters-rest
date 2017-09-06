@@ -21,5 +21,11 @@
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
