@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class OkHttpRequester implements Requester {
+
     private final OkHttpClient client;
     private final String baseUrl;
 
