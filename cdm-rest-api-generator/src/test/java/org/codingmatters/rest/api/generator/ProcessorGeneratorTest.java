@@ -2,8 +2,8 @@ package org.codingmatters.rest.api.generator;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.Processor;
-import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

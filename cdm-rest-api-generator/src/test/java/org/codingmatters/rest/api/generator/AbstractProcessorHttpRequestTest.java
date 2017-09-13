@@ -5,10 +5,10 @@ import okhttp3.OkHttpClient;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
-import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.rest.undertow.CdmHttpUndertowHandler;
 import org.codingmatters.rest.undertow.support.UndertowResource;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 

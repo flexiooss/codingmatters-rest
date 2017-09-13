@@ -1,7 +1,7 @@
 package org.codingmatters.rest.api.generator;
 
-import org.codingmatters.rest.api.tests.utils.FileHelper;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
 import org.codingmatters.value.objects.spec.Spec;

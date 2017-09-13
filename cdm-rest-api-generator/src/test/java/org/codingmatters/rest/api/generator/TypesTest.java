@@ -1,6 +1,6 @@
 package org.codingmatters.rest.api.generator;
 
-import org.codingmatters.rest.api.tests.utils.FileHelper;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
 import org.junit.Rule;
