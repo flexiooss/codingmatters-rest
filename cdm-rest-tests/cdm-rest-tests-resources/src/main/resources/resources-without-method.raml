@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: ResourcesWithoutMethod API
+version: v1
+baseUri: https://api.codingmatters.org/resources-without-method
+mediaType: application/json
+
+/root:
+    displayName: RootResource
+    get:
+    /middle:
+        displayName: MiddleResource
+        /leaf-1:
+            displayName: FirstResource
+            get:
+        /leaf-2:
+            displayName: SecondResource
+            get:
