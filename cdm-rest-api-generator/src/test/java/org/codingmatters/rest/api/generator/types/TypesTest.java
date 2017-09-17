@@ -1,5 +1,6 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.types;
 
+import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;

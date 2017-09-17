@@ -1,7 +1,8 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.processor;
 
 import okhttp3.Request;
 import okhttp3.Response;
+import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/30/17.
  */
-public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRequestTest {
+public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequestTest {
 
     @Before
     public void setUp() throws Exception {
@@ -26,13 +27,13 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
     public void singleParameter() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "queryParamsGetHandler",
+                "uriParamsGetHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params?stringParam=val")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/uri-param/val")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -40,22 +41,22 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
+                this.compiled.on(request).castedTo("org.generated.api.UriParamsGetRequest").invoke("param"),
                 is("val")
         );
     }
 
     @Test
-    public void singleParameter_empty() throws Exception {
+    public void twoParameters() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "queryParamsGetHandler",
+                "twoUriParamsGetHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params?stringParam=")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/uri-param/val/another/val2")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -63,31 +64,12 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
-                is("")
+                this.compiled.on(request).castedTo("org.generated.api.TwoUriParamsGetRequest").invoke("param"),
+                is("val")
         );
-    }
-
-    @Test
-    public void singleParameter_notSet() throws Exception {
-        AtomicReference requestHolder = new AtomicReference();
-        this.setupProcessorWithHandler(
-                "queryParamsGetHandler",
-                req -> {
-                    requestHolder.set(req);
-                    return null;
-                });
-
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params")
-                .get()
-                .build()).execute();
-        Object request = requestHolder.get();
-
-        assertThat(response.code(), is(200));
-        assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringParam"),
-                is(nullValue())
+                this.compiled.on(request).castedTo("org.generated.api.TwoUriParamsGetRequest").invoke("param2"),
+                is("val2")
         );
     }
 
@@ -95,16 +77,13 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
     public void arrayParameter() throws Exception {
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
-                "queryParamsGetHandler",
+                "arrayUriParamsGetHandler",
                 req -> {
                     requestHolder.set(req);
                     return null;
                 });
 
-        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/query-params" +
-                "?stringArrayParam=v1" +
-                "&stringArrayParam=v2" +
-                "&stringArrayParam=v3")
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/uri-param/val/another-one/val2")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -112,8 +91,8 @@ public class ProcessorRequestQueryParametersTest extends AbstractProcessorHttpRe
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.QueryParamsGetRequest").invoke("stringArrayParam"),
-                contains("v1", "v2", "v3")
+                this.compiled.on(request).castedTo("org.generated.api.ArrayUriParamsGetRequest").invoke("param"),
+                contains("val", "val2")
         );
     }
 }

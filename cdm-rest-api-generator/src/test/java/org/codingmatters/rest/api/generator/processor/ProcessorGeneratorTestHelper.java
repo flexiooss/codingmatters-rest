@@ -1,5 +1,9 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.processor;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
+import org.codingmatters.rest.api.generator.ApiTypesGenerator;
+import org.codingmatters.rest.api.generator.HandlersGenerator;
+import org.codingmatters.rest.api.generator.ProcessorGenerator;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;

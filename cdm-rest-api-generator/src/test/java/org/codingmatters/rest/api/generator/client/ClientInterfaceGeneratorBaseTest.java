@@ -1,5 +1,8 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.client;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
+import org.codingmatters.rest.api.generator.ApiTypesGenerator;
+import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;

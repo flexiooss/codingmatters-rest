@@ -1,5 +1,6 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.request;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
@@ -12,36 +13,29 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by nelt on 5/3/17.
+ * Created by nelt on 5/2/17.
  */
-public class ResponseHeadersTest {
-
-    private Spec spec;
+public class RequestQueryParametersTest {
 
     @Rule
     public FileHelper fileHelper = new FileHelper();
 
+    private Spec spec;
+
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/response-headers.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/request-query-parameters.raml")));
     }
 
     @Test
     public void propertyCount() throws Exception {
-        assertThat(this.spec.valueSpec("RootResourceGetResponse").propertySpecs(), hasSize(1));
-        assertThat(
-                this.spec.valueSpec("RootResourceGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().propertySpecs(),
-                hasSize(4)
-        );
+        assertThat(this.spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(4));
     }
 
     @Test
     public void singleParameters() throws Exception {
         assertThat(
-                this.spec.valueSpec("RootResourceGetResponse")
-                        .propertySpec("status200")
-                        .typeSpec().embeddedValueSpec()
-                        .propertySpec("stringParam"),
+                spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
                 is(PropertySpec.property().name("stringParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
@@ -51,10 +45,7 @@ public class ResponseHeadersTest {
                         .build())
         );
         assertThat(
-                this.spec.valueSpec("RootResourceGetResponse")
-                        .propertySpec("status200")
-                        .typeSpec().embeddedValueSpec()
-                        .propertySpec("intParam"),
+                spec.valueSpec("RootResourceGetRequest").propertySpec("intParam"),
                 is(PropertySpec.property().name("intParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
@@ -68,10 +59,7 @@ public class ResponseHeadersTest {
     @Test
     public void arrayParameters() throws Exception {
         assertThat(
-                this.spec.valueSpec("RootResourceGetResponse")
-                        .propertySpec("status200")
-                        .typeSpec().embeddedValueSpec()
-                        .propertySpec("stringArrayParam"),
+                spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
                 is(PropertySpec.property().name("stringArrayParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
@@ -81,10 +69,7 @@ public class ResponseHeadersTest {
                         .build())
         );
         assertThat(
-                this.spec.valueSpec("RootResourceGetResponse")
-                        .propertySpec("status200")
-                        .typeSpec().embeddedValueSpec()
-                        .propertySpec("intArrayParam"),
+                spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
                 is(PropertySpec.property().name("intArrayParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)

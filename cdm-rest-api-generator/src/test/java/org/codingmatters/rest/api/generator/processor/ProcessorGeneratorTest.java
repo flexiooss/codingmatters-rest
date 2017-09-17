@@ -1,4 +1,4 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.processor;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.Processor;

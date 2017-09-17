@@ -1,5 +1,6 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.api;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.Spec;
 import org.junit.Rule;

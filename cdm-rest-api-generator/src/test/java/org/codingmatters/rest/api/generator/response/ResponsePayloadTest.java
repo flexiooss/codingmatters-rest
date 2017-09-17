@@ -1,5 +1,6 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.response;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
@@ -13,23 +14,23 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/3/17.
  */
-public class RequestPayloadTest {
-
-    private Spec spec;
+public class ResponsePayloadTest {
 
     @Rule
     public FileHelper fileHelper = new FileHelper();
 
+    private Spec spec;
+
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/request-payload.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/response-payload.raml")));
     }
 
     @Test
     public void typePayload() throws Exception {
         assertThat(
-                this.spec.valueSpec("RootResourceGetRequest"),
-                is(ValueSpec.valueSpec().name("RootResourceGetRequest")
+                this.spec.valueSpec("RootResourceGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec(),
+                is(AnonymousValueSpec.anonymousValueSpec()
                         .addProperty(PropertySpec.property()
                                 .name("payload")
                                 .type(PropertyTypeSpec.type()

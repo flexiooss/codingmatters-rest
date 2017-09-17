@@ -1,5 +1,6 @@
-package org.codingmatters.rest.api.generator;
+package org.codingmatters.rest.api.generator.request;
 
+import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
@@ -14,16 +15,16 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/2/17.
  */
-public class RequestQueryParametersTest {
+public class RequestHeadersTest {
+
+    private Spec spec;
 
     @Rule
     public FileHelper fileHelper = new FileHelper();
 
-    private Spec spec;
-
     @Before
     public void setUp() throws Exception {
-        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/request-query-parameters.raml")));
+        this.spec = new ApiGenerator("org.generated.types").generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/request-headers.raml")));
     }
 
     @Test
@@ -34,7 +35,7 @@ public class RequestQueryParametersTest {
     @Test
     public void singleParameters() throws Exception {
         assertThat(
-                spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
+                this.spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
                 is(PropertySpec.property().name("stringParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
@@ -44,7 +45,7 @@ public class RequestQueryParametersTest {
                         .build())
         );
         assertThat(
-                spec.valueSpec("RootResourceGetRequest").propertySpec("intParam"),
+                this.spec.valueSpec("RootResourceGetRequest").propertySpec("intParam"),
                 is(PropertySpec.property().name("intParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
@@ -58,7 +59,7 @@ public class RequestQueryParametersTest {
     @Test
     public void arrayParameters() throws Exception {
         assertThat(
-                spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
+                this.spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
                 is(PropertySpec.property().name("stringArrayParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
@@ -68,7 +69,7 @@ public class RequestQueryParametersTest {
                         .build())
         );
         assertThat(
-                spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
+                this.spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
                 is(PropertySpec.property().name("intArrayParam")
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
