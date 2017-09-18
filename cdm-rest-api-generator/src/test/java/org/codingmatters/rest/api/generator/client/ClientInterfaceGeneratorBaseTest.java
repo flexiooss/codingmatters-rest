@@ -1,12 +1,9 @@
 package org.codingmatters.rest.api.generator.client;
 
-import org.codingmatters.rest.api.generator.ApiGenerator;
-import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
+import org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
-import org.codingmatters.value.objects.generation.SpecCodeGenerator;
-import org.codingmatters.value.objects.spec.Spec;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,15 +11,12 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.API_PACK;
+import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ClientInterfaceGeneratorBaseTest {
-
-    public static final String ROOT_PACK = "org.generated";
-    public static final String TYPES_PACK = ROOT_PACK + ".types";
-    public static final String API_PACK = ROOT_PACK + ".api";
-    public static final String CLIENT_PACK = ROOT_PACK + ".client";
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
@@ -35,11 +29,7 @@ public class ClientInterfaceGeneratorBaseTest {
     @Before
     public void setUp() throws Exception {
         RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("resources-without-method.raml"));
-        Spec typesSpec = new ApiTypesGenerator().generate(raml);
-        new SpecCodeGenerator(typesSpec, TYPES_PACK, this.dir.getRoot()).generate();
-
-        Spec apiSpec = new ApiGenerator(TYPES_PACK).generate(raml);
-        new SpecCodeGenerator(apiSpec, API_PACK, this.dir.getRoot()).generate();
+        ClientGeneratorHelper.generateBase(raml, this.dir.getRoot());
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
 
