@@ -5,9 +5,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
-import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.api.generator.client.RequesterCaller;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -88,38 +87,12 @@ public class ClientRequesterImplementation {
         this.addResourceConstructor(result, resource.resources());
 
         for (Method method : resource.methods()) {
-            this.addMethodCallMethod(result, method);
+            result.addMethod(new RequesterCaller(this.naming, method).caller());
         }
 
         this.addChildResourcesMethods(clientInterface, resource.resources(), result);
 
         return result.build();
-    }
-
-    private void addMethodCallMethod(TypeSpec.Builder result, Method method) {
-        ClassName requestTypeName = this.naming.methodRequestType(method);
-        ClassName responseTypeName = this.naming.methodResponseType(method);
-
-        MethodSpec.Builder caller = MethodSpec.methodBuilder(this.naming.property(method.method()))
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(requestTypeName, "request")
-                .returns(responseTypeName)
-                .addException(IOException.class);
-
-        caller.addStatement("$T requester = this.requesterFactory\n" +
-                ".forBaseUrl(this.baseUrl)\n" +
-                ".path($S)",
-                Requester.class, method.resource().resourcePath());
-
-        caller.addStatement("$T response = requester.get()", ResponseDelegate.class);
-
-        caller.addStatement("$T.Builder resp = $T.builder()",
-                this.naming.methodResponseType(method),
-                this.naming.methodResponseType(method));
-        caller.addStatement("return resp.build()");
-
-
-        result.addMethod(caller.build());
     }
 
     private void addResourceConstructor(TypeSpec.Builder result, List<Resource> childResources) {
