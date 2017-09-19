@@ -28,7 +28,7 @@ public class ClientInterfaceGeneratorBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("resources-without-method.raml"));
+        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("simple-resource-tree.raml"));
         ClientGeneratorHelper.generateBase(raml, this.dir.getRoot());
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
@@ -36,13 +36,13 @@ public class ClientInterfaceGeneratorBaseTest {
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "ResourcesWithoutMethodAPIClient.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIClient.java");
     }
 
     @Test
     public void clientInterface() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient"),
                 aPublic().interface_()
         );
     }
@@ -50,30 +50,30 @@ public class ClientInterfaceGeneratorBaseTest {
     @Test
     public void clientResourceMethods() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient").getMethod("rootResource"),
-                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource"))
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient").getMethod("rootResource"),
+                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource"))
         );
     }
 
     @Test
     public void ressourceInterfaces() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource"),
                 aStatic().public_().interface_()
         );
 
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource"),
                 aStatic().public_().interface_()
         );
 
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$FirstResource"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$FirstResource"),
                 aStatic().public_().interface_()
         );
 
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$SecondResource"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$SecondResource"),
                 aStatic().public_().interface_()
         );
     }
@@ -81,23 +81,23 @@ public class ClientInterfaceGeneratorBaseTest {
     @Test
     public void resourcesResourceMethods() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource").getMethod("middleResource"),
-                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource"))
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource").getMethod("middleResource"),
+                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource"))
         );
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource").getMethod("firstResource"),
-                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$FirstResource"))
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource").getMethod("firstResource"),
+                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$FirstResource"))
         );
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource").getMethod("secondResource"),
-                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$SecondResource"))
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource").getMethod("secondResource"),
+                aMethod().withoutParameters().returning(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$SecondResource"))
         );
     }
 
     @Test
     public void resourceMethodMethods() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource"),
                 aStatic().public_().interface_().with(
                         aMethod().named("get")
                                 .withParameters(this.compiled.getClass(API_PACK + ".RootResourceGetRequest"))

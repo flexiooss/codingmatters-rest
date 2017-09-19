@@ -35,16 +35,16 @@ public class RequesterClientGeneratorBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("resources-without-method.raml"));
+        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("simple-resource-tree.raml"));
         ClientGeneratorHelper.generateBase(raml, this.dir.getRoot());
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
         new ClientRequesterImplementation(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "ResourcesWithoutMethodAPIClient.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "ResourcesWithoutMethodAPIRequesterClient.java");
-//        this.fileHelper.printFile(this.dir.getRoot(), "RootResourceClient.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIClient.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIRequesterClient.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "RootResourceClient.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "MiddleResourceClient.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "FirstResourceClient.java");
 
@@ -58,9 +58,9 @@ public class RequesterClientGeneratorBaseTest {
     @Test
     public void clientClass() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIRequesterClient"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient"),
                 is(aPublic().class_()
-                        .implementing(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient"))
+                        .implementing(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient"))
                 )
         );
     }
@@ -70,25 +70,25 @@ public class RequesterClientGeneratorBaseTest {
         assertThat(
                 this.compiled.getClass(CLIENT_PACK + ".resources.RootResourceClient"),
                 is(aPublic().class_()
-                        .implementing(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource"))
+                        .implementing(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource"))
                 )
         );
         assertThat(
                 this.compiled.getClass(CLIENT_PACK + ".resources.MiddleResourceClient"),
                 is(aPublic().class_()
-                        .implementing(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource"))
+                        .implementing(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource"))
                 )
         );
         assertThat(
                 this.compiled.getClass(CLIENT_PACK + ".resources.FirstResourceClient"),
                 is(aPublic().class_()
-                        .implementing(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$FirstResource"))
+                        .implementing(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$FirstResource"))
                 )
         );
         assertThat(
                 this.compiled.getClass(CLIENT_PACK + ".resources.SecondResourceClient"),
                 is(aPublic().class_()
-                        .implementing(this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIClient$RootResource$MiddleResource$SecondResource"))
+                        .implementing(this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIClient$RootResource$MiddleResource$SecondResource"))
                 )
         );
     }
@@ -96,7 +96,7 @@ public class RequesterClientGeneratorBaseTest {
     @Test
     public void clientConstructor() throws Exception {
         assertThat(
-                this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIRequesterClient"),
+                this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient"),
                 is(aPublic().class_().with(aConstructor().withParameters(RequesterFactory.class, JsonFactory.class, String.class)))
         );
     }
@@ -107,7 +107,7 @@ public class RequesterClientGeneratorBaseTest {
         JsonFactory jsonFactory = new JsonFactory();
         String baseUrl = "https://path.to/me";
 
-        Object client = this.compiled.getClass(CLIENT_PACK + ".ResourcesWithoutMethodAPIRequesterClient")
+        Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
                 .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
