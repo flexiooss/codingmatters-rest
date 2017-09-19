@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.client.RequesterFactory;
@@ -60,7 +61,7 @@ public class ClientRequesterImplementation {
                 .addSuperinterface(clientInterface)
                 ;
 
-        this.addResourceConstructor(result);
+        this.addResourceConstructor(result, model.getApiV10().resources());
         this.addChildResourcesMethods(clientInterface, model.getApiV10().resources(), result);
 
 
@@ -85,7 +86,7 @@ public class ClientRequesterImplementation {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(clientInterface)
                 ;
-        this.addResourceConstructor(result);
+        this.addResourceConstructor(result, resource.resources());
 
         String resourceTypeName = this.naming.type(resource.displayName().value());
         for (Method method : resource.methods()) {
@@ -105,32 +106,50 @@ public class ClientRequesterImplementation {
         return result.build();
     }
 
-    private void addChildResourcesMethods(ClassName clientInterface, List<Resource> childResources, TypeSpec.Builder result) {
-        for (Resource childResource : childResources) {
-            result.addMethod(MethodSpec.methodBuilder(this.naming.property(childResource.displayName().value()))
-                    .addModifiers( Modifier.PUBLIC)
-                    .returns(clientInterface.nestedClass(this.naming.type(childResource.displayName().value())))
-                    .addStatement("return new $T(this.requesterFactory, this.jsonFactory, this.baseUrl)",
-                            ClassName.get(this.resourcePackage(), this.naming.type(childResource.displayName().value(), "Client"))
-                            )
-                    .build());
-        }
-    }
-
-    private void addResourceConstructor(TypeSpec.Builder result) {
+    private void addResourceConstructor(TypeSpec.Builder result, List<Resource> childResources) {
         result
-                .addField(ClassName.get(RequesterFactory.class), "requesterFactory")
-                .addField(ClassName.get(JsonFactory.class), "jsonFactory")
-                .addField(ClassName.get(String.class), "baseUrl");
+                .addField(ClassName.get(RequesterFactory.class), "requesterFactory", Modifier.PRIVATE, Modifier.FINAL)
+                .addField(ClassName.get(JsonFactory.class), "jsonFactory", Modifier.PRIVATE, Modifier.FINAL)
+                .addField(ClassName.get(String.class), "baseUrl", Modifier.PRIVATE, Modifier.FINAL);
 
-        result.addMethod(MethodSpec.constructorBuilder()
+        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get(RequesterFactory.class), "requesterFactory")
                 .addParameter(ClassName.get(JsonFactory.class), "jsonFactory")
                 .addParameter(ClassName.get(String.class), "baseUrl")
                 .addStatement("this.requesterFactory = requesterFactory")
                 .addStatement("this.jsonFactory = jsonFactory")
-                .addStatement("this.baseUrl = baseUrl")
-                .build());
+                .addStatement("this.baseUrl = baseUrl");
+
+        for (Resource childResource : childResources) {
+            ClassName childResourceType = this.resourceClientType(childResource);
+            String childResourceDelegate = this.resourceDelegateName(childResource);
+
+            result.addField(FieldSpec.builder(childResourceType, childResourceDelegate)
+                    .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                    .build());
+            constructorBuilder.addStatement("this.$N = new $T(this.requesterFactory, this.jsonFactory, this.baseUrl)", childResourceDelegate, childResourceType);
+        }
+
+        result.addMethod(constructorBuilder.build());
+    }
+
+
+    private void addChildResourcesMethods(ClassName clientInterface, List<Resource> childResources, TypeSpec.Builder result) {
+        for (Resource childResource : childResources) {
+            result.addMethod(MethodSpec.methodBuilder(this.naming.property(childResource.displayName().value()))
+                    .addModifiers( Modifier.PUBLIC)
+                    .returns(clientInterface.nestedClass(this.naming.type(childResource.displayName().value())))
+                    .addStatement("return this.$N", this.resourceDelegateName(childResource))
+                    .build());
+        }
+    }
+
+    private String resourceDelegateName(Resource childResource) {
+        return this.naming.property(childResource.displayName().value(), "Delegate");
+    }
+
+    private ClassName resourceClientType(Resource resource) {
+        return ClassName.get(this.resourcePackage(), this.naming.type(resource.displayName().value(), "Client"));
     }
 }
