@@ -42,11 +42,8 @@ public class RequesterClientGeneratorBaseTest {
         new ClientRequesterImplementation(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-//        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIClient.java");
         this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIRequesterClient.java");
         this.fileHelper.printFile(this.dir.getRoot(), "RootResourceClient.java");
-//        this.fileHelper.printFile(this.dir.getRoot(), "MiddleResourceClient.java");
-//        this.fileHelper.printFile(this.dir.getRoot(), "FirstResourceClient.java");
 
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
@@ -129,7 +126,5 @@ public class RequesterClientGeneratorBaseTest {
                 this.compiled.on(this.compiled.on(this.compiled.on(client).invoke("rootResource")).invoke("middleResource")).invoke("secondResource"),
                 is(notNullValue())
         );
-
-
     }
 }

@@ -72,7 +72,7 @@ public class ClientRequesterImplementation {
     private List<TypeSpec> resourceClasses(ClassName parentInterface, List<Resource> resources) {
         List<TypeSpec> results = new LinkedList<>();
         for (Resource resource : resources) {
-            ClassName clientInterface = parentInterface.nestedClass(this.naming.type(resource.displayName().value()));
+            ClassName clientInterface = parentInterface.nestedClass(this.resourceType(resource));
             TypeSpec resourceClass = this.resourceClass(clientInterface, resource);
             results.add(resourceClass);
             results.addAll(this.resourceClasses(clientInterface, resource.resources()));
@@ -88,10 +88,9 @@ public class ClientRequesterImplementation {
                 ;
         this.addResourceConstructor(result, resource.resources());
 
-        String resourceTypeName = this.naming.type(resource.displayName().value());
         for (Method method : resource.methods()) {
-            ClassName requestTypeName = ClassName.get(this.apiPackage, this.naming.type(resourceTypeName, method.method(), "Request"));
-            ClassName responseTypeName = ClassName.get(this.apiPackage, this.naming.type(resourceTypeName, method.method(), "Response"));
+            ClassName requestTypeName = this.resourceMethodRequestType(resource, method);
+            ClassName responseTypeName = this.resourceMethodResponseType(resource, method);
             result.addMethod(MethodSpec.methodBuilder(this.naming.property(method.method()))
                     .addModifiers( Modifier.PUBLIC)
                     .addParameter(requestTypeName, "request")
@@ -139,10 +138,14 @@ public class ClientRequesterImplementation {
         for (Resource childResource : childResources) {
             result.addMethod(MethodSpec.methodBuilder(this.naming.property(childResource.displayName().value()))
                     .addModifiers( Modifier.PUBLIC)
-                    .returns(clientInterface.nestedClass(this.naming.type(childResource.displayName().value())))
+                    .returns(clientInterface.nestedClass(this.resourceType(childResource)))
                     .addStatement("return this.$N", this.resourceDelegateName(childResource))
                     .build());
         }
+    }
+
+    private String resourceType(Resource resource) {
+        return this.naming.type(resource.displayName().value());
     }
 
     private String resourceDelegateName(Resource childResource) {
@@ -152,4 +155,13 @@ public class ClientRequesterImplementation {
     private ClassName resourceClientType(Resource resource) {
         return ClassName.get(this.resourcePackage(), this.naming.type(resource.displayName().value(), "Client"));
     }
+
+    private ClassName resourceMethodResponseType(Resource resource, Method method) {
+        return ClassName.get(this.apiPackage, this.naming.type(this.resourceType(resource), method.method(), "Response"));
+    }
+
+    private ClassName resourceMethodRequestType(Resource resource, Method method) {
+        return ClassName.get(this.apiPackage, this.naming.type(this.resourceType(resource), method.method(), "Request"));
+    }
+
 }
