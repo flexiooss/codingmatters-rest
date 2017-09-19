@@ -33,7 +33,7 @@ public class ClientRequesterImplementation {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
         this.dir = dir;
-        this.naming = new ResourceNaming(this.apiPackage, this.resourcePackage());
+        this.naming = new ResourceNaming(this.apiPackage, this.clientPackage);
     }
 
     public void generate(RamlModelResult model) throws IOException {
@@ -48,14 +48,10 @@ public class ClientRequesterImplementation {
         for (TypeSpec resource : resources) {
             writeJavaFile(
                     packageDir(this.dir, this.clientPackage),
-                    this.resourcePackage(),
+                    this.naming.resourcePackage(),
                     resource);
         }
 
-    }
-
-    private String resourcePackage() {
-        return this.clientPackage + ".resources";
     }
 
     private TypeSpec clientClass(ClassName clientInterface, RamlModelResult model) {
@@ -85,7 +81,7 @@ public class ClientRequesterImplementation {
     }
 
     private TypeSpec resourceClass(ClassName clientInterface, Resource resource) {
-        TypeSpec.Builder result = TypeSpec.classBuilder(this.naming.type(resource.displayName().value(), "Client"))
+        TypeSpec.Builder result = TypeSpec.classBuilder(this.naming.resourceClientType(resource))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(clientInterface)
                 ;

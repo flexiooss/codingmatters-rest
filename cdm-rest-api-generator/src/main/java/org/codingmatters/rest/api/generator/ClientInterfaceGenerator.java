@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -20,12 +20,13 @@ public class ClientInterfaceGenerator {
     private final String apiPackage;
     private final File dir;
 
-    private final Naming naming = new Naming();
+    private final ResourceNaming naming;
 
     public ClientInterfaceGenerator(String clientPackage, String apiPackage, File dir) {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
         this.dir = dir;
+        this.naming = new ResourceNaming(this.apiPackage, this.clientPackage);
     }
 
     public void generate(RamlModelResult model) throws IOException {
@@ -54,8 +55,8 @@ public class ClientInterfaceGenerator {
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
         for (Method method : resource.methods()) {
-            ClassName requestTypeName = ClassName.get(this.apiPackage, this.naming.type(resourceTypeName, method.method(), "Request"));
-            ClassName responseTypeName = ClassName.get(this.apiPackage, this.naming.type(resourceTypeName, method.method(), "Response"));
+            ClassName requestTypeName = this.naming.methodRequestType(method);
+            ClassName responseTypeName = this.naming.methodResponseType(method);
             resourceType.addMethod(MethodSpec.methodBuilder(this.naming.property(method.method()))
                     .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                     .addParameter(requestTypeName, "request")

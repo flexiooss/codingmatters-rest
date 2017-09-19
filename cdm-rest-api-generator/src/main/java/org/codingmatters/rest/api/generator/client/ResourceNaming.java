@@ -7,11 +7,16 @@ import org.raml.v2.api.model.v10.resources.Resource;
 
 public class ResourceNaming extends Naming {
     private final String apiPackage;
-    private final String resourcePackage;
+    private final String clientPackage;
 
-    public ResourceNaming(String apiPackage, String resourcePackage) {
+    public ResourceNaming(String apiPackage, String clientPackage) {
         this.apiPackage = apiPackage;
-        this.resourcePackage = resourcePackage;
+        this.clientPackage = clientPackage;
+    }
+
+
+    public String resourcePackage() {
+        return this.clientPackage + ".resources";
     }
 
     public String resourceType(Resource resource) {
@@ -23,7 +28,7 @@ public class ResourceNaming extends Naming {
     }
 
     public ClassName resourceClientType(Resource resource) {
-        return ClassName.get(this.resourcePackage, this.type(resource.displayName().value(), "Client"));
+        return ClassName.get(this.resourcePackage(), this.type(resource.displayName().value(), "Client"));
     }
 
     public ClassName methodResponseType(Method method) {
