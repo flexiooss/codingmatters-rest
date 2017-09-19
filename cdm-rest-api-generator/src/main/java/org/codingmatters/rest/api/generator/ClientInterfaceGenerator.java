@@ -60,6 +60,7 @@ public class ClientInterfaceGenerator {
                     .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                     .addParameter(requestTypeName, "request")
                     .returns(responseTypeName)
+                    .addException(IOException.class)
                     .build());
         }
 

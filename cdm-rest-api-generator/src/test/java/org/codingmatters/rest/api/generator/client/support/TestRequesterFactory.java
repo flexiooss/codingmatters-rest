@@ -35,6 +35,10 @@ public class TestRequesterFactory implements RequesterFactory {
     private final HashMap<Method, LinkedList<TestResponseDeleguate>> nextResponses = new HashMap<>();
     private final LinkedList<Call> calls = new LinkedList<>();
 
+    public TestRequesterFactory nextResponse(Method method, int code) {
+        return this.nextResponse(method, code, null, null);
+    }
+
     public TestRequesterFactory nextResponse(Method method, int code, byte[] body, Map<String, String> headers) {
         if(! this.nextResponses.containsKey(method)) {
             this.nextResponses.put(method, new LinkedList<>());
@@ -48,9 +52,11 @@ public class TestRequesterFactory implements RequesterFactory {
         return new TestRequester(url, this);
     }
 
-    public ResponseDelegate nextResponse(TestRequesterFactory.Method method) throws IOException {
+    protected ResponseDelegate nextResponse(Method method, TestRequester requester) throws IOException {
         try {
-            return this.nextResponses.getOrDefault(method, new LinkedList<>()).pop();
+            TestResponseDeleguate responseDeleguate = this.nextResponses.getOrDefault(method, new LinkedList<>()).pop();
+            this.calls.add(new Call(method, requester));
+            return responseDeleguate;
         } catch (NoSuchElementException e) {
             throw new IOException("no response was supposed to be returned for method " + method, e);
         }

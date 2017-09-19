@@ -57,7 +57,7 @@ public class TestRequester implements Requester {
 
     private ResponseDelegate nextResponse(TestRequesterFactory.Method method) throws IOException {
         try {
-            return this.factory.nextResponse(method);
+            return this.factory.nextResponse(method, this);
         } catch (NoSuchElementException e) {
             throw new IOException("no response was supposed to be returned for method " + method, e);
         }
@@ -78,7 +78,7 @@ public class TestRequester implements Requester {
     @Override
     public Requester path(String path) {
         this.path = path;
-        return null;
+        return this;
     }
 
 

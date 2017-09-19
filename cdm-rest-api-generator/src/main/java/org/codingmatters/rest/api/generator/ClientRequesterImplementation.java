@@ -5,8 +5,10 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -25,12 +27,13 @@ public class ClientRequesterImplementation {
     private final String apiPackage;
     private final File dir;
 
-    private final Naming naming = new Naming();
+    private final ResourceNaming naming;
 
     public ClientRequesterImplementation(String clientPackage, String apiPackage, File dir) {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
         this.dir = dir;
+        this.naming = new ResourceNaming(this.apiPackage, this.resourcePackage());
     }
 
     public void generate(RamlModelResult model) throws IOException {
@@ -72,7 +75,7 @@ public class ClientRequesterImplementation {
     private List<TypeSpec> resourceClasses(ClassName parentInterface, List<Resource> resources) {
         List<TypeSpec> results = new LinkedList<>();
         for (Resource resource : resources) {
-            ClassName clientInterface = parentInterface.nestedClass(this.resourceType(resource));
+            ClassName clientInterface = parentInterface.nestedClass(this.naming.resourceType(resource));
             TypeSpec resourceClass = this.resourceClass(clientInterface, resource);
             results.add(resourceClass);
             results.addAll(this.resourceClasses(clientInterface, resource.resources()));
@@ -89,20 +92,38 @@ public class ClientRequesterImplementation {
         this.addResourceConstructor(result, resource.resources());
 
         for (Method method : resource.methods()) {
-            ClassName requestTypeName = this.resourceMethodRequestType(resource, method);
-            ClassName responseTypeName = this.resourceMethodResponseType(resource, method);
-            result.addMethod(MethodSpec.methodBuilder(this.naming.property(method.method()))
-                    .addModifiers( Modifier.PUBLIC)
-                    .addParameter(requestTypeName, "request")
-                    .returns(responseTypeName)
-                    .addStatement("return null")
-                    .build());
+            this.addMethodCallMethod(result, method);
         }
-
 
         this.addChildResourcesMethods(clientInterface, resource.resources(), result);
 
         return result.build();
+    }
+
+    private void addMethodCallMethod(TypeSpec.Builder result, Method method) {
+        ClassName requestTypeName = this.naming.methodRequestType(method);
+        ClassName responseTypeName = this.naming.methodResponseType(method);
+
+        MethodSpec.Builder caller = MethodSpec.methodBuilder(this.naming.property(method.method()))
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(requestTypeName, "request")
+                .returns(responseTypeName)
+                .addException(IOException.class);
+
+        caller.addStatement("$T requester = this.requesterFactory\n" +
+                ".forBaseUrl(this.baseUrl)\n" +
+                ".path($S)",
+                Requester.class, method.resource().resourcePath());
+
+        caller.addStatement("$T response = requester.get()", ResponseDelegate.class);
+
+        caller.addStatement("$T.Builder resp = $T.builder()",
+                this.naming.methodResponseType(method),
+                this.naming.methodResponseType(method));
+        caller.addStatement("return resp.build()");
+
+
+        result.addMethod(caller.build());
     }
 
     private void addResourceConstructor(TypeSpec.Builder result, List<Resource> childResources) {
@@ -121,8 +142,8 @@ public class ClientRequesterImplementation {
                 .addStatement("this.baseUrl = baseUrl");
 
         for (Resource childResource : childResources) {
-            ClassName childResourceType = this.resourceClientType(childResource);
-            String childResourceDelegate = this.resourceDelegateName(childResource);
+            ClassName childResourceType = this.naming.resourceClientType(childResource);
+            String childResourceDelegate = this.naming.resourceDelegateName(childResource);
 
             result.addField(FieldSpec.builder(childResourceType, childResourceDelegate)
                     .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
@@ -138,30 +159,10 @@ public class ClientRequesterImplementation {
         for (Resource childResource : childResources) {
             result.addMethod(MethodSpec.methodBuilder(this.naming.property(childResource.displayName().value()))
                     .addModifiers( Modifier.PUBLIC)
-                    .returns(clientInterface.nestedClass(this.resourceType(childResource)))
-                    .addStatement("return this.$N", this.resourceDelegateName(childResource))
+                    .returns(clientInterface.nestedClass(this.naming.resourceType(childResource)))
+                    .addStatement("return this.$N", this.naming.resourceDelegateName(childResource))
                     .build());
         }
-    }
-
-    private String resourceType(Resource resource) {
-        return this.naming.type(resource.displayName().value());
-    }
-
-    private String resourceDelegateName(Resource childResource) {
-        return this.naming.property(childResource.displayName().value(), "Delegate");
-    }
-
-    private ClassName resourceClientType(Resource resource) {
-        return ClassName.get(this.resourcePackage(), this.naming.type(resource.displayName().value(), "Client"));
-    }
-
-    private ClassName resourceMethodResponseType(Resource resource, Method method) {
-        return ClassName.get(this.apiPackage, this.naming.type(this.resourceType(resource), method.method(), "Response"));
-    }
-
-    private ClassName resourceMethodRequestType(Resource resource, Method method) {
-        return ClassName.get(this.apiPackage, this.naming.type(this.resourceType(resource), method.method(), "Request"));
     }
 
 }

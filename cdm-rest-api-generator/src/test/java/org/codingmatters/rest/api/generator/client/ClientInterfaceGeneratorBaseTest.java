@@ -11,6 +11,8 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import java.io.IOException;
+
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.API_PACK;
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
@@ -102,6 +104,7 @@ public class ClientInterfaceGeneratorBaseTest {
                         aMethod().named("get")
                                 .withParameters(this.compiled.getClass(API_PACK + ".RootResourceGetRequest"))
                                 .returning(this.compiled.getClass(API_PACK + ".RootResourceGetResponse"))
+                                .throwing(IOException.class)
                 )
         );
     }

@@ -19,8 +19,7 @@ import static org.codingmatters.rest.api.generator.client.support.ClientGenerato
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aConstructor;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class RequesterClientGeneratorBaseTest {
@@ -42,8 +41,10 @@ public class RequesterClientGeneratorBaseTest {
         new ClientRequesterImplementation(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIRequesterClient.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIRequesterClient.java");
         this.fileHelper.printFile(this.dir.getRoot(), "RootResourceClient.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "FirstResourceClient.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "RootResourceGetRequest.java");
 
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
@@ -126,5 +127,66 @@ public class RequesterClientGeneratorBaseTest {
                 this.compiled.on(this.compiled.on(this.compiled.on(client).invoke("rootResource")).invoke("middleResource")).invoke("secondResource"),
                 is(notNullValue())
         );
+    }
+
+    @Test
+    public void rootResourceGet() throws Exception {
+        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        JsonFactory jsonFactory = new JsonFactory();
+        String baseUrl = "https://path.to/me";
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
+                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .newInstance(requesterFactory, jsonFactory, baseUrl);
+        Object resource = this.compiled.on(client).invoke("rootResource");
+
+        Object request = this.compiled
+                .on(this.compiled
+                        .onClass(API_PACK + ".RootResourceGetRequest")
+                        .invoke("builder"))
+                .invoke("build");
+
+        Object response = this.compiled.on(resource)
+                .invoke("get", this.compiled.getClass(API_PACK + ".RootResourceGetRequest"))
+                .with(request);
+
+        assertThat(response, is(notNullValue(this.compiled.getClass(API_PACK + ".RootResourceGetResponse"))));
+        assertThat(requesterFactory.calls(), hasSize(1));
+        assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
+        assertThat(requesterFactory.calls().get(0).requester().path(), is("/root"));
+    }
+
+    @Test
+    public void firstResourceGet() throws Exception {
+        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        JsonFactory jsonFactory = new JsonFactory();
+        String baseUrl = "https://path.to/me";
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
+                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .newInstance(requesterFactory, jsonFactory, baseUrl);
+        Object resource = this.compiled.on(this.compiled.on(this.compiled.on(client)
+                .invoke("rootResource"))
+                .invoke("middleResource"))
+                .invoke("firstResource");
+
+        Object request = this.compiled
+                .on(this.compiled
+                        .onClass(API_PACK + ".FirstResourceGetRequest")
+                        .invoke("builder"))
+                .invoke("build");
+
+        Object response = this.compiled.on(resource)
+                .invoke("get", this.compiled.getClass(API_PACK + ".FirstResourceGetRequest"))
+                .with(request);
+
+        assertThat(response, is(notNullValue(this.compiled.getClass(API_PACK + ".FirstResourceGetResponse"))));
+        assertThat(requesterFactory.calls(), hasSize(1));
+        assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
+        assertThat(requesterFactory.calls().get(0).requester().path(), is("/root/middle/leaf-1"));
     }
 }
