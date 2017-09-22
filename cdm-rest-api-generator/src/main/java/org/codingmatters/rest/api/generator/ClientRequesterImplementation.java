@@ -24,13 +24,15 @@ import static org.codingmatters.value.objects.generation.GenerationUtils.writeJa
 public class ClientRequesterImplementation {
     private final String clientPackage;
     private final String apiPackage;
+    private String typesPackage;
     private final File dir;
 
     private final ResourceNaming naming;
 
-    public ClientRequesterImplementation(String clientPackage, String apiPackage, File dir) {
+    public ClientRequesterImplementation(String clientPackage, String apiPackage, String typesPackage, File dir) {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
+        this.typesPackage = typesPackage;
         this.dir = dir;
         this.naming = new ResourceNaming(this.apiPackage, this.clientPackage);
     }
@@ -87,7 +89,7 @@ public class ClientRequesterImplementation {
         this.addResourceConstructor(result, resource.resources());
 
         for (Method method : resource.methods()) {
-            result.addMethod(new RequesterCaller(this.naming, method).caller());
+            result.addMethod(new RequesterCaller(this.typesPackage, this.naming, method).caller());
         }
 
         this.addChildResourcesMethods(clientInterface, resource.resources(), result);

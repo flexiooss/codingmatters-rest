@@ -15,8 +15,7 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
-import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.API_PACK;
-import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
+import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aConstructor;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.*;
@@ -38,7 +37,7 @@ public class RequesterClientGeneratorBaseTest {
         ClientGeneratorHelper.generateBase(raml, this.dir.getRoot());
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
-        new ClientRequesterImplementation(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
+        new ClientRequesterImplementation(CLIENT_PACK, API_PACK, TYPES_PACK, this.dir.getRoot()).generate(raml);
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
 //        this.fileHelper.printFile(this.dir.getRoot(), "SimpleResourceTreeAPIRequesterClient.java");
@@ -46,10 +45,7 @@ public class RequesterClientGeneratorBaseTest {
         this.fileHelper.printFile(this.dir.getRoot(), "FirstResourceClient.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "RootResourceGetRequest.java");
 
-        this.compiled = CompiledCode.builder()
-                .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
-                .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-client-api"))
-                .source(this.dir.getRoot()).compile();
+        this.compiled = ClientGeneratorHelper.compile(this.dir.getRoot());
 
     }
 
@@ -155,7 +151,7 @@ public class RequesterClientGeneratorBaseTest {
         assertThat(response, is(notNullValue(this.compiled.getClass(API_PACK + ".RootResourceGetResponse"))));
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
-        assertThat(requesterFactory.calls().get(0).requester().path(), is("/root"));
+        assertThat(requesterFactory.calls().get(0).path(), is("/root"));
     }
 
     @Test
@@ -187,6 +183,6 @@ public class RequesterClientGeneratorBaseTest {
         assertThat(response, is(notNullValue(this.compiled.getClass(API_PACK + ".FirstResourceGetResponse"))));
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
-        assertThat(requesterFactory.calls().get(0).requester().path(), is("/root/middle/leaf-1"));
+        assertThat(requesterFactory.calls().get(0).path(), is("/root/middle/leaf-1"));
     }
 }

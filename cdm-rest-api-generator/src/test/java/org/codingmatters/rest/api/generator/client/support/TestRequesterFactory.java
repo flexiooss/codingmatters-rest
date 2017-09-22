@@ -16,19 +16,49 @@ public class TestRequesterFactory implements RequesterFactory {
 
     static public class Call {
         private final Method method;
-        private final TestRequester requester;
+        private final String url;
+        private final String path;
+        private final HashMap<String, String> parameters;
+        private final HashMap<String, String> headers;
+        private final String requestContentType;
+        private final byte [] requestBody;
 
-        public Call(Method method, TestRequester requester) {
+        public Call(Method method, String url, String path, HashMap<String, String> parameters, HashMap<String, String> headers, String requestContentType, byte[] requestBody) {
             this.method = method;
-            this.requester = requester;
+            this.url = url;
+            this.path = path;
+            this.parameters = parameters;
+            this.headers = headers;
+            this.requestContentType = requestContentType;
+            this.requestBody = requestBody;
         }
 
         public Method method() {
             return method;
         }
 
-        public TestRequester requester() {
-            return requester;
+        public String url() {
+            return url;
+        }
+
+        public String path() {
+            return path;
+        }
+
+        public HashMap<String, String> parameters() {
+            return parameters;
+        }
+
+        public HashMap<String, String> headers() {
+            return headers;
+        }
+
+        public String requestContentType() {
+            return requestContentType;
+        }
+
+        public byte[] requestBody() {
+            return requestBody;
         }
     }
 
@@ -55,15 +85,14 @@ public class TestRequesterFactory implements RequesterFactory {
     protected ResponseDelegate nextResponse(Method method, TestRequester requester) throws IOException {
         try {
             TestResponseDeleguate responseDeleguate = this.nextResponses.getOrDefault(method, new LinkedList<>()).pop();
-            this.calls.add(new Call(method, requester));
             return responseDeleguate;
         } catch (NoSuchElementException e) {
             throw new IOException("no response was supposed to be returned for method " + method, e);
         }
     }
 
-    public TestRequesterFactory called(Method method, TestRequester requester) {
-        this.calls.add(new Call(method, requester));
+    public TestRequesterFactory called(Call call) {
+        this.calls.add(call);
         return this;
     }
 

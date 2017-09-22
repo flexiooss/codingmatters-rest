@@ -11,7 +11,6 @@ import static org.codingmatters.rest.api.generator.client.support.TestRequesterF
 
 
 public class TestRequester implements Requester {
-
     private final TestRequesterFactory factory;
 
     private final String url;
@@ -27,36 +26,37 @@ public class TestRequester implements Requester {
 
     @Override
     public ResponseDelegate get() throws IOException {
-        return this.nextResponse(GET);
+        return this.nextResponse(GET, null, null);
     }
 
     @Override
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
-        return this.nextResponse(POST);
+        return this.nextResponse(POST, contentType, body);
     }
 
     @Override
     public ResponseDelegate put(String contentType, byte[] body) throws IOException {
-        return this.nextResponse(PUT);
+        return this.nextResponse(PUT, contentType, body);
     }
 
     @Override
     public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
-        return this.nextResponse(PATCH);
+        return this.nextResponse(PATCH, contentType, body);
     }
 
     @Override
     public ResponseDelegate delete() throws IOException {
-        return this.nextResponse(DELETE);
+        return this.nextResponse(DELETE, null, null);
     }
 
     @Override
     public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
-        return this.nextResponse(DELETE);
+        return this.nextResponse(DELETE, contentType, body);
     }
 
-    private ResponseDelegate nextResponse(TestRequesterFactory.Method method) throws IOException {
+    private ResponseDelegate nextResponse(TestRequesterFactory.Method method, String requestContentType, byte [] requestBody) throws IOException {
         try {
+            this.factory.called(new TestRequesterFactory.Call(method, this.url, this.path, new HashMap<>(this.parameters), new HashMap<>(this.headers), requestContentType, requestBody));
             return this.factory.nextResponse(method, this);
         } catch (NoSuchElementException e) {
             throw new IOException("no response was supposed to be returned for method " + method, e);
@@ -81,25 +81,4 @@ public class TestRequester implements Requester {
         return this;
     }
 
-
-
-    public TestRequesterFactory factory() {
-        return factory;
-    }
-
-    public String url() {
-        return url;
-    }
-
-    public String path() {
-        return path;
-    }
-
-    public HashMap<String, String> parameters() {
-        return parameters;
-    }
-
-    public HashMap<String, String> headers() {
-        return headers;
-    }
 }
