@@ -4,10 +4,9 @@ import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import static org.codingmatters.rest.api.generator.client.support.TestRequesterFactory.Method.*;
 
@@ -17,7 +16,7 @@ public class TestRequester implements Requester {
 
     private final String url;
     private String path;
-    private HashMap<String, String> parameters = new HashMap();
+    private HashMap<String, String[]> parameters = new HashMap();
     private HashMap<String, String> headers = new HashMap<>();
 
 
@@ -67,31 +66,27 @@ public class TestRequester implements Requester {
 
     @Override
     public Requester parameter(String name, String value) {
-        this.parameters.put(name, value);
+        this.parameters.put(name, new String[]{value});
         return this;
     }
 
     @Override
     public Requester parameter(String name, String[] value) {
-        this.parameters.put(name, value != null ? Arrays.stream(value).collect(Collectors.joining(",")) : null);
+        this.parameters.put(name, value);
         return this;
     }
 
     @Override
     public Requester parameter(String name, Iterable<String> value) {
         if(value != null) {
-            boolean started = false;
-            StringBuilder v = new StringBuilder();
-            for (String val : value) {
-                if(started) {
-                    v.append(",");
-                }
-                v.append(val);
-                started = true;
+            LinkedList<String> params = new LinkedList<>();
+            for (String v : value) {
+                params.add(v);
             }
-            return this.parameter(name, v.toString());
+
+            return this.parameter(name, params.toArray(new String[params.size()]));
         }
-        return this.parameter(name, (String)null);
+        return this.parameter(name, new String[0]);
     }
 
     @Override

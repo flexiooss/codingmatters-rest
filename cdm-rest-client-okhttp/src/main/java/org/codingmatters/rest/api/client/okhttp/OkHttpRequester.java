@@ -10,10 +10,9 @@ import org.codingmatters.rest.api.client.ResponseDelegate;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 public class OkHttpRequester implements Requester {
 
@@ -21,7 +20,7 @@ public class OkHttpRequester implements Requester {
     private final String baseUrl;
 
     private String path = "/";
-    private final TreeMap<String, String> queryParameters = new TreeMap<>();
+    private final TreeMap<String, String[]> parameters = new TreeMap<>();
     private final TreeMap<String, String> headers = new TreeMap<>();
 
 
@@ -66,32 +65,30 @@ public class OkHttpRequester implements Requester {
     }
 
 
+
+    @Override
     public Requester parameter(String name, String value) {
-        this.queryParameters.put(name, value);
+        this.parameters.put(name, new String[]{value});
         return this;
     }
 
     @Override
     public Requester parameter(String name, String[] value) {
-        this.parameter(name, value != null ? Arrays.stream(value).collect(Collectors.joining(",")) : null);
+        this.parameters.put(name, value);
         return this;
     }
 
     @Override
     public Requester parameter(String name, Iterable<String> value) {
         if(value != null) {
-            boolean started = false;
-            StringBuilder v = new StringBuilder();
-            for (String val : value) {
-                if(started) {
-                    v.append(",");
-                }
-                v.append(val);
-                started = true;
+            LinkedList<String> params = new LinkedList<>();
+            for (String v : value) {
+                params.add(v);
             }
-            return this.parameter(name, v.toString());
+
+            return this.parameter(name, params.toArray(new String[params.size()]));
         }
-        return this.parameter(name, (String)null);
+        return this.parameter(name, new String[0]);
     }
 
     public Requester header(String name, String value) {
@@ -107,8 +104,8 @@ public class OkHttpRequester implements Requester {
     protected String path() {
         return path;
     }
-    protected TreeMap<String, String> parameters() {
-        return queryParameters;
+    protected TreeMap<String, String[]> parameters() {
+        return parameters;
     }
     protected TreeMap<String, String> headers() {
         return headers;
@@ -120,16 +117,18 @@ public class OkHttpRequester implements Requester {
         String url = this.baseUrl + this.path();
 
         boolean first = true;
-        for (Map.Entry<String, String> queryParameterEntry : this.parameters().entrySet()) {
-            if(first) {
-                url += "?";
-                first = false;
-            } else {
-                url += "&";
+        for (Map.Entry<String, String[]> queryParameterEntry : this.parameters().entrySet()) {
+            for (String queryParameterValue : queryParameterEntry.getValue()) {
+                if(first) {
+                    url += "?";
+                    first = false;
+                } else {
+                    url += "&";
+                }
+                url += this.encode(queryParameterEntry.getKey());
+                url += "=";
+                url += queryParameterEntry.getValue() != null ? this.encode(queryParameterValue) : "null";
             }
-            url += this.encode(queryParameterEntry.getKey());
-            url += "=";
-            url += queryParameterEntry.getValue() != null ? this.encode(queryParameterEntry.getValue()) : "null";
         }
 
         Request.Builder result = new Request.Builder().url(url);

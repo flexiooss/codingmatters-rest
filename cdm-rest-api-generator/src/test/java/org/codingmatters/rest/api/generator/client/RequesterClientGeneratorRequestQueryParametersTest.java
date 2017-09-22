@@ -7,8 +7,7 @@ import org.junit.Test;
 
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.API_PACK;
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class RequesterClientGeneratorRequestQueryParametersTest extends AbstractRequesterClientGeneratorRequestTest {
@@ -41,7 +40,7 @@ public class RequesterClientGeneratorRequestQueryParametersTest extends Abstract
 
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
-        assertThat(requesterFactory.calls().get(0).parameters().get("stringParam"), is("val"));
-        assertThat(requesterFactory.calls().get(0).parameters().get("stringArrayParam"), is("v1,v2"));
+        assertThat(requesterFactory.calls().get(0).parameters().get("stringParam"), is(arrayContaining("val")));
+        assertThat(requesterFactory.calls().get(0).parameters().get("stringArrayParam"), is(arrayContaining("v1", "v2")));
     }
 }
