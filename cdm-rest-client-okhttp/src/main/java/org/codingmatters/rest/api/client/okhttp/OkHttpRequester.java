@@ -10,8 +10,10 @@ import org.codingmatters.rest.api.client.ResponseDelegate;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class OkHttpRequester implements Requester {
 
@@ -67,6 +69,29 @@ public class OkHttpRequester implements Requester {
     public Requester parameter(String name, String value) {
         this.queryParameters.put(name, value);
         return this;
+    }
+
+    @Override
+    public Requester parameter(String name, String[] value) {
+        this.parameter(name, value != null ? Arrays.stream(value).collect(Collectors.joining(",")) : null);
+        return this;
+    }
+
+    @Override
+    public Requester parameter(String name, Iterable<String> value) {
+        if(value != null) {
+            boolean started = false;
+            StringBuilder v = new StringBuilder();
+            for (String val : value) {
+                if(started) {
+                    v.append(",");
+                }
+                v.append(val);
+                started = true;
+            }
+            return this.parameter(name, v.toString());
+        }
+        return this.parameter(name, (String)null);
     }
 
     public Requester header(String name, String value) {

@@ -11,6 +11,8 @@ public interface Requester {
     ResponseDelegate delete(String contentType, byte[] body) throws IOException;
 
     Requester parameter(String name, String value);
+    Requester parameter(String name, String[] value);
+    Requester parameter(String name, Iterable<String> value);
     Requester header(String name, String value);
     Requester path(String path);
 }

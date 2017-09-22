@@ -31,10 +31,35 @@ public class RequesterCaller {
                 .returns(this.responseType())
                 .addException(IOException.class);
 
-        caller.addStatement("$T requester = this.requesterFactory\n" +
+        caller.addStatement(
+                "$T requester = this.requesterFactory\n" +
                         ".forBaseUrl(this.baseUrl)\n" +
                         ".path($S)",
                 Requester.class, method.resource().resourcePath());
+
+        this.prepareParameters(caller);
+        this.makeRequest(caller);
+
+        caller.addStatement("$T.Builder resp = $T.builder()",
+                responseType(),
+                responseType());
+        caller.addStatement("return resp.build()");
+
+        return caller.build();
+    }
+
+    private void prepareParameters(MethodSpec.Builder caller) {
+        for (TypeDeclaration param : this.method.queryParameters()) {
+            caller
+                    .beginControlFlow("if(request.$L() != null)", this.naming.property(param.name()))
+                        .addStatement("requester.parameter($S, request.$L())", param.name(), this.naming.property(param.name()))
+                    .endControlFlow()
+            ;
+        }
+
+    }
+
+    private void makeRequest(MethodSpec.Builder caller) {
         if(this.method.method().equals("get") || this.method.method().equals("delete")) {
             caller.addStatement("$T response = requester.$L()", ResponseDelegate.class, this.method.method());
         } else {
@@ -69,13 +94,6 @@ public class RequesterCaller {
             caller.endControlFlow();
             caller.addStatement("$T response = requester.$L($S, requestBody)", ResponseDelegate.class, this.method.method(), "application/json");
         }
-
-        caller.addStatement("$T.Builder resp = $T.builder()",
-                responseType(),
-                responseType());
-        caller.addStatement("return resp.build()");
-
-        return caller.build();
     }
 
     private String callerName() {
