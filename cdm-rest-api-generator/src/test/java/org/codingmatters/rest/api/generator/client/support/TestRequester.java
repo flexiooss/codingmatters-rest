@@ -65,12 +65,6 @@ public class TestRequester implements Requester {
     }
 
     @Override
-    public Requester parameter(String name, String value) {
-        this.parameters.put(name, new String[]{value});
-        return this;
-    }
-
-    @Override
     public Requester parameter(String name, String[] value) {
         this.parameters.put(name, value);
         return this;

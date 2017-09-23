@@ -64,14 +64,6 @@ public class OkHttpRequester implements Requester {
         return new OkHttpResponseDelegate(this.client.newCall(request).execute());
     }
 
-
-
-    @Override
-    public Requester parameter(String name, String value) {
-        this.parameters.put(name, new String[]{value});
-        return this;
-    }
-
     @Override
     public Requester parameter(String name, String[] value) {
         this.parameters.put(name, value);
