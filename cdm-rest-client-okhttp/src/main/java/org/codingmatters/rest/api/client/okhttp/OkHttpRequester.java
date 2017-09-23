@@ -21,7 +21,7 @@ public class OkHttpRequester implements Requester {
 
     private String path = "/";
     private final TreeMap<String, String[]> parameters = new TreeMap<>();
-    private final TreeMap<String, String> headers = new TreeMap<>();
+    private final TreeMap<String, String[]> headers = new TreeMap<>();
 
 
     public OkHttpRequester(OkHttpClient client, String url) {
@@ -65,6 +65,11 @@ public class OkHttpRequester implements Requester {
     }
 
     @Override
+    public Requester parameter(String name, String value) {
+        return this.parameter(name, new String[] {value});
+    }
+
+    @Override
     public Requester parameter(String name, String[] value) {
         this.parameters.put(name, value);
         return this;
@@ -83,11 +88,6 @@ public class OkHttpRequester implements Requester {
         return this.parameter(name, new String[0]);
     }
 
-    public Requester header(String name, String value) {
-        this.headers.put(name, value);
-        return this;
-    }
-
     public Requester path(String path) {
         this.path = path;
         return this;
@@ -99,8 +99,30 @@ public class OkHttpRequester implements Requester {
     protected TreeMap<String, String[]> parameters() {
         return parameters;
     }
-    protected TreeMap<String, String> headers() {
-        return headers;
+
+    @Override
+    public Requester header(String name, String value) {
+        return this.header(name, new String[] {value});
+    }
+
+    @Override
+    public Requester header(String name, String [] value) {
+        this.headers.put(name, value);
+        return this;
+    }
+
+    @Override
+    public Requester header(String name, Iterable<String> value) {
+        if(value != null) {
+            LinkedList<String> params = new LinkedList<>();
+            for (String v : value) {
+                params.add(v);
+            }
+
+            return this.header(name, params.toArray(new String[params.size()]));
+        } else {
+            return this.header(name, new String[0]);
+        }
     }
 
 
@@ -125,8 +147,12 @@ public class OkHttpRequester implements Requester {
 
         Request.Builder result = new Request.Builder().url(url);
 
-        for (Map.Entry<String, String> headerEntry : this.headers().entrySet()) {
-            result.header(headerEntry.getKey(), headerEntry.getValue());
+        for (Map.Entry<String, String[]> headerEntry : this.headers.entrySet()) {
+            if(headerEntry.getValue() != null) {
+                for (String value : headerEntry.getValue()) {
+                    result.header(headerEntry.getKey(), value);
+                }
+            }
         }
 
         return result;

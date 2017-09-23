@@ -19,11 +19,11 @@ public class TestRequesterFactory implements RequesterFactory {
         private final String url;
         private final String path;
         private final HashMap<String, String[]> parameters;
-        private final HashMap<String, String> headers;
+        private final HashMap<String, String[]> headers;
         private final String requestContentType;
         private final byte [] requestBody;
 
-        public Call(Method method, String url, String path, HashMap<String, String[]> parameters, HashMap<String, String> headers, String requestContentType, byte[] requestBody) {
+        public Call(Method method, String url, String path, HashMap<String, String[]> parameters, HashMap<String, String[]> headers, String requestContentType, byte[] requestBody) {
             this.method = method;
             this.url = url;
             this.path = path;
@@ -49,7 +49,7 @@ public class TestRequesterFactory implements RequesterFactory {
             return parameters;
         }
 
-        public HashMap<String, String> headers() {
+        public HashMap<String, String[]> headers() {
             return headers;
         }
 

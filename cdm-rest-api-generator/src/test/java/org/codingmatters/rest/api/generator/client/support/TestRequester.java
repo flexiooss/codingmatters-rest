@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 import static org.codingmatters.rest.api.generator.client.support.TestRequesterFactory.Method.*;
 
@@ -16,8 +17,8 @@ public class TestRequester implements Requester {
 
     private final String url;
     private String path;
-    private HashMap<String, String[]> parameters = new HashMap();
-    private HashMap<String, String> headers = new HashMap<>();
+    private TreeMap<String, String[]> parameters = new TreeMap<>();
+    private TreeMap<String, String[]> headers = new TreeMap<>();
 
 
     public TestRequester(String url, TestRequesterFactory factory) {
@@ -64,6 +65,12 @@ public class TestRequester implements Requester {
         }
     }
 
+
+    @Override
+    public Requester parameter(String name, String value) {
+        return this.parameter(name, new String[] {value});
+    }
+
     @Override
     public Requester parameter(String name, String[] value) {
         this.parameters.put(name, value);
@@ -79,14 +86,34 @@ public class TestRequester implements Requester {
             }
 
             return this.parameter(name, params.toArray(new String[params.size()]));
+        } else {
+            return this.parameter(name, new String[0]);
         }
-        return this.parameter(name, new String[0]);
     }
 
     @Override
     public Requester header(String name, String value) {
+        return this.header(name, new String[] {value});
+    }
+
+    @Override
+    public Requester header(String name, String [] value) {
         this.headers.put(name, value);
         return this;
+    }
+
+    @Override
+    public Requester header(String name, Iterable<String> value) {
+        if(value != null) {
+            LinkedList<String> params = new LinkedList<>();
+            for (String v : value) {
+                params.add(v);
+            }
+
+            return this.header(name, params.toArray(new String[params.size()]));
+        } else {
+            return this.header(name, new String[0]);
+        }
     }
 
     @Override
