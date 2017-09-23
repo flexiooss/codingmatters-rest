@@ -33,10 +33,10 @@ public class RequesterCaller {
 
         caller.addStatement(
                 "$T requester = this.requesterFactory\n" +
-                        ".forBaseUrl(this.baseUrl)\n" +
-                        ".path($S)",
-                Requester.class, method.resource().resourcePath());
+                        ".forBaseUrl(this.baseUrl)",
+                Requester.class);
 
+        this.preparePath(caller);
         this.prepareParameters(caller);
         this.prepareHeaders(caller);
         this.makeRequest(caller);
@@ -47,6 +47,22 @@ public class RequesterCaller {
         caller.addStatement("return resp.build()");
 
         return caller.build();
+    }
+
+    private void preparePath(MethodSpec.Builder caller) {
+        caller.addStatement("String path = $S", this.method.resource().resourcePath());
+        for (TypeDeclaration param : this.method.resource().uriParameters()) {
+            if(param instanceof ArrayTypeDeclaration) {
+                caller.beginControlFlow("for($T element : request.$L())", String.class, this.naming.property(param.name()))
+                        .addStatement("path = path.replaceFirst($S, element)", "\\{" + param.name() + "\\}")
+                        .endControlFlow();
+            } else {
+                caller.addStatement("path = path.replaceFirst($S, request.$L())",
+                        "\\{" + param.name() + "\\}",
+                        this.naming.property(param.name()));
+            }
+        }
+        caller.addStatement("requester.path(path)");
     }
 
     private void prepareParameters(MethodSpec.Builder caller) {
