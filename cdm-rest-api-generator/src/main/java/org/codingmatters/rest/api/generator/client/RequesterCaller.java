@@ -38,6 +38,7 @@ public class RequesterCaller {
                 Requester.class, method.resource().resourcePath());
 
         this.prepareParameters(caller);
+        this.prepareHeaders(caller);
         this.makeRequest(caller);
 
         caller.addStatement("$T.Builder resp = $T.builder()",
@@ -56,7 +57,16 @@ public class RequesterCaller {
                     .endControlFlow()
             ;
         }
+    }
 
+    private void prepareHeaders(MethodSpec.Builder caller) {
+        for (TypeDeclaration param : this.method.headers()) {
+            caller
+                    .beginControlFlow("if(request.$L() != null)", this.naming.property(param.name()))
+                    .addStatement("requester.header($S, request.$L())", param.name(), this.naming.property(param.name()))
+                    .endControlFlow()
+            ;
+        }
     }
 
     private void makeRequest(MethodSpec.Builder caller) {
