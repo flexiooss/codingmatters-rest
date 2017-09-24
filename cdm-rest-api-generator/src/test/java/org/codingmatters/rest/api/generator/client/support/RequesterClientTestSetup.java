@@ -1,31 +1,32 @@
-package org.codingmatters.rest.api.generator.client;
+package org.codingmatters.rest.api.generator.client.support;
 
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.rest.api.generator.ClientRequesterImplementation;
-import org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 
-public abstract class AbstractRequesterClientGeneratorTest {
+public class RequesterClientTestSetup extends ExternalResource {
 
-    @Rule
-    public TemporaryFolder dir = new TemporaryFolder();
-
-    @Rule
-    public FileHelper fileHelper = new FileHelper();
-
+    private final String ramlResource;
+    private final TemporaryFolder dir;
+    private final FileHelper fileHelper;
     private CompiledCode compiled;
 
-    @Before
-    public void setUp() throws Exception {
-        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("processor/processor-request.raml"));
+    public RequesterClientTestSetup(String ramlResource, TemporaryFolder dir, FileHelper fileHelper) {
+        this.ramlResource = ramlResource;
+        this.dir = dir;
+        this.fileHelper = fileHelper;
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource(this.ramlResource));
         ClientGeneratorHelper.generateBase(raml, this.dir.getRoot());
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
@@ -38,6 +39,10 @@ public abstract class AbstractRequesterClientGeneratorTest {
 
         this.compiled = ClientGeneratorHelper.compile(this.dir.getRoot());
     }
+
+    @Override
+    protected void after() {}
+
 
     public CompiledCode compiled() {
         return compiled;

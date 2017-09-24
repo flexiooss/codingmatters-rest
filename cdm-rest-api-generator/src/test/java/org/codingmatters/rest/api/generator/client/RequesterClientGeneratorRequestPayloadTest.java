@@ -2,15 +2,29 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.generator.client.support.RequesterClientTestSetup;
 import org.codingmatters.rest.api.generator.client.support.TestRequesterFactory;
+import org.codingmatters.tests.compile.FileHelper;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TemporaryFolder;
 
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RequesterClientGeneratorRequestPayloadTest extends AbstractRequesterClientGeneratorTest {
+public class RequesterClientGeneratorRequestPayloadTest {
+    public TemporaryFolder dir = new TemporaryFolder();
+    public FileHelper fileHelper = new FileHelper();
+    public RequesterClientTestSetup testSetup = new RequesterClientTestSetup("processor/processor-request.raml", this.dir, this.fileHelper);
+
+    @Rule
+    public RuleChain chain= RuleChain
+            .outerRule(this.dir)
+            .around(this.fileHelper)
+            .around(this.testSetup);
 
     @Test
     public void payload() throws Exception {
@@ -20,23 +34,23 @@ public class RequesterClientGeneratorRequestPayloadTest extends AbstractRequeste
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.POST, 200);
 
-        Object client = this.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
+        Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
                 .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
-        Object resource = this.compiled().on(client).invoke("payload");
+        Object resource = this.testSetup.compiled().on(client).invoke("payload");
 
-        Object requestBuilder = this.compiled()
+        Object requestBuilder = this.testSetup.compiled()
                 .onClass(API_PACK + ".PayloadPostRequest")
                 .invoke("builder");
-        Object req = this.compiled().on(this.compiled().on(this.compiled().onClass(TYPES_PACK + ".Req").invoke("builder"))
+        Object req = this.testSetup.compiled().on(this.testSetup.compiled().on(this.testSetup.compiled().onClass(TYPES_PACK + ".Req").invoke("builder"))
                 .invoke("prop", String.class).with("val")).invoke("build");
-        this.compiled().on(requestBuilder).invoke("payload", this.compiled().getClass(TYPES_PACK + ".Req")).with(req);
+        this.testSetup.compiled().on(requestBuilder).invoke("payload", this.testSetup.compiled().getClass(TYPES_PACK + ".Req")).with(req);
 
-        Object request = this.compiled().on(requestBuilder).invoke("build");
+        Object request = this.testSetup.compiled().on(requestBuilder).invoke("build");
 
-        this.compiled().on(resource)
-                .invoke("post", this.compiled().getClass(API_PACK + ".PayloadPostRequest"))
+        this.testSetup.compiled().on(resource)
+                .invoke("post", this.testSetup.compiled().getClass(API_PACK + ".PayloadPostRequest"))
                 .with(request);
 
         assertThat(requesterFactory.calls(), hasSize(1));
