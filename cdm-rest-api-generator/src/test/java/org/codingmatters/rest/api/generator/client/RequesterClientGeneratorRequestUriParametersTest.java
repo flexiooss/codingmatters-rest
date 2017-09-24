@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RequesterClientGeneratorRequestUriParametersTest extends AbstractRequesterClientGeneratorRequestTest {
+public class RequesterClientGeneratorRequestUriParametersTest extends AbstractRequesterClientGeneratorTest {
     @Test
     public void uriParams() throws Exception {
         TestRequesterFactory requesterFactory = new TestRequesterFactory();

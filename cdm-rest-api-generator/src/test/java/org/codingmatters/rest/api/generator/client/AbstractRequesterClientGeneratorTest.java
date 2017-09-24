@@ -13,7 +13,7 @@ import org.raml.v2.api.RamlModelResult;
 
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 
-public abstract class AbstractRequesterClientGeneratorRequestTest {
+public abstract class AbstractRequesterClientGeneratorTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();

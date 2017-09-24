@@ -10,7 +10,7 @@ import static org.codingmatters.rest.api.generator.client.support.ClientGenerato
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class RequesterClientGeneratorRequestHeadersTest extends AbstractRequesterClientGeneratorRequestTest {
+public class RequesterClientGeneratorRequestHeadersTest extends AbstractRequesterClientGeneratorTest {
     @Test
     public void headers() throws Exception {
         TestRequesterFactory requesterFactory = new TestRequesterFactory();
