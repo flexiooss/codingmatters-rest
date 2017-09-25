@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
+import org.raml.v2.api.model.v10.system.types.StatusCodeString;
 
 public class ResourceNaming extends Naming {
     private final String apiPackage;
@@ -37,5 +38,13 @@ public class ResourceNaming extends Naming {
 
     public ClassName methodRequestType(Method method) {
         return ClassName.get(this.apiPackage, this.type(this.resourceType(method.resource()), method.method(), "Request"));
+    }
+
+    public ClassName methodResponseStatusType(Method method, StatusCodeString status) {
+        method.resource();
+        method.method();
+
+        String pack = this.apiPackage + "." + this.type(this.resourceType(method.resource()), method.method(), "Response").toLowerCase();
+        return ClassName.get(pack, this.type("Status", status.value()));
     }
 }

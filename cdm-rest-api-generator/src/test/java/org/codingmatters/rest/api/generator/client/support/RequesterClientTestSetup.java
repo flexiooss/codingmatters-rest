@@ -32,11 +32,6 @@ public class RequesterClientTestSetup extends ExternalResource {
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);
         new ClientRequesterImplementation(CLIENT_PACK, API_PACK, TYPES_PACK, this.dir.getRoot()).generate(raml);
 
-        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIRequesterClient.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "PayloadClient.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "PayloadPostRequest.java");
-
         this.compiled = ClientGeneratorHelper.compile(this.dir.getRoot());
     }
 

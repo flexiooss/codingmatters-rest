@@ -5,6 +5,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -44,6 +45,9 @@ public class RequesterCaller {
         caller.addStatement("$T.Builder resp = $T.builder()",
                 responseType(),
                 responseType());
+
+        this.parseResponse(caller);
+
         caller.addStatement("return resp.build()");
 
         return caller.build();
@@ -120,6 +124,20 @@ public class RequesterCaller {
             caller.endControlFlow();
             caller.addStatement("$T response = requester.$L($S, requestBody)", ResponseDelegate.class, this.method.method(), "application/json");
         }
+    }
+
+    private void parseResponse(MethodSpec.Builder caller) {
+        for (Response response : this.method.responses()) {
+            caller.beginControlFlow("if(response.code() == $L)", response.code().value());
+
+            caller.addStatement("$T.Builder responseBuilder = $T.builder()",
+                    this.naming.methodResponseStatusType(this.method, response.code()),
+                    this.naming.methodResponseStatusType(this.method, response.code())
+            );
+            caller.addStatement("resp.$L(responseBuilder.build())", "status" + response.code().value());
+            caller.endControlFlow();
+        }
+
     }
 
     private String callerName() {
