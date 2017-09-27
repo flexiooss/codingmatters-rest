@@ -48,39 +48,34 @@ public class RequesterClientGeneratorResponsePayloadTest {
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200, "{\"prop\":\"value\"}".getBytes("UTF-8"));
 
-        Object client = this.support.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
-                .newInstance(requesterFactory, jsonFactory, baseUrl);
+        ObjectHelper resource = this.classes.get(c(CLIENT_PACK + ".TestAPIRequesterClient"))
+                .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
+                .with(requesterFactory, jsonFactory, baseUrl)
+                    .call("payload");
 
-        Object resource = this.support.compiled().on(client).invoke("payload");
-
-        Object requestBuilder = this.support.compiled()
-                .onClass(API_PACK + ".PayloadGetRequest")
-                .invoke("builder");
-        Object request = this.support.compiled().on(requestBuilder).invoke("build");
-
-        Object response = this.support.compiled().on(resource)
-                .invoke("get", this.support.compiled().getClass(API_PACK + ".PayloadGetRequest"))
-                .with(request);
+        ObjectHelper response = resource.
+                call("get", c(API_PACK + ".PayloadGetRequest"))
+                .with(this.classes.get(API_PACK + ".PayloadGetRequest")
+                        .call("builder")
+                        .call("build")
+                        .get());
 
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
         assertThat(requesterFactory.calls().get(0).path(), is("/payload"));
 
-        Object status200 = this.support.compiled().on(response).castedTo(API_PACK + ".PayloadGetResponse").invoke("status200");
+        ObjectHelper status200 = response.as(API_PACK + ".PayloadGetResponse").call("status200");
         assertThat(
-                status200,
+                status200.get(),
                 is(notNullValue(this.support.compiled().getClass(API_PACK + ".PayloadGetResponse")))
         );
 
-        Object payload = this.support.compiled().on(status200).castedTo(API_PACK + ".payloadgetresponse.Status200").invoke("payload");
+        ObjectHelper payload = status200.as(API_PACK + ".payloadgetresponse.Status200").call("payload");
         assertThat(
-                this.support.compiled().on(payload).castedTo(Object.class.getName()).invoke("toString"),
+                payload.as(Object.class).call("toString").get(),
                 is("Resp{prop=value}")
         );
     }
-
-
 
     @Test
     public void payloadList() throws Exception {
@@ -93,7 +88,7 @@ public class RequesterClientGeneratorResponsePayloadTest {
 
         ObjectHelper resource =
                 this.classes.get(CLIENT_PACK + ".TestAPIRequesterClient")
-                    .newInstance(c(RequesterFactory.class), c(JsonFactory.class), c(String.class))
+                    .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
                     .with(requesterFactory, jsonFactory, baseUrl)
                 .call("payloadList");
 
