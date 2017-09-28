@@ -152,10 +152,11 @@ public class RequesterCaller {
                         this.naming.property(headerType.name()),
                         headerType.name());
             } else {
-                caller.addStatement("$T[] headers = response.header($S)", String.class, headerType.name());
-                caller.addStatement("responseBuilder.$L(headers != null && headers.length > 0 ? headers[0] : null)",
-                        this.naming.property(headerType.name())
-                );
+                caller.beginControlFlow("if(response.header($S) != null)", headerType.name())
+                        .addStatement("responseBuilder.$L(response.header($S)[0])",
+                                this.naming.property(headerType.name()),
+                                headerType.name())
+                        .endControlFlow();
             }
         }
     }
