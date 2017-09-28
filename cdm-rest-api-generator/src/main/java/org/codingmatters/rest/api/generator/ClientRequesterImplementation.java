@@ -89,7 +89,7 @@ public class ClientRequesterImplementation {
         this.addResourceConstructor(result, resource.resources());
 
         for (Method method : resource.methods()) {
-            result.addMethod(new RequesterCaller(this.typesPackage, this.naming, method).caller());
+            result.addMethods(new RequesterCaller(this.typesPackage, this.naming, method).callers());
         }
 
         this.addChildResourcesMethods(clientInterface, resource.resources(), result);

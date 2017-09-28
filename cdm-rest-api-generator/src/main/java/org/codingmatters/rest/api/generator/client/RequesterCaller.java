@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.raml.v2.api.model.v10.bodies.Response;
@@ -14,6 +15,9 @@ import org.raml.v2.api.model.v10.methods.Method;
 import javax.lang.model.element.Modifier;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class RequesterCaller {
     private final String typesPackage;
@@ -26,7 +30,14 @@ public class RequesterCaller {
         this.method = method;
     }
 
-    public MethodSpec caller() {
+    public List<MethodSpec> callers() {
+        return Arrays.asList(
+                this.baseCaller().build(),
+                this.consumerCaller().build()
+        );
+    }
+
+    private MethodSpec.Builder baseCaller() {
         MethodSpec.Builder caller = MethodSpec.methodBuilder(this.callerName())
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(this.requestType(), "request")
@@ -50,8 +61,22 @@ public class RequesterCaller {
         this.parseResponse(caller);
 
         caller.addStatement("return resp.build()");
+        return caller;
+    }
 
-        return caller.build();
+    private MethodSpec.Builder consumerCaller() {
+
+        return MethodSpec.methodBuilder(this.naming.property(method.method()))
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ParameterizedTypeName.get(ClassName.get(Consumer.class), this.requestType().nestedClass("Builder")), "request")
+                .returns(this.responseType())
+                .addException(IOException.class)
+                .addStatement("$T builder = $T.builder()", this.requestType().nestedClass("Builder"), this.requestType())
+                .beginControlFlow("if(request != null)")
+                    .addStatement("request.accept(builder)")
+                    .endControlFlow()
+                .addStatement("return this.$L(builder.build())", this.callerName())
+                ;
     }
 
     private void preparePath(MethodSpec.Builder caller) {

@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
@@ -11,6 +12,7 @@ import org.raml.v2.api.model.v10.resources.Resource;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
 import static org.codingmatters.value.objects.generation.GenerationUtils.writeJavaFile;
@@ -60,6 +62,13 @@ public class ClientInterfaceGenerator {
             resourceType.addMethod(MethodSpec.methodBuilder(this.naming.property(method.method()))
                     .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                     .addParameter(requestTypeName, "request")
+                    .returns(responseTypeName)
+                    .addException(IOException.class)
+                    .build());
+
+            resourceType.addMethod(MethodSpec.methodBuilder(this.naming.property(method.method()))
+                    .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                    .addParameter(ParameterizedTypeName.get(ClassName.get(Consumer.class), requestTypeName.nestedClass("Builder")), "request")
                     .returns(responseTypeName)
                     .addException(IOException.class)
                     .build());
