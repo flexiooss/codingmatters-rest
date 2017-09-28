@@ -136,30 +136,50 @@ public class RequesterCaller {
                     this.naming.methodResponseStatusType(this.method, response.code())
             );
 
-            TypeDeclaration bodyType = ! response.body().isEmpty() ? response.body().get(0) : null;
-            if(bodyType  != null) {
-                caller.beginControlFlow("try($T parser = this.jsonFactory.createParser(response.body()))",
-                        JsonParser.class
-                );
-                if(bodyType instanceof ArrayTypeDeclaration) {
-                    caller.addStatement("responseBuilder.payload(new $T().readArray(parser))",
-                            ClassName.get(
-                                    this.typesPackage + ".json",
-                                    this.naming.type(((ArrayTypeDeclaration)bodyType).items().name(), "Reader")
-                            )
-                    );
-                } else {
-                    caller.addStatement("responseBuilder.payload(new $T().read(parser))",
-                            ClassName.get(this.typesPackage + ".json", this.naming.type(bodyType.type(), "Reader"))
-                    );
-                }
-                caller.endControlFlow();
-            }
+            this.parseHeaders(caller, response);
+            this.parseBody(caller, response);
 
             caller.addStatement("resp.$L(responseBuilder.build())", "status" + response.code().value());
             caller.endControlFlow();
         }
 
+    }
+
+    private void parseHeaders(MethodSpec.Builder caller, Response response) {
+        for (TypeDeclaration headerType : response.headers()) {
+            if(headerType instanceof ArrayTypeDeclaration) {
+                caller.addStatement("responseBuilder.$L(response.header($S))",
+                        this.naming.property(headerType.name()),
+                        headerType.name());
+            } else {
+                caller.addStatement("$T[] headers = response.header($S)", String.class, headerType.name());
+                caller.addStatement("responseBuilder.$L(headers != null && headers.length > 0 ? headers[0] : null)",
+                        this.naming.property(headerType.name())
+                );
+            }
+        }
+    }
+
+    private void parseBody(MethodSpec.Builder caller, Response response) {
+        TypeDeclaration bodyType = ! response.body().isEmpty() ? response.body().get(0) : null;
+        if(bodyType  != null) {
+            caller.beginControlFlow("try($T parser = this.jsonFactory.createParser(response.body()))",
+                    JsonParser.class
+            );
+            if(bodyType instanceof ArrayTypeDeclaration) {
+                caller.addStatement("responseBuilder.payload(new $T().readArray(parser))",
+                        ClassName.get(
+                                this.typesPackage + ".json",
+                                this.naming.type(((ArrayTypeDeclaration)bodyType).items().name(), "Reader")
+                        )
+                );
+            } else {
+                caller.addStatement("responseBuilder.payload(new $T().read(parser))",
+                        ClassName.get(this.typesPackage + ".json", this.naming.type(bodyType.type(), "Reader"))
+                );
+            }
+            caller.endControlFlow();
+        }
     }
 
     private String callerName() {

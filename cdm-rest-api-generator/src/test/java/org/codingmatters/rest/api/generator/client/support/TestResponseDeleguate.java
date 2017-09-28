@@ -8,9 +8,9 @@ import java.util.Map;
 public class TestResponseDeleguate implements ResponseDelegate {
     private final int code;
     private final byte[] body;
-    private final Map<String, String> headers;
+    private final Map<String, String[]> headers;
 
-    public TestResponseDeleguate(int code, byte[] body, Map<String, String> headers) {
+    public TestResponseDeleguate(int code, byte[] body, Map<String, String[]> headers) {
         this.code = code;
         this.body = body;
         this.headers = headers;
@@ -27,7 +27,7 @@ public class TestResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
-    public String header(String name) {
+    public String[] header(String name) {
         return this.headers.get(name);
     }
 }

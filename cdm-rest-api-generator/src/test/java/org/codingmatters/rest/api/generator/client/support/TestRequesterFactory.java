@@ -73,7 +73,7 @@ public class TestRequesterFactory implements RequesterFactory {
         return this.nextResponse(method, code, body, null);
     }
 
-    public TestRequesterFactory nextResponse(Method method, int code, byte[] body, Map<String, String> headers) {
+    public TestRequesterFactory nextResponse(Method method, int code, byte[] body, Map<String, String[]> headers) {
         if(! this.nextResponses.containsKey(method)) {
             this.nextResponses.put(method, new LinkedList<>());
         }

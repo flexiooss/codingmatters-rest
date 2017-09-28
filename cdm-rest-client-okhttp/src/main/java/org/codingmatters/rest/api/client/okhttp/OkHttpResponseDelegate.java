@@ -4,6 +4,7 @@ import okhttp3.Response;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
 import java.io.IOException;
+import java.util.List;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
     private final Response response;
@@ -23,7 +24,8 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     }
 
     @Override
-    public String header(String name) {
-        return this.response.header(name);
+    public String[] header(String name) {
+        List<String> headers = this.response.headers(name);
+        return headers.toArray(new String [headers.size()]);
     }
 }

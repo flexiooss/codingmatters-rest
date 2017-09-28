@@ -28,18 +28,6 @@ public class GenerateAPIServerSideMojo extends AbstractGenerateAPIMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         RamlModelResult ramlModel = this.resolveRamlModel();
-
-//        try {
-//            new HandlersGenerator(
-//                    this.destinationPackage,
-//                    this.typesPackage + ".types",
-//                    this.typesPackage,
-//                    this.outputDirectory
-//            ).generate(ramlModel);
-//        } catch (IOException e) {
-//            throw new MojoExecutionException("error generating handlers from raml model", e);
-//        }
-
         try {
             new ProcessorGenerator(
                     this.destinationPackage,
