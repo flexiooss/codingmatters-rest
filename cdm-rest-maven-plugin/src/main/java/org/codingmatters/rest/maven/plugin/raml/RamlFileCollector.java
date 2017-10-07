@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -70,12 +71,6 @@ public class RamlFileCollector implements AutoCloseable {
             try(InputStream in = new FileInputStream(file)) {
                 return this.copyToTempDir(in, file.getName(), toPath);
             }
-        } else if(this.existsInClassLoader(resource)) {
-            log.debug("{} resource found in class loader. Will copy to {}.", resource, toPath);
-            File file = this.fromClassLoader(resource);
-            try(InputStream in = new FileInputStream(file)) {
-                return this.copyToTempDir(in, file.getName(), toPath);
-            }
         } else {
             for (JarFile classpathJar : this.classpathJars) {
                 if(classpathJar.getJarEntry(resource) != null) {
@@ -85,7 +80,15 @@ public class RamlFileCollector implements AutoCloseable {
                     }
                 }
             }
-            throw new IOException("resource not found " + resource);
+            if(this.existsInClassLoader(resource)) {
+                log.debug("{} resource found in class loader. Will copy to {}.", resource, toPath);
+                File file = this.fromClassLoader(resource);
+                try(InputStream in = new FileInputStream(file)) {
+                    return this.copyToTempDir(in, file.getName(), toPath);
+                }
+            } else {
+                throw new IOException("resource not found " + resource);
+            }
         }
     }
 
@@ -110,10 +113,15 @@ public class RamlFileCollector implements AutoCloseable {
     }
 
     private File fromClassLoader(String resource) throws IOException {
+        URL resourceUrl = null;
         try {
-            return new File(Thread.currentThread().getContextClassLoader().getResource(resource).toURI());
-        } catch (URISyntaxException e) {
-            throw new IOException("error reading resource from class loader " + resource, e);
+            resourceUrl = Thread.currentThread().getContextClassLoader().getResource(resource);
+            if(resourceUrl == null) {
+                throw new IOException("no resource found for " + resource);
+            }
+            return new File(resourceUrl.toURI());
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            throw new IOException("error reading resource " + resource + " from class loader with url " + resourceUrl, e);
         }
     }
 
