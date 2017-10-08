@@ -9,6 +9,8 @@ import org.codingmatters.rest.undertow.CdmHttpUndertowHandler;
 import org.codingmatters.rest.undertow.support.UndertowResource;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -37,16 +39,15 @@ public abstract class AbstractProcessorHttpRequestTest {
     }
 
     protected void setupProcessorWithHandler(String handlerMethod, Function handler) throws Exception {
-        Object builder = this.compiled.getClass("org.generated.api.TestAPIHandlers$Builder").newInstance();
-        builder = this.compiled.on(builder).invoke(handlerMethod, Function.class).with(handler);
-        Object handlers = this.compiled.on(builder).invoke("build");
+        ClassLoaderHelper classes = this.compiled.classLoader();
+        ObjectHelper builder = classes.get("org.generated.api.TestAPIHandlers$Builder")
+                .newInstance()
+                .call(handlerMethod, Function.class).with(handler);
+        Object handlers = builder.call("build").get();
 
-        this.testProcessor = (Processor) this.compiled.getClass("org.generated.server.TestAPIProcessor")
-                .getConstructor(
-                        String.class,
-                        JsonFactory.class,
-                        this.compiled.getClass("org.generated.api.TestAPIHandlers"))
-                .newInstance("/api", new JsonFactory(), handlers);
+        this.testProcessor = (Processor) classes.get("org.generated.server.TestAPIProcessor")
+                .newInstance(String.class, JsonFactory.class, classes.get("org.generated.api.TestAPIHandlers").get())
+                .with("/api", new JsonFactory(), handlers).get();
     }
 
 }
