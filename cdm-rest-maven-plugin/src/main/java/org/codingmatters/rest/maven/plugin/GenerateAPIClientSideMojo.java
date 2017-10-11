@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codingmatters.rest.api.generator.ClientHandlerImplementation;
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.rest.api.generator.ClientRequesterImplementation;
 import org.raml.v2.api.RamlModelResult;
@@ -40,6 +41,11 @@ public class GenerateAPIClientSideMojo extends AbstractGenerateAPIMojo {
             new ClientRequesterImplementation(this.destinationPackage, this.apiPackage, this.typesPackage, this.outputDirectory).generate(raml);
         } catch (IOException e) {
             throw new MojoExecutionException("error generating requester client implementation from raml model", e);
+        }
+        try {
+            new ClientHandlerImplementation(this.destinationPackage, this.apiPackage, this.typesPackage, this.outputDirectory).generate(raml);
+        } catch (IOException e) {
+            throw new MojoExecutionException("error generating handler client implementation from raml model", e);
         }
 
     }
