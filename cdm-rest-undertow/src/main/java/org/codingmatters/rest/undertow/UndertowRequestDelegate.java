@@ -4,6 +4,8 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.regex.Pattern;
  */
 public class UndertowRequestDelegate implements RequestDelegate {
 
+    static private final Logger log = LoggerFactory.getLogger(UndertowRequestDelegate.class);
+
     private final HttpServerExchange exchange;
     private Map<String, List<String>> uriParamsCache = null;
     private Map<String, List<String>> queryParamsCache = null;
@@ -29,7 +33,12 @@ public class UndertowRequestDelegate implements RequestDelegate {
 
     @Override
     public Matcher pathMatcher(String regex) {
-        return Pattern.compile(regex).matcher(this.exchange.getRelativePath());
+        log.debug("req={} ; rel={} ; res={}",
+                this.exchange.getRequestPath(),
+                this.exchange.getRelativePath(),
+                this.exchange.getResolvedPath()
+        );
+        return Pattern.compile(regex).matcher(this.exchange.getRequestPath());
     }
 
     @Override
