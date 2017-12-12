@@ -19,6 +19,17 @@ mediaType: application/json
           type: array
           items: string
 
+/query-params-with-booleans:
+  displayName: QueryParamsWithBooleans
+  get:
+    queryParameters:
+      booleanParam:
+          type: boolean
+      booleanArrayParam:
+          type: array
+          items: boolean
+
+
 /uri-param/{param}:
     displayName: UriParams
     uriParameters:

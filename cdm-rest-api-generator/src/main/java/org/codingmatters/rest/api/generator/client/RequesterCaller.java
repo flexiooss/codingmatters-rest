@@ -7,6 +7,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.api.generator.exception.RamlSpecException;
+import org.codingmatters.rest.api.generator.type.RamlType;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -15,7 +17,9 @@ import org.raml.v2.api.model.v10.methods.Method;
 import javax.lang.model.element.Modifier;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -97,12 +101,58 @@ public class RequesterCaller {
 
     private void prepareParameters(MethodSpec.Builder caller) {
         for (TypeDeclaration param : this.method.queryParameters()) {
-            caller
-                    .beginControlFlow("if(request.$L() != null)", this.naming.property(param.name()))
-                        .addStatement("requester.parameter($S, request.$L())", param.name(), this.naming.property(param.name()))
-                    .endControlFlow()
+            RamlType type;
+            boolean isArray;
+            if(param instanceof ArrayTypeDeclaration) {
+                type = this.getRamlType(((ArrayTypeDeclaration)param).items());
+                isArray = true;
+            } else {
+                type = this.getRamlType(param);
+                isArray = false;
+            }
+
+
+            caller.beginControlFlow("if(request.$L() != null)", this.naming.property(param.name()));
+
+            if(type.equals(RamlType.BOOLEAN)) {
+                if(isArray) {
+                    caller.addStatement(
+                            "requester.parameter($S, $T.stream(request.$L().toArray()).map(o -> o !=null ? o.toString().toLowerCase() : \"null\").toArray(i -> new $T[i]))",
+                            param.name(),
+                            Arrays.class,
+                            this.naming.property(param.name()),
+                            String.class
+                    );
+                } else {
+                    caller.addStatement("requester.parameter($S, request.$L().toString().toLowerCase())", param.name(), this.naming.property(param.name()));
+                }
+            } else {
+                if(isArray) {
+                    caller.addStatement(
+                            "requester.parameter($S, $T.stream(request.$L().toArray()).map(o -> o !=null ? o.toString() : \"null\").toArray(i -> new $T[i]))",
+                            param.name(),
+                            Arrays.class,
+                            this.naming.property(param.name()),
+                            String.class
+                    );
+                } else {
+                    caller.addStatement("requester.parameter($S, request.$L().toString())", param.name(), this.naming.property(param.name()));
+                }
+            }
+
+            caller.endControlFlow()
             ;
         }
+    }
+
+    private RamlType getRamlType(TypeDeclaration param) {
+        RamlType type;
+        try {
+            type = RamlType.from(param);
+        } catch (RamlSpecException e) {
+            throw new RuntimeException("cannot process " + param, e);
+        }
+        return type;
     }
 
     private void prepareHeaders(MethodSpec.Builder caller) {
