@@ -14,6 +14,9 @@ public class OkHttpRequesterFactory implements RequesterFactory {
 
     @Override
     public Requester forBaseUrl(String url) {
+        while(url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
         return new OkHttpRequester(this.client, url);
     }
 }
