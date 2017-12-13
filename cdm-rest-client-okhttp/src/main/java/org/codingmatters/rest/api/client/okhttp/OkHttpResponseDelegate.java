@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.client.okhttp;
 
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
 import java.io.IOException;
@@ -20,7 +21,9 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public byte[] body() throws IOException {
-        return this.response.body().bytes();
+        try(ResponseBody body = this.response.body()) {
+            return body.bytes();
+        }
     }
 
     @Override
