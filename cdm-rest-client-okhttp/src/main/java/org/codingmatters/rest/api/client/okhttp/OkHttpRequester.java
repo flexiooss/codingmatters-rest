@@ -1,9 +1,6 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
@@ -32,36 +29,48 @@ public class OkHttpRequester implements Requester {
     @Override
     public ResponseDelegate get() throws IOException {
         Request request = this.prepareRequestBuilder().get().build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
         Request request = this.prepareRequestBuilder().post(RequestBody.create(MediaType.parse(contentType), body)).build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
     public ResponseDelegate put(String contentType, byte[] body) throws IOException {
         Request request = this.prepareRequestBuilder().put(RequestBody.create(MediaType.parse(contentType), body)).build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
     public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
         Request request = this.prepareRequestBuilder().patch(RequestBody.create(MediaType.parse(contentType), body)).build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
     public ResponseDelegate delete() throws IOException {
         Request request = this.prepareRequestBuilder().delete().build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
     public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
         Request request = this.prepareRequestBuilder().delete(RequestBody.create(MediaType.parse(contentType), body)).build();
-        return new OkHttpResponseDelegate(this.client.newCall(request).execute());
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
