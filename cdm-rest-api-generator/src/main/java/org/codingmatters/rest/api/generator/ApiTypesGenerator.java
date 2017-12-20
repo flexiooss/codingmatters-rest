@@ -68,11 +68,16 @@ public class ApiTypesGenerator {
                     .cardinality(withCardinality)
                     .typeKind(TypeKind.ENUM)
                     .enumValues(values.toArray(new String[values.size()]));
-        } else {
+        } else if(RamlType.isRamlType(declaration)){
             return PropertyTypeSpec.type()
                     .cardinality(withCardinality)
                     .typeKind(TypeKind.JAVA_TYPE)
                     .typeRef(RamlType.from(declaration).javaType());
+        } else {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
+                    .typeRef(declaration.type());
         }
     }
 

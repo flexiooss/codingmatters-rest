@@ -28,11 +28,24 @@ public enum RamlType {
         return this.javaType;
     }
 
+    static public boolean isRamlType(TypeDeclaration declaration) {
+        for (RamlType ramlType : RamlType.values()) {
+            if(ramlType.name().equals(ramlTypeName(declaration))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static public RamlType from(TypeDeclaration declaration) throws RamlSpecException {
         try {
-            return RamlType.valueOf(declaration.type().replaceAll("-", "_").toUpperCase());
+            return RamlType.valueOf(ramlTypeName(declaration));
         } catch(IllegalArgumentException e) {
             throw new RamlSpecException("not implemented type : " + declaration.type(), e);
         }
+    }
+
+    static private String ramlTypeName(TypeDeclaration declaration) {
+        return declaration.type().replaceAll("-", "_").toUpperCase();
     }
 }

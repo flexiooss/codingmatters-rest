@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
     //private final Response response;
@@ -43,7 +42,7 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     @Override
     public String[] header(String name) {
         //List<String> headers = this.response.headers(name);
-        List<String> header = this.headers.get(name);
-        return header != null ? header.toArray(new String [headers.size()]) : new String[0];
+        List<String> header = this.headers.get(name.toLowerCase());
+        return header != null ? header.toArray(new String [headers.size()]) : null;
     }
 }

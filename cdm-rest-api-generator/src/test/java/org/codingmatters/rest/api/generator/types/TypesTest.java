@@ -158,4 +158,30 @@ public class TypesTest {
                         .build())
         );
     }
+
+
+    @Test
+    public void referencesType() throws Exception {
+        assertThat(
+                this.spec.valueSpec("ReferencesType"),
+                is(ValueSpec.valueSpec().name("ReferencesType")
+                        .addProperty(PropertySpec.property()
+                                .name("reference")
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
+                                        .typeRef("SimplePropertyType")
+                                )
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("typeReference")
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
+                                        .typeRef("SimplePropertyType")
+                                )
+                        )
+                        .build())
+        );
+    }
 }
