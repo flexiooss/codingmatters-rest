@@ -46,6 +46,14 @@ public enum RamlType {
     }
 
     static private String ramlTypeName(TypeDeclaration declaration) {
-        return declaration.type().replaceAll("-", "_").toUpperCase();
+        String name = declaration.type();
+        while(name.endsWith("[]")) {
+            name = name.substring(0, name.length() - 2);
+        }
+        return name.replaceAll("-", "_").toUpperCase();
+    }
+
+    static public boolean isArrayType(TypeDeclaration declaration) {
+        return declaration.type().endsWith("[]");
     }
 }

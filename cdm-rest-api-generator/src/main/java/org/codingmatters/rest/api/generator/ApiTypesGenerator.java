@@ -39,12 +39,19 @@ public class ApiTypesGenerator {
     }
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration declaration) throws RamlSpecException {
-        if(declaration.type().equals("array")) {
+        if(declaration instanceof ArrayTypeDeclaration) {
             if(((ArrayTypeDeclaration)declaration).items().type().equals("object")) {
-                return PropertyTypeSpec.type()
-                        .cardinality(PropertyCardinality.LIST)
-                        .typeKind(TypeKind.EMBEDDED)
-                        .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) ((ArrayTypeDeclaration)declaration).items()));
+                if(((ArrayTypeDeclaration)declaration).items().name().equals("object")) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EMBEDDED)
+                            .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()));
+                } else {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
+                            .typeRef(((ArrayTypeDeclaration)declaration).items().name());
+                }
             } else {
                 return this.simpleProperty(((ArrayTypeDeclaration)declaration).items(), PropertyCardinality.LIST);
             }
@@ -57,7 +64,7 @@ public class ApiTypesGenerator {
                     .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) declaration)
                     );
         } else {
-            return this.simpleProperty(declaration, PropertyCardinality.SINGLE);
+            return this.simpleProperty(declaration, RamlType.isArrayType(declaration) ? PropertyCardinality.LIST : PropertyCardinality.SINGLE);
         }
     }
 
@@ -75,7 +82,7 @@ public class ApiTypesGenerator {
                     .typeRef(RamlType.from(declaration).javaType());
         } else {
             return PropertyTypeSpec.type()
-                    .cardinality(PropertyCardinality.SINGLE)
+                    .cardinality(withCardinality)
                     .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
                     .typeRef(declaration.type());
         }
