@@ -8,6 +8,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,6 +37,7 @@ public class TypesTest {
                 is(ValueSpec.valueSpec().name("SimplePropertyType")
                         .addProperty(PropertySpec.property()
                                 .name("stringProp")
+                                .hints(set("property:raw(stringProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.JAVA_TYPE)
@@ -41,6 +46,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("stringArrayProp")
+                                .hints(set("property:raw(stringArrayProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.JAVA_TYPE)
@@ -49,6 +55,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("intProp")
+                                .hints(set("property:raw(intProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.JAVA_TYPE)
@@ -57,6 +64,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("intArrayProp")
+                                .hints(set("property:raw(intArrayProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.JAVA_TYPE)
@@ -65,6 +73,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("enumProp")
+                                .hints(set("property:raw(enumProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.ENUM)
@@ -73,6 +82,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("enumArrayProp")
+                                .hints(set("property:raw(enumArrayProp)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.ENUM)
@@ -90,12 +100,14 @@ public class TypesTest {
                 is(ValueSpec.valueSpec().name("NestedType")
                         .addProperty(PropertySpec.property()
                                 .name("nested")
+                                .hints(set("property:raw(nested)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.EMBEDDED)
                                         .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
                                                 .addProperty(PropertySpec.property()
                                                         .name("stringProp")
+                                                        .hints(set("property:raw(stringProp)"))
                                                         .type(PropertyTypeSpec.type()
                                                                 .cardinality(PropertyCardinality.SINGLE)
                                                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -104,12 +116,14 @@ public class TypesTest {
                                                 )
                                                 .addProperty(PropertySpec.property()
                                                         .name("nested")
+                                                        .hints(set("property:raw(nested)"))
                                                         .type(PropertyTypeSpec.type()
                                                             .cardinality(PropertyCardinality.SINGLE)
                                                             .typeKind(TypeKind.EMBEDDED)
                                                             .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
                                                                     .addProperty(PropertySpec.property()
                                                                             .name("stringProp")
+                                                                            .hints(set("property:raw(stringProp)"))
                                                                             .type(PropertyTypeSpec.type()
                                                                                     .cardinality(PropertyCardinality.SINGLE)
                                                                                     .typeKind(TypeKind.JAVA_TYPE)
@@ -118,6 +132,7 @@ public class TypesTest {
                                                                     )
                                                                     .addProperty(PropertySpec.property()
                                                                             .name("enumProp")
+                                                                            .hints(set("property:raw(enumProp)"))
                                                                             .type(PropertyTypeSpec.type()
                                                                                     .cardinality(PropertyCardinality.SINGLE)
                                                                                     .typeKind(TypeKind.ENUM)
@@ -126,6 +141,7 @@ public class TypesTest {
                                                                     )
                                                                     .addProperty(PropertySpec.property()
                                                                             .name("enumArrayProp")
+                                                                            .hints(set("property:raw(enumArrayProp)"))
                                                                             .type(PropertyTypeSpec.type()
                                                                                     .cardinality(PropertyCardinality.LIST)
                                                                                     .typeKind(TypeKind.ENUM)
@@ -140,12 +156,14 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("nestedArray")
+                                .hints(set("property:raw(nestedArray)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.EMBEDDED)
                                         .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
                                                 .addProperty(PropertySpec.property()
                                                         .name("stringProp")
+                                                        .hints(set("property:raw(stringProp)"))
                                                         .type(PropertyTypeSpec.type()
                                                                 .cardinality(PropertyCardinality.SINGLE)
                                                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -167,6 +185,7 @@ public class TypesTest {
                 is(ValueSpec.valueSpec().name("ReferencesType")
                         .addProperty(PropertySpec.property()
                                 .name("reference")
+                                .hints(set("property:raw(reference)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
@@ -175,6 +194,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("typeReference")
+                                .hints(set("property:raw(typeReference)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.SINGLE)
                                         .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
@@ -183,6 +203,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("referenceArray")
+                                .hints(set("property:raw(referenceArray)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
@@ -191,6 +212,7 @@ public class TypesTest {
                         )
                         .addProperty(PropertySpec.property()
                                 .name("typeReferenceArray")
+                                .hints(set("property:raw(typeReferenceArray)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
@@ -199,5 +221,27 @@ public class TypesTest {
                         )
                         .build())
         );
+    }
+
+    @Test
+    public void rawPropertyNameTypes() throws Exception {
+        assertThat(
+                this.spec.valueSpec("RawPropertyNameType"),
+                is(ValueSpec.valueSpec().name("RawPropertyNameType")
+                        .addProperty(PropertySpec.property()
+                                .name("rawPropertyName")
+                                .hints(set("property:raw(Raw Property Name)"))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeRef(String.class.getName())
+                                ))
+                        .build()
+                )
+        );
+    }
+
+    private Set<String> set(String ... values) {
+        return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();
     }
 }

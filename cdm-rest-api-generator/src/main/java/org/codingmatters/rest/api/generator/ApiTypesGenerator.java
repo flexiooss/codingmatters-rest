@@ -10,7 +10,10 @@ import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.StringTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by nelt on 5/2/17.
@@ -28,6 +31,7 @@ public class ApiTypesGenerator {
                 for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
                     valueSpec.addProperty(PropertySpec.property()
                             .name(this.naming.property(declaration.name()))
+                            .hints(this.rawNameHint(declaration))
                             .type(this.typeSpecFromDeclaration(declaration))
                     );
                 }
@@ -36,6 +40,10 @@ public class ApiTypesGenerator {
             }
         }
         return result.build();
+    }
+
+    private Set<String> rawNameHint(TypeDeclaration declaration) {
+        return new HashSet<>(Arrays.asList(String.format("property:raw(%s)", declaration.name())));
     }
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration declaration) throws RamlSpecException {
@@ -98,6 +106,7 @@ public class ApiTypesGenerator {
             if(objectProp.type().equals("object")) {
                 embedded.addProperty(PropertySpec.property()
                         .name(this.naming.property(objectProp.name()))
+                        .hints(this.rawNameHint(objectProp))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.EMBEDDED)
@@ -107,6 +116,7 @@ public class ApiTypesGenerator {
             } else {
                 embedded.addProperty(PropertySpec.property()
                         .name(this.naming.property(objectProp.name()))
+                        .hints(this.rawNameHint(objectProp))
                         .type(this.typeSpecFromDeclaration(objectProp))
                 );
             }
