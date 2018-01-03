@@ -66,17 +66,21 @@ public class ApiGenerator {
         return result.build();
     }
 
-    private PropertyTypeSpec.Builder payloadType(TypeDeclaration typeDeclaration) {
-        if(typeDeclaration instanceof  ArrayTypeDeclaration) {
-            return PropertyTypeSpec.type()
-                    .cardinality(PropertyCardinality.LIST)
-                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                    .typeRef(this.typesPackage + "." + ((ArrayTypeDeclaration)typeDeclaration).items().name());
+    private PropertyTypeSpec.Builder payloadType(TypeDeclaration typeDeclaration) throws RamlSpecException {
+        if(RamlType.isRamlType(typeDeclaration)) {
+            return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
-            return PropertyTypeSpec.type()
-                    .cardinality(PropertyCardinality.SINGLE)
-                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                    .typeRef(this.typesPackage + "." + typeDeclaration.type());
+            if (typeDeclaration instanceof ArrayTypeDeclaration) {
+                return PropertyTypeSpec.type()
+                        .cardinality(PropertyCardinality.LIST)
+                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                        .typeRef(this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name());
+            } else {
+                return PropertyTypeSpec.type()
+                        .cardinality(PropertyCardinality.SINGLE)
+                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                        .typeRef(this.typesPackage + "." + typeDeclaration.type());
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.*;
 import org.codingmatters.rest.api.Processor;
@@ -10,7 +9,6 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
-import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -19,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -38,13 +35,15 @@ public class ProcessorClass {
     private final String apiPackage;
     private final Naming naming;
     private final HandlersHelper helper;
-    private boolean needsSubstitutedMethod = false;
+
+    private final ProcessorResponse processorResponse;
 
     public ProcessorClass(String typesPackage, String apiPackage, Naming naming, HandlersHelper helper) {
         this.typesPackage = typesPackage;
         this.apiPackage = apiPackage;
         this.naming = naming;
         this.helper = helper;
+        this.processorResponse = new ProcessorResponse(this.typesPackage, this.naming);
     }
 
     public TypeSpec type(RamlModelResult ramlModel) {
@@ -70,7 +69,7 @@ public class ProcessorClass {
                         .addStatement("this.$L = $L", "factory", "factory")
                         .addStatement("this.$L = $L", "handlers", "handlers")
                         .build());
-        if(this.needsSubstitutedMethod) {
+        if(this.processorResponse.needsSubstitutedMethod()) {
             processorBuilder.addMethod(this.buildSubstitutedMethod());
         }
         return processorBuilder
@@ -93,7 +92,6 @@ public class ProcessorClass {
                 .addParameter(ClassName.get(ResponseDelegate.class), "responseDelegate")
                 .addException(ClassName.get(IOException.class));
 
-        method.addStatement("responseDelegate.contenType($S)", "application/json; charset=utf-8");
         this.addResourcesProcessing( method, ramlModel.getApiV10().resources());
 
         return method.build();
@@ -306,92 +304,9 @@ public class ProcessorClass {
     }
 
     private void addResponseProcessingStatements(Method resourceMethod, MethodSpec.Builder method) {
-        method.beginControlFlow("if(response != null)");
-        if(! resourceMethod.responses().isEmpty()) {
-            for (int i = 0; i < resourceMethod.responses().size(); i++) {
-                Response response = resourceMethod.responses().get(i);
-                if (i == 0) {
-                    method.beginControlFlow("if (response.status$L() != null)", response.code().value());
-                } else {
-                    method.nextControlFlow("else if (response.status$L() != null)", response.code().value());
-                }
-                method.addStatement("responseDelegate.status($L)", response.code().value());
-
-                if (!response.headers().isEmpty()) {
-                    this.addResponseHeadersProcessingStatements(response, method);
-                }
-                if (!response.body().isEmpty()) {
-                    this.addResponsePayloadProcessingStatements(response, method);
-                }
-            }
-            method.endControlFlow();
-        }
-        method.endControlFlow();
+        this.processorResponse.append(resourceMethod, method);
     }
 
-    private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
-        for (TypeDeclaration typeDeclaration : response.headers()) {
-            this.needsSubstitutedMethod = true;
-            String property = this.naming.property(typeDeclaration.name());
-            method.beginControlFlow(
-                    "if(response.status$L().$L() != null)",
-                    response.code().value(),
-                    property
-            );
-            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-                method.addStatement(
-                        "responseDelegate.addHeader($S, this.substituted(requestDelegate, response.status$L().$L()))",
-                        typeDeclaration.name(),
-                        response.code().value(),
-                        property
-                );
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-                method.beginControlFlow(
-                        "for($T element: response.status$L().$L())",
-                        String.class,
-                        response.code().value(),
-                        property
-                );
-                method.addStatement("responseDelegate.addHeader($S, this.substituted(requestDelegate, element))", typeDeclaration.name());
-                method.endControlFlow();
-            } else {
-                log.warn("not yet implemented : {} response header type", typeDeclaration);
-            }
-            method.endControlFlow();
-        }
-    }
-
-    private void addResponsePayloadProcessingStatements(Response response, MethodSpec.Builder method) {
-        TypeDeclaration body = response.body().get(0);
-
-        method.beginControlFlow("if(response.status$L().payload() != null)", response.code().value());
-        method.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
-        method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
-        if(body instanceof ArrayTypeDeclaration) {
-            // TODO replace with list writer
-            String elementType = ((ArrayTypeDeclaration) body).items().name();
-            method.addStatement("generator.writeStartArray()");
-            method.beginControlFlow("for ($T element : response.status$L().payload())", ClassName.get(this.typesPackage, this.naming.type(elementType)), response.code().value())
-                    .beginControlFlow("if(element != null)")
-                        .addStatement("new $T().write(generator, element)", ClassName.get(this.typesPackage + ".json", this.naming.type(elementType, "Writer")))
-                    .nextControlFlow("else")
-                        .addStatement("generator.writeNull()")
-                    .endControlFlow()
-                    .endControlFlow();
-            method.addStatement("generator.writeEndArray()");
-        } else {
-            method.addStatement(
-                    "new $T().write(generator, response.status$L().payload())",
-                    ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer")),
-                    response.code().value()
-            );
-        }
-        method.endControlFlow();
-        method.addStatement("responseDelegate.payload(out.toString(), $S)", "utf-8");
-        method.endControlFlow();
-        method.endControlFlow();
-    }
 
     private MethodSpec buildSubstitutedMethod() {
         MethodSpec.Builder method = MethodSpec.methodBuilder("substituted")

@@ -71,9 +71,7 @@ public class ProcessorGeneratorTest {
 
     @Test
     public void instantiate() throws Exception {
-
         this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
-//        this.fileHelper.printFile(this.dir.getRoot(), "RootGetResponse.java");
 
         Function rootGetHandler = o -> {
             try {

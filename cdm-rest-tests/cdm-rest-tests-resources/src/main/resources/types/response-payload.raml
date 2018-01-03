@@ -12,6 +12,14 @@ mediaType: application/json
                 body:
                     type: AType
 
+/stringPayload:
+   displayName: StringPayload
+   get:
+      responses:
+         200:
+            body:
+               type: string
+
 types:
     AType:
         type: object

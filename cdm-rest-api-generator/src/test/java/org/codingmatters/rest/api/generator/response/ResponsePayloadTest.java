@@ -41,4 +41,19 @@ public class ResponsePayloadTest {
                         .build())
         );
     }
+    @Test
+    public void stringPayload() throws Exception {
+        assertThat(
+                this.spec.valueSpec("StringPayloadGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec(),
+                is(AnonymousValueSpec.anonymousValueSpec()
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeRef(String.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
 }

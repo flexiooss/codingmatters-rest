@@ -1,0 +1,37 @@
+#%RAML 1.0
+title: Test API
+version: v1
+baseUri: https://api.codingmatters.org/test
+mediaType: application/json
+
+types:
+   T:
+      type: object
+
+/root:
+   displayName: Root
+   get:
+      responses:
+         200:
+            body: T
+   /changed:
+      displayName: Changed
+      get:
+         responses:
+            200:
+               body:
+                  text/html: string
+   /unchanged:
+      displayName: Unchanged
+      get:
+         responses:
+            200:
+               body: T
+
+/binary:
+   displayName: Binary
+   get:
+      responses:
+         200:
+            body:
+               application/octet-stream: string
