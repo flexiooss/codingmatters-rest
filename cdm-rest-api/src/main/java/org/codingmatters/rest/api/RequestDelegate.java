@@ -20,6 +20,6 @@ public interface RequestDelegate {
     String absolutePath(String relative);
 
     enum Method {
-        GET, POST, PUT, PATCH, DELETE, UNIMPLEMENTED;
+        GET, POST, PUT, PATCH, DELETE, HEAD, UNIMPLEMENTED;
     }
 }
