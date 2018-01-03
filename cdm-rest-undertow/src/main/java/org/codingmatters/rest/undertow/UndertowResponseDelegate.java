@@ -5,6 +5,7 @@ import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.codingmatters.rest.api.ResponseDelegate;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -38,6 +39,12 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     @Override
     public ResponseDelegate payload(String payload, String charset) {
         this.exchange.getResponseSender().send(payload, Charset.forName(charset));
+        return this;
+    }
+
+    @Override
+    public ResponseDelegate payload(byte [] bytes) {
+        this.exchange.getResponseSender().send(ByteBuffer.wrap(bytes));
         return this;
     }
 }

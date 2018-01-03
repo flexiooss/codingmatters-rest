@@ -13,5 +13,45 @@
 
     <artifactId>cdm-rest-api</artifactId>
     <name>${project.groupId}${project.artifactId}</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codingmatters.value.objects</groupId>
+                <artifactId>cdm-value-objects-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>job-value-objects</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <destination-package>org.codingmatters.rest.api.types</destination-package>
+                            <input-spec>src/main/resources/file.yaml</input-spec>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     
 </project>

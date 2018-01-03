@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.processors;
 
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
+import org.codingmatters.rest.api.generator.processors.responses.FileResponseStatement;
 import org.codingmatters.rest.api.generator.processors.responses.JsonResponseStatement;
 import org.codingmatters.rest.api.generator.processors.responses.TextResponseStatement;
 import org.codingmatters.rest.api.generator.utils.Naming;
@@ -17,6 +18,17 @@ public interface ResponseStatement {
     }
 
     enum SupportedMediaType {
+        FILE {
+            @Override
+            public boolean matches(Response response) {
+                return response.body().get(0).type().equals("file");
+            }
+
+            @Override
+            public ResponseStatement statement(Response response, String typesPackage, Naming naming) {
+                return new FileResponseStatement(response, typesPackage, naming);
+            }
+        },
         JSON {
             @Override
             public boolean matches(Response response) {

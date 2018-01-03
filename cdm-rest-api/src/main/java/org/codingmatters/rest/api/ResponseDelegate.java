@@ -8,4 +8,5 @@ public interface ResponseDelegate {
     ResponseDelegate status(int code);
     ResponseDelegate addHeader(String name, String value);
     ResponseDelegate payload(String payload, String charset);
+    ResponseDelegate payload(byte[] bytes);
 }

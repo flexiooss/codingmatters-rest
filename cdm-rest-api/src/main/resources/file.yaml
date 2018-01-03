@@ -1,0 +1,3 @@
+file:
+  contentType: string
+  content: bytes

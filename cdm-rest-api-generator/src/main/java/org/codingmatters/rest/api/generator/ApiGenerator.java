@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.types.File;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
@@ -71,15 +72,27 @@ public class ApiGenerator {
             return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
             if (typeDeclaration instanceof ArrayTypeDeclaration) {
+                String typeRef;
+                if(((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
+                    typeRef = File.class.getName();
+                } else {
+                    typeRef = this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name();
+                }
                 return PropertyTypeSpec.type()
                         .cardinality(PropertyCardinality.LIST)
                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                        .typeRef(this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name());
+                        .typeRef(typeRef);
             } else {
+                String typeRef;
+                if(typeDeclaration.type().equals("file")) {
+                    typeRef = File.class.getName();
+                } else {
+                    typeRef = this.typesPackage + "." + typeDeclaration.type();
+                }
                 return PropertyTypeSpec.type()
                         .cardinality(PropertyCardinality.SINGLE)
                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                        .typeRef(this.typesPackage + "." + typeDeclaration.type());
+                        .typeRef(typeRef);
             }
         }
     }
