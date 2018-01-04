@@ -241,6 +241,28 @@ public class TypesTest {
         );
     }
 
+    @Test
+    public void typeWithValueObjectHint() throws Exception {
+        assertThat(
+                this.spec.valueSpec("TypeWithHint"),
+                is(ValueSpec.valueSpec().name("TypeWithHint")
+                        .addProperty(PropertySpec.property()
+                                .name("annotated")
+                                .hints(set(
+                                        "mongo:object-id",
+                                        "mongo:field(_id)",
+                                        "property:raw(annotated)"
+                                ))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeRef(String.class.getName())
+                                ))
+                        .build()
+                )
+        );
+    }
+
     private Set<String> set(String ... values) {
         return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();
     }

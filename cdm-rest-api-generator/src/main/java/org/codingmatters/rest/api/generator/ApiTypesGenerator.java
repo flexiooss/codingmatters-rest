@@ -5,10 +5,8 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
-import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
-import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
-import org.raml.v2.api.model.v10.datamodel.StringTypeDeclaration;
-import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.*;
+import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,11 +27,12 @@ public class ApiTypesGenerator {
                 ValueSpec.Builder valueSpec = ValueSpec.valueSpec()
                         .name(this.naming.type(typeDeclaration.name()));
                 for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
-                    valueSpec.addProperty(PropertySpec.property()
+                    PropertySpec.Builder prop = PropertySpec.property()
                             .name(this.naming.property(declaration.name()))
                             .hints(this.rawNameHint(declaration))
-                            .type(this.typeSpecFromDeclaration(declaration))
-                    );
+                            .type(this.typeSpecFromDeclaration(declaration));
+                    this.appendValueObjectHints(prop, declaration.annotations());
+                    valueSpec.addProperty(prop);
                 }
 
                 result.addValue(valueSpec);
@@ -103,24 +102,44 @@ public class ApiTypesGenerator {
     private AnonymousValueSpec.Builder nestedType(ObjectTypeDeclaration declaration) throws RamlSpecException {
         AnonymousValueSpec.Builder embedded = AnonymousValueSpec.anonymousValueSpec();
         for (TypeDeclaration objectProp : declaration.properties()) {
+            PropertySpec.Builder prop;
             if(objectProp.type().equals("object")) {
-                embedded.addProperty(PropertySpec.property()
+                prop = PropertySpec.property()
                         .name(this.naming.property(objectProp.name()))
                         .hints(this.rawNameHint(objectProp))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.EMBEDDED)
                                 .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) objectProp))
-                        )
-                );
+                        );
             } else {
-                embedded.addProperty(PropertySpec.property()
+                prop = PropertySpec.property()
                         .name(this.naming.property(objectProp.name()))
                         .hints(this.rawNameHint(objectProp))
-                        .type(this.typeSpecFromDeclaration(objectProp))
-                );
+                        .type(this.typeSpecFromDeclaration(objectProp)
+                        );
             }
+            this.appendValueObjectHints(prop, objectProp.annotations());
+            embedded.addProperty(prop);
         }
         return embedded;
+    }
+
+    private void appendValueObjectHints(PropertySpec.Builder prop, List<AnnotationRef> annotations) {
+        Set<String> hints = new HashSet<>();
+        for (AnnotationRef annotation : annotations) {
+            if(annotation.name().equalsIgnoreCase("(value-object-hint)")) {
+                if(annotation.structuredValue().properties().get(0) != null
+                        && annotation.structuredValue().properties().get(0).isArray()) {
+                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
+                        hints.add(typeInstance.value().toString());
+                    }
+                }
+            }
+        }
+        if(! hints.isEmpty()) {
+            prop.hints(hints);
+        }
+
     }
 }

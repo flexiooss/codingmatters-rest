@@ -68,18 +68,11 @@ public abstract class AbstractGenerateAPIMojo extends AbstractMojo {
 
 
     private void appendArtifactsJars(RamlFileCollector.Builder builder) throws IOException {
-        Artifact artifact = null;
         for (Artifact anArtifact : this.plugin.getArtifacts()) {
             if (anArtifact.getFile().isFile() && anArtifact.getFile().getName().endsWith(".jar")) {
                 JarFile jar = new JarFile(anArtifact.getFile().getAbsolutePath());
                 builder.classpathJar(jar);
             }
-//            else if (anArtifact.getFile().isDirectory()) {
-//                if (new File(anArtifact.getFile(), this.apiSpecResource).exists()) {
-//                    artifact = anArtifact;
-//                    break;
-//                }
-//            }
         }
     }
 }

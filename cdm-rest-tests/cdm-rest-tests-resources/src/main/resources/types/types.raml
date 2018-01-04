@@ -4,6 +4,11 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
+
+annotationTypes:
+   value-object-hint:
+      type: string[]
+
 types:
     SimplePropertyType:
         type: object
@@ -65,4 +70,13 @@ types:
         type: object
         properties:
             Raw Property Name: string
+
+    TypeWithHint:
+        type: object
+        properties:
+            annotated:
+                type: string
+                (value-object-hint):
+                    - mongo:object-id
+                    - mongo:field(_id)
 
