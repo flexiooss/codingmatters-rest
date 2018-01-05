@@ -8,6 +8,7 @@ import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -107,7 +108,7 @@ public class ProcessorClass {
     private void addResourceProcessing(MethodSpec.Builder method, Resource resource) {
         if(resource.methods().isEmpty()) return;
 
-        if(! resource.uriParameters().isEmpty()) {
+        if(! Resolver.resolvedUriParameters(resource).isEmpty()) {
             String pathRegex = resource.resourcePath().replaceAll("\\{[^\\}]*}", "[^/]+");
             method.beginControlFlow("if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())", pathRegex);
         } else {
@@ -170,7 +171,7 @@ public class ProcessorClass {
         if(! resourceMethod.queryParameters().isEmpty()) {
             this.addRequestQueryParametersProcessing(resourceMethod, method);
         }
-        if(! resourceMethod.resource().uriParameters().isEmpty()) {
+        if(! Resolver.resolvedUriParameters(resourceMethod.resource()).isEmpty()) {
             this.addRequestUriParametersProcessing(resourceMethod, method);
         }
         if(! resourceMethod.headers().isEmpty()) {
@@ -272,7 +273,7 @@ public class ProcessorClass {
                 "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
                 Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
             );
-        for (TypeDeclaration typeDeclaration : resourceMethod.resource().uriParameters()) {
+        for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
             String property = this.naming.property(typeDeclaration.name());
             if(typeDeclaration.type().equalsIgnoreCase("string")) {
                 method

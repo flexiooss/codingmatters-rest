@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.codingmatters.rest.api.types.File;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
@@ -59,7 +60,7 @@ public class ApiGenerator {
                     .type(this.payloadType(method.body().get(0))
                     ));
         }
-        for (TypeDeclaration typeDeclaration : resource.uriParameters()) {
+        for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resource)) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);
         }
 

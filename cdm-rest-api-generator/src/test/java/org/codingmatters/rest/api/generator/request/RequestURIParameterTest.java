@@ -45,4 +45,18 @@ public class RequestURIParameterTest {
                         .build())
         );
     }
+
+    @Test
+    public void uriParametersAreInherited() throws Exception {
+        assertThat(
+                spec.valueSpec("InheritedUriParamGetRequest").propertySpec("param"),
+                is(PropertySpec.property().name("param")
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
+                        )
+                        .build())
+        );
+    }
 }

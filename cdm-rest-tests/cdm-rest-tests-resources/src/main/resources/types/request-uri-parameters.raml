@@ -5,8 +5,11 @@ baseUri: https://api.codingmatters.org/query-parameters
 mediaType: application/json
 
 /root/{param}:
-    displayName: RootResource
-    uriParameters:
-         param:
-           type: string
-    get:
+   displayName: RootResource
+   uriParameters:
+      param:
+         type: string
+   get:
+   /inheritance:
+      displayName: InheritedUriParam
+      get:

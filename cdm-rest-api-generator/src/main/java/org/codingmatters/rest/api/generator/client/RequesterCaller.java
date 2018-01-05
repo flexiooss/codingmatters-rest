@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
+import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -17,9 +18,7 @@ import org.raml.v2.api.model.v10.methods.Method;
 import javax.lang.model.element.Modifier;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -85,7 +84,7 @@ public class RequesterCaller {
 
     private void preparePath(MethodSpec.Builder caller) {
         caller.addStatement("String path = $S", this.method.resource().resourcePath());
-        for (TypeDeclaration param : this.method.resource().uriParameters()) {
+        for (TypeDeclaration param : Resolver.resolvedUriParameters(this.method.resource())) {
             if(param instanceof ArrayTypeDeclaration) {
                 caller.beginControlFlow("for($T element : request.$L())", String.class, this.naming.property(param.name()))
                         .addStatement("path = path.replaceFirst($S, element)", "\\{" + param.name() + "\\}")
