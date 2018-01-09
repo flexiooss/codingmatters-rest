@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
+import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.codingmatters.rest.api.types.File;
@@ -20,6 +21,7 @@ public class ApiGenerator {
 
     private final String typesPackage;
     private final Naming naming = new Naming();
+    private final AnnotationProcessor annotationProcessor = new AnnotationProcessor();
 
     public ApiGenerator(String typesPackage) {
         this.typesPackage = typesPackage;
@@ -47,6 +49,11 @@ public class ApiGenerator {
     private ValueSpec generateMethodRequestValue(Resource resource, Method method) throws RamlSpecException {
         ValueSpec.Builder result = ValueSpec.valueSpec()
                 .name(this.naming.type(resource.displayName().value(), method.method(), "Request"));
+
+        this.annotationProcessor.appendConformsToAnnotations(result, method.annotations());
+        for(Resource res = method.resource() ; res != null ; res = res.parentResource()) {
+            this.annotationProcessor.appendConformsToAnnotations(result, method.resource().annotations());
+        }
 
         for (TypeDeclaration typeDeclaration : method.queryParameters()) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);

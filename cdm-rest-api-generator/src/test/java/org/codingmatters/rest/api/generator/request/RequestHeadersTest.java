@@ -8,8 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -30,6 +29,11 @@ public class RequestHeadersTest {
     @Test
     public void propertyCount() throws Exception {
         assertThat(this.spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(4));
+    }
+
+    @Test
+    public void conformsTo() throws Exception {
+        assertThat(this.spec.valueSpec("RootResourceGetRequest").protocols(), containsInAnyOrder("org.fake.Protocol1", "org.fake.Protocol2"));
     }
 
     @Test

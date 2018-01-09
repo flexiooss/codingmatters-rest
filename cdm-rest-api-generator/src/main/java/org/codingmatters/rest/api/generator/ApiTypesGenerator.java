@@ -2,11 +2,14 @@ package org.codingmatters.rest.api.generator;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
+import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
-import org.raml.v2.api.model.v10.datamodel.*;
-import org.raml.v2.api.model.v10.declarations.AnnotationRef;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.StringTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,21 +22,21 @@ import java.util.Set;
 public class ApiTypesGenerator {
 
     private final Naming naming = new Naming();
+    private final AnnotationProcessor annotationProcessor = new AnnotationProcessor();
 
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
             if(typeDeclaration.type().equals("object")) {
-                ValueSpec.Builder valueSpec = ValueSpec.valueSpec()
-                        .name(this.naming.type(typeDeclaration.name()));
-                this.processTypeAnnotations(valueSpec, typeDeclaration.annotations());
+                ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
+                this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
 
                 for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
                     PropertySpec.Builder prop = PropertySpec.property()
                             .name(this.naming.property(declaration.name()))
                             .hints(this.rawNameHint(declaration))
                             .type(this.typeSpecFromDeclaration(declaration));
-                    this.appendValueObjectHints(prop, declaration.annotations());
+                    this.annotationProcessor.appendValueObjectHints(prop, declaration.annotations());
                     valueSpec.addProperty(prop);
                 }
 
@@ -121,41 +124,9 @@ public class ApiTypesGenerator {
                         .type(this.typeSpecFromDeclaration(objectProp)
                         );
             }
-            this.appendValueObjectHints(prop, objectProp.annotations());
+            this.annotationProcessor.appendValueObjectHints(prop, objectProp.annotations());
             embedded.addProperty(prop);
         }
         return embedded;
-    }
-
-
-    private void processTypeAnnotations(ValueSpec.Builder valueSpec, List<AnnotationRef> annotations) {
-        for (AnnotationRef annotation : annotations) {
-            if (annotation.name().equalsIgnoreCase("(conforms-to)")) {
-                if(annotation.structuredValue().properties().get(0) != null
-                        && annotation.structuredValue().properties().get(0).isArray()) {
-                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
-                        valueSpec.addConformsTo(typeInstance.value().toString());
-                    }
-                }
-            }
-        }
-    }
-
-    private void appendValueObjectHints(PropertySpec.Builder prop, List<AnnotationRef> annotations) {
-        Set<String> hints = new HashSet<>();
-        for (AnnotationRef annotation : annotations) {
-            if(annotation.name().equalsIgnoreCase("(value-object-hint)")) {
-                if(annotation.structuredValue().properties().get(0) != null
-                        && annotation.structuredValue().properties().get(0).isArray()) {
-                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
-                        hints.add(typeInstance.value().toString());
-                    }
-                }
-            }
-        }
-        if(! hints.isEmpty()) {
-            prop.hints(hints);
-        }
-
     }
 }

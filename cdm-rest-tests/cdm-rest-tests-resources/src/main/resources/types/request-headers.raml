@@ -4,9 +4,17 @@ version: v1
 baseUri: https://api.codingmatters.org/query-headers
 mediaType: application/json
 
+annotationTypes:
+   value-object-hint:
+      type: string[]
+   conforms-to:
+      type: string[]
+
 /root:
     displayName: RootResource
+    (conforms-to): [org.fake.Protocol1]
     get:
+        (conforms-to): [org.fake.Protocol2]
         headers:
             stringParam:
                 type: string
