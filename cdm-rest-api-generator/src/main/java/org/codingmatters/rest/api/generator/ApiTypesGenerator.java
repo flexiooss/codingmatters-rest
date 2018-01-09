@@ -26,6 +26,8 @@ public class ApiTypesGenerator {
             if(typeDeclaration.type().equals("object")) {
                 ValueSpec.Builder valueSpec = ValueSpec.valueSpec()
                         .name(this.naming.type(typeDeclaration.name()));
+                this.processTypeAnnotations(valueSpec, typeDeclaration.annotations());
+
                 for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
                     PropertySpec.Builder prop = PropertySpec.property()
                             .name(this.naming.property(declaration.name()))
@@ -123,6 +125,20 @@ public class ApiTypesGenerator {
             embedded.addProperty(prop);
         }
         return embedded;
+    }
+
+
+    private void processTypeAnnotations(ValueSpec.Builder valueSpec, List<AnnotationRef> annotations) {
+        for (AnnotationRef annotation : annotations) {
+            if (annotation.name().equalsIgnoreCase("(conforms-to)")) {
+                if(annotation.structuredValue().properties().get(0) != null
+                        && annotation.structuredValue().properties().get(0).isArray()) {
+                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
+                        valueSpec.addConformsTo(typeInstance.value().toString());
+                    }
+                }
+            }
+        }
     }
 
     private void appendValueObjectHints(PropertySpec.Builder prop, List<AnnotationRef> annotations) {

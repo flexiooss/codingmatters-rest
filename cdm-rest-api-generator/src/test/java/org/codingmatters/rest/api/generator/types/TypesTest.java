@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -258,6 +259,17 @@ public class TypesTest {
                                         .typeKind(TypeKind.JAVA_TYPE)
                                         .typeRef(String.class.getName())
                                 ))
+                        .build()
+                )
+        );
+    }
+
+    @Test
+    public void typeWithProtocol() throws Exception {
+        assertThat(
+                this.spec.valueSpec("TypeWithProtocol"),
+                is(ValueSpec.valueSpec().name("TypeWithProtocol")
+                        .addConformsTo(Serializable.class.getName())
                         .build()
                 )
         );
