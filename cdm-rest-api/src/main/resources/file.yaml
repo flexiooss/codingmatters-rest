@@ -1,3 +1,4 @@
 file:
   contentType: string
   content: bytes
+  $conforms-to: org.codingmatters.rest.api.types.FileAsStream
