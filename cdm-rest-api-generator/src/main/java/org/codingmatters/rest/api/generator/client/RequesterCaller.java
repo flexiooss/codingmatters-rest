@@ -170,7 +170,7 @@ public class RequesterCaller {
     }
 
     private void makeRequest(MethodSpec.Builder caller) {
-        if(this.method.method().equals("get") || this.method.method().equals("delete")) {
+        if(this.method.method().equals("get") || this.method.method().equals("delete")|| this.method.method().equals("head")) {
             caller.addStatement("$T response = requester.$L()", ResponseDelegate.class, this.method.method());
         } else if(this.method.body().isEmpty()) {
             caller.addStatement("$T response = requester.$L($S, new byte[0])", ResponseDelegate.class, this.method.method(), "application/json");
