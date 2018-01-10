@@ -6,11 +6,11 @@ import java.io.InputStream;
 public interface FileAsStream {
     byte [] content();
 
-    default InputStream asStream() {
+    default InputStream inputStream() {
         return new ByteArrayInputStream(content());
     }
 
-    default String asString() {
+    default String string() {
         return new String(content());
     }
 }
