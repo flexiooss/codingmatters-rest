@@ -9,11 +9,16 @@ public class TestResponseDeleguate implements ResponseDelegate {
     private final int code;
     private final byte[] body;
     private final Map<String, String[]> headers;
+    private final String contentType;
 
     public TestResponseDeleguate(int code, byte[] body, Map<String, String[]> headers) {
+        this(code, body, headers, null);
+    }
+    public TestResponseDeleguate(int code, byte[] body, Map<String, String[]> headers, String contentType) {
         this.code = code;
         this.body = body;
         this.headers = headers;
+        this.contentType=  contentType;
     }
 
     @Override
@@ -29,5 +34,10 @@ public class TestResponseDeleguate implements ResponseDelegate {
     @Override
     public String[] header(String name) {
         return this.headers.get(name);
+    }
+
+    @Override
+    public String contentType() {
+        return this.contentType;
     }
 }

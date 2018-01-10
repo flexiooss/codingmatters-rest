@@ -4,6 +4,7 @@ import java.io.IOException;
 
 public interface Requester {
     ResponseDelegate get() throws IOException;
+    ResponseDelegate head() throws IOException;
     ResponseDelegate post(String contentType, byte[] body) throws IOException;
     ResponseDelegate put(String contentType, byte[] body) throws IOException;
     ResponseDelegate patch(String contentType, byte[] body) throws IOException;

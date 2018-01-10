@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 
 public class TestRequesterFactory implements RequesterFactory {
 
-    public enum Method {GET, POST, PUT, PATCH, DELETE}
+    public enum Method {GET, HEAD, POST, PUT, PATCH, DELETE}
 
     static public class Call {
         private final Method method;

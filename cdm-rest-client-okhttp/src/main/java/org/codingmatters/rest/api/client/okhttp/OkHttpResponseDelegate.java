@@ -15,11 +15,13 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     private final int code;
     private final byte[] body;
     private final Map<String, List<String>> headers;
+    private final String contentType;
 
     public OkHttpResponseDelegate(Response response) throws IOException {
         //this.response = response;
         this.code = response.code();
         try(ResponseBody body = response.body()) {
+            this.contentType = response.body().contentType() != null ? response.body().contentType().toString() : null;
             this.body = body.bytes();
         }
         this.headers = new HashMap<>(response.headers().toMultimap());
@@ -44,5 +46,10 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
         //List<String> headers = this.response.headers(name);
         List<String> header = this.headers.get(name.toLowerCase());
         return header != null ? header.toArray(new String [headers.size()]) : null;
+    }
+
+    @Override
+    public String contentType() {
+        return this.contentType;
     }
 }

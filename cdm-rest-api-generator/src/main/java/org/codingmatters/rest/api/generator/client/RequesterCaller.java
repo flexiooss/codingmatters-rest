@@ -1,19 +1,22 @@
 package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
+import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.type.RamlType;
+import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +26,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class RequesterCaller {
+    static private Logger log = LoggerFactory.getLogger(RequesterCaller.class);
+
     private final String typesPackage;
     private final ResourceNaming naming;
     private final Method method;
@@ -240,22 +245,12 @@ public class RequesterCaller {
     private void parseBody(MethodSpec.Builder caller, Response response) {
         TypeDeclaration bodyType = ! response.body().isEmpty() ? response.body().get(0) : null;
         if(bodyType  != null) {
-            caller.beginControlFlow("try($T parser = this.jsonFactory.createParser(response.body()))",
-                    JsonParser.class
-            );
-            if(bodyType instanceof ArrayTypeDeclaration) {
-                caller.addStatement("responseBuilder.payload(new $T().readArray(parser))",
-                        ClassName.get(
-                                this.typesPackage + ".json",
-                                this.naming.type(((ArrayTypeDeclaration)bodyType).items().name(), "Reader")
-                        )
-                );
-            } else {
-                caller.addStatement("responseBuilder.payload(new $T().read(parser))",
-                        ClassName.get(this.typesPackage + ".json", this.naming.type(bodyType.type(), "Reader"))
-                );
+            try {
+                SupportedMediaType.from(response).bodyReaderStatement(response, this.typesPackage, this.naming).append(caller);
+            } catch (UnsupportedMediaTypeException e) {
+                log.error("error while processing response", e);
+                return ;
             }
-            caller.endControlFlow();
         }
     }
 

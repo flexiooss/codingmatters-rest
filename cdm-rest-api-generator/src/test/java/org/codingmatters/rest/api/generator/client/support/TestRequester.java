@@ -32,6 +32,11 @@ public class TestRequester implements Requester {
     }
 
     @Override
+    public ResponseDelegate head() throws IOException {
+        return this.nextResponse(HEAD, null, null);
+    }
+
+    @Override
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
         return this.nextResponse(POST, contentType, body);
     }

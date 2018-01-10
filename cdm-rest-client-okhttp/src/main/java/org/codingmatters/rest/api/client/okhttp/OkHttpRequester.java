@@ -34,6 +34,14 @@ public class OkHttpRequester implements Requester {
         }
     }
 
+    @Override
+    public ResponseDelegate head() throws IOException {
+        Request request = this.prepareRequestBuilder().head().build();
+        try (Response response = this.client.newCall(request).execute()) {
+            return new OkHttpResponseDelegate(response);
+        }
+    }
+
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
         Request request = this.prepareRequestBuilder().post(RequestBody.create(MediaType.parse(contentType), body)).build();
         try (Response response = this.client.newCall(request).execute()) {
