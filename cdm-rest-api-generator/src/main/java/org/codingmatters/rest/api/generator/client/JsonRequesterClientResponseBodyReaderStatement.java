@@ -7,13 +7,13 @@ import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
-public class JsonRequesterBodyReaderStatement implements BodyReaderStatement {
+public class JsonRequesterClientResponseBodyReaderStatement implements ClientResponseBodyReaderStatement {
 
     private final Response response;
     private final String typesPackage;
     private final ResourceNaming naming;
 
-    public JsonRequesterBodyReaderStatement(Response response, String typesPackage, ResourceNaming naming) {
+    public JsonRequesterClientResponseBodyReaderStatement(Response response, String typesPackage, ResourceNaming naming) {
         this.response = response;
         this.typesPackage = typesPackage;
         this.naming = naming;

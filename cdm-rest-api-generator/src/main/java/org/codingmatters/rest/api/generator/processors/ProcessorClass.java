@@ -1,12 +1,13 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.*;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
+import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
+import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;
@@ -189,18 +190,16 @@ public class ProcessorClass {
     }
 
     private void addRequestPayloadProcessing(Method resourceMethod, MethodSpec.Builder method) {
-        method.addStatement("$T payload = requestDelegate.payload()", InputStream.class);
-        method.beginControlFlow("try");
-        method.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
-        method.addStatement("requestBuilder.payload(new $T().read(parser))",
-                ClassName.get(this.typesPackage + ".json", this.naming.type(resourceMethod.body().get(0).type(), "Reader"))
-        );
-        method.nextControlFlow("catch(IOException e)");
-        method
-                .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
-                .addStatement("log.info($S)", "malformed request")
-                .addStatement("return");
+        SupportedMediaType mediaType;
+        try {
+            mediaType = SupportedMediaType.from(resourceMethod);
+        } catch (UnsupportedMediaTypeException e) {
+            log.error("error while processing response", e);
+            return ;
+        }
 
+        method.beginControlFlow("try($T payload = requestDelegate.payload())", InputStream.class);
+        mediaType.processorBodyReaderStatement(resourceMethod, this.typesPackage, this.naming).append(method);
         method.endControlFlow();
     }
 

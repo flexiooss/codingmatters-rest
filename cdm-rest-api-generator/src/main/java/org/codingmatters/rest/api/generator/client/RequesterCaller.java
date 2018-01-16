@@ -1,6 +1,5 @@
 package org.codingmatters.rest.api.generator.client;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -180,27 +179,17 @@ public class RequesterCaller {
             caller.addStatement("byte[] requestBody = new byte[0]");
             caller.beginControlFlow("if(request.payload() != null)");
             caller.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
-            caller.beginControlFlow("try($T generator = this.jsonFactory.createGenerator(out))", JsonGenerator.class);
 
-            if(body instanceof ArrayTypeDeclaration) {
-                // TODO replace with list writer
-                String elementType = ((ArrayTypeDeclaration) body).items().name();
-                caller.addStatement("generator.writeStartArray()");
-                caller.beginControlFlow("for ($T element : request.payload())", ClassName.get(this.typesPackage, this.naming.type(elementType)))
-                        .beginControlFlow("if(element != null)")
-                        .addStatement("new $T().write(generator, element)", ClassName.get(this.typesPackage + ".json", this.naming.type(elementType, "Writer")))
-                        .nextControlFlow("else")
-                        .addStatement("generator.writeNull()")
-                        .endControlFlow()
-                        .endControlFlow();
-                caller.addStatement("generator.writeEndArray()");
-            } else {
-                caller.addStatement(
-                        "new $T().write(generator, request.payload())",
-                        ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer"))
-                );
+            SupportedMediaType mediaType;
+            try {
+                mediaType = SupportedMediaType.from(this.method);
+            } catch (UnsupportedMediaTypeException e) {
+                log.error("unsupported request media type : " + this.method.body().get(0).type());
+                return ;
             }
-            caller.endControlFlow();
+
+            mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming).append(caller);
+
             caller.addStatement("requestBody = out.toByteArray()");
             caller.endControlFlow();
             caller.endControlFlow();
@@ -246,7 +235,7 @@ public class RequesterCaller {
         TypeDeclaration bodyType = ! response.body().isEmpty() ? response.body().get(0) : null;
         if(bodyType  != null) {
             try {
-                SupportedMediaType.from(response).bodyReaderStatement(response, this.typesPackage, this.naming).append(caller);
+                SupportedMediaType.from(response).clientBodyReaderStatement(response, this.typesPackage, this.naming).append(caller);
             } catch (UnsupportedMediaTypeException e) {
                 log.error("error while processing response", e);
                 return ;

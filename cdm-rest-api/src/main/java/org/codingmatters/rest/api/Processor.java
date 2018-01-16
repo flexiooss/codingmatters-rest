@@ -7,4 +7,18 @@ import java.io.IOException;
  */
 public interface Processor {
     void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException;
+
+    enum Variables {
+        API_PATH("%API_PATH%");
+
+        private final String token;
+
+        Variables(String token) {
+            this.token = token;
+        }
+
+        public String token() {
+            return token;
+        }
+    }
 }

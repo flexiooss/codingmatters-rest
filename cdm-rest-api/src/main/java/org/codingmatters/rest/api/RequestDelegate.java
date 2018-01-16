@@ -12,6 +12,7 @@ public interface RequestDelegate {
     Matcher pathMatcher(String regex);
     Method method();
     InputStream payload();
+    String contentType();
 
     Map<String,List<String>> uriParameters(String pathExpression);
     Map<String,List<String>> queryParameters();

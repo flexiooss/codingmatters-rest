@@ -90,7 +90,7 @@ public class ProcessorResponse {
 
     private void addResponsePayloadProcessingStatements(Response response, MethodSpec.Builder method) {
         try {
-            ResponseStatement statement = ResponseStatement.from(response, this.typesPackage, this.naming);
+            ProcessorResponseBodyWriterStatement statement = ProcessorResponseBodyWriterStatement.from(response, this.typesPackage, this.naming);
             statement.appendContentType(method);
             statement.appendTo(method);
         } catch (UnsupportedMediaTypeException e) {

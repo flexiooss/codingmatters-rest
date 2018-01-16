@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator.processors.responses;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import org.codingmatters.rest.api.generator.processors.ResponseStatement;
+import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -11,7 +11,7 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import java.io.ByteArrayOutputStream;
 
-public class JsonResponseStatement implements ResponseStatement {
+public class JsonProcessorResponseStatement implements ProcessorResponseBodyWriterStatement {
 
     private final Response response;
     private final TypeDeclaration body;
@@ -19,7 +19,7 @@ public class JsonResponseStatement implements ResponseStatement {
     private final Naming naming;
     private final String typesPackage;
 
-    public JsonResponseStatement(Response response, String typesPackage, Naming naming) {
+    public JsonProcessorResponseStatement(Response response, String typesPackage, Naming naming) {
         this.response = response;
         this.body = response.body().get(0);
         this.typesPackage = typesPackage;

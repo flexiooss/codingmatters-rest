@@ -2,6 +2,7 @@ package org.codingmatters.rest.undertow;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
+import io.undertow.util.Headers;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
 import org.slf4j.Logger;
@@ -59,6 +60,11 @@ public class UndertowRequestDelegate implements RequestDelegate {
             this.exchange.startBlocking();
         }
         return this.exchange.getInputStream();
+    }
+
+    @Override
+    public String contentType() {
+        return this.exchange.getRequestHeaders().getFirst(Headers.CONTENT_TYPE);
     }
 
     @Override

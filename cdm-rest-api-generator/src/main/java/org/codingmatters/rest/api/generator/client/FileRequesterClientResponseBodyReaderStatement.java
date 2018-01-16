@@ -4,12 +4,12 @@ import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.types.File;
 import org.raml.v2.api.model.v10.bodies.Response;
 
-public class FileRequesterBodyReaderStatement implements BodyReaderStatement {
+public class FileRequesterClientResponseBodyReaderStatement implements ClientResponseBodyReaderStatement {
     private final Response response;
     private final String typesPackage;
     private final ResourceNaming naming;
 
-    public FileRequesterBodyReaderStatement(Response response, String typesPackage, ResourceNaming naming) {
+    public FileRequesterClientResponseBodyReaderStatement(Response response, String typesPackage, ResourceNaming naming) {
         this.response = response;
         this.typesPackage = typesPackage;
         this.naming = naming;

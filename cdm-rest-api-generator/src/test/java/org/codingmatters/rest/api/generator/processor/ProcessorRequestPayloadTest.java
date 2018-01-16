@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
+import org.codingmatters.rest.api.types.File;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +46,29 @@ public class ProcessorRequestPayloadTest extends AbstractProcessorHttpRequestTes
         assertThat(
                 this.compiled.on(request).castedTo("org.generated.api.PayloadPostRequest").invoke("payload"),
                 isA(this.compiled.getClass("org.generated.types.Req"))
+        );
+    }
+
+    @Test
+    public void filePayload() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        this.setupProcessorWithHandler(
+                "filePayloadPostHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/file-payload/")
+                .post(RequestBody.create(MediaType.parse("application/octet-stream"), "just a bunch of bytes".getBytes()))
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.FilePayloadPostRequest").invoke("payload"),
+                isA(this.compiled.getClass(File.class.getName()))
         );
     }
 

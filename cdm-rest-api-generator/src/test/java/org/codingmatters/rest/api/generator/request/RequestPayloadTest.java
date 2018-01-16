@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.generator.request;
 
 import org.codingmatters.rest.api.generator.ApiGenerator;
+import org.codingmatters.rest.api.types.File;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
@@ -36,6 +37,26 @@ public class RequestPayloadTest {
                                 .type(PropertyTypeSpec.type()
                                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef("org.generated.types.AType")
+                                )
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void filePayload() throws Exception {
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            System.out.println(valueSpec);
+        }
+
+        assertThat(
+                this.spec.valueSpec("FilePayloadPostRequest"),
+                is(ValueSpec.valueSpec().name("FilePayloadPostRequest")
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(File.class.getName())
                                 )
                         )
                         .build())

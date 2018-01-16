@@ -122,6 +122,11 @@ public class RequestDelegateUriParameterTest {
         }
 
         @Override
+        public String contentType() {
+            return null;
+        }
+
+        @Override
         public String absolutePath(String relative) {
             return null;
         }
