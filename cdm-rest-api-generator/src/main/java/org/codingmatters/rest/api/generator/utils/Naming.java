@@ -1,5 +1,8 @@
 package org.codingmatters.rest.api.generator.utils;
 
+import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+
 import java.util.LinkedList;
 import java.util.function.Function;
 
@@ -42,5 +45,10 @@ public class Naming {
     }
     private String lowerCaseFirst(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
+    }
+
+    public boolean isArbitraryObject(TypeDeclaration typeDeclaration) {
+        return typeDeclaration.type().equals("object") &&
+                ((ObjectTypeDeclaration)typeDeclaration).properties().isEmpty();
     }
 }

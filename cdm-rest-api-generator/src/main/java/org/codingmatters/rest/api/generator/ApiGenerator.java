@@ -7,6 +7,7 @@ import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.codingmatters.rest.api.types.File;
 import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -80,27 +81,41 @@ public class ApiGenerator {
             return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
             if (typeDeclaration instanceof ArrayTypeDeclaration) {
-                String typeRef;
-                if(((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
-                    typeRef = File.class.getName();
+                if(this.naming.isArbitraryObject(((ArrayTypeDeclaration) typeDeclaration).items())) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(ObjectValue.class.getName());
                 } else {
-                    typeRef = this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name();
+                    String typeRef;
+                    if (((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
+                        typeRef = File.class.getName();
+                    } else {
+                        typeRef = this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name();
+                    }
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(typeRef);
                 }
-                return PropertyTypeSpec.type()
-                        .cardinality(PropertyCardinality.LIST)
-                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                        .typeRef(typeRef);
             } else {
-                String typeRef;
-                if(typeDeclaration.type().equals("file")) {
-                    typeRef = File.class.getName();
+                if(this.naming.isArbitraryObject(typeDeclaration)) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.SINGLE)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(ObjectValue.class.getName());
                 } else {
-                    typeRef = this.typesPackage + "." + typeDeclaration.type();
+                    String typeRef;
+                    if (typeDeclaration.type().equals("file")) {
+                        typeRef = File.class.getName();
+                    } else {
+                        typeRef = this.typesPackage + "." + typeDeclaration.type();
+                    }
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.SINGLE)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(typeRef);
                 }
-                return PropertyTypeSpec.type()
-                        .cardinality(PropertyCardinality.SINGLE)
-                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                        .typeRef(typeRef);
             }
         }
     }

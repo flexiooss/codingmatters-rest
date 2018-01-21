@@ -85,3 +85,11 @@ types:
     TypeWithProtocol:
         (conforms-to): [java.io.Serializable]
         type: object
+
+    TypeWithObjectProperty:
+        type: object
+        properties:
+            obj: object
+            objs:
+               type: array
+               items: object

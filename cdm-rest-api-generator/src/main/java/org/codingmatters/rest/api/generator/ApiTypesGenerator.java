@@ -5,6 +5,7 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
@@ -53,7 +54,12 @@ public class ApiTypesGenerator {
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration declaration) throws RamlSpecException {
         if(declaration instanceof ArrayTypeDeclaration) {
             if(((ArrayTypeDeclaration)declaration).items().type().equals("object")) {
-                if(((ArrayTypeDeclaration)declaration).items().name().equals("object")) {
+                if(this.naming.isArbitraryObject(((ArrayTypeDeclaration) declaration).items())) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(ObjectValue.class.getName());
+                } else if(((ArrayTypeDeclaration)declaration).items().name().equals("object")) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EMBEDDED)
@@ -67,9 +73,12 @@ public class ApiTypesGenerator {
             } else {
                 return this.simpleProperty(((ArrayTypeDeclaration)declaration).items(), PropertyCardinality.LIST);
             }
-        }
-
-        if(declaration.type().equals("object")) {
+        } else if(this.naming.isArbitraryObject(declaration)) {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                    .typeRef(ObjectValue.class.getName());
+        } else if(declaration.type().equals("object")) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EMBEDDED)

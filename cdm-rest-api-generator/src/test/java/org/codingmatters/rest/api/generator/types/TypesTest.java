@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator.types;
 import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -274,6 +275,37 @@ public class TypesTest {
                 )
         );
     }
+
+
+    @Test
+    public void typeWithObjectProperty() throws Exception {
+        assertThat(
+                this.spec.valueSpec("TypeWithObjectProperty"),
+                is(ValueSpec.valueSpec().name("TypeWithObjectProperty")
+                        .addProperty(PropertySpec.property()
+                                .name("obj")
+                                .hints(set("property:raw(obj)"))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("objs")
+                                .hints(set("property:raw(objs)"))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.LIST)
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+
+
+
 
     private Set<String> set(String ... values) {
         return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();

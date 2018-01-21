@@ -4,6 +4,7 @@ import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.rest.api.types.File;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,6 +70,22 @@ public class ResponsePayloadTest {
                                 .type(PropertyTypeSpec.type()
                                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef(File.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void objectPayload() throws Exception {
+        assertThat(
+                this.spec.valueSpec("ObjectPayloadGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec(),
+                is(AnonymousValueSpec.anonymousValueSpec()
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
                                 )
                         )
                         .build())

@@ -4,6 +4,7 @@ import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.rest.api.types.File;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +58,26 @@ public class RequestPayloadTest {
                                 .type(PropertyTypeSpec.type()
                                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef(File.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void objectPayload() throws Exception {
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            System.out.println(valueSpec);
+        }
+
+        assertThat(
+                this.spec.valueSpec("ArbitraryObjectPostRequest"),
+                is(ValueSpec.valueSpec().name("ArbitraryObjectPostRequest")
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
                                 )
                         )
                         .build())
