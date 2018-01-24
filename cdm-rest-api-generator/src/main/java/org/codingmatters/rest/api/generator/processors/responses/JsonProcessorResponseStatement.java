@@ -72,7 +72,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
     }
 
     private ClassName elementClassName(String elementType) {
-        if(elementType.equals("object")) {
+        if("object".equals(elementType) || "object[]".equals(elementType)) {
             return ClassName.get(ObjectValue.class);
         } else {
             return ClassName.get(this.typesPackage, this.naming.type(elementType));
@@ -80,7 +80,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
     }
 
     private ClassName writerClassName(String type) {
-        if(type.equals("object")) {
+        if("object".equals(type) || "object[]".equals(type)) {
             return ClassName.get(ObjectValueWriter.class);
         } else {
             return ClassName.get(this.typesPackage + ".json", this.naming.type(type, "Writer"));

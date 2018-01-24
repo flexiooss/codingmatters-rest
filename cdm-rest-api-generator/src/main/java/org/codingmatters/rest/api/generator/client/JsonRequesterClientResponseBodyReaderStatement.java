@@ -38,7 +38,7 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
     }
 
     private ClassName readerClassName(String elementType) {
-        if(elementType.equals("object")) {
+        if("object".equals(elementType) || "object[]".equals(elementType)) {
             return ClassName.get(ObjectValueReader.class);
         } else {
             return ClassName.get(
