@@ -22,3 +22,64 @@ mediaType: application/json
         /leaf-2:
             displayName: SecondResource
             get:
+
+
+
+/obj:
+    displayName: Obj
+    get:
+        body: object
+        responses:
+            200:
+                body: object
+/obj-array:
+    displayName: ObjArray
+    get:
+        body:
+            type: array
+            items: object
+        responses:
+            200:
+                body:
+                    type: array
+                    items: object
+/obj-array-inline:
+    displayName: ObjArrayInline
+    get:
+        body: object[]
+        responses:
+            200:
+                body: object[]
+
+/simple-type:
+    displayName: SimpleType
+    get:
+        body: SimpleType
+        responses:
+            200:
+               body: SimpleType
+/simple-type-array:
+    displayName: SimpleTypeArray
+    get:
+        body:
+            type: array
+            items: SimpleType
+        responses:
+            200:
+               body:
+                   type: array
+                   items: SimpleType
+/simple-type-array-inline:
+    displayName: SimpleTypeArrayInline
+    get:
+        body: SimpleType[]
+        responses:
+            200:
+               body: SimpleType[]
+
+
+types:
+    SimpleType:
+        type: object
+        properties:
+            prop: string

@@ -40,6 +40,7 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
     private void generateTypes(RamlModelResult ramlModel) throws MojoExecutionException {
         try {
             Spec spec = new ApiTypesGenerator().generate(ramlModel);
+            getLog().debug("Types Spec : " + spec);
             this.generateCodeFromSpec(spec, this.destinationPackage + ".types");
         } catch (RamlSpecException e) {
             throw new MojoExecutionException("error generating value object spec from raml api types", e);
@@ -49,6 +50,7 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
     private void generateApi(RamlModelResult ramlModel) throws MojoExecutionException {
         try {
             Spec spec = new ApiGenerator(this.destinationPackage + ".types").generate(ramlModel);
+            getLog().debug("API Spec : " + spec);
             this.generateCodeFromSpec(spec, this.destinationPackage);
         } catch (RamlSpecException e) {
             throw new MojoExecutionException("error generating value object spec from raml api types", e);

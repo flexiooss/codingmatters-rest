@@ -81,7 +81,7 @@ public class ApiGenerator {
             return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
             if (typeDeclaration instanceof ArrayTypeDeclaration) {
-                if(this.naming.isArbitraryObject(((ArrayTypeDeclaration) typeDeclaration).items())) {
+                if(this.naming.isArbitraryObjectArray(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
@@ -91,7 +91,8 @@ public class ApiGenerator {
                     if (((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
                         typeRef = File.class.getName();
                     } else {
-                        typeRef = this.typesPackage + "." + ((ArrayTypeDeclaration) typeDeclaration).items().name();
+                        String typeName = ((ArrayTypeDeclaration) typeDeclaration).items().type().equals("object") ? ((ArrayTypeDeclaration) typeDeclaration).items().name() : ((ArrayTypeDeclaration) typeDeclaration).items().type();
+                        typeRef = this.typesPackage + "." + typeName;
                     }
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)

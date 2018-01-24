@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.generator.utils;
 
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
@@ -52,4 +53,16 @@ public class Naming {
                 ((ObjectTypeDeclaration)typeDeclaration).properties().isEmpty();
     }
 
+    public boolean isArbitraryObjectArray(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration instanceof ArrayTypeDeclaration) {
+            ArrayTypeDeclaration arrayDeclaration = (ArrayTypeDeclaration) typeDeclaration;
+            if(arrayDeclaration.items().type() == null) {
+                return "object[]".equals(arrayDeclaration.items().name());
+            }
+            return "object".equals(arrayDeclaration.items().type()) &&
+                    ((ObjectTypeDeclaration)arrayDeclaration.items()).properties().isEmpty();
+        } else {
+            return false;
+        }
+    }
 }
