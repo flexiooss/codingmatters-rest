@@ -3,6 +3,8 @@ package org.codingmatters.rest.api.generator.client;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.json.ObjectValueWriter;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -26,9 +28,9 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
             // TODO replace with list writer
             String elementType = ((ArrayTypeDeclaration) body).items().name();
             caller.addStatement("generator.writeStartArray()");
-            caller.beginControlFlow("for ($T element : request.payload())", ClassName.get(this.typesPackage, this.naming.type(elementType)))
+            caller.beginControlFlow("for ($T element : request.payload())", this.elementClassName(elementType))
                     .beginControlFlow("if(element != null)")
-                    .addStatement("new $T().write(generator, element)", ClassName.get(this.typesPackage + ".json", this.naming.type(elementType, "Writer")))
+                    .addStatement("new $T().write(generator, element)", this.writerClassName(elementType))
                     .nextControlFlow("else")
                     .addStatement("generator.writeNull()")
                     .endControlFlow()
@@ -37,9 +39,29 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
         } else {
             caller.addStatement(
                     "new $T().write(generator, request.payload())",
-                    ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer"))
+                    this.writerClassName(body.type())
             );
         }
         caller.endControlFlow();
+    }
+
+
+
+
+
+    private ClassName elementClassName(String elementType) {
+        if(elementType.equals("object")) {
+            return ClassName.get(ObjectValue.class);
+        } else {
+            return ClassName.get(this.typesPackage, this.naming.type(elementType));
+        }
+    }
+
+    private ClassName writerClassName(String type) {
+        if(type.equals("object")) {
+            return ClassName.get(ObjectValueWriter.class);
+        } else {
+            return ClassName.get(this.typesPackage + ".json", this.naming.type(type, "Writer"));
+        }
     }
 }

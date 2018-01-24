@@ -51,4 +51,5 @@ public class Naming {
         return typeDeclaration.type().equals("object") &&
                 ((ObjectTypeDeclaration)typeDeclaration).properties().isEmpty();
     }
+
 }

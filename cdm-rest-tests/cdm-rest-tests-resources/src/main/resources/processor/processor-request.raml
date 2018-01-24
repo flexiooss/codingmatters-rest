@@ -12,6 +12,16 @@ mediaType: application/json
   displayName: FilePayload
   post:
     body: file
+/arbitrary-object-payload:
+  displayName: ArbitraryObjectPayload
+  post:
+    body: object
+/arbitrary-object-array-payload:
+  displayName: ArbitraryObjectArrayPayload
+  post:
+    body:
+      type: array
+      items: object
 
 /query-params:
   displayName: QueryParams
