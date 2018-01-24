@@ -5,6 +5,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.json.ObjectValueWriter;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -51,9 +53,9 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
             // TODO replace with list writer
             String elementType = ((ArrayTypeDeclaration) body).items().name();
             method.addStatement("generator.writeStartArray()");
-            method.beginControlFlow("for ($T element : response.status$L().payload())", ClassName.get(this.typesPackage, this.naming.type(elementType)), response.code().value())
+            method.beginControlFlow("for ($T element : response.status$L().payload())", this.elementClassName(elementType), response.code().value())
                     .beginControlFlow("if(element != null)")
-                    .addStatement("new $T().write(generator, element)", ClassName.get(this.typesPackage + ".json", this.naming.type(elementType, "Writer")))
+                    .addStatement("new $T().write(generator, element)", this.writerClassName(elementType))
                     .nextControlFlow("else")
                     .addStatement("generator.writeNull()")
                     .endControlFlow()
@@ -62,11 +64,27 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
         } else {
             method.addStatement(
                     "new $T().write(generator, response.status$L().payload())",
-                    ClassName.get(this.typesPackage + ".json", this.naming.type(body.type(), "Writer")),
+                    this.writerClassName(body.type()),
                     response.code().value()
             );
         }
         method.endControlFlow();
+    }
+
+    private ClassName elementClassName(String elementType) {
+        if(elementType.equals("object")) {
+            return ClassName.get(ObjectValue.class);
+        } else {
+            return ClassName.get(this.typesPackage, this.naming.type(elementType));
+        }
+    }
+
+    private ClassName writerClassName(String type) {
+        if(type.equals("object")) {
+            return ClassName.get(ObjectValueWriter.class);
+        } else {
+            return ClassName.get(this.typesPackage + ".json", this.naming.type(type, "Writer"));
+        }
     }
 
 }

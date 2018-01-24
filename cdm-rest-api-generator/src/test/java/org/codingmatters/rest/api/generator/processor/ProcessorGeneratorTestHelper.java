@@ -61,6 +61,7 @@ public class ProcessorGeneratorTestHelper {
 
         this.compiled = CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
+                .classpath(CompiledCode.findLibraryInClasspath("cdm-value-objects-values"))
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .classpath(CompiledCode.findLibraryInClasspath("slf4j-api"))
                 .source(this.dir.getRoot())

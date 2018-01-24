@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator.client;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.value.objects.values.json.ObjectValueReader;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -27,18 +28,24 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
                 JsonParser.class
         );
         if(bodyType instanceof ArrayTypeDeclaration) {
-            caller.addStatement("responseBuilder.payload(new $T().readArray(parser))",
-                    ClassName.get(
-                            this.typesPackage + ".json",
-                            this.naming.type(((ArrayTypeDeclaration)bodyType).items().name(), "Reader")
-                    )
-            );
+            String elementType = ((ArrayTypeDeclaration) bodyType).items().name();
+            caller.addStatement("responseBuilder.payload(new $T().readArray(parser))", this.readerClassName(elementType));
         } else {
-            caller.addStatement("responseBuilder.payload(new $T().read(parser))",
-                    ClassName.get(this.typesPackage + ".json", this.naming.type(bodyType.type(), "Reader"))
-            );
+            String elementType = bodyType.type();
+            caller.addStatement("responseBuilder.payload(new $T().read(parser))", this.readerClassName(elementType));
         }
         caller.endControlFlow();
+    }
+
+    private ClassName readerClassName(String elementType) {
+        if(elementType.equals("object")) {
+            return ClassName.get(ObjectValueReader.class);
+        } else {
+            return ClassName.get(
+                    this.typesPackage + ".json",
+                    this.naming.type(elementType, "Reader")
+            );
+        }
     }
 
 }

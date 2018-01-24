@@ -32,6 +32,7 @@ public class ClientGeneratorHelper {
     public static CompiledCode compile(File dir) throws Exception {
         return CompiledCode.builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
+                .classpath(CompiledCode.findLibraryInClasspath("cdm-value-objects-values"))
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-client-api"))
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))

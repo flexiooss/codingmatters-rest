@@ -37,6 +37,21 @@ mediaType: application/json
       201:
       202:
 
+/arbitrary-object:
+  displayName: ArbitraryObject
+  get:
+    responses:
+      200:
+        body: object
+
+/arbitrary-object-array:
+  displayName: ArbitraryObjectArray
+  get:
+    responses:
+      200:
+        body:
+          type: array
+          items: object
 
 types:
   Resp:
