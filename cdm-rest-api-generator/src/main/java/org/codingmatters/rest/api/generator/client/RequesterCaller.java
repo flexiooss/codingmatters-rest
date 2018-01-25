@@ -196,10 +196,9 @@ public class RequesterCaller {
             caller.endControlFlow();
 
             writerStatement.appendContentTypeVariableCreate(caller);
-            caller.addStatement("$T response = requester.$L($S, requestBody)",
+            caller.addStatement("$T response = requester.$L(contentType, requestBody)",
                     ResponseDelegate.class,
-                    this.method.method(),
-                    "application/json"
+                    this.method.method()
             );
         }
     }
