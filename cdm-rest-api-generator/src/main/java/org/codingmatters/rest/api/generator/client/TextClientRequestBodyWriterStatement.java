@@ -18,4 +18,9 @@ public class TextClientRequestBodyWriterStatement implements ClientRequestBodyWr
     public void append(MethodSpec.Builder caller) {
         caller.addStatement("out.write(request.payload().getBytes())");
     }
+
+    @Override
+    public void appendContentTypeVariableCreate(MethodSpec.Builder caller) {
+        caller.addStatement("String contentType = $S", "text/plain");
+    }
 }

@@ -188,12 +188,19 @@ public class RequesterCaller {
                 return ;
             }
 
-            mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming).append(caller);
+            ClientRequestBodyWriterStatement writerStatement = mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming);
+            writerStatement.append(caller);
 
             caller.addStatement("requestBody = out.toByteArray()");
             caller.endControlFlow();
             caller.endControlFlow();
-            caller.addStatement("$T response = requester.$L($S, requestBody)", ResponseDelegate.class, this.method.method(), "application/json");
+
+            writerStatement.appendContentTypeVariableCreate(caller);
+            caller.addStatement("$T response = requester.$L($S, requestBody)",
+                    ResponseDelegate.class,
+                    this.method.method(),
+                    "application/json"
+            );
         }
     }
 

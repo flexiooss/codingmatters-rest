@@ -45,8 +45,10 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
         caller.endControlFlow();
     }
 
-
-
+    @Override
+    public void appendContentTypeVariableCreate(MethodSpec.Builder caller) {
+        caller.addStatement("String contentType = $S", "application/json");
+    }
 
 
     private ClassName elementClassName(String elementType) {
