@@ -124,6 +124,7 @@ public class ProcessorClass {
                     resourceMethod.method().toUpperCase()
             );
             method.addStatement("this.$L(requestDelegate, responseDelegate)", this.methodProcessingMethodName(resourceMethod));
+            method.addStatement("return");
             method.endControlFlow();
         }
 
