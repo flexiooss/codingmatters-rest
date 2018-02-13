@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -304,8 +305,13 @@ public class TypesTest {
         );
     }
 
-
-
+    @Test
+    public void alreadyDefinedType() {
+        assertThat(
+                this.spec.valueSpec("AlreadyDefinedType"),
+                is(nullValue())
+        );
+    }
 
     private Set<String> set(String ... values) {
         return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();

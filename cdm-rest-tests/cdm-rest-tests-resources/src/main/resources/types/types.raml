@@ -10,6 +10,8 @@ annotationTypes:
       type: string[]
    conforms-to:
       type: string[]
+   already-defined:
+      type: string
 
 types:
     SimplePropertyType:
@@ -93,3 +95,7 @@ types:
             objs:
                type: array
                items: object
+
+    AlreadyDefinedType:
+        (already-defined): org.codingmatters.AnExternalValueObject
+        type: object

@@ -29,19 +29,21 @@ public class ApiTypesGenerator {
         Spec.Builder result = Spec.spec();
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
             if(typeDeclaration.type().equals("object")) {
-                ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
-                this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
+                if(!this.naming.isAlreadyDefined(typeDeclaration)) {
+                    ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
+                    this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
 
-                for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
-                    PropertySpec.Builder prop = PropertySpec.property()
-                            .name(this.naming.property(declaration.name()))
-                            .hints(this.rawNameHint(declaration))
-                            .type(this.typeSpecFromDeclaration(declaration));
-                    this.annotationProcessor.appendValueObjectHints(prop, declaration.annotations());
-                    valueSpec.addProperty(prop);
+                    for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
+                        PropertySpec.Builder prop = PropertySpec.property()
+                                .name(this.naming.property(declaration.name()))
+                                .hints(this.rawNameHint(declaration))
+                                .type(this.typeSpecFromDeclaration(declaration));
+                        this.annotationProcessor.appendValueObjectHints(prop, declaration.annotations());
+                        valueSpec.addProperty(prop);
+                    }
+
+                    result.addValue(valueSpec);
                 }
-
-                result.addValue(valueSpec);
             }
         }
         return result.build();

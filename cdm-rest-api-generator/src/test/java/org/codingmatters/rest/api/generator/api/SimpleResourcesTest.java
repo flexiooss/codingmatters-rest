@@ -205,4 +205,79 @@ public class SimpleResourcesTest {
                         .build())
         );
     }
+
+    @Test
+    public void alreadyDefinedRequestAndResponseBody() {
+        assertThat(spec.valueSpec("AlreadyDefinedRequestAndResponseBodyGetRequest").propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .build())
+        );
+
+        assertThat(spec.valueSpec("AlreadyDefinedRequestAndResponseBodyGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void alreadyDefinedArrayRequestAndResponseBody() {
+        assertThat(spec.valueSpec("AlreadyDefinedArrayRequestAndResponseBodyGetRequest").propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.LIST)
+                        )
+                        .build())
+        );
+
+        assertThat(spec.valueSpec("AlreadyDefinedArrayRequestAndResponseBodyGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.LIST)
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void alreadyDefinedInlineArrayRequestAndResponseBody() {
+        assertThat(spec.valueSpec("AlreadyDefinedInlineArrayRequestAndResponseBodyGetRequest").propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.LIST)
+                        )
+                        .build())
+        );
+
+        assertThat(spec.valueSpec("AlreadyDefinedInlineArrayRequestAndResponseBodyGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().propertySpec("payload"),
+                is(PropertySpec.property()
+                        .name("payload")
+                        .type(PropertyTypeSpec.type()
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .cardinality(PropertyCardinality.LIST)
+                        )
+                        .build())
+        );
+    }
 }

@@ -81,7 +81,12 @@ public class ApiGenerator {
             return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
             if (typeDeclaration instanceof ArrayTypeDeclaration) {
-                if(this.naming.isArbitraryObjectArray(typeDeclaration)) {
+                if(this.isAlreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items())) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(this.alreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items()));
+                } else if(this.naming.isArbitraryObjectArray(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
@@ -100,7 +105,12 @@ public class ApiGenerator {
                             .typeRef(typeRef);
                 }
             } else {
-                if(this.naming.isArbitraryObject(typeDeclaration)) {
+                if(this.isAlreadyDefined(typeDeclaration)) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.SINGLE)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(this.alreadyDefined(typeDeclaration));
+                } else if(this.naming.isArbitraryObject(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.SINGLE)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
@@ -119,6 +129,30 @@ public class ApiGenerator {
                 }
             }
         }
+    }
+
+    private String alreadyDefined(TypeDeclaration typeDeclaration) {
+        if(this.naming.isAlreadyDefined(typeDeclaration)) {
+            return this.naming.alreadyDefined(typeDeclaration);
+        }
+
+        for (TypeDeclaration parentType : typeDeclaration.parentTypes()) {
+            if (this.naming.isAlreadyDefined(parentType)) {
+                return this.naming.alreadyDefined(parentType);
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isAlreadyDefined(TypeDeclaration typeDeclaration) {
+        if(this.naming.isAlreadyDefined(typeDeclaration)) return true;
+        for (TypeDeclaration parentType : typeDeclaration.parentTypes()) {
+            if(this.naming.isAlreadyDefined(parentType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ValueSpec generateMethodResponseValue(Resource resource, Method method) throws RamlSpecException {

@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator.utils;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 
 import java.util.LinkedList;
 import java.util.function.Function;
@@ -56,6 +57,7 @@ public class Naming {
     public boolean isArbitraryObjectArray(TypeDeclaration typeDeclaration) {
         if(typeDeclaration instanceof ArrayTypeDeclaration) {
             ArrayTypeDeclaration arrayDeclaration = (ArrayTypeDeclaration) typeDeclaration;
+            System.out.println(arrayDeclaration.items().type() + "-" + arrayDeclaration.name() + "-" + arrayDeclaration.annotations());
             if(arrayDeclaration.items().type() == null) {
                 return "object[]".equals(arrayDeclaration.items().name());
             }
@@ -64,5 +66,25 @@ public class Naming {
         } else {
             return false;
         }
+    }
+
+    public  boolean isAlreadyDefined(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.annotations() == null) return false;
+        for (AnnotationRef annotation : typeDeclaration.annotations()) {
+            if (annotation.name().equalsIgnoreCase("(already-defined)")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String alreadyDefined(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.annotations() == null) return null;
+        for (AnnotationRef annotation : typeDeclaration.annotations()) {
+            if (annotation.name().equalsIgnoreCase("(already-defined)")) {
+                return annotation.structuredValue().value().toString();
+            }
+        }
+        return null;
     }
 }

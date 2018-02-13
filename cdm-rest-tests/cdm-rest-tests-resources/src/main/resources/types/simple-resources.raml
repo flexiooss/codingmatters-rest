@@ -4,6 +4,15 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
+
+annotationTypes:
+   value-object-hint:
+      type: string[]
+   conforms-to:
+      type: string[]
+   already-defined:
+      type: string
+
 /root:
     displayName: RootResource
     get:
@@ -77,9 +86,39 @@ mediaType: application/json
             200:
                body: SimpleType[]
 
+/already-defined-request-and-response-body:
+    displayName: AlreadyDefinedRequestAndResponseBody
+    get:
+        body: AlreadyDefinedType
+        responses:
+            200:
+               body: AlreadyDefinedType
+
+/already-defined-array-request-and-response-body:
+    displayName: AlreadyDefinedArrayRequestAndResponseBody
+    get:
+        body:
+            type: array
+            items: AlreadyDefinedType
+        responses:
+            200:
+               body:
+                  type: array
+                  items: AlreadyDefinedType
+/already-defined-inline-array-request-and-response-body:
+    displayName: AlreadyDefinedInlineArrayRequestAndResponseBody
+    get:
+        body: AlreadyDefinedType[]
+        responses:
+            200:
+               body: AlreadyDefinedType[]
 
 types:
     SimpleType:
         type: object
         properties:
             prop: string
+
+    AlreadyDefinedType:
+        (already-defined): org.codingmatters.AnAlreadyDefinedValueObject
+        type: object
