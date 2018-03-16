@@ -71,6 +71,8 @@
         <module>cdm-rest-client-okhttp</module>
 
         <module>cdm-rest-api-generator</module>
+        <module>cdm-rest-api-doc</module>
+
         <module>cdm-rest-maven-plugin</module>
 
         <module>cdm-rest-tests</module>

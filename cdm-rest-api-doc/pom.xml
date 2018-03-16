@@ -6,30 +6,30 @@
 
     <parent>
         <groupId>org.codingmatters.rest</groupId>
-        <artifactId>cdm-rest-tests</artifactId>
+        <artifactId>cdm-rest-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../cdm-rest-parent</relativePath>
     </parent>
 
-    <artifactId>cdm-rest-tests-support</artifactId>
+    <artifactId>cdm-rest-api-doc</artifactId>
+    <name>${project.groupId}:${project.artifactId}</name>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codingmatters.rest</groupId>
-            <artifactId>cdm-rest-api</artifactId>
+            <groupId>org.raml</groupId>
+            <artifactId>raml-parser-2</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-tests-resources</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
 </project>

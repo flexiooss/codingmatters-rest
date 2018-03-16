@@ -1,0 +1,17 @@
+@startuml
+
+title QueryHeaders API - RootResource
+
+actor Client as client
+participant "QueryHeaders API" as api
+
+client --> api: <b>GET /root</b>\n\
+    <i>Headers</i>\n\
+        stringParam: string\n\
+        stringArrayParam: string[]\n\
+        intParam: integer\n\
+        intArrayParam: integer[]\n\
+
+
+
+@enduml
