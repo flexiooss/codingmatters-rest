@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
  * Created by nelt on 4/27/17.
  */
 public interface RequestDelegate {
+    String path();
     Matcher pathMatcher(String regex);
     Method method();
     InputStream payload();

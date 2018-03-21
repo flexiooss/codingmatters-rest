@@ -107,6 +107,11 @@ public class RequestDelegateUriParameterTest {
         }
 
         @Override
+        public String path() {
+            return this.path;
+        }
+
+        @Override
         public Matcher pathMatcher(String regex) {
             return Pattern.compile(regex).matcher(this.path);
         }

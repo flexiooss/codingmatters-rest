@@ -135,4 +135,24 @@ public class UndertowRequestDelegateTest extends AbstractUndertowTest {
         assertThat(queryParameters.get().size(), is(1));
         assertThat(queryParameters.get().get("n"), contains(""));
     }
+
+    @Test
+    public void path() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/path").get().build()).execute();
+        assertThat(req.get().path(), is("/request/path"));
+
+        this.client.newCall(this.requestBuilder("/request/path?yop=yop").get().build()).execute();
+        assertThat(req.get().path(), is("/request/path"));
+
+        this.client.newCall(this.requestBuilder("/request/path/").get().build()).execute();
+        assertThat(req.get().path(), is("/request/path/"));
+
+        this.client.newCall(this.requestBuilder("").get().build()).execute();
+        assertThat(req.get().path(), is("/"));
+    }
 }

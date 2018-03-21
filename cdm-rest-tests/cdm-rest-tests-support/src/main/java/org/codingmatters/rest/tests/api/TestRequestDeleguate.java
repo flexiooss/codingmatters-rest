@@ -86,6 +86,11 @@ public class TestRequestDeleguate implements RequestDelegate {
     }
 
     @Override
+    public String path() {
+        return this.requestPath;
+    }
+
+    @Override
     public Matcher pathMatcher(String regex) {
         return Pattern.compile(regex).matcher(this.requestPath);
     }

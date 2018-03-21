@@ -33,13 +33,18 @@ public class UndertowRequestDelegate implements RequestDelegate {
     }
 
     @Override
+    public String path() {
+        return this.exchange.getRequestPath();
+    }
+
+    @Override
     public Matcher pathMatcher(String regex) {
         log.debug("req={} ; rel={} ; res={}",
                 this.exchange.getRequestPath(),
                 this.exchange.getRelativePath(),
                 this.exchange.getResolvedPath()
         );
-        return Pattern.compile(regex).matcher(this.exchange.getRequestPath());
+        return Pattern.compile(regex).matcher(this.path());
     }
 
     @Override
