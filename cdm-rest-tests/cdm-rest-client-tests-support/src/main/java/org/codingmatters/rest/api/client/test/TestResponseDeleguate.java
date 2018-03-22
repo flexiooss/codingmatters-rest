@@ -4,6 +4,7 @@ import org.codingmatters.rest.api.client.ResponseDelegate;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class TestResponseDeleguate implements ResponseDelegate {
     private final int code;
@@ -17,7 +18,14 @@ public class TestResponseDeleguate implements ResponseDelegate {
     public TestResponseDeleguate(int code, byte[] body, Map<String, String[]> headers, String contentType) {
         this.code = code;
         this.body = body;
-        this.headers = headers;
+
+        this.headers = new TreeMap<>();
+        if(headers != null) {
+            for (Map.Entry<String, String[]> header : headers.entrySet()) {
+                this.headers.put(header.getKey().toLowerCase(), header.getValue());
+            }
+        }
+
         this.contentType=  contentType;
     }
 
@@ -33,7 +41,7 @@ public class TestResponseDeleguate implements ResponseDelegate {
 
     @Override
     public String[] header(String name) {
-        return this.headers.get(name);
+        return this.headers.get(name.toLowerCase());
     }
 
     @Override
