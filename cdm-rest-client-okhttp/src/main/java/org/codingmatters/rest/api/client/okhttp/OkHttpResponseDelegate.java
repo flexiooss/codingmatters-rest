@@ -41,6 +41,11 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     }
 
     @Override
+    public String[] headerNames() {
+        return this.headers.keySet().toArray(new String[this.headers.size()]);
+    }
+
+    @Override
     public String contentType() {
         return this.contentType;
     }

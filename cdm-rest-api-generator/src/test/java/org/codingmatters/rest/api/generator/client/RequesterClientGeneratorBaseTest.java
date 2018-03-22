@@ -2,10 +2,10 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.rest.api.generator.ClientRequesterImplementation;
 import org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper;
-import org.codingmatters.rest.api.generator.client.support.TestRequesterFactory;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package org.codingmatters.rest.api.generator.client.support;
+package org.codingmatters.rest.api.client.test;
 
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
@@ -34,6 +34,11 @@ public class TestResponseDeleguate implements ResponseDelegate {
     @Override
     public String[] header(String name) {
         return this.headers.get(name);
+    }
+
+    @Override
+    public String[] headerNames() {
+        return this.headers.keySet().toArray(new String[this.headers.size()]);
     }
 
     @Override

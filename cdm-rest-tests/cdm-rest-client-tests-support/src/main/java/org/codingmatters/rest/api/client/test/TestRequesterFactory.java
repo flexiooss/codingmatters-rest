@@ -1,4 +1,4 @@
-package org.codingmatters.rest.api.generator.client.support;
+package org.codingmatters.rest.api.client.test;
 
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
@@ -12,7 +12,9 @@ import java.util.NoSuchElementException;
 
 public class TestRequesterFactory implements RequesterFactory {
 
-    public enum Method {GET, HEAD, POST, PUT, PATCH, DELETE}
+    public enum Method {
+        GET, HEAD, POST, PUT, PATCH, DELETE
+    }
 
     static public class Call {
         private final Method method;
@@ -65,6 +67,12 @@ public class TestRequesterFactory implements RequesterFactory {
     private final HashMap<Method, LinkedList<TestResponseDeleguate>> nextResponses = new HashMap<>();
     private final LinkedList<Call> calls = new LinkedList<>();
 
+    public TestRequesterFactory clear() {
+        this.nextResponses.clear();
+        this.calls.clear();
+        return this;
+    }
+
     public TestRequesterFactory nextResponse(Method method, int code) {
         return this.nextResponse(method, code, null, null);
     }
@@ -86,7 +94,7 @@ public class TestRequesterFactory implements RequesterFactory {
         return new TestRequester(url, this);
     }
 
-    protected ResponseDelegate nextResponse(Method method, TestRequester requester) throws IOException {
+    protected ResponseDelegate registeredNextResponse(Method method, TestRequester requester) throws IOException {
         try {
             TestResponseDeleguate responseDeleguate = this.nextResponses.getOrDefault(method, new LinkedList<>()).pop();
             return responseDeleguate;

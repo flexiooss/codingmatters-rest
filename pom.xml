@@ -66,6 +66,7 @@
         <module>cdm-rest-bom</module>
         <module>cdm-rest-api</module>
         <module>cdm-rest-client-api</module>
+        <module>cdm-rest-proxy-api</module>
 
         <module>cdm-rest-undertow</module>
         <module>cdm-rest-client-okhttp</module>

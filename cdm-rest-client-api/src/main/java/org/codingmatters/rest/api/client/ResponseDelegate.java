@@ -6,5 +6,6 @@ public interface ResponseDelegate {
     int code();
     byte [] body() throws IOException;
     String [] header(String name);
+    String [] headerNames();
     String contentType();
 }

@@ -6,7 +6,7 @@ package org.codingmatters.rest.api;
 public interface ResponseDelegate {
     ResponseDelegate contenType(String contenType);
     ResponseDelegate status(int code);
-    ResponseDelegate addHeader(String name, String value);
+    ResponseDelegate addHeader(String name, String ... value);
     ResponseDelegate payload(String payload, String charset);
     ResponseDelegate payload(byte[] bytes);
 }

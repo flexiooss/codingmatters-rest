@@ -31,8 +31,13 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     }
 
     @Override
-    public ResponseDelegate addHeader(String name, String value) {
-        this.exchange.getResponseHeaders().add(HttpString.tryFromString(name),value);
+    public ResponseDelegate addHeader(String name, String ... values) {
+        if(values != null) {
+            for (String value : values) {
+                this.exchange.getResponseHeaders().add(HttpString.tryFromString(name), value);
+            }
+        }
+
         return this;
     }
 

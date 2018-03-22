@@ -1,4 +1,4 @@
-package org.codingmatters.rest.api.generator.client.support;
+package org.codingmatters.rest.api.client.test;
 
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
-import static org.codingmatters.rest.api.generator.client.support.TestRequesterFactory.Method.*;
+import static org.codingmatters.rest.api.client.test.TestRequesterFactory.Method.*;
 
 
 public class TestRequester implements Requester {
@@ -64,7 +64,7 @@ public class TestRequester implements Requester {
     private ResponseDelegate nextResponse(TestRequesterFactory.Method method, String requestContentType, byte [] requestBody) throws IOException {
         try {
             this.factory.called(new TestRequesterFactory.Call(method, this.url, this.path, new HashMap<>(this.parameters), new HashMap<>(this.headers), requestContentType, requestBody));
-            return this.factory.nextResponse(method, this);
+            return this.factory.registeredNextResponse(method, this);
         } catch (NoSuchElementException e) {
             throw new IOException("no response was supposed to be returned for method " + method, e);
         }

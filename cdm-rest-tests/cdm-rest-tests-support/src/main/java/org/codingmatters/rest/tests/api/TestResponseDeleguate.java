@@ -9,7 +9,7 @@ import java.util.TreeMap;
 public class TestResponseDeleguate implements ResponseDelegate {
     private String contentType;
     private int code;
-    private Map<String, String> headers = new TreeMap<>();
+    private Map<String, String[]> headers = new TreeMap<>();
     private String charset;
     private byte[] payload;
 
@@ -26,7 +26,7 @@ public class TestResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
-    public ResponseDelegate addHeader(String name, String value) {
+    public ResponseDelegate addHeader(String name, String ... value) {
         this.headers.put(name, value);
         return this;
     }
@@ -56,7 +56,7 @@ public class TestResponseDeleguate implements ResponseDelegate {
         return code;
     }
 
-    public Map<String, String> headers() {
+    public Map<String, String[]> headers() {
         return headers;
     }
 
