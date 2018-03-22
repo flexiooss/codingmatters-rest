@@ -36,8 +36,8 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public String[] header(String name) {
-        List<String> header = this.headers.get(name.toLowerCase());
-        return header != null ? header.toArray(new String [headers.size()]) : null;
+        List<String> headerValues = this.headers.get(name.toLowerCase());
+        return headerValues != null ? headerValues.toArray(new String [headerValues.size()]) : null;
     }
 
     @Override

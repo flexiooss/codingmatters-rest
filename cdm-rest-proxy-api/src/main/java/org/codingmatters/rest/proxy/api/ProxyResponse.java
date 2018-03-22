@@ -39,7 +39,8 @@ public class ProxyResponse {
 
         HashMap<String, List<String>> headers = new HashMap<>();
         for (String header : this.originalResponse.headerNames()) {
-            headers.put(header, Arrays.asList(this.originalResponse.header(header)));
+            String[] headerValues = this.originalResponse.header(header);
+            headers.put(header, Arrays.asList(headerValues));
         }
 
         for (MapOfListModification headerModification : this.headerModifications) {
@@ -47,7 +48,10 @@ public class ProxyResponse {
         }
 
         for (String header : headers.keySet()) {
-        response.addHeader(header, headers.get(header).toArray(new String[headers.get(header).size()]));
+            List<String> headerValues = headers.get(header);
+            String[] values = headerValues.toArray(new String[headerValues.size()]);
+
+            response.addHeader(header, values);
         }
     }
 
