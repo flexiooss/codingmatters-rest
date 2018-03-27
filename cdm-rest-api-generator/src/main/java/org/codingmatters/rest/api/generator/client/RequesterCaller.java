@@ -53,7 +53,7 @@ public class RequesterCaller {
 
         caller.addStatement(
                 "$T requester = this.requesterFactory\n" +
-                        ".forBaseUrl(this.baseUrl)",
+                        ".forBaseUrl(this.urlProvider.baseUrl())",
                 Requester.class);
 
         this.preparePath(caller);

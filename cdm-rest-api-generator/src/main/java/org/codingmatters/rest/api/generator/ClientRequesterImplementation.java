@@ -6,6 +6,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.generator.client.RequesterCaller;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
@@ -61,7 +62,7 @@ public class ClientRequesterImplementation {
                 .addSuperinterface(clientInterface)
                 ;
 
-        this.addResourceConstructor(result, model.getApiV10().resources());
+        this.addResourceConstructors(result, model.getApiV10().resources());
         this.addChildResourcesMethods(clientInterface, model.getApiV10().resources(), result);
 
 
@@ -86,7 +87,7 @@ public class ClientRequesterImplementation {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(clientInterface)
                 ;
-        this.addResourceConstructor(result, resource.resources());
+        this.addResourceConstructors(result, resource.resources());
 
         for (Method method : resource.methods()) {
             result.addMethods(new RequesterCaller(this.typesPackage, this.naming, method).callers());
@@ -97,20 +98,20 @@ public class ClientRequesterImplementation {
         return result.build();
     }
 
-    private void addResourceConstructor(TypeSpec.Builder result, List<Resource> childResources) {
+    private void addResourceConstructors(TypeSpec.Builder result, List<Resource> childResources) {
         result
                 .addField(ClassName.get(RequesterFactory.class), "requesterFactory", Modifier.PRIVATE, Modifier.FINAL)
                 .addField(ClassName.get(JsonFactory.class), "jsonFactory", Modifier.PRIVATE, Modifier.FINAL)
-                .addField(ClassName.get(String.class), "baseUrl", Modifier.PRIVATE, Modifier.FINAL);
+                .addField(ClassName.get(UrlProvider.class), "urlProvider", Modifier.PRIVATE, Modifier.FINAL);
 
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get(RequesterFactory.class), "requesterFactory")
                 .addParameter(ClassName.get(JsonFactory.class), "jsonFactory")
-                .addParameter(ClassName.get(String.class), "baseUrl")
+                .addParameter(ClassName.get(UrlProvider.class), "urlProvider")
                 .addStatement("this.requesterFactory = requesterFactory")
                 .addStatement("this.jsonFactory = jsonFactory")
-                .addStatement("this.baseUrl = baseUrl");
+                .addStatement("this.urlProvider = urlProvider");
 
         for (Resource childResource : childResources) {
             ClassName childResourceType = this.naming.resourceClientType(childResource);
@@ -119,10 +120,19 @@ public class ClientRequesterImplementation {
             result.addField(FieldSpec.builder(childResourceType, childResourceDelegate)
                     .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                     .build());
-            constructorBuilder.addStatement("this.$N = new $T(this.requesterFactory, this.jsonFactory, this.baseUrl)", childResourceDelegate, childResourceType);
+            constructorBuilder.addStatement("this.$N = new $T(this.requesterFactory, this.jsonFactory, this.urlProvider)", childResourceDelegate, childResourceType);
         }
 
         result.addMethod(constructorBuilder.build());
+
+        result.addMethod(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get(RequesterFactory.class), "requesterFactory")
+                .addParameter(ClassName.get(JsonFactory.class), "jsonFactory")
+                .addParameter(ClassName.get(String.class), "baseUrl")
+                .addStatement("this(requesterFactory, jsonFactory, () -> baseUrl)")
+                .build()
+        );
     }
 
 

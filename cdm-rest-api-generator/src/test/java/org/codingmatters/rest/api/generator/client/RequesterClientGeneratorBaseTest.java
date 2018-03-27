@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.rest.api.generator.ClientRequesterImplementation;
@@ -91,7 +92,10 @@ public class RequesterClientGeneratorBaseTest {
     public void clientConstructor() throws Exception {
         assertThat(
                 this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient"),
-                is(aPublic().class_().with(aConstructor().withParameters(RequesterFactory.class, JsonFactory.class, String.class)))
+                is(aPublic().class_()
+                        .with(aConstructor().withParameters(RequesterFactory.class, JsonFactory.class, String.class))
+                        .with(aConstructor().withParameters(RequesterFactory.class, JsonFactory.class, UrlProvider.class))
+                )
         );
     }
 
@@ -184,5 +188,37 @@ public class RequesterClientGeneratorBaseTest {
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
         assertThat(requesterFactory.calls().get(0).path(), is("/root/middle/leaf-1"));
+    }
+
+
+
+    @Test
+    public void rootResourceGetWithUrlProvider() throws Exception {
+        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        JsonFactory jsonFactory = new JsonFactory();
+        String baseUrl = "https://path.to/me";
+        UrlProvider urlProvider = () -> baseUrl;
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
+                .newInstance(requesterFactory, jsonFactory, urlProvider);
+        Object resource = this.compiled.on(client).invoke("rootResource");
+
+        Object request = this.compiled
+                .on(this.compiled
+                        .onClass(API_PACK + ".RootResourceGetRequest")
+                        .invoke("builder"))
+                .invoke("build");
+
+        Object response = this.compiled.on(resource)
+                .invoke("get", this.compiled.getClass(API_PACK + ".RootResourceGetRequest"))
+                .with(request);
+
+        assertThat(response, is(notNullValue(this.compiled.getClass(API_PACK + ".RootResourceGetResponse"))));
+        assertThat(requesterFactory.calls(), hasSize(1));
+        assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
+        assertThat(requesterFactory.calls().get(0).path(), is("/root"));
     }
 }
