@@ -185,11 +185,20 @@ public class ApiPumlGenerator {
                 if(bodyType instanceof ArrayTypeDeclaration) {
                     body.append("\\n\\t<b>[").append(((ArrayTypeDeclaration)bodyType).items().type()).append("]</b>");
                 } else {
-                    body.append("\\n\\t<b>").append(bodyType.type()).append("</b>");
+                    body.append("\\n\\t<b>" + this.typeName(bodyType) + "</b>");
                 }
             }
         }
         return body;
+    }
+
+    private String typeName(TypeDeclaration type) {
+        for (TypeDeclaration declared : this.ramlModel.getApiV10().types()) {
+            if(type.type().equals(declared.name())) {
+                return String.format("[[#%s-type %s]]", type.type(), type.type());
+            }
+        }
+        return type.type();
     }
 
     private StringBuilder responseBodyPartsAsString(List<TypeDeclaration> bodyParts) {
@@ -200,7 +209,7 @@ public class ApiPumlGenerator {
                 if(started) {
                     body.append(", ");
                 }
-                body.append("<b>").append(bodyType.type()).append("</b>");
+                body.append("<b>").append(this.typeName(bodyType)).append("</b>");
             }
         }
         return body;

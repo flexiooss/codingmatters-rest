@@ -4,6 +4,7 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.resources.Resource;
 
 import java.io.File;
@@ -40,6 +41,12 @@ public class DocHelper {
     static public File typesSvgClassFile(RamlModelResult ramlModel, File toDirectory) {
         return new File(toDirectory, camelCased(
                 ramlModel.getApiV10().title().value()) + ".classes.svg"
+        );
+    }
+
+    static public File typesSvgClassFile(RamlModelResult ramlModel, TypeDeclaration type, File toDirectory) {
+        return new File(toDirectory, camelCased(
+                ramlModel.getApiV10().title().value()) + "." + type.name() + ".classes.svg"
         );
     }
 

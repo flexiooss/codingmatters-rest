@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.doc;
 
 import org.codingmatters.value.objects.FormattedWriter;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
@@ -63,7 +64,25 @@ public class ApiHtmlDocGenerator {
         this.appendResourceNav(this.ramlModel.getApiV10().resources(), html, prefix+ "          ");
         html
                 .appendLine("%s      </li>", prefix)
-                .appendLine("%s      <li><a href=\"#api-types\">API Types</a></li>", prefix)
+                ;
+
+        if(! this.ramlModel.getApiV10().types().isEmpty()) {
+            html
+                    .appendLine("%s      <li><a href=\"#api-types\">API Types</a>", prefix)
+                    .appendLine("%s        <nav>", prefix)
+                    .appendLine("%s          <ul>", prefix)
+                    ;
+            for (TypeDeclaration type : this.ramlModel.getApiV10().types()) {
+                html.appendLine("%s          <li><a href=\"#%s-type\">%s</a></li>", prefix, type.name(), type.name());
+            }
+            html.appendLine("%s          <li><a href=\"#all-types\">All types</a></li>", prefix);
+            html
+                    .appendLine("%s          </ul>", prefix)
+                    .appendLine("%s        </nav>", prefix)
+                    .appendLine("%s      </li>", prefix);
+        }
+
+        html
                 .appendLine("%s      <li><a href=\"#overview\">Overview</a></li>", prefix)
                 .appendLine("%s    </ul>", prefix)
                 .appendLine("%s  </nav>", prefix)
@@ -169,7 +188,23 @@ public class ApiHtmlDocGenerator {
         html
                 .appendLine("%s<article class=\"types\" id=\"api-types\">", prefix)
                 .appendLine("%s<h1>API Types</h1>", prefix)
-                .appendLine("%s<section class=\"class-diaggram\">%s</section>",
+                ;
+
+        for (TypeDeclaration type : this.ramlModel.getApiV10().types()) {
+            html
+                    .appendLine("%s<article class=\"type\" id=\"%s-type\">", prefix, type.name())
+                    .appendLine("%s  <h2>%s</h2>", prefix, type.name())
+                    .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
+                            prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, type, toDirectory))))
+                    .appendLine("%s</article>", prefix)
+                    ;
+        }
+
+
+        html
+                .appendLine("%s<article class=\"type\" id=\"all-types\">", prefix)
+                .appendLine("%s  <h2>All Types</h2>", prefix)
+                .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
                         prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, toDirectory))))
                 .appendLine("%s</article>", prefix)
                 ;
