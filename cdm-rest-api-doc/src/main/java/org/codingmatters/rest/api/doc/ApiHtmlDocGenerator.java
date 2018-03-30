@@ -2,11 +2,14 @@ package org.codingmatters.rest.api.doc;
 
 import org.codingmatters.value.objects.FormattedWriter;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.bodies.Response;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.codingmatters.rest.api.doc.DocHelper.*;
@@ -170,11 +173,69 @@ public class ApiHtmlDocGenerator {
                         camelCased(method.resource().displayName().value()),
                         method.method().toLowerCase()
                 )
-                .appendLine("%s  <h2>%s</h2>", prefix, method.method().toUpperCase())
+                .appendLine("%s  <h2>%s %s</h2>", prefix, method.method().toUpperCase(), this.resourceUrl(method.resource(), method))
                 .appendLine("%s  <section class=\"documentation\">", prefix)
                 ;
 
 
+        List<TypeDeclaration> uriParameters = this.resolvedUriParameters(method.resource());
+        if(! uriParameters.isEmpty()) {
+            html.appendLine("%s    <section class=\"uri-parameters\">", prefix);
+            html.appendLine("%s      <h3>uri parameters</h3>", prefix);
+            this.parameterSections(uriParameters, html, prefix + "      ", "uri-parameter", "h4");
+            html.appendLine("%s    </section>", prefix);
+        }
+
+        if(! method.queryParameters().isEmpty()) {
+            html.appendLine("%s    <section class=\"query-parameters\">", prefix);
+            html.appendLine("%s      <h3>query parameters</h3>", prefix);
+            this.parameterSections(method.queryParameters(), html, prefix + "      ", "query-parameter", "h4");
+            html.appendLine("%s    </section>", prefix);
+        }
+
+        if(! method.headers().isEmpty()) {
+            html.appendLine("%s    <section class=\"headers\">", prefix);
+            html.appendLine("%s      <h3>headers</h3>", prefix);
+            this.parameterSections(method.headers(), html, prefix + "      ", "header", "h4");
+            html.appendLine("%s    </section>", prefix);
+        }
+
+        if(! method.body().isEmpty()) {
+            html.appendLine("%s    <section class=\"request-payload-parts\">", prefix);
+            html.appendLine("%s      <h3>request payload</h3>", prefix);
+            this.parameterSections(method.body(), html, prefix + "      ", "request-payload-part", "h4");
+            html.appendLine("%s    </section>", prefix);
+        }
+
+        if(method.responses() != null && ! method.responses().isEmpty()) {
+            html.appendLine("%s    <section class=\"responses\">", prefix);
+            html.appendLine("%s      <h3>responses</h3>", prefix);
+            for (Response response : method.responses()) {
+                html.appendLine("%s      <section class=\"response\">", prefix);
+                html.appendLine("%s        <h4>%s</h4>", prefix, response.code().value());
+                if(response.description() != null) {
+                    html.appendLine("%s        <p>%s</p>", prefix, markdownToHtml(response.description().value()));
+                }
+
+
+                if(! response.headers().isEmpty()) {
+                    html.appendLine("%s        <section class=\"headers\">", prefix);
+                    html.appendLine("%s        <h5>headers</h5>", prefix);
+                    this.parameterSections(response.headers(), html, prefix + "        ", "header", "h6");
+                    html.appendLine("%s        </section>", prefix);
+                }
+                if(! response.body().isEmpty()) {
+                    html.appendLine("%s        <section class=\"response-payload-part\">", prefix);
+                    html.appendLine("%s        <h5>response payload</h5>", prefix);
+                    this.parameterSections(response.body(), html, prefix + "        ", "response-payload-part", "h6");
+                    html.appendLine("%s        </section>", prefix);
+                }
+
+
+                html.appendLine("%s      <section>", prefix);
+            }
+            html.appendLine("%s    </section>", prefix);
+        }
 
         html
                 .appendLine("%s  </section>", prefix)
@@ -182,6 +243,52 @@ public class ApiHtmlDocGenerator {
                 ;
     }
 
+    private String resourceUrl(Resource resource, Method method) {
+        String path = resource.resourcePath();
+        List<TypeDeclaration> uriParameters = new LinkedList<>();
+        Resource r = resource;
+        while (r != null) {
+            uriParameters.addAll(r.uriParameters());
+            r = r.parentResource();
+        }
+
+        if (!uriParameters.isEmpty()) {
+            for (TypeDeclaration uriParam : uriParameters) {
+                path = path.replaceAll("\\{" + uriParam.name() + "\\}", "{<b>" + uriParam.name() + "</b>}");
+            }
+        }
+
+        return path;
+    }
+
+    private void parameterSections(List<TypeDeclaration> parameters, FormattedWriter html, String prefix, String elementClass, String header) throws IOException {
+        for (TypeDeclaration type : parameters) {
+            html.appendLine("%s<section class=\"%s\">", prefix, elementClass)
+                    .appendLine("%s  <%s>%s:  %s</%s>", prefix, header, type.name(), this.formattedType(type), header)
+                    ;
+            if(type.description() != null) {
+                html.appendLine("%s  <p>%s</p>", prefix, DocHelper.markdownToHtml(type.description().value()));
+            }
+            html.appendLine("%s</section>", prefix);
+        }
+    }
+
+    private String formattedType(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration instanceof ArrayTypeDeclaration) {
+            return this.typeName(((ArrayTypeDeclaration)typeDeclaration).items().name()) + "[]";
+        } else {
+            return this.typeName(typeDeclaration.type());
+        }
+    }
+
+    private String typeName(String type) {
+        for (TypeDeclaration declared : this.ramlModel.getApiV10().types()) {
+            if(type.equals(declared.name())) {
+                return String.format("<a href=\"#%s-type\">%s</a>", type, type);
+            }
+        }
+        return type;
+    }
 
 
     private void appendTypesArticle(FormattedWriter html, String prefix) throws IOException {
@@ -208,6 +315,18 @@ public class ApiHtmlDocGenerator {
                         prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, toDirectory))))
                 .appendLine("%s</article>", prefix)
                 ;
+    }
+
+    private List<TypeDeclaration> resolvedUriParameters(Resource resource) {
+        List<TypeDeclaration> result = new LinkedList<>();
+
+        for(Resource r = resource ; r != null ; r = r.parentResource()) {
+            if(r.uriParameters() != null && ! r.uriParameters().isEmpty()) {
+                result.addAll(r.uriParameters());
+            }
+        }
+
+        return result;
     }
 
     private String svg(String content) {

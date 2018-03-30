@@ -15,7 +15,10 @@ import org.raml.v2.api.model.v10.resources.Resource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+
+import static org.codingmatters.rest.api.doc.DocHelper.camelCased;
 
 public class ApiPumlGenerator {
 
@@ -87,7 +90,11 @@ public class ApiPumlGenerator {
         out.appendLine("");
         out.appendLine("== %s ==", resource.displayName().value());
         for (Method method : resource.methods()) {
-            out.appendLine("");
+            out.appendLine("|||");
+            out.appendLine("group '[[#%s-%s-method %s %s]]'",
+                    camelCased(method.resource().displayName().value()), method.method().toLowerCase(),
+                    resource.displayName().value(),
+                    method.method().toUpperCase());
             this.generateRequest(resource, out, method);
             out.appendLine("activate api");
 
@@ -109,6 +116,7 @@ public class ApiPumlGenerator {
             }
 
             out.appendLine("deactivate api");
+            out.appendLine("end");
         }
     }
 
@@ -116,8 +124,8 @@ public class ApiPumlGenerator {
         out.appendLine("--> api: <b>%s</b> %s %s%s",
                 method.method().toUpperCase(),
                 this.resourceUrl(resource, method),
-                this.generateHeaders(method.headers()),
-                this.requestBodyPartsAsString(method.body())
+                this.requestBodyPartsAsString(method.body()),
+                this.generateHeaders(method.headers())
         );
     }
 
@@ -125,22 +133,29 @@ public class ApiPumlGenerator {
         out.appendLine("%s<- api: %s: %s %s",
                 prefix,
                 response.code().value(),
-                this.generateHeaders(response.headers()),
-                this.responseBodyPartsAsString(response.body())
+                this.responseBodyPartsAsString(response.body()),
+                this.generateHeaders(response.headers())
         );
     }
 
     private StringBuilder generateHeaders(List<TypeDeclaration> headers) {
         StringBuilder result = new StringBuilder();
         if(headers != null && ! headers.isEmpty()) {
-            result.append("[");
+            result.append("\\n\\t[");
+            boolean started = false;
             for (TypeDeclaration header : headers) {
-                result.append("\\n\\t\\t").append("<b>").append(header.name()).append("</b>").append("=");
+                if(started) {
+                    result.append("\\n\\t\\t");
+                } else {
+                    result.append("\\t");
+                }
+                result.append("<b>").append(header.name()).append("</b>").append("=");
                 if(header instanceof ArrayTypeDeclaration) {
                     result.append(((ArrayTypeDeclaration)header).items().type()).append("[]");
                 } else {
                     result.append(header.type());
                 }
+                started = true;
             }
             result.append("\\n\\t\\t]");
         }
@@ -149,11 +164,24 @@ public class ApiPumlGenerator {
 
     private String resourceUrl(Resource resource, Method method) {
         String path = resource.resourcePath();
-        if(resource.uriParameters() != null && ! resource.uriParameters().isEmpty()) {
-            for (TypeDeclaration uriParam : resource.uriParameters()) {
-                path = path.replaceAll("\\{" + uriParam.name() + "\\}", "<b>" + uriParam.name() + "</b>");
-            }
+        List<TypeDeclaration> uriParameters = new LinkedList<>();
+        Resource r = resource;
+        while(r != null) {
+            uriParameters.addAll(r.uriParameters());
+            r = r.parentResource();
+        }
 
+
+        if(! uriParameters.isEmpty()) {
+            for (TypeDeclaration uriParam : uriParameters) {
+                String type;
+                if(uriParam instanceof ArrayTypeDeclaration) {
+                    type = ((ArrayTypeDeclaration)uriParam).items().type();
+                } else {
+                    type = uriParam.type();
+                }
+                path = path.replaceAll("\\{" + uriParam.name() + "\\}", "{<b>" + uriParam.name() + "</b>=" + type + "}");
+            }
         }
 
         StringBuilder result = new StringBuilder(path);
@@ -182,23 +210,10 @@ public class ApiPumlGenerator {
         StringBuilder body = new StringBuilder();
         if(bodyParts != null && ! bodyParts.isEmpty()) {
             for (TypeDeclaration bodyType : bodyParts) {
-                if(bodyType instanceof ArrayTypeDeclaration) {
-                    body.append("\\n\\t<b>[").append(((ArrayTypeDeclaration)bodyType).items().type()).append("]</b>");
-                } else {
-                    body.append("\\n\\t<b>" + this.typeName(bodyType) + "</b>");
-                }
+                body.append("\\n\\t<b>" + this.formattedType(bodyType) + "</b>");
             }
         }
         return body;
-    }
-
-    private String typeName(TypeDeclaration type) {
-        for (TypeDeclaration declared : this.ramlModel.getApiV10().types()) {
-            if(type.type().equals(declared.name())) {
-                return String.format("[[#%s-type %s]]", type.type(), type.type());
-            }
-        }
-        return type.type();
     }
 
     private StringBuilder responseBodyPartsAsString(List<TypeDeclaration> bodyParts) {
@@ -209,12 +224,31 @@ public class ApiPumlGenerator {
                 if(started) {
                     body.append(", ");
                 }
-                body.append("<b>").append(this.typeName(bodyType)).append("</b>");
+                body.append("<b>").append(this.formattedType(bodyType)).append("</b>");
             }
         }
         return body;
     }
 
+    private String formattedType(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.type().equals("object[]")) {
+            return typeDeclaration.type();
+        }
+        if(typeDeclaration instanceof ArrayTypeDeclaration) {
+            return this.typeName(((ArrayTypeDeclaration)typeDeclaration).items().name()) + "[]";
+        } else {
+            return this.typeName(typeDeclaration.type());
+        }
+    }
+
+    private String typeName(String type) {
+        for (TypeDeclaration declared : this.ramlModel.getApiV10().types()) {
+            if(type.equals(declared.name())) {
+                return String.format("[[#%s-type %s]]", type, type);
+            }
+        }
+        return type;
+    }
 
 
     private void generateSvg(File pumlFile) throws IOException {
