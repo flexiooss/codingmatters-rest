@@ -145,7 +145,7 @@ public class ApiHtmlDocGenerator {
         if(resource.description() != null) {
             html
                     .appendLine("%s  <section class=\"documentation\">", prefix)
-                    .appendLine("%s  <p>%s</p>", prefix, markdownToHtml(resource.description().value()))
+                    .appendLine("%s  <div class=\"description\">%s</div>", prefix, markdownToHtml(resource.description().value()))
                     .appendLine("%s  </section>", prefix)
             ;
         }
@@ -214,7 +214,7 @@ public class ApiHtmlDocGenerator {
                 html.appendLine("%s      <section class=\"response\">", prefix);
                 html.appendLine("%s        <h4>%s</h4>", prefix, response.code().value());
                 if(response.description() != null) {
-                    html.appendLine("%s        <p>%s</p>", prefix, markdownToHtml(response.description().value()));
+                    html.appendLine("%s        <div class=\"description\">%s</div>", prefix, markdownToHtml(response.description().value()));
                 }
 
 
@@ -267,7 +267,7 @@ public class ApiHtmlDocGenerator {
                     .appendLine("%s  <%s>%s:  %s</%s>", prefix, header, type.name(), this.formattedType(type), header)
                     ;
             if(type.description() != null) {
-                html.appendLine("%s  <p>%s</p>", prefix, DocHelper.markdownToHtml(type.description().value()));
+                html.appendLine("%s  <div class=\"description\">%s</div>", prefix, DocHelper.markdownToHtml(type.description().value()));
             }
             html.appendLine("%s</section>", prefix);
         }
@@ -330,7 +330,7 @@ public class ApiHtmlDocGenerator {
     }
 
     private String svg(String content) {
-        int start = content.indexOf("<svg");
+        int start = content.indexOf("<svg class=\"diagram\" ");
         if(start != -1) {
             return content.substring(start);
         } else {
