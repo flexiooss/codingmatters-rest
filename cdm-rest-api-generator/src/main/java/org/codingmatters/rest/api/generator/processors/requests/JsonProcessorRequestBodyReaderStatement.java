@@ -25,12 +25,26 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
         TypeDeclaration body = this.method.body().get(0);
         caller.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
         if(body instanceof ArrayTypeDeclaration) {
+            ClassName className;
+            if(! (((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items().parentTypes().get(0))) {
+                className = this.naming.alreadyDefinedReader(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
+            } else {
+                className = this.readerClassName(((ArrayTypeDeclaration) body).items().type());
+            }
+
             caller.addStatement("requestBuilder.payload(new $T().readArray(parser))",
-                    this.readerClassName(((ArrayTypeDeclaration)body).items().name())
+                    className
             );
         } else {
+            ClassName className;
+            if((! body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
+                className = this.naming.alreadyDefinedReader(body.parentTypes().get(0));
+            } else {
+                className = this.readerClassName(body.type());
+            }
+
             caller.addStatement("requestBuilder.payload(new $T().read(parser))",
-                    this.readerClassName(body.type())
+                    className
             );
         }
 

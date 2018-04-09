@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.generator.utils;
 
+import com.squareup.javapoet.ClassName;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -86,5 +87,26 @@ public class Naming {
             }
         }
         return null;
+    }
+
+    public ClassName alreadyDefinedClass(TypeDeclaration typeDeclaration) {
+        String alreadyDefined = this.alreadyDefined(typeDeclaration);
+        String packageName = alreadyDefined.substring(0, alreadyDefined.lastIndexOf("."));
+        String className = alreadyDefined.substring(alreadyDefined.lastIndexOf(".") + 1);
+        return ClassName.get(packageName, this.type(className, "Writer"));
+    }
+
+    public ClassName alreadyDefinedWriter(TypeDeclaration typeDeclaration) {
+        String alreadyDefined = this.alreadyDefined(typeDeclaration);
+        String packageName = alreadyDefined.substring(0, alreadyDefined.lastIndexOf("."));
+        String className = alreadyDefined.substring(alreadyDefined.lastIndexOf(".") + 1);
+        return ClassName.get(packageName + ".json", this.type(className, "Writer"));
+    }
+
+    public ClassName alreadyDefinedReader(TypeDeclaration typeDeclaration) {
+        String alreadyDefined = this.alreadyDefined(typeDeclaration);
+        String packageName = alreadyDefined.substring(0, alreadyDefined.lastIndexOf("."));
+        String className = alreadyDefined.substring(alreadyDefined.lastIndexOf(".") + 1);
+        return ClassName.get(packageName + ".json", this.type(className, "Reader"));
     }
 }

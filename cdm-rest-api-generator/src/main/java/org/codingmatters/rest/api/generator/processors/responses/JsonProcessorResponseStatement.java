@@ -51,20 +51,37 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
         method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
         if(body instanceof ArrayTypeDeclaration) {
             // TODO replace with list writer
-            String elementType = ((ArrayTypeDeclaration) body).items().name();
+            ClassName elementClassName;
+            ClassName elementTypeWriter;
+            if((! ((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items())) {
+                elementClassName = this.naming.alreadyDefinedClass(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
+                elementTypeWriter = this.naming.alreadyDefinedWriter(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
+            } else {
+                String elementType = ((ArrayTypeDeclaration) body).items().name();
+                elementClassName = this.elementClassName(elementType);
+                elementTypeWriter = this.writerClassName(elementType);
+            }
+
             method.addStatement("generator.writeStartArray()");
-            method.beginControlFlow("for ($T element : response.status$L().payload())", this.elementClassName(elementType), response.code().value())
+            method.beginControlFlow("for ($T element : response.status$L().payload())", elementClassName, response.code().value())
                     .beginControlFlow("if(element != null)")
-                    .addStatement("new $T().write(generator, element)", this.writerClassName(elementType))
+                    .addStatement("new $T().write(generator, element)", elementTypeWriter)
                     .nextControlFlow("else")
                     .addStatement("generator.writeNull()")
                     .endControlFlow()
                     .endControlFlow();
             method.addStatement("generator.writeEndArray()");
         } else {
+            ClassName writerName;
+            if((! body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
+                writerName = this.naming.alreadyDefinedWriter(body.parentTypes().get(0));
+            } else {
+                writerName = this.writerClassName(body.type());
+            }
+
             method.addStatement(
                     "new $T().write(generator, response.status$L().payload())",
-                    this.writerClassName(body.type()),
+                    writerName,
                     response.code().value()
             );
         }

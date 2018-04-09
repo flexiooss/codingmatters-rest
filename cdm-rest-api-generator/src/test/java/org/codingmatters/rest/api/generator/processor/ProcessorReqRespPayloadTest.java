@@ -51,6 +51,30 @@ public class ProcessorReqRespPayloadTest extends AbstractProcessorHttpRequestTes
     }
 
 
+    @Test
+    public void already() throws Exception {
+        AtomicReference requestHolder = new AtomicReference();
+        this.setupProcessorWithHandler(
+                "alreadyPostHandler",
+                req -> {
+                    requestHolder.set(req);
+                    return this.createFilledAlreadyGetResponse();
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/already/")
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf_8"), "{}"))
+                .build()).execute();
+        Object request = requestHolder.get();
+
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.compiled.on(request).castedTo("org.generated.api.AlreadyPostRequest").invoke("payload"),
+                isA(this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject"))
+        );
+        assertThat(response.body().string(), is("{}"));
+    }
+
     private Object createFilledPayloadGetResponse() {
         Object response = null;
         try {
@@ -69,5 +93,25 @@ public class ProcessorReqRespPayloadTest extends AbstractProcessorHttpRequestTes
         System.out.println(response);
         return response;
     }
+
+    private Object createFilledAlreadyGetResponse() {
+        Object response = null;
+        try {
+            Object payloadBuilder = this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject$Builder").newInstance();
+            Object payload = this.compiled.on(payloadBuilder).invoke("build");
+            Object status200Builder = this.compiled.getClass("org.generated.api.alreadypostresponse.Status200$Builder").newInstance();
+            this.compiled.on(status200Builder).invoke("payload", this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject")).with(payload);
+            Object status200 = this.compiled.on(status200Builder).invoke("build");
+            Object builder = this.compiled.getClass("org.generated.api.AlreadyPostResponse$Builder").newInstance();
+            this.compiled.on(builder).invoke("status200", this.compiled.getClass("org.generated.api.alreadypostresponse.Status200")).with(status200);
+            response = this.compiled.on(builder).invoke("build");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(response);
+        return response;
+    }
+
+
 
 }

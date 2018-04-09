@@ -180,6 +180,15 @@ public class ApiPumlGeneratorTest {
                         "<- api: 200: <b>[[#Resp-type Resp]]</b> " ,
                         "deactivate api",
                         "end",
+                        "" ,
+                        "== already ==" ,
+                        "|||" ,
+                        "group '[[#Already-post-method already POST]]'",
+                        "--> api: <b>POST</b> /already \\n\\t<b>[[#AlreadyDefinedType-type AlreadyDefinedType]]</b>" ,
+                        "activate api" ,
+                        "<- api: 200: <b>[[#AlreadyDefinedType-type AlreadyDefinedType]]</b> " ,
+                        "deactivate api",
+                        "end",
                         "@enduml"
                 ))
         );

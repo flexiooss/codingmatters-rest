@@ -12,12 +12,33 @@ mediaType: application/json
       200:
         body: Resp
 
+/already:
+   displayName: already
+   post:
+      body: AlreadyDefinedType
+      responses:
+         200:
+            body: AlreadyDefinedType
+
 types:
-  Resp:
-    type: object
-    properties:
-      prop: string
-  Req:
-    type: object
-    properties:
-      prop: string
+   Resp:
+      type: object
+      properties:
+         prop: string
+   Req:
+      type: object
+      properties:
+         prop: string
+
+   AlreadyDefinedType:
+      (already-defined): org.codingmatters.AnAlreadyDefinedValueObject
+      type: object
+
+
+annotationTypes:
+   value-object-hint:
+      type: string[]
+   conforms-to:
+      type: string[]
+   already-defined:
+      type: string

@@ -9,6 +9,7 @@ import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
 import org.codingmatters.value.objects.spec.Spec;
+import org.codingmatters.value.objects.spec.ValueSpec;
 import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
@@ -44,6 +45,15 @@ public class ProcessorGeneratorTestHelper {
     }
 
     public ProcessorGeneratorTestHelper setUpWithResource(String ramlRessource) throws Exception {
+        Spec anAlreadyDefinedValueObject = new Spec.Builder()
+                .addValue(ValueSpec.valueSpec()
+                        .name("AnAlreadyDefinedValueObject")
+                )
+                .build();
+        new SpecCodeGenerator(anAlreadyDefinedValueObject,
+                "org.codingmatters", this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(anAlreadyDefinedValueObject, "org.codingmatters", this.dir.getRoot()).generate();
+
         RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource(ramlRessource));
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
