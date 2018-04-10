@@ -20,6 +20,24 @@ mediaType: application/json
          200:
             body: AlreadyDefinedType
 
+/alreadyArray:
+   displayName: alreadyArray
+   post:
+      body: AlreadyDefinedType
+      responses:
+         200:
+            body:
+               type: array
+               items: AlreadyDefinedType
+
+/alreadyArrayLiteral:
+   displayName: alreadyArrayLiteral
+   post:
+      body: AlreadyDefinedType
+      responses:
+         200:
+            body: AlreadyDefinedType[]
+
 types:
    Resp:
       type: object

@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator.processors.responses;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.rest.api.generator.processors.ProcessorClass;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.values.ObjectValue;
@@ -49,11 +50,26 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
 
     private void applicationJsonResponsePayload(Response response, MethodSpec.Builder method, TypeDeclaration body) {
         method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
-        if(body instanceof ArrayTypeDeclaration) {
+
+        if(body instanceof ArrayTypeDeclaration || body.type().endsWith("[]")) {
             // TODO replace with list writer
+
             ClassName elementClassName;
             ClassName elementTypeWriter;
-            if((! ((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items())) {
+
+            if(body.type().endsWith("[]")) {
+                String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
+                TypeDeclaration itemsType = ProcessorClass.declaredTypes().get(itemsTypeName);
+
+                if(this.naming.isAlreadyDefined(itemsType)) {
+                    elementClassName = this.naming.alreadyDefinedClass(itemsType);
+                    elementTypeWriter = this.naming.alreadyDefinedWriter(itemsType);
+                } else {
+                    elementClassName = this.elementClassName(itemsTypeName);
+                    elementTypeWriter = this.writerClassName(itemsTypeName);
+                }
+
+            } else if((! ((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items().parentTypes().get(0))) {
                 elementClassName = this.naming.alreadyDefinedClass(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
                 elementTypeWriter = this.naming.alreadyDefinedWriter(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
             } else {

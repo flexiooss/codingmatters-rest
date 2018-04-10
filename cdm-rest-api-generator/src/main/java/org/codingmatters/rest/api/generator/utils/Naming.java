@@ -91,9 +91,10 @@ public class Naming {
 
     public ClassName alreadyDefinedClass(TypeDeclaration typeDeclaration) {
         String alreadyDefined = this.alreadyDefined(typeDeclaration);
+        System.out.println("ALREADY : " + alreadyDefined + " from : name=" + typeDeclaration.name() + " type=" + typeDeclaration.type());
         String packageName = alreadyDefined.substring(0, alreadyDefined.lastIndexOf("."));
         String className = alreadyDefined.substring(alreadyDefined.lastIndexOf(".") + 1);
-        return ClassName.get(packageName, this.type(className, "Writer"));
+        return ClassName.get(packageName, this.type(className));
     }
 
     public ClassName alreadyDefinedWriter(TypeDeclaration typeDeclaration) {

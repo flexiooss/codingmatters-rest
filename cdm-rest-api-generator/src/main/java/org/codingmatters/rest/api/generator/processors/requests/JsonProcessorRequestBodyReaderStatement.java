@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.generator.processors.requests;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.rest.api.generator.processors.ProcessorClass;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.values.json.ObjectValueReader;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -24,7 +25,22 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
     public void append(MethodSpec.Builder caller) {
         TypeDeclaration body = this.method.body().get(0);
         caller.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
-        if(body instanceof ArrayTypeDeclaration) {
+
+        if(body.type().endsWith("[]")) {
+            String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
+            TypeDeclaration itemsType = ProcessorClass.declaredTypes().get(itemsTypeName);
+
+            ClassName className;
+            if(this.naming.isAlreadyDefined(itemsType)) {
+                className = this.naming.alreadyDefinedReader(itemsType);
+            } else {
+                className = this.readerClassName(itemsTypeName);
+            }
+
+            caller.addStatement("requestBuilder.payload(new $T().readArray(parser))",
+                    className
+            );
+        } else if(body instanceof ArrayTypeDeclaration) {
             ClassName className;
             if(! (((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items().parentTypes().get(0))) {
                 className = this.naming.alreadyDefinedReader(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
