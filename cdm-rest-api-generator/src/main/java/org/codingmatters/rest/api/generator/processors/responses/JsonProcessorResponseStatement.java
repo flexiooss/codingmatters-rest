@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.processors.ProcessorClass;
+import org.codingmatters.rest.api.generator.processors.ProcessorResponse;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.values.ObjectValue;
@@ -11,10 +12,13 @@ import org.codingmatters.value.objects.values.json.ObjectValueWriter;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
 public class JsonProcessorResponseStatement implements ProcessorResponseBodyWriterStatement {
+    static private final Logger log = LoggerFactory.getLogger(JsonProcessorResponseStatement.class);
 
     private final Response response;
     private final TypeDeclaration body;
@@ -61,7 +65,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
                 String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
                 TypeDeclaration itemsType = ProcessorClass.declaredTypes().get(itemsTypeName);
 
-                if(this.naming.isAlreadyDefined(itemsType)) {
+                if(itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
                     elementClassName = this.naming.alreadyDefinedClass(itemsType);
                     elementTypeWriter = this.naming.alreadyDefinedWriter(itemsType);
                 } else {
