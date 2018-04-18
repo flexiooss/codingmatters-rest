@@ -27,7 +27,7 @@ public class TextProcessorRequestBodyReaderStatement implements ProcessorRequest
                     .addStatement("requestBuilder.payload(out.toString())")
                 .nextControlFlow("catch(IOException e)")
                     .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
-                    .addStatement("log.info($S)", "malformed request")
+                    .addStatement("log.warn($S, e)", "malformed request")
                     .addStatement("return")
                 .endControlFlow();
     }
