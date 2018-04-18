@@ -3,9 +3,8 @@ package org.codingmatters.rest.api.generator.processors.responses;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import org.codingmatters.rest.api.generator.processors.ProcessorClass;
-import org.codingmatters.rest.api.generator.processors.ProcessorResponse;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
+import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.json.ObjectValueWriter;
@@ -63,7 +62,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
 
             if(body.type().endsWith("[]")) {
                 String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
-                TypeDeclaration itemsType = ProcessorClass.declaredTypes().get(itemsTypeName);
+                TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
                 if(itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
                     elementClassName = this.naming.alreadyDefinedClass(itemsType);

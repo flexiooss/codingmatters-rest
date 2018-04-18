@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator.processors.requests;
 import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import org.codingmatters.rest.api.generator.processors.ProcessorClass;
+import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.values.json.ObjectValueReader;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -28,7 +28,7 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
 
         if(body.type().endsWith("[]")) {
             String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
-            TypeDeclaration itemsType = ProcessorClass.declaredTypes().get(itemsTypeName);
+            TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
             ClassName className;
             if(this.naming.isAlreadyDefined(itemsType)) {

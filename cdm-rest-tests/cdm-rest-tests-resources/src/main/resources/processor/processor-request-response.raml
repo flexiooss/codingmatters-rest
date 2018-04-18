@@ -60,3 +60,19 @@ annotationTypes:
       type: string[]
    already-defined:
       type: string
+
+traits:
+   collectionPaging:
+      usage: aplied to a collection GET
+      description: pageable collection of <<elementType>>. Paging is handled with the range header (according to [RFC 7233](https://tools.ietf.org/html/rfc7233)).
+      headers:
+         range:
+            type: string
+            required: false
+      responses:
+         200:
+             description: complete list of <<elementType>> or last elements of the list of <<elementType>>
+             headers:
+                 Content-Range: string
+                 Accept-Range: string
+             body: <<elementType>>[]

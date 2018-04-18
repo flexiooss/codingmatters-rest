@@ -8,6 +8,7 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
+import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;
@@ -21,18 +22,15 @@ import org.slf4j.LoggerFactory;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nelt on 5/23/17.
  */
 public class ProcessorClass {
-
-    //TODO Refactor this UGLY static method
-    static private final Map<String, TypeDeclaration> declaredTypes = new TreeMap<>();
-    static public Map<String, TypeDeclaration> declaredTypes() {
-        return declaredTypes;
-    }
 
     static private final Logger log = LoggerFactory.getLogger(ProcessorClass.class);
 
@@ -52,9 +50,7 @@ public class ProcessorClass {
     }
 
     public TypeSpec type(RamlModelResult ramlModel) {
-        for (TypeDeclaration type : ramlModel.getApiV10().types()) {
-            declaredTypes.put(type.name(), type);
-        }
+        DeclaredTypeRegistry.initialize(ramlModel);
 
         TypeSpec.Builder processorBuilder = TypeSpec.classBuilder(this.naming.type(ramlModel.getApiV10().title().value(), "Processor"))
                 .addModifiers(Modifier.PUBLIC)

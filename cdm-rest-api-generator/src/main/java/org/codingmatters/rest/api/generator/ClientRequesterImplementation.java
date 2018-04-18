@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.client.RequesterFactory;
 import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.generator.client.RequesterCaller;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
+import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -39,6 +40,8 @@ public class ClientRequesterImplementation {
     }
 
     public void generate(RamlModelResult model) throws IOException {
+        DeclaredTypeRegistry.initialize(model);
+
         ClassName clientInterface = ClassName.get(this.clientPackage, this.naming.type(model.getApiV10().title().value(), "Client"));
         TypeSpec clientClass = this.clientClass(clientInterface, model);
         writeJavaFile(

@@ -110,4 +110,11 @@ public class Naming {
         String className = alreadyDefined.substring(alreadyDefined.lastIndexOf(".") + 1);
         return ClassName.get(packageName + ".json", this.type(className, "Reader"));
     }
+
+    public boolean isArray(TypeDeclaration type) {
+        if(type.type().endsWith("[]")) return true;
+        if(type instanceof ArrayTypeDeclaration) return true;
+
+        return false;
+    }
 }
