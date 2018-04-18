@@ -8,11 +8,15 @@ import org.codingmatters.rest.api.internal.UriParameterProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +31,8 @@ public class UndertowRequestDelegate implements RequestDelegate {
     private Map<String, List<String>> uriParamsCache = null;
     private Map<String, List<String>> queryParamsCache = null;
     private Map<String, List<String>> headersCache = null;
+
+    private final AtomicReference<byte[]> body = new AtomicReference<>(null);
 
     public UndertowRequestDelegate(HttpServerExchange exchange) {
         this.exchange = exchange;
@@ -61,10 +67,29 @@ public class UndertowRequestDelegate implements RequestDelegate {
 
     @Override
     public InputStream payload() {
-        if(! this.exchange.isBlocking()) {
-            this.exchange.startBlocking();
+        synchronized (this.body) {
+            if(this.body.get() == null) {
+                if(! this.exchange.isBlocking()) {
+                    this.exchange.startBlocking();
+                }
+                try {
+                    try (ByteArrayOutputStream out = new ByteArrayOutputStream(); InputStream in = this.exchange.getInputStream()) {
+                        byte[] buffer = new byte[1024];
+                        for (int read = in.read(buffer); read != -1; read = in.read(buffer)) {
+                            out.write(buffer, 0, read);
+                        }
+                        out.flush();
+                        out.close();
+                        this.body.set(out.toByteArray());
+                    }
+                } catch (IOException e) {
+                    log.error("failed reading body", e);
+                    this.body.set(new byte[0]);
+                }
+            }
         }
-        return this.exchange.getInputStream();
+
+        return new ByteArrayInputStream(this.body.get());
     }
 
     @Override
