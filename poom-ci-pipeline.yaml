@@ -16,13 +16,13 @@ stages:
 onSuccess:
   - name: notify-flexio
     exec:
-      - curl -XGET 'https://my.flexio.io/channelApi/flexHttpInOut/59d3a0105d443519843d0496/5adf40aededdbb452368cfca?repository=poom-services&status=0'
+      - curl -XGET 'https://my.flexio.io/channelApi/flexHttpInOut/59d3a0105d443519843d0496/5adf40aededdbb452368cfca?repository=codingmatters-rest&status=0'
 
 
 onError:
   - name: notify-flexio
     exec:
-      - curl -XGET 'https://my.flexio.io/channelApi/flexHttpInOut/59d3a0105d443519843d0496/5adf40aededdbb452368cfca?repository=poom-services&status=1'
+      - curl -XGET 'https://my.flexio.io/channelApi/flexHttpInOut/59d3a0105d443519843d0496/5adf40aededdbb452368cfca?repository=codingmatters-rest&status=1'
 
 
 
