@@ -1,6 +1,5 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import okhttp3.OkHttpClient;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.undertow.support.BehaviouralUndertowResource;
 import org.junit.Before;
@@ -15,7 +14,7 @@ public class OkHttpRequesterTest {
     @Rule
     public BehaviouralUndertowResource undertow = new BehaviouralUndertowResource();
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClientWrapper client = OkHttpClientWrapper.build();
     private Requester requester;
 
     @Before

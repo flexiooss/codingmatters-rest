@@ -17,6 +17,6 @@ public class OkHttpRequesterFactory implements RequesterFactory {
         while(url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
-        return new OkHttpRequester(this.client, url);
+        return new OkHttpRequester(OkHttpClientWrapper.from(this.client), url);
     }
 }
