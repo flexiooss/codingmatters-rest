@@ -1,6 +1,8 @@
 package org.codingmatters.rest.api.client;
 
+import java.io.IOException;
+
 @FunctionalInterface
 public interface UrlProvider {
-    String baseUrl();
+    String baseUrl() throws IOException;
 }

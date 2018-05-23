@@ -13,7 +13,6 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 
 public class OkHttpWrapperTests {
 
@@ -41,7 +40,6 @@ public class OkHttpWrapperTests {
 
         this.exception.expect(ConnectionTimeoutException.class);
         this.exception.expectMessage(is("connection timed out"));
-        this.exception.expectCause(isA(SocketTimeoutException.class));
 
         client.execute(new Request.Builder().url("http://192.168.76.78").build());
     }
