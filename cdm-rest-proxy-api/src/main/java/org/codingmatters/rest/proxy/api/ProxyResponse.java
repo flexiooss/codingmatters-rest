@@ -26,12 +26,6 @@ public class ProxyResponse {
         if(this.modifiedCode != null) {
             response.status(this.modifiedCode.get());
         }
-
-        response.payload(this.originalResponse.body());
-        if(this.modifiedBody != null) {
-            response.payload(this.modifiedBody.orElse(null));
-        }
-
         response.contenType(this.originalResponse.contentType());
         if(this.modifiedContentType != null) {
             response.contenType(this.modifiedContentType.orElse(null));
@@ -52,6 +46,11 @@ public class ProxyResponse {
             String[] values = headerValues.toArray(new String[headerValues.size()]);
 
             response.addHeader(header, values);
+        }
+
+        response.payload(this.originalResponse.body());
+        if(this.modifiedBody != null) {
+            response.payload(this.modifiedBody.orElse(null));
         }
     }
 

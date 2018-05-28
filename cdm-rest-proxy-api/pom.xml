@@ -33,6 +33,16 @@
             <artifactId>cdm-rest-client-tests-support</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-client-okhttp</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-undertow</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
 </project>
