@@ -38,7 +38,7 @@ onError:
 cleanup:
   - name: maven-clean
     exec:
-      - $MVN clean
+      - $MVN -q clean
 
 
 env:
