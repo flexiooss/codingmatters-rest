@@ -9,11 +9,20 @@ import java.io.IOException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 public class OkHttpClientWrapper {
 
+    static public final String OK_WRAPPER_CONNECT_TIMEOUT_ENV = "OK_WRAPPER_CONNECT_TIMEOUT";
+    static public final String OK_WRAPPER_READ_TIMEOUT_ENV = "OK_WRAPPER_CONNECT_TIMEOUT";
+    static public final String OK_WRAPPER_WRITE_TIMEOUT_ENV = "OK_WRAPPER_CONNECT_TIMEOUT";
+
     static public OkHttpClientWrapper build() {
-        return build(new OkHttpClient.Builder());
+        return build(new OkHttpClient.Builder()
+                .connectTimeout(envLong(OK_WRAPPER_CONNECT_TIMEOUT_ENV, "2000"), TimeUnit.MILLISECONDS)
+                .readTimeout(envLong(OK_WRAPPER_READ_TIMEOUT_ENV, "20000"), TimeUnit.MILLISECONDS)
+                .writeTimeout(envLong(OK_WRAPPER_WRITE_TIMEOUT_ENV, "20000"), TimeUnit.MILLISECONDS)
+        );
     }
 
     static public OkHttpClientWrapper build(OkHttpClient.Builder builder) {
@@ -23,6 +32,18 @@ public class OkHttpClientWrapper {
     static public OkHttpClientWrapper from(OkHttpClient client) {
         return new OkHttpClientWrapper(client);
     }
+
+    static private Long envLong(String name, String defaultValue) {
+        return Long.parseLong(envString(name, defaultValue));
+    }
+    static private String envString(String name, String defaultValue) {
+        if(System.getenv(name) != null) {
+            return System.getenv(name);
+        }
+        return System.getProperty(name.replaceAll("_", ".").toLowerCase(), defaultValue);
+    }
+
+
 
     private final OkHttpClient delegate;
 
