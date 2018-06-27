@@ -20,8 +20,8 @@ public class OkHttpClientWrapper {
     static public OkHttpClientWrapper build() {
         return build(new OkHttpClient.Builder()
                 .connectTimeout(envLong(OK_WRAPPER_CONNECT_TIMEOUT_ENV, "2000"), TimeUnit.MILLISECONDS)
-                .readTimeout(envLong(OK_WRAPPER_READ_TIMEOUT_ENV, "20000"), TimeUnit.MILLISECONDS)
-                .writeTimeout(envLong(OK_WRAPPER_WRITE_TIMEOUT_ENV, "20000"), TimeUnit.MILLISECONDS)
+                .readTimeout(envLong(OK_WRAPPER_READ_TIMEOUT_ENV, "40000"), TimeUnit.MILLISECONDS)
+                .writeTimeout(envLong(OK_WRAPPER_WRITE_TIMEOUT_ENV, "40000"), TimeUnit.MILLISECONDS)
         );
     }
 
