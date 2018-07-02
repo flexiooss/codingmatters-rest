@@ -8,7 +8,6 @@ import org.codingmatters.rest.api.client.okhttp.exception.ConnectionTimeoutExcep
 import java.io.IOException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 public class OkHttpClientWrapper {
@@ -78,7 +77,7 @@ public class OkHttpClientWrapper {
             } else {
                 throw e;
             }
-        } catch (NoRouteToHostException | UnknownHostException e) {
+        } catch (NoRouteToHostException e) {
             throw new ConnectionTimeoutException("connection timed out", e);
         }
     }
