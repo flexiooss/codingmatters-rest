@@ -125,4 +125,20 @@ public class OkHttpRequesterTest {
                 is(200)
         );
     }
+
+    @Test
+    public void oneHeaderWithTwoValues() throws Exception {
+        this.undertow
+                .when(exchange ->
+                        exchange.getRequestHeaders().get("X-Test").get(0).equals("v1") &&
+                        exchange.getRequestHeaders().get("X-Test").get(1).equals("v2")
+                )
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester
+                    .header("X-Test", new String[]{"v1", "v2"})
+                .get().code(),
+                is(200)
+        );
+    }
 }

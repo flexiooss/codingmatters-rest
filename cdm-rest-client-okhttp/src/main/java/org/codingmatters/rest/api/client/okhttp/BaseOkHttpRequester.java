@@ -171,7 +171,7 @@ public class BaseOkHttpRequester implements Requester {
         for (Map.Entry<String, String[]> headerEntry : this.headers.entrySet()) {
             if(headerEntry.getValue() != null) {
                 for (String value : headerEntry.getValue()) {
-                    result.header(headerEntry.getKey(), value);
+                    result.addHeader(headerEntry.getKey(), value);
                 }
             }
         }
