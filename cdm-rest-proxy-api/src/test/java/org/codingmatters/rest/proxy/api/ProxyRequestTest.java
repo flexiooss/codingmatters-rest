@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.codingmatters.rest.api.client.test.TestRequesterFactory.Method.GET;
-import static org.codingmatters.rest.api.client.test.TestRequesterFactory.Method.POST;
+import static org.codingmatters.rest.api.client.test.TestRequesterFactory.Method.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -52,7 +51,7 @@ public class ProxyRequestTest {
     }
 
     @Test
-    public void requestPassBy() throws Exception {
+    public void requestPassBy_post() throws Exception {
         this.requesterFactory.clear().nextResponse(POST, 200);
 
         ProxyRequest
@@ -66,6 +65,48 @@ public class ProxyRequestTest {
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).method(), is(POST));
+        assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv1", "qv2")));
+        assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv1", "hv2")));
+        assertThat(this.requesterFactory.calls().get(0).requestContentType(), is("text/plain"));
+        assertThat(this.requesterFactory.calls().get(0).requestBody(), is("my request content is rich".getBytes()));
+    }
+
+    @Test
+    public void requestPassBy_patch() throws Exception {
+        this.requesterFactory.clear().nextResponse(PATCH, 200);
+
+        ProxyRequest
+                .from(TestRequestDeleguate.request(RequestDelegate.Method.PATCH, "https://some/where")
+                        .addHeader("h", "hv1", "hv2")
+                        .addQueryParam("q", "qv1", "qv2")
+                        .contentType("text/plain")
+                        .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
+                        .build())
+                .to(requesterFactory.forBaseUrl("https://else/where"));
+
+        assertThat(this.requesterFactory.calls(), hasSize(1));
+        assertThat(this.requesterFactory.calls().get(0).method(), is(PATCH));
+        assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv1", "qv2")));
+        assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv1", "hv2")));
+        assertThat(this.requesterFactory.calls().get(0).requestContentType(), is("text/plain"));
+        assertThat(this.requesterFactory.calls().get(0).requestBody(), is("my request content is rich".getBytes()));
+    }
+
+    @Test
+    public void requestPassBy_put() throws Exception {
+        this.requesterFactory.clear().nextResponse(PUT, 200);
+
+        ProxyRequest
+                .from(TestRequestDeleguate.request(RequestDelegate.Method.PUT, "https://some/where")
+                        .addHeader("h", "hv1", "hv2")
+                        .addQueryParam("q", "qv1", "qv2")
+                        .contentType("text/plain")
+                        .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
+                        .build())
+                .to(requesterFactory.forBaseUrl("https://else/where"));
+
+        assertThat(this.requesterFactory.calls(), hasSize(1));
+        assertThat(this.requesterFactory.calls().get(0).method(), is(PUT));
         assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv1", "qv2")));
         assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv1", "hv2")));
         assertThat(this.requesterFactory.calls().get(0).requestContentType(), is("text/plain"));

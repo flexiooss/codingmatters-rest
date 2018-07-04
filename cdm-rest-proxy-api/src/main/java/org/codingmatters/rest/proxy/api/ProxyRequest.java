@@ -80,9 +80,9 @@ public class ProxyRequest {
             case POST:
                 return requester.post(this.originalRequest.contentType(), this.payloadAsBytes());
             case PUT:
-                return requester.put(this.originalRequest.contentType(), new byte[0]);
+                return requester.put(this.originalRequest.contentType(), this.payloadAsBytes());
             case PATCH:
-                return requester.patch(this.originalRequest.contentType(), new byte[0]);
+                return requester.patch(this.originalRequest.contentType(), this.payloadAsBytes());
             case DELETE:
                 return requester.delete();
             case HEAD:
