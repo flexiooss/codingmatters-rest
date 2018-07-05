@@ -20,6 +20,10 @@ public class UndertowResource extends ExternalResource {
         this.handler = handler;
     }
 
+    public Undertow server() {
+        return server;
+    }
+
     public String baseUrl() {
         return baseUrl;
     }
