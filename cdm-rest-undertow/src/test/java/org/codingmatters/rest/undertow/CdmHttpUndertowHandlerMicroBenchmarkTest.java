@@ -2,18 +2,14 @@ package org.codingmatters.rest.undertow;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import org.codingmatters.rest.api.Processor;
-import org.codingmatters.rest.undertow.support.UndertowResource;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.lang.management.ManagementFactory;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @Ignore
 public class CdmHttpUndertowHandlerMicroBenchmarkTest extends AbstractUndertowTest {
@@ -35,8 +31,12 @@ public class CdmHttpUndertowHandlerMicroBenchmarkTest extends AbstractUndertowTe
             Response response = this.client.newCall(this.requestBuilder().get().build()).execute();
             assertThat(response.code(), is(200));
             if(i % 100 == 0) {
-                System.out.printf("%08d - %s\n", i, ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().toString());
-
+                System.out.printf(
+                        "%08d - non heap used : %s - heap used : %s\n",
+                        i,
+                        ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed(),
+                        ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
+                );
             }
         }
     }
