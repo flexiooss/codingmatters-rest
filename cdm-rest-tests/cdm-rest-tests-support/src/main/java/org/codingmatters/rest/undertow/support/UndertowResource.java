@@ -1,6 +1,7 @@
 package org.codingmatters.rest.undertow.support;
 
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
 import org.junit.rules.ExternalResource;
 
@@ -36,6 +37,7 @@ public class UndertowResource extends ExternalResource {
         }
         this.server = Undertow.builder()
                 .addHttpListener(port, "localhost")
+                .setSocketOption(UndertowOptions.IDLE_TIMEOUT, 2000)
                 .setHandler(this.handler)
                 .build();
         this.server.start();
