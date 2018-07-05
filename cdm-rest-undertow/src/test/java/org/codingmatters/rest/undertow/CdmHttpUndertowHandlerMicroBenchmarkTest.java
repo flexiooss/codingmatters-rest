@@ -30,6 +30,7 @@ public class CdmHttpUndertowHandlerMicroBenchmarkTest extends AbstractUndertowTe
         for (int i = 0; i < 100000; i++) {
             Response response = this.client.newCall(this.requestBuilder().get().build()).execute();
             assertThat(response.code(), is(200));
+            response.close();
             if(i % 100 == 0) {
                 System.out.printf(
                         "%08d - non heap used : %s - heap used : %s\n",
@@ -48,7 +49,7 @@ public class CdmHttpUndertowHandlerMicroBenchmarkTest extends AbstractUndertowTe
         });
 
         for (int i = 0; i < 100000; i++) {
-            this.client.newCall(this.requestBuilder().get().build()).execute();
+            this.client.newCall(this.requestBuilder().get().build()).execute().close();
             if(i % 100 == 0) {
                 System.out.println(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().toString());
             }
@@ -62,7 +63,7 @@ public class CdmHttpUndertowHandlerMicroBenchmarkTest extends AbstractUndertowTe
         });
 
         for (int i = 0; i < 1000000; i++) {
-            this.client.newCall(this.requestBuilder().get().build()).execute();
+            this.client.newCall(this.requestBuilder().get().build()).execute().close();
             if(i % 100 == 0) {
                 System.out.println(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().toString());
             }
