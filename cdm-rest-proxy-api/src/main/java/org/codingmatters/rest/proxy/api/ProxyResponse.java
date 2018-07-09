@@ -22,35 +22,43 @@ public class ProxyResponse {
     }
 
     public void to(org.codingmatters.rest.api.ResponseDelegate response) throws IOException {
-        response.status(this.originalResponse.code());
-        if(this.modifiedCode != null) {
-            response.status(this.modifiedCode.get());
-        }
-        response.contenType(this.originalResponse.contentType());
-        if(this.modifiedContentType != null) {
-            response.contenType(this.modifiedContentType.orElse(null));
-        }
+        try {
+            response.status(this.originalResponse.code());
+            if (this.modifiedCode != null) {
+                response.status(this.modifiedCode.get());
+            }
+            response.contenType(this.originalResponse.contentType());
+            if (this.modifiedContentType != null) {
+                response.contenType(this.modifiedContentType.orElse(null));
+            }
 
-        HashMap<String, List<String>> headers = new HashMap<>();
-        for (String header : this.originalResponse.headerNames()) {
-            String[] headerValues = this.originalResponse.header(header);
-            headers.put(header, Arrays.asList(headerValues));
-        }
+            HashMap<String, List<String>> headers = new HashMap<>();
+            for (String header : this.originalResponse.headerNames()) {
+                String[] headerValues = this.originalResponse.header(header);
+                headers.put(header, Arrays.asList(headerValues));
+            }
 
-        for (MapOfListModification headerModification : this.headerModifications) {
-            headerModification.appy(headers);
-        }
+            for (MapOfListModification headerModification : this.headerModifications) {
+                headerModification.appy(headers);
+            }
 
-        for (String header : headers.keySet()) {
-            List<String> headerValues = headers.get(header);
-            String[] values = headerValues.toArray(new String[headerValues.size()]);
+            for (String header : headers.keySet()) {
+                List<String> headerValues = headers.get(header);
+                String[] values = headerValues.toArray(new String[headerValues.size()]);
 
-            response.addHeader(header, values);
-        }
+                response.addHeader(header, values);
+            }
 
-        response.payload(this.originalResponse.body());
-        if(this.modifiedBody != null) {
-            response.payload(this.modifiedBody.orElse(null));
+            response.payload(this.originalResponse.body());
+            if (this.modifiedBody != null) {
+                response.payload(this.modifiedBody.orElse(null));
+            }
+        } finally {
+            try {
+                this.originalResponse.close();
+            } catch (Exception e) {
+                throw new IOException("error closing original response delegate while proxying it", e);
+            }
         }
     }
 
