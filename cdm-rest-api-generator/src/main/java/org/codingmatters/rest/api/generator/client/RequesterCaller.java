@@ -75,7 +75,9 @@ public class RequesterCaller {
         caller
                 .nextControlFlow("finally")
                     .beginControlFlow("try")
-                        .addStatement("response.close()")
+                        .beginControlFlow("if(response != null)")
+                            .addStatement("response.close()")
+                        .endControlFlow()
                     .nextControlFlow( "catch($T e)", Exception.class)
                         .addStatement("throw new $T($S, e)", IOException.class, "error closing response")
                     .endControlFlow()
