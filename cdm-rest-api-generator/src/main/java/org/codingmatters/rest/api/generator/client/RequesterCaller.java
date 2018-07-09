@@ -59,6 +59,9 @@ public class RequesterCaller {
         this.preparePath(caller);
         this.prepareParameters(caller);
         this.prepareHeaders(caller);
+
+        caller.addStatement("$T response = null", ResponseDelegate.class);
+        caller.beginControlFlow("try");
         this.makeRequest(caller);
 
         caller.addStatement("$T.Builder resp = $T.builder()",
@@ -68,6 +71,16 @@ public class RequesterCaller {
         this.parseResponse(caller);
 
         caller.addStatement("return resp.build()");
+
+        caller
+                .nextControlFlow("finally")
+                    .beginControlFlow("try")
+                        .addStatement("response.close()")
+                    .nextControlFlow( "catch($T e)", Exception.class)
+                        .addStatement("throw new $T($S, e)", IOException.class, "error closing response")
+                    .endControlFlow()
+                .endControlFlow();
+
         return caller;
     }
 
@@ -170,9 +183,9 @@ public class RequesterCaller {
 
     private void makeRequest(MethodSpec.Builder caller) {
         if(this.method.method().equals("get") || this.method.method().equals("delete")|| this.method.method().equals("head")) {
-            caller.addStatement("$T response = requester.$L()", ResponseDelegate.class, this.method.method());
+            caller.addStatement("response = requester.$L()", this.method.method());
         } else if(this.method.body().isEmpty()) {
-            caller.addStatement("$T response = requester.$L($S, new byte[0])", ResponseDelegate.class, this.method.method(), "application/json");
+            caller.addStatement("response = requester.$L($S, new byte[0])", this.method.method(), "application/json");
         } else {
             TypeDeclaration body = this.method.body().get(0);
 
@@ -196,8 +209,7 @@ public class RequesterCaller {
             caller.endControlFlow();
 
             writerStatement.appendContentTypeVariableCreate(caller);
-            caller.addStatement("$T response = requester.$L(contentType, requestBody)",
-                    ResponseDelegate.class,
+            caller.addStatement("response = requester.$L(contentType, requestBody)",
                     this.method.method()
             );
         }
