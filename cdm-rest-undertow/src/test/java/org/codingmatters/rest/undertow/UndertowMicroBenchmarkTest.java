@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.undertow.support.UndertowResource;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-//@Ignore
+@Ignore
 public class UndertowMicroBenchmarkTest {
 
     @Rule
