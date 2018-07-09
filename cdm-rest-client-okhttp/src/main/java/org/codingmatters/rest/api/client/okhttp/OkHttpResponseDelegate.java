@@ -5,7 +5,6 @@ import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     private final int code;
     private final Map<String, List<String>> headers;
     private final String contentType;
-    private final long contentLength;
     private final File bodyFile;
 
     public OkHttpResponseDelegate(Response response) throws IOException {
@@ -24,7 +22,6 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
             this.bodyFile = File.createTempFile("resp-del-body", ".bin");
             this.bodyFile.deleteOnExit();
             try(FileOutputStream out = new FileOutputStream(this.bodyFile); InputStream in = body.byteStream()) {
-                this.contentLength = response.body().contentLength();
                 byte [] buffer = new byte[1024];
                 for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
                     out.write(buffer, 0, read);
@@ -42,13 +39,13 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public byte[] body() throws IOException {
-        try(InputStream in = new FileInputStream(this.bodyFile)) {
-            ByteBuffer content = ByteBuffer.allocate((int) this.contentLength);
+        try(InputStream in = new FileInputStream(this.bodyFile) ; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte [] buffer = new byte[1024];
             for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
-                content = content.put(buffer, 0, read);
+                out.write(buffer, 0, read);
             }
-            return content.array();
+            out.flush();
+            return out.toByteArray();
         }
     }
 
