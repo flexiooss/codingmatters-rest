@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -48,8 +47,6 @@ public class UndertowResponseDelegate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate payload(String payload, String charset) {
-//        this.exchange.getResponseSender().send(payload, Charset.forName(charset));
-//        return this;
         return this.payload(payload != null ? payload.getBytes(Charset.forName(charset)) : null);
     }
 
@@ -57,15 +54,10 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     public ResponseDelegate payload(byte [] bytes) {
         this.exchange.startBlocking();
         try {
-            try(OutputStream out = this.exchange.getOutputStream()) {
-                out.write(bytes);
-                out.flush();
-            }
+            this.exchange.getOutputStream().write(bytes);
         } catch (IOException e) {
             log.error("error writing response body", e);
         }
-        this.exchange.endExchange();
-//        this.exchange.getResponseSender().send(ByteBuffer.wrap(bytes));
         return this;
     }
 }
