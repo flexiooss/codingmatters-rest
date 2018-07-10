@@ -11,13 +11,19 @@ import java.net.ServerSocket;
  */
 public class UndertowResource extends ExternalResource {
 
+    private final Undertow.Builder undertowBuilder;
     private final HttpHandler handler;
 
     private Undertow server;
     private String baseUrl;
 
-    public UndertowResource(HttpHandler handler) {
+    public UndertowResource(Undertow.Builder undertowBuilder, HttpHandler handler) {
+        this.undertowBuilder = undertowBuilder;
         this.handler = handler;
+    }
+
+    public UndertowResource(HttpHandler handler) {
+        this(Undertow.builder(), handler);
     }
 
     public Undertow server() {
