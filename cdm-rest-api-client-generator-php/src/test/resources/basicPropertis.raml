@@ -1,0 +1,28 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+    SimplePropertyType:
+        type: object
+        properties:
+            simpleString: string
+            stringProp:
+                type: string
+            stringArrayProp:
+                type: array
+                items: string
+            shortStringArray: string[]
+            intProp: integer
+            intArrayProp:
+                type: array
+                items: integer
+            intShortArray: integer[]
+            enumProp:
+              enum: [A, B, C]
+            enumArrayProp:
+              type: array
+              items:
+                enum: [D, E, F]

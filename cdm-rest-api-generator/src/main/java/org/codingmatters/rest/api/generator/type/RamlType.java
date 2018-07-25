@@ -47,6 +47,9 @@ public enum RamlType {
 
     static private String ramlTypeName(TypeDeclaration declaration) {
         String name = declaration.type();
+        if( name == null ){
+            name = declaration.name();
+        }
         while(name.endsWith("[]")) {
             name = name.substring(0, name.length() - 2);
         }

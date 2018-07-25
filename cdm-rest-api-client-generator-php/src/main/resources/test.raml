@@ -1,0 +1,102 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+#annotationTypes:
+#   value-object-hint:
+#      type: string[]
+#   conforms-to:
+#      type: string[]
+#   already-defined:
+#      type: string
+
+types:
+    SimplePropertyType:
+        type: object
+        properties:
+            simpleString: string
+            stringProp:
+                type: string
+            stringArrayProp:
+                type: array
+                items: string
+            shortStringArray: string[]
+            intProp: integer
+            intArrayProp:
+                type: array
+                items: integer
+            intShortArray: integer[]
+            enumProp:
+              enum: [A, B, C]
+            enumArrayProp:
+              type: array
+              items:
+                enum: [D, E, F]
+
+    NestedType:
+        type: object
+        properties:
+            nested:
+                type: object
+                properties:
+                    stringProp: string
+                    nested:
+                        type: object
+                        properties:
+                            stringProp: string
+                            enumProp:
+                              enum: [A, B, C]
+#                            enumArrayProp: #TODO
+#                              type: array
+#                              items:
+#                                enum: [A, B, C]
+#            nestedArray:
+#                type: array
+#                items:
+#                    type: object
+#                    properties:
+#                        stringProp: string
+
+#    ReferencesType:
+#        type: object
+#        properties:
+#            reference: SimplePropertyType
+#            typeReference:
+#                type: SimplePropertyType
+#            referenceArray: SimplePropertyType[]
+#            typeReferenceArray:
+#                type: array
+#                items: SimplePropertyType
+#
+#
+#    RawPropertyNameType:
+#        type: object
+#        properties:
+#            Raw Property Name: string
+#
+#    TypeWithHint:
+#        type: object
+#        properties:
+#            annotated:
+#                type: string
+#                (value-object-hint):
+#                    - mongo:object-id
+#                    - mongo:field(_id)
+#
+#    TypeWithProtocol:
+#        (conforms-to): [java.io.Serializable]
+#        type: object
+#
+#    TypeWithObjectProperty:
+#        type: object
+#        properties:
+#            obj: object
+#            objs:
+#               type: array
+#               items: object
+#
+#    AlreadyDefinedType:
+#        (already-defined): org.codingmatters.AnExternalValueObject
+#        type: object

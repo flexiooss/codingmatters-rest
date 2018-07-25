@@ -1,0 +1,21 @@
+{
+    "name":"phpGeneration/unitTests",
+    "require": {
+        "phpunit/phpunit": "^6.4",
+        "flexio/utils": "master@dev"
+    },
+    "autoload": {
+        "classmap": [
+            "org/"
+        ],
+        "psr-4": {
+            "org\\": "org/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/flexiooss/flexio-php-utils.git"
+        }
+    ]
+}
