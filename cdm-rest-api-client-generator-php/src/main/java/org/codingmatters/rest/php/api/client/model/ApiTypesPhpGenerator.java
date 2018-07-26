@@ -12,7 +12,6 @@ import org.raml.v2.api.model.v10.datamodel.StringTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.codingmatters.rest.api.generator.type.RamlType.isRamlType;
@@ -59,8 +58,8 @@ public class ApiTypesPhpGenerator {
     private PropertyTypeSpec.Builder typeSpecFromDeclaration( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
         if( declaration instanceof ArrayTypeDeclaration ) {
             String type;
-            if( ((ArrayTypeDeclaration) declaration).items().type() == null && declaration.type().endsWith( "[]" ) ) {
-                type = declaration.name().replace( "[]", "" );
+            if( declaration.type().endsWith( "[]" ) ) {
+                type = declaration.type().replace( "[]", "" );
             } else {
                 type = ((ArrayTypeDeclaration) declaration).items().type();
             }
@@ -96,61 +95,83 @@ public class ApiTypesPhpGenerator {
                     .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration )
                     );
         } else {
-            return this.simpleProperty( declaration, RamlType.isArrayType( declaration ) ? PropertyCardinality.LIST : PropertyCardinality.SINGLE );
+            return this.simpleProperty( typeDeclaration, declaration );
         }
     }
 
     private PropertyTypeSpec.Builder simplePropertyArray( TypeDeclaration typeDeclaration, ArrayTypeDeclaration declaration ) {
-        String typeRef = typesPackage + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
+        String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
         if( this.isEnum( declaration.items() ) ) {
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
-            System.out.println("ADDING ARRAY ENUM with " + values.length);
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.LIST )
                     .typeKind( TypeKind.EMBEDDED )
+                    .typeRef( typeRef )
                     .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec()
                             .addProperty( PropertySpec.property()
                                     .type( PropertyTypeSpec.type()
                                             .typeKind( TypeKind.ENUM )
-                                            .typeRef( typeRef )
+                                            .typeRef( typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name() ) )
                                             .cardinality( PropertyCardinality.SINGLE )
                                             .enumValues( values )
                                     )
                                     .build() )
                             .build() );
+            /** RAML PRIMITIVE TYPE */
         } else if( RamlType.isRamlType( declaration.items() ) ) {
+            String type;
+            if( "array".equals( declaration.type() ) ){
+                type = declaration.items().type().replace( "[]", "" );
+            }else{
+                type = declaration.type().replace( "[]", "" );
+            }
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.LIST )
-                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                    .typeKind( TypeKind.EMBEDDED )
                     .typeRef( typeRef )
                     .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty(
                             PropertySpec.property().type( PropertyTypeSpec.type()
-                                    .typeRef( typeMapping.get( declaration.items().name().replace( "[]", "" ) ) )
+                                    .typeRef( typeMapping.get( type ) )
                                     .typeKind( TypeKind.JAVA_TYPE )
                             ).build() ).build() );
         } else {
+            String type;
+            if( "array".equals( declaration.type() ) ){
+                type = declaration.items().type().replace( "[]", "" );
+            }else{
+                type = declaration.type().replace( "[]", "" );
+            }
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.LIST )
-                    .typeKind( TypeKind.IN_SPEC_VALUE_OBJECT )
-                    .typeRef( declaration.type() );
+                    .typeKind( TypeKind.EMBEDDED )
+                    .typeRef( typeRef )
+                    .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty(
+                            PropertySpec.property().type(
+                                    PropertyTypeSpec.type()
+                                            .typeKind( TypeKind.IN_SPEC_VALUE_OBJECT )
+                                            .typeRef( type )
+                            ).build() ).build() );
         }
     }
 
-    private PropertyTypeSpec.Builder simpleProperty( TypeDeclaration declaration, PropertyCardinality withCardinality ) throws RamlSpecException {
+    private PropertyTypeSpec.Builder simpleProperty( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
         if( this.isEnum( declaration ) ) {
             String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
+            String type = naming.type( typeDeclaration.name(), declaration.name() );
+            String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + type;
             return PropertyTypeSpec.type()
-                    .cardinality( withCardinality )
+                    .typeRef( typeRef )
+                    .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.ENUM )
                     .enumValues( values );
         } else if( isRamlType( declaration ) ) {
             return PropertyTypeSpec.type()
-                    .cardinality( withCardinality )
+                    .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
                     .typeRef( typeMapping.get( declaration.type() ) );
         } else {
             return PropertyTypeSpec.type()
-                    .cardinality( withCardinality )
+                    .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.IN_SPEC_VALUE_OBJECT )
                     .typeRef( declaration.type() );
         }

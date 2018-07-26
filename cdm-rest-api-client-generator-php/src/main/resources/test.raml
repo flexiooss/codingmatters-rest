@@ -34,7 +34,6 @@ types:
               type: array
               items:
                 enum: [D, E, F]
-
     NestedType:
         type: object
         properties:
@@ -42,22 +41,12 @@ types:
                 type: object
                 properties:
                     stringProp: string
-                    subNested:
-                        type: object
-                        properties:
-                            stringProp: string
-                            enumProp:
-                              enum: [A, B, C]
-                            enumArrayProp: #TODO
-                              type: array
-                              items:
-                                enum: [A, B, C]
-#            nestedArray:
-#                type: array
-#                items:
-#                    type: object
-#                    properties:
-#                        stringProp: string
+                    enumProp:
+                      enum: [A, B, C]
+                    enumArrayProp: #TODO
+                      type: array
+                      items:
+                        enum: [D, E, F]
 
 #    ReferencesType:
 #        type: object
@@ -69,8 +58,8 @@ types:
 #            typeReferenceArray:
 #                type: array
 #                items: SimplePropertyType
-#
-#
+
+
 #    RawPropertyNameType:
 #        type: object
 #        properties:
