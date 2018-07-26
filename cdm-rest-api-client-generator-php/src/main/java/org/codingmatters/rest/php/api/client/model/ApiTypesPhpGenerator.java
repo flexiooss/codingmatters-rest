@@ -104,6 +104,7 @@ public class ApiTypesPhpGenerator {
         String typeRef = typesPackage + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
         if( this.isEnum( declaration.items() ) ) {
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
+            System.out.println("ADDING ARRAY ENUM with " + values.length);
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.LIST )
                     .typeKind( TypeKind.EMBEDDED )
@@ -137,11 +138,11 @@ public class ApiTypesPhpGenerator {
 
     private PropertyTypeSpec.Builder simpleProperty( TypeDeclaration declaration, PropertyCardinality withCardinality ) throws RamlSpecException {
         if( this.isEnum( declaration ) ) {
-            List<String> values = ((StringTypeDeclaration) declaration).enumValues();
+            String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
             return PropertyTypeSpec.type()
                     .cardinality( withCardinality )
                     .typeKind( TypeKind.ENUM )
-                    .enumValues( values.toArray( new String[values.size()] ) );
+                    .enumValues( values );
         } else if( isRamlType( declaration ) ) {
             return PropertyTypeSpec.type()
                     .cardinality( withCardinality )

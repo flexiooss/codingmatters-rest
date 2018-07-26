@@ -25,9 +25,9 @@ class BasicPropertiesTest extends TestCase {
         $type -> withIntArrayProp( new SimplePropertyTypeIntArrayPropList( array ( 7, 9 )));
         $type -> withIntShortArray( new SimplePropertyTypeIntShortArrayList( array( 9, 5 )));
         $type -> withEnumProp( SimplePropertyTypeEnumProp::B() );
-        $type -> withEnumArrayProp( new SimplePropertyTypeEnumArrayPropList( SimplePropertyTypeEnumArrayProp::E() ) );
+        $type -> withEnumArrayProp( new SimplePropertyTypeEnumArrayPropList( array( SimplePropertyTypeEnumArrayProp::E() )));
 
-        $type -> enumArrayProp()[] = SimplePropertyTypeEnumArrayProp::E();
+        $type -> enumArrayProp()[] = SimplePropertyTypeEnumArrayProp::D();
 
         $this -> assertSame( "toto", $type -> simpleString() );
         $this -> assertSame( "toto", $type -> stringProp() );
@@ -40,10 +40,9 @@ class BasicPropertiesTest extends TestCase {
         $this -> assertSame( 9, $type -> intArrayProp()[1] );
         $this -> assertSame( 9, $type -> intShortArray()[0] );
         $this -> assertSame( 5, $type -> intShortArray()[1] );
-        echo "coucou\n";
-        var_dump( $type -> enumArrayProp()->jsonSerialize());
-        //$this -> assertSame( 'E', $type -> enumArrayProp()[0]->value() );
-        //$this -> assertSame( 'D', $type -> enumArrayProp()[1]->value() );
+
+        $this -> assertSame( 'E', $type -> enumArrayProp()[0]->value() );
+        $this -> assertSame( 'D', $type -> enumArrayProp()[1]->value() );
     }
 
 }
