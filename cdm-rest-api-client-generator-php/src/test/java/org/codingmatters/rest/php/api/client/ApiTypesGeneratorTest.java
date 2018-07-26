@@ -119,12 +119,12 @@ public class ApiTypesGeneratorTest {
 
         ValueSpec valueSpec = spec.valueSpecs().get( 1 );
 
-//        assertThat( valueSpec.propertySpecs().size(), is( 4 ) );
+        assertThat( valueSpec.propertySpecs().size(), is( 4 ) );
 
         assertThat( valueSpec.propertySpec( "reference" ).typeSpec().typeRef(), is( "SimplePropertyType" ) );
         assertThat( valueSpec.propertySpec( "reference" ).typeSpec().typeKind(), is( TypeKind.IN_SPEC_VALUE_OBJECT ) );
         assertThat( valueSpec.propertySpec( "reference" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-//
+
         assertThat( valueSpec.propertySpec( "typeReference" ).typeSpec().typeRef(), is( "SimplePropertyType" ) );
         assertThat( valueSpec.propertySpec( "typeReference" ).typeSpec().typeKind(), is( TypeKind.IN_SPEC_VALUE_OBJECT ) );
         assertThat( valueSpec.propertySpec( "typeReference" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
@@ -142,8 +142,45 @@ public class ApiTypesGeneratorTest {
         assertThat( valueSpec.propertySpec( "typeReferenceArray" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "SimplePropertyType" ) );
         assertThat( valueSpec.propertySpec( "typeReferenceArray" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.IN_SPEC_VALUE_OBJECT ) );
         assertThat( valueSpec.propertySpec( "typeReferenceArray" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-
-
     }
 
+    @Test
+    public void testObjectValueType() throws Exception {
+        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "objectValueType.raml" ).getPath();
+
+        RamlModelResult ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
+
+        Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
+        assertThat( spec.valueSpecs().size(), is( 1 ) );
+
+        ValueSpec valueSpec = spec.valueSpecs().get( 0 );
+
+        assertThat( valueSpec.propertySpecs().size(), is( 3 ) );
+        assertThat( valueSpec.propertySpec( "obj" ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "obj" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( valueSpec.propertySpec( "obj" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().typeRef(), is( "org.generated.typewithobjectproperty.TypeWithObjectPropertyObjsList" ) );
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().typeRef(), is( "org.generated.typewithobjectproperty.TypeWithObjectPropertyShortObjsList" ) );
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+    }
+
+    @Test
+    public void testAlreadyDefinedType() throws Exception {
+        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "alreadyDefinedType.raml" ).getPath();
+
+        RamlModelResult ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
+
+        Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
+        assertThat( spec.valueSpecs().size(), is( 1 ) );
+
+    }
 }

@@ -4,7 +4,6 @@ import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.spec.*;
-import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
@@ -64,11 +63,17 @@ public class ApiTypesPhpGenerator {
                 type = ((ArrayTypeDeclaration) declaration).items().type();
             }
             if( type.equals( "object" ) ) {
-                if( this.naming.isArbitraryObject( ((ArrayTypeDeclaration) declaration).items() ) ) {
+                if( ((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty() ) { /** IS OBJECT VALUE */
+                    String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.LIST )
-                            .typeKind( TypeKind.JAVA_TYPE )
-                            .typeRef( "array" );
+                            .typeKind( TypeKind.EMBEDDED )
+                            .typeRef( typeRef )
+                            .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty(
+                                    PropertySpec.property()
+                                            .type( PropertyTypeSpec.type().typeKind( TypeKind.JAVA_TYPE ).typeRef( "array" ) )
+                                            .build()
+                            ).build() );
                 } else if( ((ArrayTypeDeclaration) declaration).items().name().equals( "object" ) ) {
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.LIST )
@@ -86,14 +91,13 @@ public class ApiTypesPhpGenerator {
         } else if( this.naming.isArbitraryObject( declaration ) ) {
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
-                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                    .typeRef( ObjectValue.class.getName() );
+                    .typeKind( TypeKind.JAVA_TYPE )
+                    .typeRef( "array" );
         } else if( declaration.type().equals( "object" ) ) {
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.EMBEDDED )
-                    .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration )
-                    );
+                    .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration ) );
         } else {
             return this.simpleProperty( typeDeclaration, declaration );
         }
@@ -120,9 +124,9 @@ public class ApiTypesPhpGenerator {
             /** RAML PRIMITIVE TYPE */
         } else if( RamlType.isRamlType( declaration.items() ) ) {
             String type;
-            if( "array".equals( declaration.type() ) ){
+            if( "array".equals( declaration.type() ) ) {
                 type = declaration.items().type().replace( "[]", "" );
-            }else{
+            } else {
                 type = declaration.type().replace( "[]", "" );
             }
             return PropertyTypeSpec.type()
@@ -136,9 +140,9 @@ public class ApiTypesPhpGenerator {
                             ).build() ).build() );
         } else {
             String type;
-            if( "array".equals( declaration.type() ) ){
+            if( "array".equals( declaration.type() ) ) {
                 type = declaration.items().type().replace( "[]", "" );
-            }else{
+            } else {
                 type = declaration.type().replace( "[]", "" );
             }
             return PropertyTypeSpec.type()

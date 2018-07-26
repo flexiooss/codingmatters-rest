@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+    TypeWithObjectProperty:
+        type: object
+        properties:
+            obj: object
+            objs:
+               type: array
+               items: object
+            shortObjs: object[]
