@@ -35,23 +35,23 @@ types:
               items:
                 enum: [D, E, F]
 
-#    NestedType:
-#        type: object
-#        properties:
-#            nested:
-#                type: object
-#                properties:
-#                    stringProp: string
-#                    nested:
-#                        type: object
-#                        properties:
-#                            stringProp: string
-#                            enumProp:
-#                              enum: [A, B, C]
-#                            enumArrayProp: #TODO
-#                              type: array
-#                              items:
-#                                enum: [A, B, C]
+    NestedType:
+        type: object
+        properties:
+            nested:
+                type: object
+                properties:
+                    stringProp: string
+                    subNested:
+                        type: object
+                        properties:
+                            stringProp: string
+                            enumProp:
+                              enum: [A, B, C]
+                            enumArrayProp: #TODO
+                              type: array
+                              items:
+                                enum: [A, B, C]
 #            nestedArray:
 #                type: array
 #                items:

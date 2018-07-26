@@ -45,4 +45,20 @@ class BasicPropertiesTest extends TestCase {
         $this -> assertSame( 'D', $type -> enumArrayProp()[1]->value() );
     }
 
+    public function testNestedType(){
+        $object = new \org\generated\NestedType();
+
+        $nested = new \org\generated\nestedtype\Nested();
+
+        $subNested = new \org\generated\nestedtype\nested\SubNested();
+
+        $nested -> withSubNested( $subNested );
+
+        $object -> withNested( $nested );
+
+        $object -> nested() -> withStringProp( "foo" );
+        $object -> nested() -> subNested() -> withStringProp( "bar" );
+        $object -> nested() -> subNested() -> withEnumProp( \org\generated\subnested\SubNestedEnumProp::A() );
+    }
+
 }

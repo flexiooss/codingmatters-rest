@@ -30,9 +30,6 @@ public class Main {
             System.out.println( "Generating api in " + rootDir );
 
             Spec spec = new ApiTypesPhpGenerator(typesPackage).generate( model );
-
-            System.out.println("SPEC PARSED:");
-            System.out.println( Arrays.toString( spec.valueSpecs().get( 0 ).propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues() ) );
             new SpecPhpGenerator( spec, clientPackage, rootDir ).generate();
 
             spec = new ApiGenerator( typesPackage ).generate( model );
