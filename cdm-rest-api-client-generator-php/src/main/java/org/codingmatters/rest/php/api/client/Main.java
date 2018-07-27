@@ -1,7 +1,6 @@
 package org.codingmatters.rest.php.api.client;
 
 import org.codingmatters.rest.api.generator.ApiGenerator;
-import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.spec.Spec;
@@ -9,7 +8,6 @@ import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
 import java.io.File;
-import java.util.Arrays;
 
 public class Main {
 
@@ -18,9 +16,9 @@ public class Main {
 //            File rootDir = Files.createTempDirectory( "cdmRest" ).toFile();
             File rootDir = new File( "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/target/test-classes" );
 
-            String clientPackage = "org.generated";
+            String clientPackage = "org.generated.client";
             String apiPackage = "org.generated.api";
-            String typesPackage = "org.generated";
+            String typesPackage = "org.generated.types";
 
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir );
 
@@ -29,11 +27,11 @@ public class Main {
 
             System.out.println( "Generating api in " + rootDir );
 
-            Spec spec = new ApiTypesPhpGenerator(typesPackage).generate( model );
-            new SpecPhpGenerator( spec, clientPackage, rootDir ).generate();
+            Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( model );
+            new SpecPhpGenerator( spec, typesPackage, rootDir ).generate();
 
             spec = new ApiGenerator( typesPackage ).generate( model );
-            new SpecPhpGenerator( spec, clientPackage, rootDir ).generate();
+            new SpecPhpGenerator( spec, apiPackage, rootDir ).generate();
 
             requesterGenerator.generate( model );
 

@@ -4,6 +4,13 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
+types:
+  RootObj:
+    type: object
+    properties:
+      titi: string
+      grosminet: integer
+
 /root:
     displayName: Root
     get:
@@ -11,3 +18,5 @@ mediaType: application/json
     /sub:
         displayName: Sub
         get:
+        post:
+          body: RootObj

@@ -3,6 +3,7 @@ package org.codingmatters.rest.php.api.client;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.php.api.client.generator.PhpClassGenerator;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
+import org.codingmatters.rest.php.api.client.model.Payload;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.api.Api;
@@ -29,7 +30,7 @@ public class PhpClientRequesterGenerator {
         this.typesPackage = typesPackage;
         this.rootDir = rootDir;
         this.utils = new Utils();
-        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), clientPackage );
+        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), apiPackage, typesPackage );
     }
 
     public void generate( RamlModelResult model ) throws RamlSpecException, IOException {
@@ -47,6 +48,7 @@ public class PhpClientRequesterGenerator {
 
 
     private void processGeneration( ResourceClientDescriptor clientDescriptor ) throws IOException {
+        new File( rootDir.getPath() + "/" + apiPackage.replace( ".", "/" )).mkdirs();
         phpClassGenerator.generateInterface( clientDescriptor );
         phpClassGenerator.generateImplementationClass( clientDescriptor );
         for( ResourceClientDescriptor subResourceClientDescriptor : clientDescriptor.nextFloorResourceClientGetters() ) {
@@ -57,14 +59,14 @@ public class PhpClientRequesterGenerator {
     private List<ResourceClientDescriptor> processApi( Api api ) {
         List<ResourceClientDescriptor> clientDescriptors = new ArrayList<>();
         for( Resource resource : api.resources() ) {
-            clientDescriptors.add( this.processResource( resource ) );
+            clientDescriptors.add( this.processResource( api, resource ) );
         }
         return clientDescriptors;
     }
 
-    private ResourceClientDescriptor processResource( Resource resource ) {
+    private ResourceClientDescriptor processResource( Api api, Resource resource ) {
         String resourceName = utils.getJoinedName( resource.displayName().value() );
-        ResourceClientDescriptor resourceDesc = new ResourceClientDescriptor( resourceName, clientPackage );
+        ResourceClientDescriptor resourceDesc = new ResourceClientDescriptor( resourceName, apiPackage );
 
         for( Method method : resource.methods() ) {
             HttpMethodDescriptor httpMethod = new HttpMethodDescriptor( utils.firstLetterLowerCase( resourceName ) )
@@ -72,14 +74,19 @@ public class PhpClientRequesterGenerator {
                     .withResponseType( resourceName + utils.firstLetterUpperCase( method.method() ) + "Response", apiPackage )
                     .withPath( resource.resourcePath() )
                     .withMethod( method );
-
-
+            if( method.body() != null && !method.body().isEmpty() ) {
+                String bodyType = method.body().get( 0 ).type();
+                if( api.types().stream().anyMatch( type->type.name().equals( bodyType ) ) ) {
+                    httpMethod.withPayload( Payload.Type.VALUE_OBJECT, bodyType );
+                } else {
+                    httpMethod.withPayload( Payload.Type.FILE, bodyType );
+                }
+            }
             resourceDesc.addMethodDescriptor( httpMethod );
-
         }
 
         for( Resource subResource : resource.resources() ) {
-            ResourceClientDescriptor subResourceDesc = processResource( subResource );
+            ResourceClientDescriptor subResourceDesc = processResource( api, subResource );
             resourceDesc.addNextFloorResource( subResourceDesc );
         }
         return resourceDesc;

@@ -2,6 +2,7 @@ package org.codingmatters.rest.php.api.client.generator;
 
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
+import org.codingmatters.rest.php.api.client.model.Payload;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.model.v10.bodies.Response;
 
@@ -15,10 +16,12 @@ public class PhpClassGenerator extends AbstractGenerator {
     private final String rootDir;
     private final String rootPackage;
     private final Utils utils;
+    private final String typesPackage;
 
-    public PhpClassGenerator( String rootDir, String rootPackage ) {
+    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage ) {
         this.rootDir = rootDir + "/" + rootPackage.replace( ".", "/" );
         this.rootPackage = rootPackage.replace( ".", "\\" );
+        this.typesPackage = typesPackage.replace( ".", "\\" );
         this.utils = new Utils();
     }
 
@@ -99,15 +102,28 @@ public class PhpClassGenerator extends AbstractGenerator {
                 writer.write( "$this->httpRequester->path( $path );" );
                 newLine( writer, 2 );
                 String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
-                writer.write( "$responseDelegate = $this->httpRequester->" + method + "(" );
+
                 if( needBody( method ) ) {
                     if( httpMethodDescriptor.getPayload() != null ) {
+                        if( httpMethodDescriptor.getPayload().type() == Payload.Type.VALUE_OBJECT ) {
+                            writer.write( "$writer = new \\" + typesPackage + "\\json\\" + httpMethodDescriptor.getPayload().typeRef() + "Writer();" );
+                            newLine( writer, 2 );
+                            writer.write( "$content = $writer->write( $" + requestVarName + " -> payload() );" );
+                            newLine( writer, 2 );
+                            writer.write( "$contentType = 'application/json';" );
+                            newLine( writer, 2 );
+                        }
                         // TODO :^)
                     } else {
-                        writer.write( " null, ''" );
+                        writer.write( "$content = null;" );
+                        newLine( writer, 2 );
+                        writer.write( "$contentType = '';" );
+                        newLine( writer, 2 );
                     }
+                    writer.write( "$responseDelegate = $this->httpRequester->" + method + "( $contentType, $content );" );
+                } else {
+                    writer.write( "$responseDelegate = $this->httpRequester->" + method + "();" );
                 }
-                writer.write( " );" );
                 newLine( writer, 2 );
 
                 for( Response response : httpMethodDescriptor.method().responses() ) {

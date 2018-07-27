@@ -10,6 +10,7 @@ class FakeHttpRequester implements HttpRequester {
     private $path;
     private $lastMethod;
     private $parameters;
+    private $lastBody;
 
     public function __construct() {
         $this -> parameters = array();
@@ -72,6 +73,10 @@ class FakeHttpRequester implements HttpRequester {
 
     public function lastMethod(): string {
         return $this -> lastMethod;
+    }
+
+    public function lastBody(): string {
+        return $this -> lastBody;
     }
 
 }

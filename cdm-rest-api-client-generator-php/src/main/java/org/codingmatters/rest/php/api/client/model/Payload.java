@@ -14,4 +14,12 @@ public class Payload {
         VALUE_OBJECT,
         FILE;
     }
+
+    public Type type() {
+        return type;
+    }
+
+    public String typeRef() {
+        return typeRef;
+    }
 }

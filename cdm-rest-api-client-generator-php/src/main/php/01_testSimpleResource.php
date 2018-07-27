@@ -5,10 +5,10 @@ namespace Test;
 use PHPUnit\Framework\TestCase;
 
 use org\utils\FakeHttpRequester;
-use org\generated\RootImpl;
-use org\generated\RootGetRequest;
-use org\generated\RootPostRequest;
-use org\generated\SubGetRequest;
+use org\generated\api\RootImpl;
+use org\generated\api\RootGetRequest;
+use org\generated\api\RootPostRequest;
+use org\generated\api\SubGetRequest;
 
 class SimpleResourceTest extends TestCase {
 
@@ -34,7 +34,6 @@ class SimpleResourceTest extends TestCase {
         $this-> assertSame( $requester->lastMethod(), 'post' );
     }
 
-
     public function testSubGet(){
         $requester = new FakeHttpRequester();
 
@@ -44,6 +43,25 @@ class SimpleResourceTest extends TestCase {
 
         $this-> assertSame( $requester->getPath(), 'http://gateway.io/services/root/sub' );
         $this-> assertSame( $requester->lastMethod(), 'get' );
+    }
+
+    public function testSubPost(){
+        $requester = new FakeHttpRequester();
+
+        $rootImpl = new RootImpl( $requester, 'http://gateway.io/services' );
+
+        $root = new \org\generated\types\RootObj();
+        $root -> withTiti( "titi" )
+              -> withGrosminet( 9 );
+
+        $request = new \org\generated\api\SubPostRequest();
+        $request -> withPayload( $root );
+
+        $response = $rootImpl -> sub() -> subPost( $request );
+
+        $this-> assertSame( $requester->getPath(), 'http://gateway.io/services/root/sub' );
+        $this-> assertSame( $requester->lastMethod(), 'post' );
+
     }
 
 }
