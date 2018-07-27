@@ -11,6 +11,8 @@ public class HttpMethodDescriptor {
     private String responseType;
     private Method method;
     private String path;
+    private Payload payload;
+
 
     public HttpMethodDescriptor( String httpMethodName ) {
         this.httpMethodName = httpMethodName;
@@ -25,6 +27,11 @@ public class HttpMethodDescriptor {
     public HttpMethodDescriptor withResponseType( String responseType, String responsePackage ) {
         this.responseType = responseType;
         this.responsePackage = responsePackage;
+        return this;
+    }
+
+    public HttpMethodDescriptor withPayload( Payload.Type type, String typeRef ) {
+        this.payload = new Payload( type, typeRef );
         return this;
     }
 
@@ -46,6 +53,10 @@ public class HttpMethodDescriptor {
 
     public String getResponseType() {
         return responseType;
+    }
+
+    public Payload getPayload() {
+        return payload;
     }
 
     public HttpMethodDescriptor withMethod( Method method ) {

@@ -67,14 +67,15 @@ public class PhpClientRequesterGenerator {
         ResourceClientDescriptor resourceDesc = new ResourceClientDescriptor( resourceName, clientPackage );
 
         for( Method method : resource.methods() ) {
-            resourceDesc.addMethodDescriptor(
-                    new HttpMethodDescriptor( utils.firstLetterLowerCase( resourceName ) )
-                            .withRequestType( resourceName + utils.firstLetterUpperCase( method.method() ) + "Request", apiPackage )
-                            .withResponseType( resourceName + utils.firstLetterUpperCase( method.method() ) + "Response", apiPackage )
-                            .withPath( resource.resourcePath() )
-                            .withMethod( method )
+            HttpMethodDescriptor httpMethod = new HttpMethodDescriptor( utils.firstLetterLowerCase( resourceName ) )
+                    .withRequestType( resourceName + utils.firstLetterUpperCase( method.method() ) + "Request", apiPackage )
+                    .withResponseType( resourceName + utils.firstLetterUpperCase( method.method() ) + "Response", apiPackage )
+                    .withPath( resource.resourcePath() )
+                    .withMethod( method );
 
-            );
+
+            resourceDesc.addMethodDescriptor( httpMethod );
+
         }
 
         for( Resource subResource : resource.resources() ) {

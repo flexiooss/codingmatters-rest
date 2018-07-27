@@ -45,7 +45,7 @@ public class PhpClassGenerator extends AbstractGenerator {
             for( HttpMethodDescriptor httpMethodDescriptor : resourceClientDescriptor.methodDescriptors() ) {
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " " + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
+                        "( " + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
                         httpMethodDescriptor.getResponseType() + ";"
                 );
                 twoLine( writer, 1 );
@@ -65,8 +65,11 @@ public class PhpClassGenerator extends AbstractGenerator {
             twoLine( writer, 0 );
 
             // TODO IMPORTS
+            writer.write( "use io\\flexio\\utils\\http\\HttpRequester;" );
+            twoLine( writer, 0 );
 
-            writer.write( "class " + resourceClientDescriptor.getClassName() + "Impl {" );
+
+            writer.write( "class " + resourceClientDescriptor.getClassName() + "Impl implements " + resourceClientDescriptor.getClassName() + " {" );
             twoLine( writer, 1 );
 
             addAttributes( writer, resourceClientDescriptor );
@@ -83,22 +86,32 @@ public class PhpClassGenerator extends AbstractGenerator {
             }
 
             for( HttpMethodDescriptor httpMethodDescriptor : resourceClientDescriptor.methodDescriptors() ) {
+                String requestVarName = utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() );
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
+                        "( " + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " ): " +
                         httpMethodDescriptor.getResponseType() + " {"
                 );
                 String responseVar = "$" + utils.firstLetterLowerCase( httpMethodDescriptor.getResponseType() );
                 newLine( writer, 2 );
-                writer.write( "$path = " + httpMethodDescriptor.path() + ";" );
+                writer.write( "$path = $this -> gatewayUrl.'" + httpMethodDescriptor.path() + "';" );
                 newLine( writer, 2 );
                 writer.write( "$this->httpRequester->path( $path );" );
                 newLine( writer, 2 );
-                writer.write( "$responseDelegate = $this->httpRequester->" + httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH ) + "();" );
+                String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
+                writer.write( "$responseDelegate = $this->httpRequester->" + method + "(" );
+                if( needBody( method ) ) {
+                    if( httpMethodDescriptor.getPayload() != null ) {
+                        // TODO :^)
+                    } else {
+                        writer.write( " null, ''" );
+                    }
+                }
+                writer.write( " );" );
                 newLine( writer, 2 );
 
                 for( Response response : httpMethodDescriptor.method().responses() ) {
-                    writer.write( "if( $responseDelegate == " + response.code().value() + "){"  );
+                    writer.write( "if( $responseDelegate == " + response.code().value() + "){" );
                     newLine( writer, 3 );
 
                     newLine( writer, 2 );
@@ -122,13 +135,17 @@ public class PhpClassGenerator extends AbstractGenerator {
         }
     }
 
+    private boolean needBody( String method ) {
+        return "post".equals( method ) || "patch".equals( method ) || "put".equals( method );
+    }
+
     private void addAttributes( BufferedWriter writer, ResourceClientDescriptor resourceClientDescriptor ) throws IOException {
         writer.write( "private $httpRequester;" );
         newLine( writer, 1 );
         writer.write( "private $gatewayUrl;" );
         twoLine( writer, 1 );
         for( ResourceClientDescriptor clientDescriptor : resourceClientDescriptor.nextFloorResourceClientGetters() ) {
-            writer.write( "private $" + utils.firstLetterLowerCase( clientDescriptor.getClassName() ) );
+            writer.write( "private $" + utils.firstLetterLowerCase( clientDescriptor.getClassName() ) + ";" );
             twoLine( writer, 1 );
         }
     }
@@ -149,7 +166,6 @@ public class PhpClassGenerator extends AbstractGenerator {
         writer.write( "}" );
         twoLine( writer, 1 );
     }
-
 
 
 }

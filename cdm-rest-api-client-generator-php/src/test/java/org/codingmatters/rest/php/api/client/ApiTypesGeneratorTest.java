@@ -210,4 +210,8 @@ public class ApiTypesGeneratorTest {
     }
 
 
+    @Test
+    public void name() {
+        Main.main( new  String[]{});
+    }
 }
