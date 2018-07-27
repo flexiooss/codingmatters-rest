@@ -5,11 +5,22 @@ baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
 types:
+  LittleObject:
+    type: object
+    properties:
+      name: string
+
   RootObj:
     type: object
     properties:
       titi: string
       grosminet: integer
+      day:
+        enum: [ LUNDI, MARDI ]
+      date: datetime
+      little: LittleObject
+      list: LittleObject[]
+
 
 /root:
     displayName: Root
@@ -20,3 +31,22 @@ types:
         get:
         post:
           body: RootObj
+    /query/me:
+        displayName: Query me
+        get:
+          queryParameters:
+            toto: string
+            titi: string
+    /uri/{param}/here:
+        displayName: Uri Param
+        uriParameters:
+          param: string
+        patch:
+    /head/shot:
+      displayName: Headed query
+      put:
+        headers:
+          x-name: string
+
+
+

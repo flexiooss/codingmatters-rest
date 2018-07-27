@@ -28,6 +28,10 @@ public class ApiTypesPhpGenerator {
         typeMapping.put( "string", "string" );
         typeMapping.put( "boolean", "bool" );
         typeMapping.put( "number", "int" );
+        typeMapping.put( "datetime", "datetime" );
+        typeMapping.put( "datetime-only", "datetime" );
+        typeMapping.put( "time-only", "time" );
+        typeMapping.put( "date-only", "date" );
     }
 
     public ApiTypesPhpGenerator( String typesPackage ) {
@@ -173,6 +177,7 @@ public class ApiTypesPhpGenerator {
                     .typeKind( TypeKind.ENUM )
                     .enumValues( values );
         } else if( isRamlType( declaration ) ) {
+            // if( date )
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )

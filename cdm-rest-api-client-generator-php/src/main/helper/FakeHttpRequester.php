@@ -10,10 +10,12 @@ class FakeHttpRequester implements HttpRequester {
     private $path;
     private $lastMethod;
     private $parameters;
+    private $headers;
     private $lastBody;
 
     public function __construct() {
         $this -> parameters = array();
+        $this -> headers = array();
     }
 
     public function get(): ResponseDelegate {
@@ -25,6 +27,7 @@ class FakeHttpRequester implements HttpRequester {
     public function post( string $contentType = null, string $body = null ): ResponseDelegate {
         $response = new FakeResponseDelegate( $this -> parameters );
         $this -> lastMethod = 'post';
+        $this -> lastBody = $body;
         return $response;
     }
 
@@ -58,7 +61,7 @@ class FakeHttpRequester implements HttpRequester {
     }
 
     public function header( string $name, string $value ): HttpRequester {
-        $this -> parameters[$name] = $value;
+        $this -> headers[$name] = $value;
         return $this;
     }
 
@@ -79,4 +82,11 @@ class FakeHttpRequester implements HttpRequester {
         return $this -> lastBody;
     }
 
+    public function lastParameters() {
+        return $this -> parameters;
+    }
+
+    public function lastHeaders(){
+        return $this -> headers;
+    }
 }

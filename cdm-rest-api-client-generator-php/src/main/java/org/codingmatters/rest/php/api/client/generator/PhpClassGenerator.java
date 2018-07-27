@@ -1,10 +1,12 @@
 package org.codingmatters.rest.php.api.client.generator;
 
+import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
 import org.codingmatters.rest.php.api.client.model.Payload;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.model.v10.bodies.Response;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -17,12 +19,14 @@ public class PhpClassGenerator extends AbstractGenerator {
     private final String rootPackage;
     private final Utils utils;
     private final String typesPackage;
+    private final Naming naming;
 
     public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage ) {
         this.rootDir = rootDir + "/" + rootPackage.replace( ".", "/" );
         this.rootPackage = rootPackage.replace( ".", "\\" );
         this.typesPackage = typesPackage.replace( ".", "\\" );
         this.utils = new Utils();
+        this.naming = new Naming();
     }
 
     public void generateInterface( ResourceClientDescriptor resourceClientDescriptor ) throws IOException {
@@ -99,10 +103,35 @@ public class PhpClassGenerator extends AbstractGenerator {
                 newLine( writer, 2 );
                 writer.write( "$path = $this -> gatewayUrl.'" + httpMethodDescriptor.path() + "';" );
                 newLine( writer, 2 );
-                writer.write( "$this->httpRequester->path( $path );" );
+                if( httpMethodDescriptor.method().resource() != null ) {
+                    for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().resource().uriParameters() ) {
+                        writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', $" + requestVarName + " -> " + typeDeclaration.name() + "(), $path );" );
+                        newLine( writer, 2 );
+                    }
+                }
+                writer.write( "$this -> httpRequester -> path( $path );" );
                 newLine( writer, 2 );
-                String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
+                for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().queryParameters() ) {
+                    String property = naming.property( typeDeclaration.name() );
+                    writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
+                    newLine( writer, 3 );
+                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', $" +requestVarName+" -> " + property + "() );" );
+                    newLine( writer, 2 );
+                    writer.write( "}" );
+                    newLine( writer, 2 );
+                }
 
+                for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().headers() ) {
+                    String property = naming.property( typeDeclaration.name() );
+                    writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
+                    newLine( writer, 3 );
+                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', $" +requestVarName+" -> " + property + "() );" );
+                    newLine( writer, 2 );
+                    writer.write( "}" );
+                    newLine( writer, 2 );
+                }
+
+                String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
                 if( needBody( method ) ) {
                     if( httpMethodDescriptor.getPayload() != null ) {
                         if( httpMethodDescriptor.getPayload().type() == Payload.Type.VALUE_OBJECT ) {
