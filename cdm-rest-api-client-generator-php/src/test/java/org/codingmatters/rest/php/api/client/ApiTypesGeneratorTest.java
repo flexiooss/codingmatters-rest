@@ -182,5 +182,32 @@ public class ApiTypesGeneratorTest {
         Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
         assertThat( spec.valueSpecs().size(), is( 1 ) );
 
+        ValueSpec valueSpec = spec.valueSpecs().get( 0 );
+
+//        assertThat( valueSpec.propertySpecs().size(), is( 4 ) );
+
+        assertThat( valueSpec.propertySpec( "adtShort" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "adtShort" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( valueSpec.propertySpec( "adtShort" ).typeSpec().typeRef(), is( "org.codingmatters.AnExternalValueObject" ) );
+
+        assertThat( valueSpec.propertySpec( "adt" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "adt" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( valueSpec.propertySpec( "adt" ).typeSpec().typeRef(), is( "org.codingmatters.AnExternalValueObject" ) );
+
+        assertThat( valueSpec.propertySpec( "adtShortList" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "adtShortList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( valueSpec.propertySpec( "adtShortList" ).typeSpec().typeRef(), is( "org.generated.includeadt.IncludeADTAdtShortListList" ) );
+        assertThat( valueSpec.propertySpec( "adtShortList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "adtShortList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "org.codingmatters.AnExternalValueObject" ) );
+
+        assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().typeRef(), is( "org.generated.includeadt.IncludeADTAdtListList" ) );
+        assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "org.codingmatters.AnExternalValueObject" ) );
+
+
     }
+
+
 }
