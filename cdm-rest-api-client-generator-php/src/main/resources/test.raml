@@ -29,6 +29,13 @@ types:
     /sub:
         displayName: Sub
         get:
+          responses:
+            200:
+              body: LittleObject
+            201:
+              body: RootObj
+            302:
+              body: object
         post:
           body: RootObj
     /query/me:

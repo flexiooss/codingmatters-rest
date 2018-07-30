@@ -112,7 +112,5 @@ class SimpleResourceTest extends TestCase {
         $this-> assertSame( $requester->getPath(), 'http://gateway.io/services/root/head/shot' );
         $this-> assertSame( $requester->lastMethod(), 'put' );
         $this -> assertSame( $requester -> lastHeaders()['x-name'], "account" );
-
-
     }
 }
