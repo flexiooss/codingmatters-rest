@@ -11,6 +11,7 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 public class PhpClassGenerator extends AbstractGenerator {
@@ -20,11 +21,13 @@ public class PhpClassGenerator extends AbstractGenerator {
     private final Utils utils;
     private final String typesPackage;
     private final Naming naming;
+    private final String clienPackage;
 
-    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage ) {
+    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage, String clientPackage ) {
         this.rootDir = rootDir + "/" + rootPackage.replace( ".", "/" );
         this.rootPackage = rootPackage.replace( ".", "\\" );
         this.typesPackage = typesPackage.replace( ".", "\\" );
+        this.clienPackage = clientPackage.replace( ".", "\\" );
         this.utils = new Utils();
         this.naming = new Naming();
     }
@@ -115,7 +118,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', $" +requestVarName+" -> " + property + "() );" );
+                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -125,7 +128,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', $" +requestVarName+" -> " + property + "() );" );
+                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -153,25 +156,36 @@ public class PhpClassGenerator extends AbstractGenerator {
                 } else {
                     writer.write( "$responseDelegate = $this->httpRequester->" + method + "();" );
                 }
-                newLine( writer, 2 );
-
-                for( Response response : httpMethodDescriptor.method().responses() ) {
-                    writer.write( "if( $responseDelegate == " + response.code().value() + "){" );
-                    newLine( writer, 3 );
-
-                    newLine( writer, 2 );
-                    writer.write( "}" );
-                }
-
+                twoLine( writer, 2 );
                 writer.write( responseVar + " = new " + httpMethodDescriptor.getResponseType() + "();" );
                 newLine( writer, 2 );
+                for( Response response : httpMethodDescriptor.method().responses() ) {
+                    writer.write( "if( $responseDelegate->code() == " + response.code().value() + "){" );
+                    newLine( writer, 3 );
+                    writer.write( "$status = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\json\\Status" + response.code().value() + "();" );
+                    newLine( writer, 3 );
+                    if( response.body() != null && !response.body().isEmpty() ) {
+                        writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
+                        newLine( writer, 3 );
+                        writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
+                        newLine( writer, 3 );
+                        writer.write( "$status -> withPayload( $body );" );
+                        newLine( writer, 3 );
+                    }
+                    for( TypeDeclaration typeDeclaration : response.headers() ) {
+                        writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $responseDelegate -> header('" + typeDeclaration.name() + "') );" );
+                        newLine( writer, 3 );
+                    }
+                    writer.write( responseVar + " -> withStatus" + response.code().value() + "( $status );" );
+                    newLine( writer, 2 );
+                    writer.write( "}" );
+                    newLine( writer, 2 );
+                }
                 writer.write( "return " + responseVar + ";" );
-
                 newLine( writer, 1 );
                 writer.write( "}" );
                 twoLine( writer, 1 );
             }
-
 
             newLine( writer, 0 );
             writer.write( "}" );
@@ -212,5 +226,60 @@ public class PhpClassGenerator extends AbstractGenerator {
         twoLine( writer, 1 );
     }
 
+    public void generateRootClientInterface( String apiName, List<ResourceClientDescriptor> clientDescriptors ) throws IOException {
+        String className = naming.type( apiName, "Client" );
+        try( BufferedWriter writer = new BufferedWriter( new FileWriter( rootDir.replace( rootPackage.replace( "\\", "/" ), "" ) + "/" + clienPackage.replace( "\\", "/" ) + "/" + className + ".php" ) ) ) {
+            writer.write( "<?php" );
+            twoLine( writer, 0 );
+            writer.write( "namespace " + clienPackage + ";" );
+            twoLine( writer, 0 );
+            writer.write( "interface " + className + " {" );
+            twoLine( writer, 1 );
+            for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
+                writer.write( "public function " + naming.property( clientDescriptor.getClassName() ) + "(): \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + ";" );
+                twoLine( writer, 1 );
+            }
+            newLine( writer, 0 );
+            writer.write( "}" );
+            writer.flush();
+        }
+    }
 
+    public void generateRootClientRequesterImpl( String apiName, List<ResourceClientDescriptor> clientDescriptors ) throws IOException {
+        String className = naming.type( apiName, "Client" );
+        try( BufferedWriter writer = new BufferedWriter( new FileWriter( rootDir.replace( rootPackage.replace( "\\", "/" ), "" ) + "/" + clienPackage.replace( "\\", "/" ) + "/" + className + "Requester.php" ) ) ) {
+            writer.write( "<?php" );
+            twoLine( writer, 0 );
+            writer.write( "namespace " + clienPackage + ";" );
+            twoLine( writer, 0 );
+            writer.write( "class " + className + "Requester implements \\" + clienPackage + "\\" + className + " {" );
+            twoLine( writer, 1 );
+
+            for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
+                writer.write( "private $" + clientDescriptor.getClassName() + ";" );
+                newLine( writer, 1 );
+            }
+
+            newLine( writer, 1 );
+            writer.write( "public function __construct( \\io\\flexio\\utils\\http\\HttpRequester $requester, string $gatewayUrl ) {" );
+            for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
+                newLine( writer, 2 );
+                writer.write( "$this -> " + clientDescriptor.getClassName() + " = new \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + "Impl( $requester, $gatewayUrl );" );
+            }
+            newLine( writer, 1 );
+            writer.write( "}" );
+
+            for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
+                twoLine( writer, 1 );
+                writer.write( "public function " + naming.property( clientDescriptor.getClassName() ) + "(): \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + " {" );
+                newLine( writer, 2 );
+                writer.write( "return $this -> " + clientDescriptor.getClassName() + ";" );
+                newLine( writer, 1 );
+                writer.write( "}" );
+            }
+            newLine( writer, 0 );
+            writer.write( "}" );
+            writer.flush();
+        }
+    }
 }

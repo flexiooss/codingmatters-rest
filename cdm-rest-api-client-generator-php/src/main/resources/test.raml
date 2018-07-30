@@ -24,11 +24,19 @@ types:
 
 /root:
     displayName: Root
+    patch:
+      body: RootObj
+    put:
+      body: RootObj[]
+    delete:
+      body: object
     get:
     post:
+      body: object[]
     /sub:
         displayName: Sub
         get:
+          body: file
           responses:
             200:
               body: LittleObject
@@ -36,8 +44,18 @@ types:
               body: RootObj
             302:
               body: object
+              headers:
+                X-entity-id: string
         post:
-          body: RootObj
+          body:
+            type: array
+            items: object
+          responses:
+            200:
+        patch:
+          body:
+            type: array
+            items: RootObj
     /query/me:
         displayName: Query me
         get:
@@ -57,3 +75,5 @@ types:
 
 
 
+/second:
+  displayName: Second

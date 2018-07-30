@@ -5,8 +5,13 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
-import org.codingmatters.rest.api.types.File;
-import org.codingmatters.value.objects.spec.*;
+import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.PropertyTypeSpec;
+import org.codingmatters.value.objects.spec.Spec;
+import org.codingmatters.value.objects.spec.ValueSpec;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.TypeKind;
+import org.codingmatters.value.objects.spec.AnonymousValueSpec;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -47,8 +52,9 @@ public class ApiGeneratorPhp {
     }
 
     private ValueSpec generateMethodRequestValue( Resource resource, Method method ) throws RamlSpecException {
+        String resourceName = this.naming.type( resource.displayName().value(), method.method(), "Request" );
         ValueSpec.Builder result = ValueSpec.valueSpec()
-                .name( this.naming.type( resource.displayName().value(), method.method(), "Request" ) );
+                .name( resourceName );
 
         this.annotationProcessor.appendConformsToAnnotations( result, method.annotations() );
         for( Resource res = method.resource(); res != null; res = res.parentResource() ) {
@@ -64,8 +70,7 @@ public class ApiGeneratorPhp {
         if( method.body() != null && !method.body().isEmpty() ) {
             result.addProperty( PropertySpec.property()
                     .name( "payload" )
-                    .type( this.payloadType( method.body().get( 0 ) )
-                    ) );
+                    .type( this.payloadType( method.body().get( 0 ), resourceName ) ) );
         }
         for( TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters( resource ) ) {
             this.addPropertyFromTypeDeclaration( result, typeDeclaration );
@@ -75,7 +80,7 @@ public class ApiGeneratorPhp {
         return result.build();
     }
 
-    private PropertyTypeSpec.Builder payloadType( TypeDeclaration typeDeclaration ) throws RamlSpecException {
+    private PropertyTypeSpec.Builder payloadType( TypeDeclaration typeDeclaration, String resourceName ) throws RamlSpecException {
         if( RamlType.isRamlType( typeDeclaration ) ) {
             return this.typeSpecFromDeclaration( typeDeclaration );
         } else {
@@ -86,22 +91,38 @@ public class ApiGeneratorPhp {
                             .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
                             .typeRef( this.alreadyDefined( ((ArrayTypeDeclaration) typeDeclaration).items() ) );
                 } else if( this.naming.isArbitraryObjectArray( typeDeclaration ) ) {
+                    String typeRef = typesPackage + "." + resourceName.toLowerCase() + "." + naming.type( resourceName, "array", "list" );
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.LIST )
-                            .typeKind( TypeKind.JAVA_TYPE )
-                            .typeRef( "array" );
+                            .typeKind( TypeKind.EMBEDDED )
+                            .typeRef( typeRef )
+                            .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type()
+                                    .typeKind( TypeKind.JAVA_TYPE )
+                                    .typeRef( "array" )
+                            ).build() ).build() );
                 } else {
-                    String typeRef;
+                    String listTypeRef;
+                    TypeKind typeKind;
+
                     if( ((ArrayTypeDeclaration) typeDeclaration).items().name().equals( "file" ) ) {
-                        typeRef = File.class.getName();
+                        listTypeRef = "string";
+                        typeKind = TypeKind.JAVA_TYPE;
                     } else {
                         String typeName = ((ArrayTypeDeclaration) typeDeclaration).items().type().equals( "object" ) ? ((ArrayTypeDeclaration) typeDeclaration).items().name() : ((ArrayTypeDeclaration) typeDeclaration).items().type();
-                        typeRef = this.typesPackage + "." + typeName;
+                        listTypeRef = this.typesPackage + "." + typeName;
+                        typeKind = TypeKind.EXTERNAL_VALUE_OBJECT;
                     }
+                    String typeRef = typesPackage + "." + resourceName.toLowerCase() + "." + naming.type( resourceName, listTypeRef.substring( listTypeRef.lastIndexOf( "." ) + 1 ), "list" );
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.LIST )
-                            .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                            .typeRef( typeRef );
+                            .typeKind( TypeKind.EMBEDDED )
+                            .typeRef( typeRef )
+                            .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec()
+                                    .addProperty( PropertySpec.property().type( PropertyTypeSpec.type()
+                                            .typeRef( listTypeRef )
+                                            .typeKind( typeKind )
+                                    ).build() )
+                                    .build() );
                 }
             } else {
                 if( this.isAlreadyDefined( typeDeclaration ) ) {
@@ -116,14 +137,17 @@ public class ApiGeneratorPhp {
                             .typeRef( "array" );
                 } else {
                     String typeRef;
+                    TypeKind typeKind;
                     if( typeDeclaration.type().equals( "file" ) ) {
-                        typeRef = File.class.getName();
+                        typeRef = "string";
+                        typeKind = TypeKind.JAVA_TYPE;
                     } else {
+                        typeKind = TypeKind.EXTERNAL_VALUE_OBJECT;
                         typeRef = this.typesPackage + "." + typeDeclaration.type();
                     }
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.SINGLE )
-                            .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                            .typeKind( typeKind )
                             .typeRef( typeRef );
                 }
             }
@@ -155,8 +179,9 @@ public class ApiGeneratorPhp {
     }
 
     private ValueSpec generateMethodResponseValue( Resource resource, Method method ) throws RamlSpecException {
+        String resourceName = this.naming.type( resource.displayName().value(), method.method(), "Response" );
         ValueSpec.Builder result = ValueSpec.valueSpec()
-                .name( this.naming.type( resource.displayName().value(), method.method(), "Response" ) );
+                .name( resourceName );
 
         for( Response response : method.responses() ) {
             AnonymousValueSpec.Builder responseSpec = AnonymousValueSpec.anonymousValueSpec();
@@ -169,7 +194,7 @@ public class ApiGeneratorPhp {
             if( response.body() != null && !response.body().isEmpty() ) {
                 responseSpec.addProperty( PropertySpec.property()
                         .name( "payload" )
-                        .type( this.payloadType( response.body().get( 0 ) ) )
+                        .type( this.payloadType( response.body().get( 0 ), resourceName ) )
                 );
             }
             PropertySpec.Builder responseProp = PropertySpec.property()

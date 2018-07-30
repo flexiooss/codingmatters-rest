@@ -1,6 +1,5 @@
 package org.codingmatters.rest.php.api.client;
 
-import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
 import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
@@ -35,6 +34,7 @@ public class Main {
             new SpecPhpGenerator( spec, apiPackage, rootDir ).generate();
 
             requesterGenerator.generate( model );
+
 
         } catch( Exception e ) {
             e.printStackTrace();

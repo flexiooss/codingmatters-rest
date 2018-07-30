@@ -1,0 +1,70 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+  LittleObject:
+    type: object
+    properties:
+      name: string
+
+/type:
+  displayName: Type
+  post:
+    body: LittleObject
+    responses:
+      200:
+        body: LittleObject
+/typeArrayShort:
+  displayName: Type array short
+  post:
+    body: LittleObject[]
+    responses:
+      200:
+        body: LittleObject[]
+/typeArray:
+  displayName: Type array
+  post:
+    body:
+      type: array
+      items: LittleObject
+    responses:
+      200:
+        body:
+          type: array
+          items: LittleObject
+/object:
+  displayName: object
+  post:
+    body: object
+    responses:
+      200:
+        body: object
+/objectArrayShort:
+  displayName: object array short
+  post:
+    body: object[]
+    responses:
+      200:
+        body: object[]
+/objectArray:
+  displayName: object array
+  post:
+    body:
+      type: array
+      items: object
+    responses:
+      200:
+        body:
+          type: array
+          items: object
+/file:
+  displayName: file
+  post:
+    body:
+      type: file
+    responses:
+      200:
+        body: file

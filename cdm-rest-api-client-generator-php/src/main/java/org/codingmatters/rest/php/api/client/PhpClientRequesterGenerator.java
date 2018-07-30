@@ -30,7 +30,7 @@ public class PhpClientRequesterGenerator {
         this.typesPackage = typesPackage;
         this.rootDir = rootDir;
         this.utils = new Utils();
-        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), apiPackage, typesPackage );
+        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), apiPackage, typesPackage, clientPackage );
     }
 
     public void generate( RamlModelResult model ) throws RamlSpecException, IOException {
@@ -40,15 +40,20 @@ public class PhpClientRequesterGenerator {
             for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
                 processGeneration( clientDescriptor );
             }
-            System.out.println( "Got it" );
+            generateRootClient( model.getApiV10().title().value(), clientDescriptors );
         } else {
             throw new RamlSpecException( "Cannot parse th raml spec v10" );
         }
     }
 
+    private void generateRootClient( String apiName, List<ResourceClientDescriptor> clientDescriptors ) throws IOException {
+        new File( rootDir.getPath() + "/" + clientPackage.replace( ".", "/" ) ).mkdirs();
+        phpClassGenerator.generateRootClientInterface( apiName, clientDescriptors );
+        phpClassGenerator.generateRootClientRequesterImpl( apiName, clientDescriptors );
+    }
 
     private void processGeneration( ResourceClientDescriptor clientDescriptor ) throws IOException {
-        new File( rootDir.getPath() + "/" + apiPackage.replace( ".", "/" )).mkdirs();
+        new File( rootDir.getPath() + "/" + apiPackage.replace( ".", "/" ) ).mkdirs();
         phpClassGenerator.generateInterface( clientDescriptor );
         phpClassGenerator.generateImplementationClass( clientDescriptor );
         for( ResourceClientDescriptor subResourceClientDescriptor : clientDescriptor.nextFloorResourceClientGetters() ) {
