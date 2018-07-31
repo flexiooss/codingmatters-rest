@@ -1,5 +1,7 @@
 package org.codingmatters.rest.php.api.client.model;
 
+import org.codingmatters.value.objects.spec.PropertyTypeSpec;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 
 public class HttpMethodDescriptor {
@@ -11,7 +13,7 @@ public class HttpMethodDescriptor {
     private String responseType;
     private Method method;
     private String path;
-    private Payload payload;
+    private PropertyTypeSpec payload;
 
 
     public HttpMethodDescriptor( String httpMethodName ) {
@@ -30,8 +32,8 @@ public class HttpMethodDescriptor {
         return this;
     }
 
-    public HttpMethodDescriptor withPayload( Payload.Type type, String typeRef ) {
-        this.payload = new Payload( type, typeRef );
+    public HttpMethodDescriptor withPayload( PropertyTypeSpec typeDeclaration ) {
+        this.payload = typeDeclaration;
         return this;
     }
 
@@ -55,7 +57,7 @@ public class HttpMethodDescriptor {
         return responseType;
     }
 
-    public Payload getPayload() {
+    public PropertyTypeSpec payload() {
         return payload;
     }
 

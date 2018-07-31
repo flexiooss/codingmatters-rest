@@ -3,9 +3,9 @@ package org.codingmatters.rest.php.api.client.generator;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
-import org.codingmatters.rest.php.api.client.model.Payload;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.model.v10.bodies.Response;
+import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import java.io.BufferedWriter;
@@ -74,7 +74,6 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.write( "namespace " + rootPackage + ";" );
             twoLine( writer, 0 );
 
-            // TODO IMPORTS
             writer.write( "use io\\flexio\\utils\\http\\HttpRequester;" );
             twoLine( writer, 0 );
 
@@ -135,21 +134,16 @@ public class PhpClassGenerator extends AbstractGenerator {
                 }
 
                 String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
-                if( needBody( method ) ) {
-                    if( httpMethodDescriptor.getPayload() != null ) {
-                        if( httpMethodDescriptor.getPayload().type() == Payload.Type.VALUE_OBJECT ) {
-                            writer.write( "$writer = new \\" + typesPackage + "\\json\\" + httpMethodDescriptor.getPayload().typeRef() + "Writer();" );
-                            newLine( writer, 2 );
-                            writer.write( "$content = $writer->write( $" + requestVarName + " -> payload() );" );
-                            newLine( writer, 2 );
-                            writer.write( "$contentType = 'application/json';" );
-                            newLine( writer, 2 );
-                        }
-                        // TODO :^)
-                    } else {
-                        writer.write( "$content = null;" );
+                if( httpMethodDescriptor.payload() != null ) {
+                    if( httpMethodDescriptor.payload().typeRef().equals( "string" ) ) {
+                        writer.write( "$content = $" + requestVarName + " -> payload();" );
                         newLine( writer, 2 );
-                        writer.write( "$contentType = '';" );
+                        writer.write( "$contentType = $" + requestVarName + " -> contentType();" );
+                        newLine( writer, 2 );
+                    } else {
+                        writer.write( "$content = json_encode( $" + requestVarName + " -> payload() );" );
+                        newLine( writer, 2 );
+                        writer.write( "$contentType = 'application/json';" );
                         newLine( writer, 2 );
                     }
                     writer.write( "$responseDelegate = $this->httpRequester->" + method + "( $contentType, $content );" );
@@ -162,15 +156,39 @@ public class PhpClassGenerator extends AbstractGenerator {
                 for( Response response : httpMethodDescriptor.method().responses() ) {
                     writer.write( "if( $responseDelegate->code() == " + response.code().value() + "){" );
                     newLine( writer, 3 );
-                    writer.write( "$status = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\json\\Status" + response.code().value() + "();" );
+                    writer.write( "$status = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\Status" + response.code().value() + "();" );
                     newLine( writer, 3 );
                     if( response.body() != null && !response.body().isEmpty() ) {
-                        writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
-                        newLine( writer, 3 );
-                        writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
-                        newLine( writer, 3 );
-                        writer.write( "$status -> withPayload( $body );" );
-                        newLine( writer, 3 );
+                        if( response.body().get( 0 ).type().equals( "file" ) ) {
+                            writer.write( "$body = $responseDelegate -> body();" );
+                            newLine( writer, 3 );
+                            writer.write( "$status -> withPayload( $body );" );
+                            newLine( writer, 3 );
+                            writer.write( "$status -> contentType( $responseDelegate -> header( 'Content-type' ));" );
+                            newLine( writer, 3 );
+
+                        } else if( this.isObjectOrArray( response.body().get( 0 ) ) ) {
+                            if( response.body().get( 0 ) instanceof ArrayTypeDeclaration ) {
+                                writer.write( "$body = json_decode( $responseDelegate -> body(), true );" );
+                                newLine( writer, 3 );
+                                writer.write( "$list = new \\" + rootPackage + "\\" + responseVar.substring( 1 ).toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), "payload", "list" ) + "( $body );" );
+                                newLine( writer, 3 );
+                                writer.write( "$status -> withPayload( $list );" );
+                                newLine( writer, 3 );
+                            } else {
+                                writer.write( "$body = json_decode( $responseDelegate -> body(), true );" );
+                                newLine( writer, 3 );
+                                writer.write( "$status -> withPayload( $body );" );
+                                newLine( writer, 3 );
+                            }
+                        } else {
+                            writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
+                            newLine( writer, 3 );
+                            writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
+                            newLine( writer, 3 );
+                            writer.write( "$status -> withPayload( $body );" );
+                            newLine( writer, 3 );
+                        }
                     }
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
                         writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $responseDelegate -> header('" + typeDeclaration.name() + "') );" );
@@ -192,6 +210,19 @@ public class PhpClassGenerator extends AbstractGenerator {
 
             writer.flush();
         }
+
+    }
+
+    private boolean isObjectOrArray( TypeDeclaration typeDeclaration ) {
+        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+            ArrayTypeDeclaration arrayDeclaration = (ArrayTypeDeclaration) typeDeclaration;
+            if( arrayDeclaration.items().type() == null ) {
+                return arrayDeclaration.items().name().equals( "object[]" ) || arrayDeclaration.items().name().equals( "array[]" );
+            } else {
+                return isObjectOrArray( arrayDeclaration.items() );
+            }
+        }
+        return naming.isArbitraryObject( typeDeclaration );
     }
 
     private boolean needBody( String method ) {

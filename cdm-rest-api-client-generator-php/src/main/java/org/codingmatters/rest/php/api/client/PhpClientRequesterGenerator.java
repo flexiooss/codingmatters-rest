@@ -2,11 +2,13 @@ package org.codingmatters.rest.php.api.client;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.php.api.client.generator.PhpClassGenerator;
+import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
-import org.codingmatters.rest.php.api.client.model.Payload;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
+import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.api.Api;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
@@ -61,7 +63,7 @@ public class PhpClientRequesterGenerator {
         }
     }
 
-    private List<ResourceClientDescriptor> processApi( Api api ) {
+    private List<ResourceClientDescriptor> processApi( Api api ) throws RamlSpecException {
         List<ResourceClientDescriptor> clientDescriptors = new ArrayList<>();
         for( Resource resource : api.resources() ) {
             clientDescriptors.add( this.processResource( api, resource ) );
@@ -69,7 +71,7 @@ public class PhpClientRequesterGenerator {
         return clientDescriptors;
     }
 
-    private ResourceClientDescriptor processResource( Api api, Resource resource ) {
+    private ResourceClientDescriptor processResource( Api api, Resource resource ) throws RamlSpecException {
         String resourceName = utils.getJoinedName( resource.displayName().value() );
         ResourceClientDescriptor resourceDesc = new ResourceClientDescriptor( resourceName, apiPackage );
 
@@ -80,12 +82,9 @@ public class PhpClientRequesterGenerator {
                     .withPath( resource.resourcePath() )
                     .withMethod( method );
             if( method.body() != null && !method.body().isEmpty() ) {
-                String bodyType = method.body().get( 0 ).type();
-                if( api.types().stream().anyMatch( type->type.name().equals( bodyType ) ) ) {
-                    httpMethod.withPayload( Payload.Type.VALUE_OBJECT, bodyType );
-                } else {
-                    httpMethod.withPayload( Payload.Type.FILE, bodyType );
-                }
+                TypeDeclaration body = method.body().get( 0 );
+                PropertyTypeSpec.Builder type = new ApiGeneratorPhp( typesPackage ).payloadType( body, resourceName );
+                httpMethod.withPayload( type.build() );
             }
             resourceDesc.addMethodDescriptor( httpMethod );
         }

@@ -10,70 +10,61 @@ types:
     properties:
       name: string
 
-  RootObj:
-    type: object
-    properties:
-      titi: string
-      grosminet: integer
-      day:
-        enum: [ LUNDI, MARDI ]
-      date: datetime
-      little: LittleObject
-      list: LittleObject[]
-
-
-/root:
-    displayName: Root
-    patch:
-      body: RootObj
-    put:
-      body: RootObj[]
-    delete:
-      body: object
-    get:
-    post:
-      body: object[]
-    /sub:
-        displayName: Sub
-        get:
-          body: file
-          responses:
-            200:
-              body: LittleObject
-            201:
-              body: RootObj
-            302:
-              body: object
-              headers:
-                X-entity-id: string
-        post:
-          body:
-            type: array
-            items: object
-          responses:
-            200:
-        patch:
-          body:
-            type: array
-            items: RootObj
-    /query/me:
-        displayName: Query me
-        get:
-          queryParameters:
-            toto: string
-            titi: string
-    /uri/{param}/here:
-        displayName: Uri Param
-        uriParameters:
-          param: string
-        patch:
-    /head/shot:
-      displayName: Headed query
-      put:
-        headers:
-          x-name: string
-
-
-
-/second:
-  displayName: Second
+#/type:
+#  displayName: Type
+#  post:
+#    body: LittleObject
+#    responses:
+#      200:
+#        body: LittleObject
+#/typeArrayShort:
+#  displayName: Type array short
+#  post:
+#    body: LittleObject[]
+#    responses:
+#      200:
+#        body: LittleObject[]
+#/typeArray:
+#  displayName: Type array
+#  post:
+#    body:
+#      type: array
+#      items: LittleObject
+#    responses:
+#      200:
+#        body:
+#          type: array
+#          items: LittleObject
+/object:
+  displayName: object
+  post:
+    body: object
+    responses:
+      200:
+        body: object
+#/objectArrayShort:
+#  displayName: object array short
+#  post:
+#    body: object[]
+#    responses:
+#      200:
+#        body: object[]
+/objectArray:
+  displayName: object array
+  post:
+    body:
+      type: array
+      items: object
+    responses:
+      200:
+        body:
+          type: array
+          items: object
+/file:
+  displayName: file
+  post:
+    body:
+      type: file
+    responses:
+      200:
+        body: file

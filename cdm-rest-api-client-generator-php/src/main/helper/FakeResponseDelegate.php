@@ -7,9 +7,11 @@ use io\flexio\utils\http\ResponseDelegate;
 class FakeResponseDelegate implements ResponseDelegate {
 
     private $headers;
+    private $nextBody;
 
-    public function __construct( $headers = array() ){
+    public function __construct( string $nextBody, $headers = array() ){
         $this -> headers = $headers;
+        $this-> nextBody = $nextBody;
     }
 
     public function addHeader( string $name, string $value ){
@@ -21,7 +23,7 @@ class FakeResponseDelegate implements ResponseDelegate {
     }
 
     public function body(): string {
-        return "";
+        return $this-> nextBody;
     }
 
     public function header( string $name ): string {

@@ -5,13 +5,7 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
-import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.PropertyTypeSpec;
-import org.codingmatters.value.objects.spec.Spec;
-import org.codingmatters.value.objects.spec.ValueSpec;
-import org.codingmatters.value.objects.spec.PropertyCardinality;
-import org.codingmatters.value.objects.spec.TypeKind;
-import org.codingmatters.value.objects.spec.AnonymousValueSpec;
+import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -68,9 +62,16 @@ public class ApiGeneratorPhp {
             this.addPropertyFromTypeDeclaration( result, typeDeclaration );
         }
         if( method.body() != null && !method.body().isEmpty() ) {
+            PropertyTypeSpec.Builder type = this.payloadType( method.body().get( 0 ), resourceName );
             result.addProperty( PropertySpec.property()
                     .name( "payload" )
-                    .type( this.payloadType( method.body().get( 0 ), resourceName ) ) );
+                    .type( type ) );
+            if( type.build().typeRef().equals( "string" ) ) {
+                result.addProperty( PropertySpec.property()
+                        .name( "contentType" )
+                        .type( PropertyTypeSpec.type().typeRef( "string" ).typeKind( TypeKind.JAVA_TYPE ).cardinality( PropertyCardinality.SINGLE ) )
+                        .build() );
+            }
         }
         for( TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters( resource ) ) {
             this.addPropertyFromTypeDeclaration( result, typeDeclaration );
@@ -80,7 +81,7 @@ public class ApiGeneratorPhp {
         return result.build();
     }
 
-    private PropertyTypeSpec.Builder payloadType( TypeDeclaration typeDeclaration, String resourceName ) throws RamlSpecException {
+    public PropertyTypeSpec.Builder payloadType( TypeDeclaration typeDeclaration, String resourceName ) throws RamlSpecException {
         if( RamlType.isRamlType( typeDeclaration ) ) {
             return this.typeSpecFromDeclaration( typeDeclaration );
         } else {
@@ -192,10 +193,17 @@ public class ApiGeneratorPhp {
                         .build() );
             }
             if( response.body() != null && !response.body().isEmpty() ) {
+                PropertyTypeSpec.Builder type = this.payloadType( response.body().get( 0 ), resourceName );
                 responseSpec.addProperty( PropertySpec.property()
                         .name( "payload" )
-                        .type( this.payloadType( response.body().get( 0 ), resourceName ) )
+                        .type( type )
                 );
+                if( type.build().typeRef().equals( "string" ) ) {
+                    responseSpec.addProperty( PropertySpec.property()
+                            .name( "contentType" )
+                            .type( PropertyTypeSpec.type().typeRef( "string" ).typeKind( TypeKind.JAVA_TYPE ).cardinality( PropertyCardinality.SINGLE ) )
+                            .build() );
+                }
             }
             PropertySpec.Builder responseProp = PropertySpec.property()
                     .name( this.naming.property( "status", response.code().value() ) )
