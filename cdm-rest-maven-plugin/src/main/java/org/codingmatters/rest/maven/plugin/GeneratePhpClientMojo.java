@@ -7,6 +7,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
+import org.codingmatters.rest.php.api.client.PhpClientRequesterGenerator;
+import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
+import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 import org.raml.v2.api.RamlModelResult;
@@ -33,6 +36,7 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
         try {
             generateTypes( ramlModel );
             generateApi( ramlModel );
+            generateClient( ramlModel );
         } catch( RamlSpecException e ) {
             throw new MojoExecutionException( "Something went wrong while generating specification", e );
         } catch( IOException e ) {
@@ -40,14 +44,26 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
         }
     }
 
+    private void generateClient( RamlModelResult ramlModel ) throws IOException, RamlSpecException {
+        String clientPackage = destinationPackage + ".client";
+        String apiPackage = destinationPackage + ".api";
+        String typesPackage = destinationPackage + ".types";
+        PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, outputDirectory );
+        requesterGenerator.generate( ramlModel );
+
+    }
+
     private void generateApi( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
-        Spec spec = new ApiGenerator( this.destinationPackage + ".types" ).generate( ramlModel );
-        new SpecPhpGenerator( spec, this.destinationPackage, this.outputDirectory ).generate();
+        String typesPackage = this.destinationPackage + ".types";
+        Spec spec = new ApiGeneratorPhp( typesPackage ).generate( ramlModel );
+        new SpecPhpGenerator( spec, typesPackage, this.outputDirectory ).generate();
+
     }
 
     private void generateTypes( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
-        Spec spec = new ApiTypesGenerator().generate( ramlModel );
-        new SpecPhpGenerator( spec, this.destinationPackage, this.outputDirectory ).generate();
+        String typesPackage = this.destinationPackage + ".types";
+        Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( ramlModel );
+        new SpecPhpGenerator( spec, typesPackage, this.outputDirectory ).generate();
     }
 
 }
