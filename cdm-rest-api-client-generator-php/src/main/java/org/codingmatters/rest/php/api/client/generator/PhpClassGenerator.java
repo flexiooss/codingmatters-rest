@@ -182,12 +182,34 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 newLine( writer, 3 );
                             }
                         } else {
-                            writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
-                            newLine( writer, 3 );
-                            writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
-                            newLine( writer, 3 );
-                            writer.write( "$status -> withPayload( $body );" );
-                            newLine( writer, 3 );
+                            if( response.body().get( 0 ) instanceof ArrayTypeDeclaration ) {
+
+                                String type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().type();
+                                if( type.equals( "object" ) && ((ArrayTypeDeclaration) response.body().get( 0 )).items().name() != null ) {
+                                    type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().name();
+                                }
+                                writer.write( "$reader = new \\" + typesPackage + "\\json\\" + type + "Reader();" );
+                                newLine( writer, 3 );
+                                writer.write( "$body = json_decode( $responseDelegate -> body(), true );" );
+                                newLine( writer, 3 );
+                                writer.write( "$list = new \\" + rootPackage + "\\" + responseVar.substring( 1 ).toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), "payload", "list" ) + "();" );
+                                newLine( writer, 3 );
+                                writer.write( "foreach( $body as $item ) {" );
+                                newLine( writer, 4 );
+                                writer.write( "$list[] = $reader->readArray( $item );" );
+                                newLine( writer, 3 );
+                                writer.write( "}" );
+                                newLine( writer, 3 );
+                                writer.write( "$status->withPayload( $list );" );
+                                newLine( writer, 3 );
+                            } else {
+                                writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
+                                newLine( writer, 3 );
+                                writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
+                                newLine( writer, 3 );
+                                writer.write( "$status -> withPayload( $body );" );
+                                newLine( writer, 3 );
+                            }
                         }
                     }
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
