@@ -5,6 +5,7 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
+import org.codingmatters.value.objects.php.generator.TypeTokenPhp;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
@@ -236,7 +237,7 @@ public class ApiGeneratorPhp {
         } else {
             typeSpec.cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
-                    .typeRef( RamlType.from( typeDeclaration ).javaType() );
+                    .typeRef( TypeTokenPhp.parse( typeDeclaration.type() ).getTypeName() );
         }
         return typeSpec;
     }

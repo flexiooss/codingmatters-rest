@@ -146,30 +146,52 @@ class PayloadTest extends TestCase {
     }
 
     public function testTypeArrayShortSyntaxPayload(){
-            $requester = new FakeHttpRequester();
-            $client = new \org\generated\api\TypeArrayShortImpl( $requester, 'http://gateway' );
+        $requester = new FakeHttpRequester();
+        $client = new \org\generated\api\TypeArrayShortImpl( $requester, 'http://gateway' );
 
-            $item1 = new \org\generated\types\LittleObject();
-            $item1 -> withName( "toto1" );
-            $item2 = new \org\generated\types\LittleObject();
-            $item2 -> withName( "toto2" );
+        $item1 = new \org\generated\types\LittleObject();
+        $item1 -> withName( "toto1" );
+        $item2 = new \org\generated\types\LittleObject();
+        $item2 -> withName( "toto2" );
 
-            $payload = new \org\generated\api\typearrayshortpostrequest\TypeArrayShortPostRequestPayloadList();
-            $payload[] = $item1;
-            $payload[] = $item2;
+        $payload = new \org\generated\api\typearrayshortpostrequest\TypeArrayShortPostRequestPayloadList();
+        $payload[] = $item1;
+        $payload[] = $item2;
 
-            $request = new \org\generated\api\TypeArrayShortPostRequest();
-            $request -> withPayload( $payload );
+        $request = new \org\generated\api\TypeArrayShortPostRequest();
+        $request -> withPayload( $payload );
 
-            $requester -> nextBody('[{"name":"titi1"},{"name":"titi2"}]');
-            $response = $client -> typeArrayShortPost( $request );
+        $requester -> nextBody('[{"name":"titi1"},{"name":"titi2"}]');
+        $response = $client -> typeArrayShortPost( $request );
 
-            $this-> assertSame( $requester->getPath(), 'http://gateway/typeArrayShort' );
-            $this-> assertSame( $requester->lastMethod(), 'post' );
-            $this-> assertSame( $requester->lastBody(), '[{"name":"toto1"},{"name":"toto2"}]' );
+        $this-> assertSame( $requester->getPath(), 'http://gateway/typeArrayShort' );
+        $this-> assertSame( $requester->lastMethod(), 'post' );
+        $this-> assertSame( $requester->lastBody(), '[{"name":"toto1"},{"name":"toto2"}]' );
 
-            $this -> assertSame( $response -> status200() -> payload()[0]->name(), "titi1" );
-            $this -> assertSame( $response -> status200() -> payload()[1]->name(), "titi2" );
-        }
+        $this -> assertSame( $response -> status200() -> payload()[0]->name(), "titi1" );
+        $this -> assertSame( $response -> status200() -> payload()[1]->name(), "titi2" );
+    }
+
+    public function testUriParametersHeadersAndQueryParams() {
+        $requester = new FakeHttpRequester();
+        $client = new \org\generated\api\ParametersImpl( $requester, 'http://gateway' );
+
+        $request = new \org\generated\api\ParametersGetRequest();
+        $request -> withFoo( "valFoo" )
+                 -> withBar( "valBar" )
+                 -> withReqHeader( "reqHeaderValue" )
+                 -> withParams( "paramValue" )
+                    ;
+
+        $requester-> parameter( "resp-header", "coucou" );
+
+        $response = $client -> parametersGet( $request );
+        $this-> assertSame( $requester->getPath(), 'http://gateway/params/paramValue' );
+        $this-> assertSame( $requester->lastMethod(), 'get' );
+
+        $this-> assertSame( $requester -> lastParameters()['foo'], "valFoo" );
+        $this-> assertSame( $requester -> lastParameters()['bar'], "valBar" );
+        $this-> assertSame( $response -> status200() -> respHeader(), "coucou" );
+    }
 
 }

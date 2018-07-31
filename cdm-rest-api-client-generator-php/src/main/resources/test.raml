@@ -68,3 +68,17 @@ types:
     responses:
       200:
         body: file
+/params/{params}:
+  displayName: parameters
+  uriParameters:
+    params: string
+  get:
+    headers:
+      req-header: string
+    queryParameters:
+      foo: string
+      bar: string
+    responses:
+      200:
+        headers:
+          resp-header: string

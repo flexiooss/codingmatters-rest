@@ -309,7 +309,7 @@ public class PhpClassGenerator extends AbstractGenerator {
             twoLine( writer, 1 );
 
             for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
-                writer.write( "private $" + clientDescriptor.getClassName() + ";" );
+                writer.write( "private $" + naming.property( clientDescriptor.getClassName() ) + ";" );
                 newLine( writer, 1 );
             }
 
@@ -317,7 +317,7 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.write( "public function __construct( \\io\\flexio\\utils\\http\\HttpRequester $requester, string $gatewayUrl ) {" );
             for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
                 newLine( writer, 2 );
-                writer.write( "$this -> " + clientDescriptor.getClassName() + " = new \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + "Impl( $requester, $gatewayUrl );" );
+                writer.write( "$this -> " + naming.property( clientDescriptor.getClassName() ) + " = new \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + "Impl( $requester, $gatewayUrl );" );
             }
             newLine( writer, 1 );
             writer.write( "}" );
@@ -326,7 +326,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                 twoLine( writer, 1 );
                 writer.write( "public function " + naming.property( clientDescriptor.getClassName() ) + "(): \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + " {" );
                 newLine( writer, 2 );
-                writer.write( "return $this -> " + clientDescriptor.getClassName() + ";" );
+                writer.write( "return $this -> " + naming.property( clientDescriptor.getClassName() ) + ";" );
                 newLine( writer, 1 );
                 writer.write( "}" );
             }
