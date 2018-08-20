@@ -19,6 +19,7 @@ public class ProcessorResponseStatusTest extends AbstractProcessorHttpRequestTes
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-response.raml");
         this.compiled = helper.compiled();
+        this.classes = this.compiled.classLoader();
     }
 
     @Test

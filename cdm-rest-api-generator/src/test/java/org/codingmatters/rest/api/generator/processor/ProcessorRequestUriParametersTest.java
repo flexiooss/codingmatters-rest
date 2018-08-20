@@ -21,10 +21,14 @@ public class ProcessorRequestUriParametersTest extends AbstractProcessorHttpRequ
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-request.raml");
         this.compiled = helper.compiled();
+        this.classes = this.compiled.classLoader();
     }
 
     @Test
     public void singleParameter() throws Exception {
+
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
+
         AtomicReference requestHolder = new AtomicReference();
         this.setupProcessorWithHandler(
                 "uriParamsGetHandler",

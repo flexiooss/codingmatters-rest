@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ public class ProcessorReqRespPayloadTest extends AbstractProcessorHttpRequestTes
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-request-response.raml");
         this.compiled = helper.compiled();
+        this.classes = this.compiled.classLoader();
     }
 
 
@@ -44,8 +46,8 @@ public class ProcessorReqRespPayloadTest extends AbstractProcessorHttpRequestTes
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.PayloadPostRequest").invoke("payload"),
-                isA(this.compiled.getClass("org.generated.types.Req"))
+                this.classes.wrap(request).as("org.generated.api.PayloadPostRequest").call("payload").get(),
+                isA(this.classes.get("org.generated.types.Req").get())
         );
         assertThat(response.body().string(), is("{\"prop\":\"val\"}"));
     }
@@ -69,47 +71,51 @@ public class ProcessorReqRespPayloadTest extends AbstractProcessorHttpRequestTes
         assertThat(response.code(), is(200));
         assertThat(request, is(notNullValue()));
         assertThat(
-                this.compiled.on(request).castedTo("org.generated.api.AlreadyPostRequest").invoke("payload"),
-                isA(this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject"))
+                this.classes.wrap(request).as("org.generated.api.AlreadyPostRequest").call("payload").get(),
+                isA(this.classes.get("org.codingmatters.AnAlreadyDefinedValueObject").get())
         );
         assertThat(response.body().string(), is("{}"));
     }
 
     private Object createFilledPayloadGetResponse() {
-        Object response = null;
+        ObjectHelper response = null;
         try {
-            Object payloadBuilder = this.compiled.getClass("org.generated.types.Resp$Builder").newInstance();
-            this.compiled.on(payloadBuilder).invoke("prop", String.class).with("val");
-            Object payload = this.compiled.on(payloadBuilder).invoke("build");
-            Object status200Builder = this.compiled.getClass("org.generated.api.payloadpostresponse.Status200$Builder").newInstance();
-            this.compiled.on(status200Builder).invoke("payload", this.compiled.getClass("org.generated.types.Resp")).with(payload);
-            Object status200 = this.compiled.on(status200Builder).invoke("build");
-            Object builder = this.compiled.getClass("org.generated.api.PayloadPostResponse$Builder").newInstance();
-            this.compiled.on(builder).invoke("status200", this.compiled.getClass("org.generated.api.payloadpostresponse.Status200")).with(status200);
-            response = this.compiled.on(builder).invoke("build");
+            ObjectHelper payload = this.classes.get("org.generated.types.Resp$Builder")
+                    .newInstance()
+                    .call("prop", String.class).with("val")
+                    .call("build");
+            ObjectHelper status200 = this.classes.get("org.generated.api.payloadpostresponse.Status200$Builder")
+                    .newInstance()
+                    .call("payload", this.classes.get("org.generated.types.Resp").get()).with(payload.get())
+                    .call("build");
+            response = this.classes.get("org.generated.api.PayloadPostResponse$Builder")
+                    .newInstance()
+                    .call("status200", this.classes.get("org.generated.api.payloadpostresponse.Status200").get()).with(status200.get())
+                    .call("build");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(response);
-        return response;
+        return response.get();
     }
 
     private Object createFilledAlreadyGetResponse() {
-        Object response = null;
+        ObjectHelper response = null;
         try {
-            Object payloadBuilder = this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject$Builder").newInstance();
-            Object payload = this.compiled.on(payloadBuilder).invoke("build");
-            Object status200Builder = this.compiled.getClass("org.generated.api.alreadypostresponse.Status200$Builder").newInstance();
-            this.compiled.on(status200Builder).invoke("payload", this.compiled.getClass("org.codingmatters.AnAlreadyDefinedValueObject")).with(payload);
-            Object status200 = this.compiled.on(status200Builder).invoke("build");
-            Object builder = this.compiled.getClass("org.generated.api.AlreadyPostResponse$Builder").newInstance();
-            this.compiled.on(builder).invoke("status200", this.compiled.getClass("org.generated.api.alreadypostresponse.Status200")).with(status200);
-            response = this.compiled.on(builder).invoke("build");
+            ObjectHelper payload = this.classes.get("org.codingmatters.AnAlreadyDefinedValueObject$Builder")
+                    .newInstance()
+                    .call("build");
+            ObjectHelper status200 = this.classes.get("org.generated.api.alreadypostresponse.Status200$Builder")
+                    .newInstance()
+                    .call("payload", this.classes.get("org.codingmatters.AnAlreadyDefinedValueObject").get()).with(payload.get())
+                    .call("build");
+            response = this.classes.get("org.generated.api.AlreadyPostResponse$Builder")
+                    .newInstance()
+                    .call("status200", this.classes.get("org.generated.api.alreadypostresponse.Status200").get()).with(status200.get())
+                    .call("build");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(response);
-        return response;
+        return response.get();
     }
 
 
