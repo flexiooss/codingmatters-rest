@@ -24,8 +24,8 @@ public interface Requester {
 
     enum Formatters {
         DATEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        TIMEONLY(DateTimeFormatter.ofPattern("HH:mm:ss[.SSS]'Z'")),
-        DATETIMEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'"))
+        TIMEONLY(DateTimeFormatter.ofPattern("HH:mm:ss[.SSS]['Z']")),
+        DATETIMEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]['Z']"))
         ;
 
         public final DateTimeFormatter formatter;
