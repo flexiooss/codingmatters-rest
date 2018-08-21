@@ -79,7 +79,7 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void datetimeParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
-                .header("datetimeParam", "2018-12-25T23:59:59.123")
+                .header("datetimeParam", "2018-12-25T23:59:59.123Z")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -109,7 +109,7 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void timeParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
-                .header("timeParam", "23:59:59.123")
+                .header("timeParam", "23:59:59.123Z")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -228,8 +228,8 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void datetimeArrayParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
-                .header("datetimeArrayParam", "2018-12-25T23:59:59.123")
-                .addHeader("datetimeArrayParam", "2018-12-26T23:59:59.123")
+                .header("datetimeArrayParam", "2018-12-25T23:59:59.123Z")
+                .addHeader("datetimeArrayParam", "2018-12-26T23:59:59.123Z")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();
@@ -262,8 +262,8 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void timeArrayParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
-                .header("timeArrayParam", "22:59:59.123")
-                .addHeader("timeArrayParam", "23:59:59.123")
+                .header("timeArrayParam", "22:59:59.123Z")
+                .addHeader("timeArrayParam", "23:59:59.123Z")
                 .get()
                 .build()).execute();
         Object request = requestHolder.get();

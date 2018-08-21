@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/5/17.
  */
-public class RequestURIParameterTest {
+public class RequestURIProcessorParameterTest {
 
     @Rule
     public FileHelper fileHelper = new FileHelper();

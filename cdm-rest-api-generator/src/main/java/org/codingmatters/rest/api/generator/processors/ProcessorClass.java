@@ -7,10 +7,11 @@ import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
-import org.codingmatters.rest.api.generator.processors.requests.Parameter;
+import org.codingmatters.rest.api.generator.processors.requests.ProcessorParameter;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.generator.utils.Parameter;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -209,15 +210,15 @@ public class ProcessorClass {
 
     private void addRequestHeadersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.headers()) {
-            Parameter param = new Parameter(this.naming, typeDeclaration);
-            param.addHeaderStatement(method);
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.HEADERS);
         }
     }
 
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
-            Parameter param = new Parameter(this.naming, typeDeclaration);
-            param.addQueryParameterStatement(method);
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.QUERY);
         }
     }
 
@@ -227,8 +228,8 @@ public class ProcessorClass {
                 Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
             );
         for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
-            Parameter param = new Parameter(this.naming, typeDeclaration);
-            param.addUriParametersStatement(method);
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.URI);
         }
 
 //        for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
