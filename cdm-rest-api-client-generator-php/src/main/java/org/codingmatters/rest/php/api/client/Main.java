@@ -13,8 +13,13 @@ public class Main {
 
     public static void main( String[] args ) {
         try {
-//            File rootDir = Files.createTempDirectory( "cdmRest" ).toFile();
-            File rootDir = new File( "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/target/test-classes" );
+            String targetDir = System.getProperty( "generationTargetDir" );
+            if( targetDir == null ) {
+                System.out.println( "Property \'generationTargetDir\' not found" );
+                System.exit( -1 );
+            }
+
+            File rootDir = new File( targetDir );
 
             String clientPackage = "org.generated.client";
             String apiPackage = "org.generated.api";
@@ -22,8 +27,7 @@ public class Main {
 
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir );
 
-            String ramlLocation = "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/src/main/resources/test.raml";
-            RamlModelResult model = new RamlModelBuilder().buildApi( ramlLocation );
+            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );
 
@@ -34,8 +38,6 @@ public class Main {
             new SpecPhpGenerator( spec, apiPackage, rootDir ).generate();
 
             requesterGenerator.generate( model );
-
-
         } catch( Exception e ) {
             e.printStackTrace();
         }
