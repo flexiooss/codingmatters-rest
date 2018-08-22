@@ -117,7 +117,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
+                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', " + getValue( typeDeclaration, requestVarName, property ) + " );" );
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -127,7 +127,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
+                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', " + getValue( typeDeclaration, requestVarName, property ) + " );" );
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -233,6 +233,16 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.flush();
         }
 
+    }
+
+    private String getValue( TypeDeclaration typeDeclaration, String requestVarName, String property ) {
+        if( typeDeclaration.type().equals( "boolean" ) ) {
+            return "$" + requestVarName + " -> " + property + "() ? 'true' : 'false'";
+        }
+        if( typeDeclaration.type().equals( "date-only" ) || typeDeclaration.type().equals( "time-only" ) || typeDeclaration.type().equals( "datetime" ) ) {
+            return "$" + requestVarName + " -> " + property + "()->jsonSerialize()";
+        }
+        return "$" + requestVarName + " -> " + property + "()";
     }
 
     private boolean isObjectOrArray( TypeDeclaration typeDeclaration ) {

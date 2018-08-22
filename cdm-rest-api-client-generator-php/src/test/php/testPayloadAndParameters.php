@@ -179,19 +179,40 @@ class PayloadTest extends TestCase {
         $request = new \org\generated\api\ParametersGetRequest();
         $request -> withFoo( "valFoo" )
                  -> withBar( "valBar" )
-                 -> withReqHeader( "reqHeaderValue" )
+                 -> withStrHeader( "reqHeaderValue" )
+                 -> withIntHeader( 7 )
+                 -> withFloatHeader( 8 )
+                 -> withDateHeader( \io\flexio\utils\FlexDate::newDate( '2011-08-01' ) )
+                 -> withTimeHeader( \io\flexio\utils\FlexDate::newTime( '10:07:04' ) )
+                 -> withDatetimeHeader( \io\flexio\utils\FlexDate::newDateTime( '2011-08-01T10:07:04' ) )
+                 -> withBoolHeader( true )
                  -> withParams( "paramValue" )
                     ;
 
-        $requester-> parameter( "resp-header", "coucou" );
+        $this-> assertSame( $request-> strHeader(), "reqHeaderValue" );
+        $this-> assertSame( $request-> intHeader(), 7 );
+        $this-> assertSame( $request-> floatHeader(), 8 );
+        $this-> assertSame( $request-> dateHeader()->jsonSerialize(), "2011-08-01" );
+        $this-> assertSame( $request-> timeHeader()->jsonSerialize(), "10:07:04" );
+        $this-> assertSame( $request-> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04" );
+        $this-> assertSame( $request-> boolHeader(), true );
+
+        $requester-> parameter( "str-header", "coucou" );
 
         $response = $client -> parametersGet( $request );
         $this-> assertSame( $requester->getPath(), 'http://gateway/params/paramValue' );
         $this-> assertSame( $requester->lastMethod(), 'get' );
+        $this-> assertSame( $requester->lastHeaders()['str-header'], "reqHeaderValue" );
+        $this-> assertSame( $requester->lastHeaders()['int-header'], '7' );
+        $this-> assertSame( $requester->lastHeaders()['float-header'], '8' );
+        $this-> assertSame( $requester->lastHeaders()['date-header'], '2011-08-01' );
+        $this-> assertSame( $requester->lastHeaders()['time-header'], '10:07:04' );
+        $this-> assertSame( $requester->lastHeaders()['datetime-header'], '2011-08-01T10:07:04' );
+        $this-> assertSame( $requester->lastHeaders()['bool-header'], 'true' );
 
         $this-> assertSame( $requester -> lastParameters()['foo'], "valFoo" );
         $this-> assertSame( $requester -> lastParameters()['bar'], "valBar" );
-        $this-> assertSame( $response -> status200() -> respHeader(), "coucou" );
+        $this-> assertSame( $response -> status200() -> strHeader(), "coucou" );
     }
 
 }

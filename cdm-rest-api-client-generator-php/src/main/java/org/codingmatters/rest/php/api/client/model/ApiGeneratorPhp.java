@@ -22,9 +22,11 @@ public class ApiGeneratorPhp {
     private final String typesPackage;
     private final Naming naming = new Naming();
     private final AnnotationProcessor annotationProcessor = new AnnotationProcessor();
+    ApiTypesPhpGenerator apiTypesPhpGenerator;
 
     public ApiGeneratorPhp( String typesPackage ) {
         this.typesPackage = typesPackage;
+        this.apiTypesPhpGenerator = new ApiTypesPhpGenerator( typesPackage );
     }
 
     public Spec generate( RamlModelResult ramlModel ) throws RamlSpecException {
@@ -57,10 +59,10 @@ public class ApiGeneratorPhp {
         }
 
         for( TypeDeclaration typeDeclaration : method.queryParameters() ) {
-            this.addPropertyFromTypeDeclaration( result, typeDeclaration );
+            result.addProperty( this.getPropertyFromTypeDeclaration( typeDeclaration, resourceName ) );
         }
         for( TypeDeclaration typeDeclaration : method.headers() ) {
-            this.addPropertyFromTypeDeclaration( result, typeDeclaration );
+            result.addProperty( this.getPropertyFromTypeDeclaration( typeDeclaration, resourceName ) );
         }
         if( method.body() != null && !method.body().isEmpty() ) {
             PropertyTypeSpec.Builder type = this.payloadType( method.body().get( 0 ), resourceName );
@@ -75,9 +77,8 @@ public class ApiGeneratorPhp {
             }
         }
         for( TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters( resource ) ) {
-            this.addPropertyFromTypeDeclaration( result, typeDeclaration );
+            result.addProperty( this.getPropertyFromTypeDeclaration( typeDeclaration, resourceName ) );
         }
-
 
         return result.build();
     }
@@ -188,10 +189,7 @@ public class ApiGeneratorPhp {
         for( Response response : method.responses() ) {
             AnonymousValueSpec.Builder responseSpec = AnonymousValueSpec.anonymousValueSpec();
             for( TypeDeclaration typeDeclaration : response.headers() ) {
-                responseSpec.addProperty( PropertySpec.property()
-                        .name( this.naming.property( typeDeclaration.name() ) )
-                        .type( this.typeSpecFromDeclaration( typeDeclaration ) )
-                        .build() );
+                responseSpec.addProperty( this.getPropertyFromTypeDeclaration( typeDeclaration, resourceName ) );
             }
             if( response.body() != null && !response.body().isEmpty() ) {
                 PropertyTypeSpec.Builder type = this.payloadType( response.body().get( 0 ), resourceName );
@@ -221,11 +219,33 @@ public class ApiGeneratorPhp {
         return result.build();
     }
 
-    private void addPropertyFromTypeDeclaration( ValueSpec.Builder result, TypeDeclaration typeDeclaration ) throws RamlSpecException {
-        result.addProperty( PropertySpec.property()
-                .name( this.naming.property( typeDeclaration.name() ) )
-                .type( this.typeSpecFromDeclaration( typeDeclaration ) )
-                .build() );
+    private PropertySpec getPropertyFromTypeDeclaration( TypeDeclaration typeDeclaration, String resourceName ) {
+        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+            String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), resourceName, "list" );
+            ArrayTypeDeclaration arrayTypeDeclaration = (ArrayTypeDeclaration) typeDeclaration;
+            return PropertySpec.property()
+                    .name( this.naming.property( typeDeclaration.name() ) )
+                    .type( PropertyTypeSpec.type()
+                            .cardinality( PropertyCardinality.LIST )
+                            .typeRef( typeRef )
+                            .typeKind( TypeKind.EMBEDDED )
+                            .embeddedValueSpec(
+                                    AnonymousValueSpec.anonymousValueSpec()
+                                            .addProperty(
+                                                    PropertySpec.property().type(
+                                                            PropertyTypeSpec.type()
+                                                                    .typeRef( ApiTypesPhpGenerator.typeMapping.get( arrayTypeDeclaration.items().type() ) )
+                                                                    .typeKind( TypeKind.JAVA_TYPE ) ) ) )
+                    ).build();
+        } else {
+            return PropertySpec.property()
+                    .name( this.naming.property( typeDeclaration.name() ) )
+                    .type( PropertyTypeSpec.type()
+                            .cardinality( PropertyCardinality.SINGLE )
+                            .typeRef( ApiTypesPhpGenerator.typeMapping.get( typeDeclaration.type() ) )
+                            .typeKind( TypeKind.JAVA_TYPE )
+                    ).build();
+        }
     }
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration( TypeDeclaration typeDeclaration ) throws RamlSpecException {

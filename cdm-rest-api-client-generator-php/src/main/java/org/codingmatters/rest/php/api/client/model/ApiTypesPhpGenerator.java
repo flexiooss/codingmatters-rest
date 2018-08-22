@@ -20,7 +20,7 @@ public class ApiTypesPhpGenerator {
 
     private final Naming naming = new Naming();
     private final String typesPackage;
-    private static Map<String, String> typeMapping;
+    public static Map<String, String> typeMapping;
 
     static {
         typeMapping = new HashMap<>();

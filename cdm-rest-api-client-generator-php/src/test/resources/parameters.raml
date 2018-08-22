@@ -1,0 +1,83 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+/header-params:
+  displayName: HeaderParams
+  get:
+    headers:
+      stringParam:
+        type: string
+      stringArrayParam:
+        type: array
+        items: string
+      intParam:
+        type: integer
+      intArrayParam:
+        type: array
+        items: integer
+      floatParam:
+        type: number
+      floatArrayParam:
+        type: array
+        items: number
+      dateParam:
+        type: date-only
+      dateArrayParam:
+        type: array
+        items: date-only
+      datetimeParam:
+        type: datetime-only
+      datetimeArrayParam:
+        type: array
+        items: datetime-only
+      timeParam:
+        type: time-only
+      timeArrayParam:
+        type: array
+        items: time-only
+      boolParam:
+        type: boolean
+      boolArrayParam:
+        type: array
+        items: boolean
+    responses:
+      200:
+        headers:
+          stringParam:
+            type: string
+          stringArrayParam:
+            type: array
+            items: string
+          intParam:
+            type: integer
+          intArrayParam:
+            type: array
+            items: integer
+          floatParam:
+            type: number
+          floatArrayParam:
+            type: array
+            items: number
+          dateParam:
+            type: date-only
+          dateArrayParam:
+            type: array
+            items: date-only
+          datetimeParam:
+            type: datetime-only
+          datetimeArrayParam:
+            type: array
+            items: datetime-only
+          timeParam:
+            type: time-only
+          timeArrayParam:
+            type: array
+            items: time-only
+          boolParam:
+            type: boolean
+          boolArrayParam:
+            type: array
+            items: boolean
