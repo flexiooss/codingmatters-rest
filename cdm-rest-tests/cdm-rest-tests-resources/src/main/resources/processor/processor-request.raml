@@ -65,6 +65,7 @@ mediaType: application/json
           type: array
           items: string
       get:
+
 /header-params:
   displayName: HeaderParams
   get:
@@ -74,6 +75,36 @@ mediaType: application/json
       arrayParam:
         type: array
         items: string
+      intParam:
+        type: integer
+      intArrayParam:
+        type: array
+        items: integer
+      realParam:
+        type: number
+      realArrayParam:
+        type: array
+        items: number
+      dateParam:
+        type: date-only
+      dateArrayParam:
+        type: array
+        items: date-only
+      datetimeParam:
+        type: datetime-only
+      datetimeArrayParam:
+        type: array
+        items: datetime-only
+      timeParam:
+        type: time-only
+      timeArrayParam:
+        type: array
+        items: time-only
+      boolParam:
+        type: boolean
+      boolArrayParam:
+        type: array
+        items: boolean
 
 
 

@@ -301,7 +301,22 @@ public class ApiPumlGeneratorTest {
                         "== HeaderParams ==" ,
                         "|||" ,
                         "group '[[#HeaderParams-get-method HeaderParams GET]]'" ,
-                        "--> api: <b>GET</b> /header-params \\n\\t[\\t<b>stringParam</b>=string\\n\\t\\t<b>arrayParam</b>=string[]\\n\\t\\t]" ,
+                        "--> api: <b>GET</b> /header-params " +
+                                "\\n\\t[\\t<b>stringParam</b>=string" +
+                                "\\n\\t\\t<b>arrayParam</b>=string[]" +
+                                "\\n\\t\\t<b>intParam</b>=integer" +
+                                "\\n\\t\\t<b>intArrayParam</b>=integer[]" +
+                                "\\n\\t\\t<b>realParam</b>=number" +
+                                "\\n\\t\\t<b>realArrayParam</b>=number[]" +
+                                "\\n\\t\\t<b>dateParam</b>=date-only" +
+                                "\\n\\t\\t<b>dateArrayParam</b>=date-only[]" +
+                                "\\n\\t\\t<b>datetimeParam</b>=datetime-only" +
+                                "\\n\\t\\t<b>datetimeArrayParam</b>=datetime-only[]" +
+                                "\\n\\t\\t<b>timeParam</b>=time-only" +
+                                "\\n\\t\\t<b>timeArrayParam</b>=time-only[]" +
+                                "\\n\\t\\t<b>boolParam</b>=boolean" +
+                                "\\n\\t\\t<b>boolArrayParam</b>=boolean[]" +
+                                "\\n\\t\\t]" ,
                         "activate api" ,
                         "deactivate api" ,
                         "end",

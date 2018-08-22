@@ -5,7 +5,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
 import org.codingmatters.rest.api.types.File;
-import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +15,6 @@ import static org.junit.Assert.assertThat;
 
 public class ProcessorHttpMediaTypesTest extends AbstractProcessorHttpRequestTest {
 
-    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {

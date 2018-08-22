@@ -32,6 +32,7 @@ public abstract class AbstractProcessorHttpRequestTest {
 
     protected Processor testProcessor;
     protected CompiledCode compiled;
+    protected ClassLoaderHelper classes;
     protected OkHttpClient client = new OkHttpClient();
 
     private void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
@@ -39,15 +40,15 @@ public abstract class AbstractProcessorHttpRequestTest {
     }
 
     protected void setupProcessorWithHandler(String handlerMethod, Function handler) throws Exception {
-        ClassLoaderHelper classes = this.compiled.classLoader();
-        ObjectHelper builder = classes.get("org.generated.api.TestAPIHandlers$Builder")
+        ObjectHelper handlers = this.classes.get("org.generated.api.TestAPIHandlers$Builder")
                 .newInstance()
-                .call(handlerMethod, Function.class).with(handler);
-        Object handlers = builder.call("build").get();
+                .call(handlerMethod, Function.class).with(handler)
+                .call("build");
 
-        this.testProcessor = (Processor) classes.get("org.generated.server.TestAPIProcessor")
-                .newInstance(String.class, JsonFactory.class, classes.get("org.generated.api.TestAPIHandlers").get())
-                .with("/api", new JsonFactory(), handlers).get();
+        this.testProcessor = (Processor) this.classes.get("org.generated.server.TestAPIProcessor")
+                .newInstance(String.class, JsonFactory.class, this.classes.get("org.generated.api.TestAPIHandlers").get())
+                .with("/api", new JsonFactory(), handlers.get())
+                .get();
     }
 
 }

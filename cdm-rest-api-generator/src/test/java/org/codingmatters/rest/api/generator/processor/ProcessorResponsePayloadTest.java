@@ -3,7 +3,6 @@ package org.codingmatters.rest.api.generator.processor;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
-import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ClassHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.value.objects.values.ObjectValue;
@@ -19,8 +18,6 @@ import static org.junit.Assert.assertThat;
  * Created by nelt on 6/1/17.
  */
 public class ProcessorResponsePayloadTest extends AbstractProcessorHttpRequestTest {
-
-    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {

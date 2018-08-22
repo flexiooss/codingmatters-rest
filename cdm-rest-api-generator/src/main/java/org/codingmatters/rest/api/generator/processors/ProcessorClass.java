@@ -7,12 +7,13 @@ import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
+import org.codingmatters.rest.api.generator.processors.requests.ProcessorParameter;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
 import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.rest.api.generator.utils.Parameter;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;
-import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
@@ -56,7 +57,7 @@ public class ProcessorClass {
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ClassName.get(Processor.class))
                 .addMethod(this.buildProcessMethod(ramlModel))
-                .addMethods(this.buidMethodProcessingMethods(ramlModel))
+                .addMethods(this.buildMethodProcessingMethods(ramlModel))
                 .addField(FieldSpec.builder(Logger.class, "log", Modifier.STATIC, Modifier.PRIVATE)
                         .initializer("$T.getLogger($T.class)", LoggerFactory.class, this.processorClassName(ramlModel))
                         .build())
@@ -137,7 +138,7 @@ public class ProcessorClass {
 
 
 
-    private Iterable<MethodSpec> buidMethodProcessingMethods(RamlModelResult ramlModel) {
+    private Iterable<MethodSpec> buildMethodProcessingMethods(RamlModelResult ramlModel) {
         LinkedList<MethodSpec> methodSpecs = new LinkedList<>();
         this.addMethodProcessingMethods(methodSpecs, ramlModel.getApiV10().resources());
         return methodSpecs;
@@ -209,65 +210,15 @@ public class ProcessorClass {
 
     private void addRequestHeadersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.headers()) {
-            String property = this.naming.property(typeDeclaration.name());
-            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T $L = requestDelegate.headers().get($S) != null " +
-                                        "&& ! requestDelegate.headers().get($S).isEmpty() ? " +
-                                        "requestDelegate.headers().get($S).get(0) : null",
-                                String.class, property, typeDeclaration.name(),
-                                typeDeclaration.name(),
-                                typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T<$T> $L = requestDelegate.headers().get($S)",
-                                List.class, String.class, property, typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else {
-                log.warn("not yet implemented : {} query parameter", typeDeclaration);
-            }
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.HEADERS);
         }
     }
 
     private void addRequestQueryParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : resourceMethod.queryParameters()) {
-            String property = this.naming.property(typeDeclaration.name());
-            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T $L = requestDelegate.queryParameters().get($S) != null " +
-                                        "&& ! requestDelegate.queryParameters().get($S).isEmpty() ? " +
-                                        "requestDelegate.queryParameters().get($S).get(0) : null",
-                                String.class, property, typeDeclaration.name(),
-                                typeDeclaration.name(),
-                                typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T<$T> $L = requestDelegate.queryParameters().get($S)",
-                                List.class, String.class, property, typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else {
-                log.warn("not yet implemented : {} query parameter", typeDeclaration);
-            }
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.QUERY);
         }
     }
 
@@ -277,34 +228,39 @@ public class ProcessorClass {
                 Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
             );
         for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
-            String property = this.naming.property(typeDeclaration.name());
-            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T $L = uriParameters.get($S) != null " +
-                                        "&& ! uriParameters.get($S).isEmpty() ? " +
-                                        "uriParameters.get($S).get(0) : null",
-                                String.class, property, typeDeclaration.name(),
-                                typeDeclaration.name(),
-                                typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-                method
-                        .addStatement(
-                                "$T<$T> $L = uriParameters.get($S)",
-                                List.class, String.class, property, typeDeclaration.name()
-                        )
-                        .addStatement(
-                                "requestBuilder.$L($L)", property, property
-                        );
-            } else {
-                log.warn("not yet implemented : {} uri parameter", typeDeclaration);
-            }
+            ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
+            param.addStatement(method, Parameter.ParameterSource.URI);
         }
+
+//        for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
+//            String property = this.naming.property(typeDeclaration.name());
+//            if(typeDeclaration.type().equalsIgnoreCase("string")) {
+//                method
+//                        .addStatement(
+//                                "$T $L = uriParameters.get($S) != null " +
+//                                        "&& ! uriParameters.get($S).isEmpty() ? " +
+//                                        "uriParameters.get($S).get(0) : null",
+//                                String.class, property, typeDeclaration.name(),
+//                                typeDeclaration.name(),
+//                                typeDeclaration.name()
+//                        )
+//                        .addStatement(
+//                                "requestBuilder.$L($L)", property, property
+//                        );
+//            } else if(typeDeclaration.type().equalsIgnoreCase("array")
+//                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
+//                method
+//                        .addStatement(
+//                                "$T<$T> $L = uriParameters.get($S)",
+//                                List.class, String.class, property, typeDeclaration.name()
+//                        )
+//                        .addStatement(
+//                                "requestBuilder.$L($L)", property, property
+//                        );
+//            } else {
+//                log.warn("not yet implemented : {} uri parameter", typeDeclaration);
+//            }
+//        }
     }
 
     private void addResponseProcessingStatements(Method resourceMethod, MethodSpec.Builder method) {

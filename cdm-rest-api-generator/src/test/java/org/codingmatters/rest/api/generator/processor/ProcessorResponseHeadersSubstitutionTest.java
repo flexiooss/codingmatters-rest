@@ -20,6 +20,7 @@ public class ProcessorResponseHeadersSubstitutionTest extends AbstractProcessorH
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-response.raml");
         this.compiled = helper.compiled();
+        this.classes = this.compiled.classLoader();
 //        this.fileHelper.printJavaContent("", this.dir.getRoot());
         this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
     }

@@ -21,6 +21,7 @@ public class ProcessorHttpBaseTest extends AbstractProcessorHttpRequestTest {
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-base.raml");
         this.compiled = helper.compiled();
+        this.classes = this.compiled.classLoader();
     }
 
     @Test
