@@ -25,20 +25,20 @@ public class RunPhpTest {
         Process process = processBuilder.start();
         process.waitFor( 30, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
-            printError( process );
+            printError( process.getInputStream() );
+            printError( process.getErrorStream() );
         }
         assertThat( process.exitValue(), is( 0 ) );
     }
 
-    private static void printError( Process process ) throws IOException {
+    private static void printError( InputStream stream ) throws IOException {
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try( InputStream stream = process.getInputStream() ) {
-            while( stream.read( buffer ) != -1 ) {
-                out.write( buffer );
-            }
-            System.out.println( "Error = " + new String( out.toByteArray() ) );
+        while( stream.read( buffer ) != -1 ) {
+            out.write( buffer );
         }
+        System.out.println( new String( out.toByteArray() ) );
+
     }
 
     @Test
@@ -47,7 +47,8 @@ public class RunPhpTest {
         Process process = processBuilder.start();
         process.waitFor( 10, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
-            printError( process );
+            printError( process.getInputStream() );
+            printError( process.getErrorStream() );
         }
         assertThat( process.exitValue(), is( 0 ) );
     }

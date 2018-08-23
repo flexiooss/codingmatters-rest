@@ -75,6 +75,9 @@ types:
   get:
     headers:
       str-header: string
+      str-array:
+        type: array
+        items: string
       int-header: integer
       float-header: number
       date-header: date-only
@@ -88,5 +91,14 @@ types:
       200:
         headers:
           str-header: string
+          str-array:
+            type: array
+            items: string
+          int-header: integer
+          float-header: number
+          date-header: date-only
+          time-header: time-only
+          datetime-header: datetime
+          bool-header: boolean
 
 

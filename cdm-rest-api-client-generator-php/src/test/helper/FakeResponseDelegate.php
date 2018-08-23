@@ -26,7 +26,7 @@ class FakeResponseDelegate implements ResponseDelegate {
         return $this-> nextBody;
     }
 
-    public function header( string $name ): string {
+    public function header( string $name ): array {
         return $this -> headers[$name];
     }
 

@@ -57,13 +57,23 @@ class FakeHttpRequester implements HttpRequester {
         return $response;
     }
 
-    public function parameter( string $name, string $value ): HttpRequester {
-        $this -> parameters[$name] = $value;
+    public function arrayParameter( string $name, array $values ) : HttpRequester {
+        $this -> parameters[$name] = $values;
         return $this;
     }
 
-    public function header( string $name, string $value ): HttpRequester {
-        $this -> headers[$name] = $value;
+    public function parameter( string $name, string $values ) : HttpRequester {
+        $this -> parameters[$name] = array( $values );
+        return $this;
+    }
+
+    public function arrayHeader( string $name, array $values ): HttpRequester {
+        $this -> headers[$name] = $values;
+        return $this;
+    }
+
+    public function header( string $name, string $values ): HttpRequester {
+        $this -> headers[$name] = array( $values );
         return $this;
     }
 
