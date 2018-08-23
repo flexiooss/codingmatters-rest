@@ -4,8 +4,10 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
-/header-params:
+/header-params/{uriParams}:
   displayName: HeaderParams
+  uriParameters:
+    uriParams: string
   get:
     headers:
       stringParam:
@@ -81,3 +83,12 @@ mediaType: application/json
           boolArrayParam:
             type: array
             items: boolean
+  /{uriParams}:
+    displayName: paramsArray
+    uriParameters:
+      uriParams:
+        type: array
+        items: string
+    get:
+      responses:
+        200:

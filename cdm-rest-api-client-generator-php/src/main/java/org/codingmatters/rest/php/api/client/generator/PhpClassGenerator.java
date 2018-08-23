@@ -107,8 +107,18 @@ public class PhpClassGenerator extends AbstractGenerator {
                 newLine( writer, 2 );
                 if( httpMethodDescriptor.method().resource() != null ) {
                     for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().resource().uriParameters() ) {
-                        writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', $" + requestVarName + " -> " + typeDeclaration.name() + "(), $path );" );
-                        newLine( writer, 2 );
+                        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+                            writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
+                            newLine( writer, 3 );
+                            writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
+                            newLine( writer, 2 );
+                            writer.write( "}" );
+                            newLine( writer, 2 );
+                        } else {
+                            String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
+                            writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
+                            newLine( writer, 2 );
+                        }
                     }
                 }
                 writer.write( "$this -> httpRequester -> path( $path );" );

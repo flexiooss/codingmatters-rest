@@ -106,5 +106,17 @@ types:
           bool-array:
             type: array
             items: boolean
-
+  /params/array/{params}/{bool}/{date}/{time}/{datetime}:
+    displayName: uri array
+    uriParameters:
+      params:
+        type: array
+        items: string
+      bool: boolean
+      date: date-only
+      time: time-only
+      datetime: datetime
+    get:
+      responses:
+        200:
 

@@ -14,6 +14,8 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
+import java.util.List;
+
 public class ApiGeneratorPhp {
     /**
      * Created by nelt on 5/2/17.
@@ -76,7 +78,8 @@ public class ApiGeneratorPhp {
                         .build() );
             }
         }
-        for( TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters( resource ) ) {
+        List<TypeDeclaration> typeDeclarations = Resolver.resolvedUriParameters( resource );
+        for( TypeDeclaration typeDeclaration : typeDeclarations ) {
             result.addProperty( this.getPropertyFromTypeDeclaration( typeDeclaration, resourceName ) );
         }
 

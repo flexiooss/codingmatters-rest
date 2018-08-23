@@ -170,11 +170,11 @@ public class ApiGeneratorTest {
         RamlModelResult ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
         Spec spec = new ApiGeneratorPhp( "org.generated" ).generate( ramlModel );
 
-        assertThat( spec.valueSpecs().size(), is( 2 ) );
+        assertThat( spec.valueSpecs().size(), is( 4 ) );
 
         ValueSpec requestSpec = spec.valueSpecs().get( 0 );
 
-        assertThat( requestSpec.propertySpecs().size(), is( 14 ) );
+        assertThat( requestSpec.propertySpecs().size(), is( 15 ) );
 
         assertThat( requestSpec.propertySpec( "stringParam" ).typeSpec().typeRef(), is( "string" ) );
         assertThat( requestSpec.propertySpec( "stringParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
@@ -319,6 +319,16 @@ public class ApiGeneratorTest {
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "boolArrayParam" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "boolArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "boolArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "bool" ) );
+
+        requestSpec = spec.valueSpecs().get( 2 );
+
+        assertThat( requestSpec.propertySpecs().size(), is( 1 ) );
+
+        assertThat( requestSpec.propertySpec( "uriParams" ).typeSpec().typeRef(), is( "org.generated.uriparams.UriParamsParamsArrayGetRequestList" ) );
+        assertThat( requestSpec.propertySpec( "uriParams" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( requestSpec.propertySpec( "uriParams" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( requestSpec.propertySpec( "uriParams" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+        assertThat( requestSpec.propertySpec( "uriParams" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "string" ) );
 
     }
 

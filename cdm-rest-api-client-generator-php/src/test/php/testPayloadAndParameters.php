@@ -243,6 +243,19 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $response -> status200() -> boolHeader(), false );
         $this-> assertSame( $response -> status200() -> boolArray()[0], true );
         $this-> assertSame( $response -> status200() -> boolArray()[1], false );
+
+
+        $uriParams = new \org\generated\api\uriarraygetrequest\UriArrayGetRequestParamsList( array( "p1", "p2" ) );
+
+        $request = new \org\generated\api\UriArrayGetRequest();
+        $request -> withParams( $uriParams );
+        $request -> withBool( false );
+        $request -> withDate( \io\flexio\utils\FlexDate::newDate( '2011-08-01' ) );
+        $request -> withTime( \io\flexio\utils\FlexDate::newTime( '10:07:04' ) );
+        $request -> withDatetime( \io\flexio\utils\FlexDate::newDateTime( '2011-08-01T10:07:04' ) );
+
+        $response = $client -> uriArray() -> uriArrayGet( $request );
+        $this-> assertSame( $requester->getPath(), 'http://gateway/params/p1/params/array/p2/false/2011-08-01/10:07:04/2011-08-01T10:07:04' );
     }
 
 }
