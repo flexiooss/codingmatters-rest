@@ -210,12 +210,13 @@ class PayloadTest extends TestCase {
         $requester-> parameter( "int-header", "7" );
         $requester-> parameter( "float-header", "8" );
         $requester-> parameter( "date-header", "2011-08-01" );
+        $requester-> arrayParameter( "date-array", array( "2011-08-01", "2011-08-02", "2011-08-03" ) );
         $requester-> parameter( "time-header", "10:07:04" );
         $requester-> parameter( "datetime-header", "2011-08-01T10:07:04" );
         $requester-> parameter( "bool-header", "false" );
+        $requester-> arrayParameter( "bool-array", array( "true", "false" ));
 
         $response = $client -> parametersGet( $request );
-/*
         $this-> assertSame( $requester->getPath(), 'http://gateway/params/paramValue' );
         $this-> assertSame( $requester->lastMethod(), 'get' );
         $this-> assertSame( $requester->lastHeaders()['str-header'][0], "reqHeaderValue" );
@@ -226,17 +227,22 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $requester->lastHeaders()['datetime-header'][0], '2011-08-01T10:07:04' );
         $this-> assertSame( $requester->lastHeaders()['bool-header'][0], 'true' );
 
-        $this-> assertSame( $requester -> lastParameters()['foo'], "valFoo" );
-        $this-> assertSame( $requester -> lastParameters()['bar'], "valBar" );
+        $this-> assertSame( $requester -> lastParameters()['foo'][0], "valFoo" );
+        $this-> assertSame( $requester -> lastParameters()['bar'][0], "valBar" );
         $this-> assertSame( $response -> status200() -> strHeader(), "coucou" );
-        $this-> assertSame( $response -> status200() -> strArray(), "coucou1" );
+        $this-> assertSame( $response -> status200() -> strArray()[0], "coucou1" );
+        $this-> assertSame( $response -> status200() -> strArray()[1], "coucou2" );
         $this-> assertSame( $response -> status200() -> intHeader(), 7 );
         $this-> assertSame( $response -> status200() -> floatHeader(), 8 );
         $this-> assertSame( $response -> status200() -> dateHeader()->jsonSerialize(), "2011-08-01" );
+        $this-> assertSame( $response -> status200() -> dateArray()[0]->jsonSerialize(), "2011-08-01" );
+        $this-> assertSame( $response -> status200() -> dateArray()[1]->jsonSerialize(), "2011-08-02" );
+        $this-> assertSame( $response -> status200() -> dateArray()[2]->jsonSerialize(), "2011-08-03" );
         $this-> assertSame( $response -> status200() -> timeHeader()->jsonSerialize(), "10:07:04" );
         $this-> assertSame( $response -> status200() -> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04" );
         $this-> assertSame( $response -> status200() -> boolHeader(), false );
-        */
+        $this-> assertSame( $response -> status200() -> boolArray()[0], true );
+        $this-> assertSame( $response -> status200() -> boolArray()[1], false );
     }
 
 }

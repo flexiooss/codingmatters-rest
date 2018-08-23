@@ -224,9 +224,13 @@ public class PhpClassGenerator extends AbstractGenerator {
                     }
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
                         if( typeDeclaration instanceof ArrayTypeDeclaration ) {
-                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), typeDeclaration.name(), "list" ) + "( " + "$responseDelegate -> header('" + typeDeclaration.name() + "')" + ") );" );
+                            writer.write( "$list = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), typeDeclaration.name(), "list" ) + "();" );
+                            writer.write( "foreach( $responseDelegate -> header('" + typeDeclaration.name() + "') as $item ){" );
+                            writer.write( "$list[] = " + readSingleValueFromArray( "$item", ((ArrayTypeDeclaration) typeDeclaration).items().type() ) + ";" );
+                            writer.write( "}" );
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $list );" );
                         } else {
-                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( typeDeclaration ) + " );" );
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$responseDelegate -> header('" + typeDeclaration.name() + "')[0]", typeDeclaration.type() ) + " );" );
                         }
                         newLine( writer, 3 );
                     }
@@ -249,17 +253,18 @@ public class PhpClassGenerator extends AbstractGenerator {
 
     }
 
-    private String readSingleValueFromArray( TypeDeclaration typeDeclaration ) {
-        if( typeDeclaration.type().equals( "boolean" ) ) {
-            return "$responseDelegate -> header('" + typeDeclaration.name() + "')[0] == 'true' ? true : false";
-        } else if( typeDeclaration.type().equals( "date-only" ) ) {
-            return "\\io\\flexio\\utils\\FlexDate::newDate( $responseDelegate -> header('" + typeDeclaration.name() + "')[0] )";
-        } else if( typeDeclaration.type().equals( "time-only" ) ) {
-            return "\\io\\flexio\\utils\\FlexDate::newTime( $responseDelegate -> header('" + typeDeclaration.name() + "')[0] )";
-        } else if( typeDeclaration.type().equals( "datetime" ) ) {
-            return "\\io\\flexio\\utils\\FlexDate::newDateTime( $responseDelegate -> header('" + typeDeclaration.name() + "')[0] )";
+    private String readSingleValueFromArray( String variableName, String type ) {
+        if( type.equals( "boolean" ) ) {
+            return variableName + " == 'true' ? true : false";
+        } else if( type.equals( "date-only" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newDate( " + variableName + " )";
+        } else if( type.equals( "time-only" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newTime( " + variableName + " )";
+        } else if( type.equals( "datetime" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newDateTime( " + variableName + " )";
+        } else {
+            return variableName;
         }
-        return "$responseDelegate -> header('" + typeDeclaration.name() + "')[0]";
     }
 
     private String getValue( TypeDeclaration typeDeclaration, String variableName ) {
