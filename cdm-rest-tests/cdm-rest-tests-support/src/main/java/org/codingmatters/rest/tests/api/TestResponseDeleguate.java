@@ -2,6 +2,9 @@ package org.codingmatters.rest.tests.api;
 
 import org.codingmatters.rest.api.ResponseDelegate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,6 +48,24 @@ public class TestResponseDeleguate implements ResponseDelegate {
     @Override
     public ResponseDelegate payload(byte[] bytes) {
         this.payload = bytes;
+        return this;
+    }
+
+    @Override
+    public ResponseDelegate payload(InputStream in) {
+        try {
+            try(ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[1024];
+                for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
+                    out.write(buffer, 0, read);
+                }
+                out.flush();
+                out.close();
+                this.payload = out.toByteArray();
+            }
+        } catch (IOException e) {
+            throw new AssertionError("error reading bytes", e);
+        }
         return this;
     }
 
