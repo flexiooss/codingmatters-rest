@@ -60,4 +60,8 @@ public class UndertowResponseDelegate implements ResponseDelegate {
         }
         return this;
     }
+
+    @Override
+    public void close() throws Exception {
+    }
 }

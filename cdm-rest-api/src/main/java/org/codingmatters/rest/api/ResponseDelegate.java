@@ -3,7 +3,7 @@ package org.codingmatters.rest.api;
 /**
  * Created by nelt on 4/27/17.
  */
-public interface ResponseDelegate {
+public interface ResponseDelegate extends AutoCloseable {
     ResponseDelegate contenType(String contenType);
     ResponseDelegate status(int code);
     ResponseDelegate addHeader(String name, String ... value);

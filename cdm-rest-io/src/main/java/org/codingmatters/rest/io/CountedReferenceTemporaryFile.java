@@ -53,11 +53,11 @@ public class CountedReferenceTemporaryFile implements AutoCloseable {
         return new CountedReferenceOutputStream(this.file, this.referenceCounter);
     }
 
-    static private class CountedReferenceInputStream extends FileInputStream {
+    public static class CountedReferenceInputStream extends FileInputStream {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final ReferenceCounter referenceCounter;
 
-        public CountedReferenceInputStream(File file, ReferenceCounter referenceCounter) throws FileNotFoundException {
+        private CountedReferenceInputStream(File file, ReferenceCounter referenceCounter) throws FileNotFoundException {
             super(file);
             this.referenceCounter = referenceCounter;
         }
@@ -71,11 +71,11 @@ public class CountedReferenceTemporaryFile implements AutoCloseable {
         }
     }
 
-    static private class CountedReferenceOutputStream extends FileOutputStream {
+    static public class CountedReferenceOutputStream extends FileOutputStream {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final ReferenceCounter referenceCounter;
 
-        public CountedReferenceOutputStream(File file, ReferenceCounter referenceCounter) throws FileNotFoundException {
+        private CountedReferenceOutputStream(File file, ReferenceCounter referenceCounter) throws FileNotFoundException {
             super(file);
             this.referenceCounter = referenceCounter;
         }

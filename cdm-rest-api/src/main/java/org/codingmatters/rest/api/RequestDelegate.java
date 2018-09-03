@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 /**
  * Created by nelt on 4/27/17.
  */
-public interface RequestDelegate {
+public interface RequestDelegate extends AutoCloseable {
     String path();
     Matcher pathMatcher(String regex);
     Method method();

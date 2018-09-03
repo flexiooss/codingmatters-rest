@@ -67,4 +67,7 @@ public class TestResponseDeleguate implements ResponseDelegate {
     public byte[] payload() {
         return payload;
     }
+
+    @Override
+    public void close() throws Exception {}
 }
