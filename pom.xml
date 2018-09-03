@@ -64,6 +64,7 @@
     <modules>
         <module>cdm-rest-parent</module>
         <module>cdm-rest-bom</module>
+        <module>cdm-rest-io</module>
         <module>cdm-rest-api</module>
         <module>cdm-rest-client-api</module>
         <module>cdm-rest-proxy-api</module>
