@@ -107,8 +107,18 @@ public class PhpClassGenerator extends AbstractGenerator {
                 newLine( writer, 2 );
                 if( httpMethodDescriptor.method().resource() != null ) {
                     for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().resource().uriParameters() ) {
-                        writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', $" + requestVarName + " -> " + typeDeclaration.name() + "(), $path );" );
-                        newLine( writer, 2 );
+                        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+                            writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
+                            newLine( writer, 3 );
+                            writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
+                            newLine( writer, 2 );
+                            writer.write( "}" );
+                            newLine( writer, 2 );
+                        } else {
+                            String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
+                            writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
+                            newLine( writer, 2 );
+                        }
                     }
                 }
                 writer.write( "$this -> httpRequester -> path( $path );" );
@@ -117,7 +127,12 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
+                    String variableName = "$" + requestVarName + " -> " + property + "()";
+                    if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+                        writer.write( "$this -> httpRequester -> arrayParameter( '" + typeDeclaration.name() + "', " + variableName + "->jsonSerialize() );" );
+                    } else {
+                        writer.write( "$this -> httpRequester -> parameter( '" + typeDeclaration.name() + "', " + getValue( typeDeclaration, variableName ) + " );" );
+                    }
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -127,7 +142,12 @@ public class PhpClassGenerator extends AbstractGenerator {
                     String property = naming.property( typeDeclaration.name() );
                     writer.write( "if( $" + requestVarName + " -> " + property + "() !== null ){" );
                     newLine( writer, 3 );
-                    writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', $" + requestVarName + " -> " + property + "() );" );
+                    String variableName = "$" + requestVarName + " -> " + property + "()";
+                    if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+                        writer.write( "$this -> httpRequester -> arrayHeader( '" + typeDeclaration.name() + "', " + variableName + "->jsonSerialize() );" );
+                    } else {
+                        writer.write( "$this -> httpRequester -> header( '" + typeDeclaration.name() + "', " + getValue( typeDeclaration, variableName ) + " );" );
+                    }
                     newLine( writer, 2 );
                     writer.write( "}" );
                     newLine( writer, 2 );
@@ -213,7 +233,15 @@ public class PhpClassGenerator extends AbstractGenerator {
                         }
                     }
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
-                        writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $responseDelegate -> header('" + typeDeclaration.name() + "') );" );
+                        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
+                            writer.write( "$list = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), typeDeclaration.name(), "list" ) + "();" );
+                            writer.write( "foreach( $responseDelegate -> header('" + typeDeclaration.name() + "') as $item ){" );
+                            writer.write( "$list[] = " + readSingleValueFromArray( "$item", ((ArrayTypeDeclaration) typeDeclaration).items().type() ) + ";" );
+                            writer.write( "}" );
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $list );" );
+                        } else {
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$responseDelegate -> header('" + typeDeclaration.name() + "')[0]", typeDeclaration.type() ) + " );" );
+                        }
                         newLine( writer, 3 );
                     }
                     writer.write( responseVar + " -> withStatus" + response.code().value() + "( $status );" );
@@ -233,6 +261,30 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.flush();
         }
 
+    }
+
+    private String readSingleValueFromArray( String variableName, String type ) {
+        if( type.equals( "boolean" ) ) {
+            return variableName + " == 'true' ? true : false";
+        } else if( type.equals( "date-only" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newDate( " + variableName + " )";
+        } else if( type.equals( "time-only" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newTime( " + variableName + " )";
+        } else if( type.equals( "datetime" ) ) {
+            return "\\io\\flexio\\utils\\FlexDate::newDateTime( " + variableName + " )";
+        } else {
+            return variableName;
+        }
+    }
+
+    private String getValue( TypeDeclaration typeDeclaration, String variableName ) {
+        if( typeDeclaration.type().equals( "boolean" ) ) {
+            return variableName + " ? 'true' : 'false'";
+        }
+        if( typeDeclaration.type().equals( "date-only" ) || typeDeclaration.type().equals( "time-only" ) || typeDeclaration.type().equals( "datetime" ) ) {
+            return variableName + "->jsonSerialize()";
+        }
+        return variableName;
     }
 
     private boolean isObjectOrArray( TypeDeclaration typeDeclaration ) {
