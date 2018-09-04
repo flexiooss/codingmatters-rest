@@ -146,4 +146,7 @@ public class TestRequestDeleguate implements RequestDelegate {
                 relative
         );
     }
+
+    @Override
+    public void close() throws Exception {}
 }

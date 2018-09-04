@@ -134,9 +134,44 @@
                     <systemPropertyVariables>
                         <project.build.directory>${project.build.directory}</project.build.directory>
                     </systemPropertyVariables>
+                    <skipTests>${php.tests.are.skipped}</skipTests>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>deactivate tests by default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <php.tests.are.skipped>true</php.tests.are.skipped>
+            </properties>
+        </profile>
+        <profile>
+            <id>activate tests when compose is found</id>
+            <activation>
+                <file>
+                    <exists>/usr/bin/composer</exists>
+                </file>
+            </activation>
+            <properties>
+                <php.tests.are.skipped>false</php.tests.are.skipped>
+            </properties>
+        </profile>
+        <profile>
+            <id>activate tests when forced</id>
+            <activation>
+                <property>
+                    <name>php.tests.are.forced</name>
+                </property>
+            </activation>
+            <properties>
+                <tests.are.skipped>false</tests.are.skipped>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

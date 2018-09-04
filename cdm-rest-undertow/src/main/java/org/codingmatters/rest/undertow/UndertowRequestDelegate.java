@@ -5,12 +5,10 @@ import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
+import org.codingmatters.rest.undertow.internal.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +30,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     private Map<String, List<String>> queryParamsCache = null;
     private Map<String, List<String>> headersCache = null;
 
-    private final AtomicReference<byte[]> body = new AtomicReference<>(null);
+    private final AtomicReference<RequestBody> body = new AtomicReference<>(null);
 
     public UndertowRequestDelegate(HttpServerExchange exchange) {
         this.exchange = exchange;
@@ -72,24 +70,11 @@ public class UndertowRequestDelegate implements RequestDelegate {
                 if(! this.exchange.isBlocking()) {
                     this.exchange.startBlocking();
                 }
-                try {
-                    try (ByteArrayOutputStream out = new ByteArrayOutputStream(); InputStream in = this.exchange.getInputStream()) {
-                        byte[] buffer = new byte[1024];
-                        for (int read = in.read(buffer); read != -1; read = in.read(buffer)) {
-                            out.write(buffer, 0, read);
-                        }
-                        out.flush();
-                        out.close();
-                        this.body.set(out.toByteArray());
-                    }
-                } catch (IOException e) {
-                    log.error("failed reading body", e);
-                    this.body.set(new byte[0]);
-                }
+                this.body.set(RequestBody.from(exchange));
             }
         }
 
-        return new ByteArrayInputStream(this.body.get());
+        return this.body.get().inputStream();
     }
 
     @Override
@@ -145,4 +130,10 @@ public class UndertowRequestDelegate implements RequestDelegate {
         return this.headersCache;
     }
 
+    @Override
+    public void close() throws Exception {
+        if(this.body.get() != null) {
+            this.body.get().close();
+        }
+    }
 }

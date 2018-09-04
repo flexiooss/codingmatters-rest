@@ -7,7 +7,9 @@ import org.codingmatters.rest.api.ResponseDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -52,12 +54,24 @@ public class UndertowResponseDelegate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate payload(byte [] bytes) {
+        return this.payload(new ByteArrayInputStream(bytes));
+    }
+
+    @Override
+    public ResponseDelegate payload(InputStream in) {
         this.exchange.startBlocking();
         try {
-            this.exchange.getOutputStream().write(bytes);
+            byte [] buffer = new byte[1024];
+            for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
+                this.exchange.getOutputStream().write(buffer, 0, read);
+            }
         } catch (IOException e) {
             log.error("error writing response body", e);
         }
         return this;
+    }
+
+    @Override
+    public void close() throws Exception {
     }
 }

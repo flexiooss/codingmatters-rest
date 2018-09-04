@@ -24,6 +24,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-rest-io</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-rest-api</artifactId>
                 <version>${project.version}</version>
             </dependency>

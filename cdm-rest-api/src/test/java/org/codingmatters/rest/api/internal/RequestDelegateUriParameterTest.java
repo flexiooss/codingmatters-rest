@@ -150,5 +150,10 @@ public class RequestDelegateUriParameterTest {
         public Map<String, List<String>> headers() {
             return null;
         }
+
+        @Override
+        public void close() throws Exception {
+
+        }
     }
 }
