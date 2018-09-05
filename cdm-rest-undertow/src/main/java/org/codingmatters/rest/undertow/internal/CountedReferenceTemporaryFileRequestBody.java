@@ -2,14 +2,12 @@ package org.codingmatters.rest.undertow.internal;
 
 import io.undertow.server.HttpServerExchange;
 import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
+import org.codingmatters.rest.io.content.ContentHelper;
 import org.codingmatters.rest.undertow.UndertowRequestDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class CountedReferenceTemporaryFileRequestBody implements RequestBody {
     static private final Logger log = LoggerFactory.getLogger(UndertowRequestDelegate.class);
@@ -18,6 +16,9 @@ public class CountedReferenceTemporaryFileRequestBody implements RequestBody {
         CountedReferenceTemporaryFile temp = null;
         try {
             temp = CountedReferenceTemporaryFile.create();
+            try(OutputStream out = temp.outputStream()) {
+                ContentHelper.copyStream(exchange.getInputStream(), out);
+            }
         } catch (IOException e) {
             throw new RuntimeException("failed creating temporary file, cannot proceed in this condition", e);
         }

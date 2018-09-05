@@ -19,6 +19,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-io</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -26,6 +30,15 @@
             <plugin>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codingmatters.rest</groupId>
+                        <artifactId>cdm-rest-io</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+
                 <executions>
                     <execution>
                         <id>job-value-objects</id>

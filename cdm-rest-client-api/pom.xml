@@ -13,4 +13,11 @@
 
     <artifactId>cdm-rest-client-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-io</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

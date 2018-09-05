@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SmallRequestBody implements RequestBody {
+public class ByteArrayRequestBody implements RequestBody {
     static private final Logger log = LoggerFactory.getLogger(UndertowRequestDelegate.class);
 
     static public RequestBody from(HttpServerExchange exchange) {
@@ -23,18 +23,18 @@ public class SmallRequestBody implements RequestBody {
                 out.flush();
                 out.close();
 
-                return new SmallRequestBody(out.toByteArray());
+                return new ByteArrayRequestBody(out.toByteArray());
             }
         } catch (IOException e) {
             log.error("failed reading body", e);
-            return new SmallRequestBody(new byte[0]);
+            return new ByteArrayRequestBody(new byte[0]);
         }
 
     }
 
     private final byte[] body;
 
-    public SmallRequestBody(byte[] body) {
+    public ByteArrayRequestBody(byte[] body) {
         this.body = body;
     }
 

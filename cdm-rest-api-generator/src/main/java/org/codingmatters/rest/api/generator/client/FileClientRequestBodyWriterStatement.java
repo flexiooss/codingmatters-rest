@@ -16,7 +16,7 @@ public class FileClientRequestBodyWriterStatement implements ClientRequestBodyWr
 
     @Override
     public void append(MethodSpec.Builder caller) {
-        caller.addStatement("out.write(request.payload().content())");
+        caller.addStatement("request.payload().content().to(out)");
     }
 
     @Override

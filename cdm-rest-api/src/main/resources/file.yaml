@@ -1,4 +1,7 @@
 file:
   contentType: string
-  content: bytes
+  content:
+    $type: org.codingmatters.rest.io.Content
+    $hints:
+      - json:transient
   $conforms-to: org.codingmatters.rest.api.types.FileAsStream

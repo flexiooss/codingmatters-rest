@@ -9,7 +9,7 @@ public interface RequestBody extends AutoCloseable {
 
     static RequestBody from(HttpServerExchange exchange) {
         if(isSmall(exchange.getRequestHeaders().get("content-length"))) {
-            return SmallRequestBody.from(exchange);
+            return ByteArrayRequestBody.from(exchange);
         } else {
             return CountedReferenceTemporaryFileRequestBody.from(exchange);
         }

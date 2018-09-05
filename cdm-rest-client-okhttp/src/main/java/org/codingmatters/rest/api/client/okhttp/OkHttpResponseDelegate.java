@@ -3,8 +3,12 @@ package org.codingmatters.rest.api.client.okhttp;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +17,15 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     private final int code;
     private final Map<String, List<String>> headers;
     private final String contentType;
-    private final File bodyFile;
+    private final CountedReferenceTemporaryFile bodyFile;
 
     public OkHttpResponseDelegate(Response response) throws IOException {
         this.code = response.code();
         try(ResponseBody body = response.body()) {
             this.contentType = response.body().contentType() != null ? response.body().contentType().toString() : null;
-            this.bodyFile = File.createTempFile("resp-del-body", ".bin");
-            this.bodyFile.deleteOnExit();
-            try(FileOutputStream out = new FileOutputStream(this.bodyFile); InputStream in = body.byteStream()) {
+            this.bodyFile = CountedReferenceTemporaryFile.create();
+
+            try(OutputStream out = this.bodyFile.outputStream(); InputStream in = body.byteStream()) {
                 byte [] buffer = new byte[1024];
                 for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
                     out.write(buffer, 0, read);
@@ -39,7 +43,7 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public byte[] body() throws IOException {
-        try(InputStream in = new FileInputStream(this.bodyFile) ; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        try(InputStream in = this.bodyFile.inputStream() ; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte [] buffer = new byte[1024];
             for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
                 out.write(buffer, 0, read);
@@ -67,8 +71,6 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public void close() throws Exception {
-        if(this.bodyFile != null && this.bodyFile.exists()) {
-            this.bodyFile.delete();
-        }
+        this.bodyFile.close();
     }
 }

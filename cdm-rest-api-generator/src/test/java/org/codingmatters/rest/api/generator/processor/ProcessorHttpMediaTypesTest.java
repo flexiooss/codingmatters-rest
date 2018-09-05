@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.api.generator.AbstractProcessorHttpRequestTest;
 import org.codingmatters.rest.api.types.File;
+import org.codingmatters.rest.io.Content;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -110,7 +111,7 @@ public class ProcessorHttpMediaTypesTest extends AbstractProcessorHttpRequestTes
                             .with(classes.get("org.generated.api.binarygetresponse.Status200").call("builder")
                                     .call("payload", File.class).with(File.builder()
                                             .contentType("application/octet-stream")
-                                            .content("binary content".getBytes())
+                                            .content(Content.from("binary content".getBytes()))
                                             .build()
                                     )
                                     .call("build").get())

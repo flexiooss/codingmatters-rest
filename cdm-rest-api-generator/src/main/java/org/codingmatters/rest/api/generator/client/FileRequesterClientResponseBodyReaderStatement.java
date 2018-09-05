@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.types.File;
+import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.bodies.Response;
 
 public class FileRequesterClientResponseBodyReaderStatement implements ClientResponseBodyReaderStatement {
@@ -17,8 +18,8 @@ public class FileRequesterClientResponseBodyReaderStatement implements ClientRes
 
     @Override
     public void append(MethodSpec.Builder caller) {
-        caller.addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content(response.body()).build())",
-                File.class
+        caller.addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content($T.from(response.body())).build())",
+                File.class, Content.class
         );
     }
 }

@@ -34,6 +34,7 @@ public class ClientGeneratorHelper {
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-value-objects-values"))
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-client-api"))
+                .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-io"))
                 .classpath(CompiledCode.findLibraryInClasspath("cdm-rest-api"))
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .classpath(CompiledCode.findLibraryInClasspath("slf4j-api"))
