@@ -3,6 +3,7 @@ package org.codingmatters.rest.undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import org.codingmatters.rest.api.Processor;
+import org.codingmatters.rest.io.Content;
 
 /**
  * Created by nelt on 4/27/17.
@@ -28,5 +29,7 @@ public class CdmHttpUndertowHandler implements HttpHandler {
             this.processor.process(requestDelegate, responseDelegate);
         }
         exchange.endExchange();
+
+        Content.cleanupTemporaryFiles();
     }
 }

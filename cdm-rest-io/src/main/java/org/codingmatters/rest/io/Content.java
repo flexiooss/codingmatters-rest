@@ -32,7 +32,7 @@ public interface Content {
 
     ThreadLocal<List<CountedReferenceTemporaryFile>> temporaryFiles = ThreadLocal.withInitial(LinkedList::new);
 
-    static void closeThreadTemppraryFiles() {
+    static void cleanupTemporaryFiles() {
         for (CountedReferenceTemporaryFile temporaryFile : new ArrayList<>(temporaryFiles.get())) {
             try {
                 temporaryFile.close();
