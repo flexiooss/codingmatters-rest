@@ -23,7 +23,7 @@ public class RunPhpTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "composer", "install" );
         Process process = processBuilder.start();
-        process.waitFor( 30, TimeUnit.SECONDS );
+        process.waitFor( 60, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process.getInputStream() );
             printError( process.getErrorStream() );
