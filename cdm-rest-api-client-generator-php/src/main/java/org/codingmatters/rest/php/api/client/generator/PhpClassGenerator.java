@@ -55,7 +55,7 @@ public class PhpClassGenerator extends AbstractGenerator {
             for( HttpMethodDescriptor httpMethodDescriptor : resourceClientDescriptor.methodDescriptors() ) {
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
                         httpMethodDescriptor.getResponseType() + ";"
                 );
                 twoLine( writer, 1 );
@@ -98,7 +98,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                 String requestVarName = utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() );
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " ): " +
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " ): " +
                         httpMethodDescriptor.getResponseType() + " {"
                 );
                 String responseVar = "$" + utils.firstLetterLowerCase( httpMethodDescriptor.getResponseType() );

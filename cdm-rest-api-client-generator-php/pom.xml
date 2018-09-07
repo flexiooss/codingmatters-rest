@@ -156,6 +156,9 @@
                 <file>
                     <exists>/usr/bin/composer</exists>
                 </file>
+                <property>
+                    <name>!skipTests</name>
+                </property>
             </activation>
             <properties>
                 <php.tests.are.skipped>false</php.tests.are.skipped>
