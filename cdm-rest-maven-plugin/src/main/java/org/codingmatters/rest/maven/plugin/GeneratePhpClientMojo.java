@@ -4,8 +4,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codingmatters.rest.api.generator.ApiGenerator;
-import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.php.api.client.PhpClientRequesterGenerator;
 import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
@@ -26,6 +24,10 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
     private File outputDirectory;
 
+    private String clientPackage;
+    private String apiPackage;
+    private String typesPackage;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         RamlModelResult ramlModel = this.resolveRamlModel();
@@ -34,6 +36,9 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
 
     private void generatePhpClientSide( RamlModelResult ramlModel ) throws MojoExecutionException, MojoFailureException {
         try {
+            this.clientPackage = this.destinationPackage + ".client";
+            this.apiPackage = this.destinationPackage + ".api";
+            this.typesPackage = this.destinationPackage + ".types";
             generateTypes( ramlModel );
             generateApi( ramlModel );
             generateClient( ramlModel );
@@ -45,25 +50,19 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
     }
 
     private void generateClient( RamlModelResult ramlModel ) throws IOException, RamlSpecException {
-        String clientPackage = destinationPackage + ".client";
-        String apiPackage = destinationPackage + ".api";
-        String typesPackage = destinationPackage + ".types";
-        PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, outputDirectory );
+        PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( this.clientPackage, this.apiPackage, this.typesPackage, this.outputDirectory );
         requesterGenerator.generate( ramlModel );
-
     }
 
     private void generateApi( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
-        String typesPackage = this.destinationPackage + ".types";
-        Spec spec = new ApiGeneratorPhp( typesPackage ).generate( ramlModel );
-        new SpecPhpGenerator( spec, typesPackage, this.outputDirectory ).generate();
+        Spec spec = new ApiGeneratorPhp( this.typesPackage ).generate( ramlModel );
+        new SpecPhpGenerator( spec, this.apiPackage, this.outputDirectory ).generate();
 
     }
 
     private void generateTypes( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
-        String typesPackage = this.destinationPackage + ".types";
-        Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( ramlModel );
-        new SpecPhpGenerator( spec, typesPackage, this.outputDirectory ).generate();
+        Spec spec = new ApiTypesPhpGenerator( this.typesPackage ).generate( ramlModel );
+        new SpecPhpGenerator( spec, this.typesPackage, this.outputDirectory ).generate();
     }
 
 }
