@@ -22,14 +22,16 @@ public class PhpClassGenerator extends AbstractGenerator {
     private final String typesPackage;
     private final Naming naming;
     private final String clienPackage;
+    private final boolean useReturnType;
 
-    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage, String clientPackage ) {
+    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage, String clientPackage, boolean useReturnType ) {
         this.rootDir = rootDir + "/" + rootPackage.replace( ".", "/" );
         this.rootPackage = rootPackage.replace( ".", "\\" );
         this.typesPackage = typesPackage.replace( ".", "\\" );
         this.clienPackage = clientPackage.replace( ".", "\\" );
         this.utils = new Utils();
         this.naming = new Naming();
+        this.useReturnType = useReturnType;
     }
 
     public void generateInterface( ResourceClientDescriptor resourceClientDescriptor ) throws IOException {
@@ -48,16 +50,22 @@ public class PhpClassGenerator extends AbstractGenerator {
 
             for( ResourceClientDescriptor clientDescriptor : resourceClientDescriptor.nextFloorResourceClientGetters() ) {
                 String descriptorLowerCase = utils.firstLetterLowerCase( clientDescriptor.getClassName() );
-                writer.write( "public function " + descriptorLowerCase + "(): " + clientDescriptor.getClassName() + ";" );
+                writer.write( "public function " + descriptorLowerCase + "()" );
+                if( useReturnType ) {
+                    writer.write( ": " + clientDescriptor.getClassName() );
+                }
+                writer.write( ";" );
                 twoLine( writer, 1 );
             }
 
             for( HttpMethodDescriptor httpMethodDescriptor : resourceClientDescriptor.methodDescriptors() ) {
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
-                        httpMethodDescriptor.getResponseType() + ";"
-                );
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " )" );
+                if( useReturnType ) {
+                    writer.write( ": " + httpMethodDescriptor.getResponseType() );
+                }
+                writer.write( ";" );
                 twoLine( writer, 1 );
             }
             newLine( writer, 0 );
@@ -86,7 +94,11 @@ public class PhpClassGenerator extends AbstractGenerator {
 
             for( ResourceClientDescriptor clientDescriptor : resourceClientDescriptor.nextFloorResourceClientGetters() ) {
                 String descriptorLowerCase = utils.firstLetterLowerCase( clientDescriptor.getClassName() );
-                writer.write( "public function " + descriptorLowerCase + "(): " + clientDescriptor.getClassName() + "{" );
+                writer.write( "public function " + descriptorLowerCase + "()" );
+                if( useReturnType ) {
+                    writer.write( ": " + clientDescriptor.getClassName() );
+                }
+                writer.write( " {" );
                 newLine( writer, 2 );
                 writer.write( "return $this->" + descriptorLowerCase + ";" );
                 newLine( writer, 1 );
@@ -98,9 +110,11 @@ public class PhpClassGenerator extends AbstractGenerator {
                 String requestVarName = utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() );
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " ): " +
-                        httpMethodDescriptor.getResponseType() + " {"
-                );
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " )" );
+                if( useReturnType ) {
+                    writer.write( httpMethodDescriptor.getResponseType() );
+                }
+                writer.write( " {" );
                 String responseVar = "$" + utils.firstLetterLowerCase( httpMethodDescriptor.getResponseType() );
                 newLine( writer, 2 );
                 writer.write( "$path = $this -> gatewayUrl.'" + httpMethodDescriptor.path() + "';" );

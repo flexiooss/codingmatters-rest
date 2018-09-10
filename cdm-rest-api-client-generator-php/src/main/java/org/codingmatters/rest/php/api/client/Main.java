@@ -24,18 +24,19 @@ public class Main {
             String clientPackage = "org.generated.client";
             String apiPackage = "org.generated.api";
             String typesPackage = "org.generated.types";
+            boolean useReturnType = false;
 
-            PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir );
+            PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir, useReturnType );
 
             RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );
 
             Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( model );
-            new SpecPhpGenerator( spec, typesPackage, rootDir ).generate();
+            new SpecPhpGenerator( spec, typesPackage, rootDir, useReturnType ).generate();
 
             spec = new ApiGeneratorPhp( typesPackage ).generate( model );
-            new SpecPhpGenerator( spec, apiPackage, rootDir ).generate();
+            new SpecPhpGenerator( spec, apiPackage, rootDir, useReturnType ).generate();
 
             requesterGenerator.generate( model );
         } catch( Exception e ) {

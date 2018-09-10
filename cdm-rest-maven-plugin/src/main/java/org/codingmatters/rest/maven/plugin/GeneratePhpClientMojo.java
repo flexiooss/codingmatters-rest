@@ -24,6 +24,9 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
     private File outputDirectory;
 
+    @Parameter(defaultValue = "true")
+    private boolean useTypeHintingReturnValue;
+
     private String clientPackage;
     private String apiPackage;
     private String typesPackage;
@@ -50,19 +53,19 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
     }
 
     private void generateClient( RamlModelResult ramlModel ) throws IOException, RamlSpecException {
-        PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( this.clientPackage, this.apiPackage, this.typesPackage, this.outputDirectory );
+        PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( this.clientPackage, this.apiPackage, this.typesPackage, this.outputDirectory, useTypeHintingReturnValue );
         requesterGenerator.generate( ramlModel );
     }
 
     private void generateApi( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
         Spec spec = new ApiGeneratorPhp( this.typesPackage ).generate( ramlModel );
-        new SpecPhpGenerator( spec, this.apiPackage, this.outputDirectory ).generate();
+        new SpecPhpGenerator( spec, this.apiPackage, this.outputDirectory, useTypeHintingReturnValue ).generate();
 
     }
 
     private void generateTypes( RamlModelResult ramlModel ) throws RamlSpecException, IOException {
         Spec spec = new ApiTypesPhpGenerator( this.typesPackage ).generate( ramlModel );
-        new SpecPhpGenerator( spec, this.typesPackage, this.outputDirectory ).generate();
+        new SpecPhpGenerator( spec, this.typesPackage, this.outputDirectory, useTypeHintingReturnValue ).generate();
     }
 
 }
