@@ -7,12 +7,15 @@ import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+import org.raml.v2.api.model.v10.resources.Resource;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PhpClassGenerator extends AbstractGenerator {
 
@@ -120,20 +123,28 @@ public class PhpClassGenerator extends AbstractGenerator {
                 writer.write( "$path = $this -> gatewayUrl.'" + httpMethodDescriptor.path() + "';" );
                 newLine( writer, 2 );
                 if( httpMethodDescriptor.method().resource() != null ) {
-                    for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().resource().uriParameters() ) {
-                        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
-                            writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
-                            newLine( writer, 3 );
-                            writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
-                            newLine( writer, 2 );
-                            writer.write( "}" );
-                            newLine( writer, 2 );
-                        } else {
-                            String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
-                            writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
-                            newLine( writer, 2 );
+                    Resource resource = httpMethodDescriptor.method().resource();
+                    List<String> handledParams = new ArrayList<>();
+                    do {
+                        List<TypeDeclaration> params = resource.uriParameters();
+                        for( TypeDeclaration typeDeclaration : params ) {
+                            if( typeDeclaration instanceof ArrayTypeDeclaration && !handledParams.contains( typeDeclaration.name() ) ) {
+                                writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
+                                newLine( writer, 3 );
+                                writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
+                                newLine( writer, 2 );
+                                writer.write( "}" );
+                                newLine( writer, 2 );
+                                handledParams.add( typeDeclaration.name() );
+                            } else if( !handledParams.contains( typeDeclaration.name() ) ) {
+                                String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
+                                writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
+                                newLine( writer, 2 );
+                                handledParams.add( typeDeclaration.name() );
+                            }
                         }
-                    }
+                        resource = resource.parentResource();
+                    } while( resource != null );
                 }
                 writer.write( "$this -> httpRequester -> path( $path );" );
                 newLine( writer, 2 );
@@ -217,7 +228,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                             }
                         } else {
                             if( response.body().get( 0 ) instanceof ArrayTypeDeclaration ) {
-
+                                // #TODO Handle array of external value object, as below
                                 String type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().type();
                                 if( type.equals( "object" ) && ((ArrayTypeDeclaration) response.body().get( 0 )).items().name() != null ) {
                                     type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().name();
@@ -237,8 +248,23 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 writer.write( "$status->withPayload( $list );" );
                                 newLine( writer, 3 );
                             } else {
-                                writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
-                                newLine( writer, 3 );
+                                TypeDeclaration typeDeclaration = response.body().get( 0 );
+                                final TypeDeclaration[] parents = { typeDeclaration };
+                                boolean parentIsAlreadyDefined = typeDeclaration.parentTypes() != null && response.body().get( 0 ).parentTypes().stream().anyMatch( parent->{
+                                    boolean test = naming.isAlreadyDefined( parent );
+                                    parents[0] = parent;
+                                    return test;
+                                });
+                                if( naming.isAlreadyDefined( typeDeclaration ) || parentIsAlreadyDefined ) {
+                                    String[] reference = naming.alreadyDefined( parents[0] ).split( "\\." );
+                                    reference[reference.length-1] = "json\\" + reference[reference.length-1] + "Reader";
+                                    String fullReference = String.join( "\\", reference );
+                                    writer.write( "$reader = new \\" + fullReference  + "();" );
+                                    newLine( writer, 3 );
+                                } else {
+                                    writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
+                                    newLine( writer, 3 );
+                                }
                                 writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
                                 newLine( writer, 3 );
                                 writer.write( "$status -> withPayload( $body );" );

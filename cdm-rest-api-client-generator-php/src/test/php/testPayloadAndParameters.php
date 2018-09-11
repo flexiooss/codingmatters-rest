@@ -256,6 +256,13 @@ class PayloadTest extends TestCase {
 
         $response = $client -> uriArray() -> uriArrayGet( $request );
         $this-> assertSame( $requester->getPath(), 'http://gateway/params/p1/params/array/p2/false/2011-08-01/10:07:04/2011-08-01T10:07:04' );
+
+        $request = new \org\generated\api\InheritedParamGetRequest();
+        $request->withParams( "toto" );
+
+        $response = $client->inheritedparam()->inheritedparamGet( $request );
+        $this-> assertSame( $requester->getPath(), 'http://gateway/params/toto/inheritedParam' );
+
     }
 
 }

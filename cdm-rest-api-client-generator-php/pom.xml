@@ -22,13 +22,11 @@
             <groupId>org.codingmatters.rest</groupId>
             <artifactId>cdm-rest-api-generator</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-php</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
