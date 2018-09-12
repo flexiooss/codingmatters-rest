@@ -29,7 +29,7 @@ public class Main {
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir, useReturnType );
 
 //            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
-            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/flexio-services/flexio-connector/flexio-connector-api-spec/src/main/resources/flexio-connector.raml" );
+            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );
 

@@ -156,20 +156,20 @@ public class ApiTypesGeneratorTest {
         ValueSpec valueSpec = spec.valueSpecs().get( 0 );
 
         assertThat( valueSpec.propertySpecs().size(), is( 3 ) );
-        assertThat( valueSpec.propertySpec( "obj" ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "obj" ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "obj" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( valueSpec.propertySpec( "obj" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
         assertThat( valueSpec.propertySpec( "objs" ).typeSpec().typeRef(), is( "org.generated.typewithobjectproperty.TypeWithObjectPropertyObjsList" ) );
         assertThat( valueSpec.propertySpec( "objs" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "objs" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "objs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "objs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
         assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().typeRef(), is( "org.generated.typewithobjectproperty.TypeWithObjectPropertyShortObjsList" ) );
         assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "shortObjs" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
     }
 

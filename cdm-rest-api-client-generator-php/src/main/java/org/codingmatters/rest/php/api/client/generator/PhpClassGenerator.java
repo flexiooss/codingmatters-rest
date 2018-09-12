@@ -221,7 +221,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 writer.write( "$status -> withPayload( $list );" );
                                 newLine( writer, 3 );
                             } else {
-                                writer.write( "$body = json_decode( $responseDelegate -> body(), true );" );
+                                writer.write( "$body = new \\ArrayObject( json_decode( $responseDelegate -> body(), true ));" );
                                 newLine( writer, 3 );
                                 writer.write( "$status -> withPayload( $body );" );
                                 newLine( writer, 3 );

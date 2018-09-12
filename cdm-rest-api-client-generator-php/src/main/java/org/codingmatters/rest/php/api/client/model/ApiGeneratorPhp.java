@@ -104,7 +104,7 @@ public class ApiGeneratorPhp {
                             .typeRef( typeRef )
                             .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type()
                                     .typeKind( TypeKind.JAVA_TYPE )
-                                    .typeRef( "array" )
+                                    .typeRef( "\\ArrayObject" )
                             ).build() ).build() );
                 } else {
                     String listTypeRef;
@@ -140,7 +140,7 @@ public class ApiGeneratorPhp {
                     return PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.SINGLE )
                             .typeKind( TypeKind.JAVA_TYPE )
-                            .typeRef( "array" );
+                            .typeRef( "\\ArrayObject" );
                 } else {
                     String typeRef;
                     TypeKind typeKind;

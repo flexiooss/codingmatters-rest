@@ -9,7 +9,7 @@ use org\utils\FakeHttpRequester;
 class PayloadTest extends TestCase {
 
     public function getTestArray() {
-        $array = array();
+        $array = new \ArrayObject();
 
         $list = array();
         $list[] = "item1";
