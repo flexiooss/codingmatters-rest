@@ -61,12 +61,19 @@ public class ApiTypesPhpGenerator {
     private PropertyTypeSpec.Builder typeSpecFromDeclaration( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
         if( declaration instanceof ArrayTypeDeclaration ) {
             String type;
-            if( declaration.type().endsWith( "[]" ) ) {
+            ArrayTypeDeclaration arrayTypeDeclaration = (ArrayTypeDeclaration) declaration;
+            String alreadyDefinedType;
+            if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
+                type = arrayTypeDeclaration.items().type().replace( "[]", "" );
+                alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
+                if( alreadyDefinedType == null ){
+                    alreadyDefinedType = isAlreadyDefined( declaration );
+                }
+            } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
-            } else {
-                type = ((ArrayTypeDeclaration) declaration).items().type();
+                alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
             }
-            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) ) { /** IS OBJECT VALUE */
+            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ) { /** IS OBJECT VALUE */
                 String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
                 return PropertyTypeSpec.type()
                         .cardinality( PropertyCardinality.LIST )
@@ -85,7 +92,7 @@ public class ApiTypesPhpGenerator {
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
                     .typeRef( "\\ArrayObject" );
-        } else if( declaration.type().equals( "object" ) ) {
+        } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ) {
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.EMBEDDED )
@@ -136,6 +143,9 @@ public class ApiTypesPhpGenerator {
             if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
                 type = declaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
+                if( alreadyDefinedType == null ){
+                    alreadyDefinedType = isAlreadyDefined( declaration );
+                }
             } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );

@@ -232,31 +232,6 @@ public class SimpleResourcesTest {
     }
 
     @Test
-    public void typeWithAlreadyDefinedPropertyRequestAndResponseBody() {
-        assertThat(spec.valueSpec("TypeWithAlreadyDefinedPropertyRequestAndResponseBodyGetRequest").propertySpec("payload"),
-                is(PropertySpec.property()
-                        .name("payload")
-                        .type(PropertyTypeSpec.type()
-                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
-                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                                .cardinality(PropertyCardinality.SINGLE)
-                        )
-                        .build())
-        );
-
-        assertThat(spec.valueSpec("AlreadyDefinedRequestAndResponseBodyGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().propertySpec("payload"),
-                is(PropertySpec.property()
-                        .name("payload")
-                        .type(PropertyTypeSpec.type()
-                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
-                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                                .cardinality(PropertyCardinality.SINGLE)
-                        )
-                        .build())
-        );
-    }
-
-    @Test
     public void alreadyDefinedArrayRequestAndResponseBody() {
         assertThat(spec.valueSpec("AlreadyDefinedArrayRequestAndResponseBodyGetRequest").propertySpec("payload"),
                 is(PropertySpec.property()

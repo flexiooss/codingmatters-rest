@@ -52,7 +52,7 @@ public class Naming {
 
     public boolean isArbitraryObject(TypeDeclaration typeDeclaration) {
         return typeDeclaration.type().equals("object") &&
-                ((ObjectTypeDeclaration)typeDeclaration).properties().isEmpty();
+                ((ObjectTypeDeclaration)typeDeclaration).properties().isEmpty() && typeDeclaration.annotations().stream().noneMatch( annot->annot.annotation().name().equals( "already-defined" )  );
     }
 
     public boolean isArbitraryObjectArray(TypeDeclaration typeDeclaration) {

@@ -28,7 +28,7 @@ public class Main {
 
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir, useReturnType );
 
-            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/flexio-services/flexio-resources/flexio-resources-api-spec/src/main/resources/flexio-resources.raml" );
+            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/src/test/resources/alreadyDefinedType.raml" );
 //            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );

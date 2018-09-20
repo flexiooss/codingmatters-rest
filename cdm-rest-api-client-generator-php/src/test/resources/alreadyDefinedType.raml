@@ -8,6 +8,14 @@ annotationTypes:
    already-defined:
       type: string
 
+
+
+#/toto:
+#  displayName: Toto
+#  get:
+#    responses:
+#      200:
+
 types:
     AlreadyDefinedType:
         (already-defined): org.codingmatters.AnExternalValueObject
@@ -23,3 +31,15 @@ types:
         adtList:
           type: array
           items: AlreadyDefinedType
+
+    TypeWithAlreadyDefinedProperty:
+      type: object
+      properties:
+        prop:
+          (already-defined): io.flexio.services.resources.api.types.Schema
+          type: object
+        propList:
+          type: array
+          items:
+            type: object
+            (already-defined): io.flexio.services.resources.api.types.Schema

@@ -180,11 +180,9 @@ public class ApiTypesGeneratorTest {
         RamlModelResult ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
-        assertThat( spec.valueSpecs().size(), is( 1 ) );
+        assertThat( spec.valueSpecs().size(), is( 2 ) );
 
         ValueSpec valueSpec = spec.valueSpecs().get( 0 );
-
-//        assertThat( valueSpec.propertySpecs().size(), is( 4 ) );
 
         assertThat( valueSpec.propertySpec( "adtShort" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
         assertThat( valueSpec.propertySpec( "adtShort" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
@@ -206,6 +204,17 @@ public class ApiTypesGeneratorTest {
         assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
         assertThat( valueSpec.propertySpec( "adtList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "org.codingmatters.AnExternalValueObject" ) );
 
+        valueSpec = spec.valueSpecs().get( 1 );
+        assertThat( valueSpec.propertySpec( "prop" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( valueSpec.propertySpec( "prop" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "prop" ).typeSpec().typeRef(), is( "io.flexio.services.resources.api.types.Schema" ) );
 
+        assertThat( valueSpec.propertySpec( "propList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( valueSpec.propertySpec( "propList" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "propList" ).typeSpec().typeRef(), is( "org.generated.typewithalreadydefinedproperty.TypeWithAlreadyDefinedPropertyPropListList" ) );
+        assertThat( valueSpec.propertySpec( "propList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( valueSpec.propertySpec( "propList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.services.resources.api.types.Schema" ) );
     }
+
+
 }
