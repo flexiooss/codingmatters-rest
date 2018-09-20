@@ -28,8 +28,8 @@ public class Main {
 
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir, useReturnType );
 
-            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/src/test/resources/alreadyDefinedType.raml" );
-//            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
+//            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/src/test/resources/alreadyDefinedType.raml" );
+            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );
 
