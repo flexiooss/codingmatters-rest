@@ -313,6 +313,38 @@ public class TypesTest {
         );
     }
 
+    @Test
+    public void typeWithAlreadyDefinedProperty() {
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("prop"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
+    }
+
+    @Test
+    public void typeWithAlreadyDefinedArrayProperty() {
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("props"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .cardinality(PropertyCardinality.LIST)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
+    }
+
     private Set<String> set(String ... values) {
         return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();
     }
