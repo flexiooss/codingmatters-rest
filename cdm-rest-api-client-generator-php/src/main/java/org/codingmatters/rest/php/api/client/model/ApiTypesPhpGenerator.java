@@ -45,9 +45,8 @@ public class ApiTypesPhpGenerator {
                 if( !this.naming.isAlreadyDefined( typeDeclaration ) ) {
                     ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name( this.naming.type( typeDeclaration.name() ) );
                     for( TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties() ) {
-                        String propertyName = this.naming.property( declaration.name() );
                         PropertySpec.Builder prop = PropertySpec.property()
-                                .name( propertyName )
+                                .name( declaration.name() )
                                 .type( this.typeSpecFromDeclaration( typeDeclaration, declaration ) );
                         // TODO hints ? conforms to ?
                         valueSpec.addProperty( prop );

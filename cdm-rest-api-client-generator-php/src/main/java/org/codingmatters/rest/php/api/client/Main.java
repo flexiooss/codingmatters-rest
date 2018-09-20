@@ -23,13 +23,13 @@ public class Main {
 
             String clientPackage = "org.generated.client";
             String apiPackage = "org.generated.api";
-            String typesPackage = "org.generated.types";
+            String typesPackage = "org.generated.api.types";
             boolean useReturnType = false;
 
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, rootDir, useReturnType );
 
+            RamlModelResult model = new RamlModelBuilder().buildApi( "/home/nico/workspace/flexio-services/flexio-resources/flexio-resources-api-spec/src/main/resources/flexio-resources.raml" );
 //            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
-            RamlModelResult model = new RamlModelBuilder().buildApi( rootDir.getPath() + "/test.raml" );
 
             System.out.println( "Generating api in " + rootDir );
 

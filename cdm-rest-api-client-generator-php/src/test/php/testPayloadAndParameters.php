@@ -102,7 +102,7 @@ class PayloadTest extends TestCase {
         $requester = new FakeHttpRequester();
         $client = new \org\generated\api\TypeImpl( $requester, 'http://gateway' );
 
-        $payload = new \org\generated\types\LittleObject();
+        $payload = new \org\generated\api\types\LittleObject();
         $payload -> withName( "toto" );
 
         $request = new \org\generated\api\TypePostRequest();
@@ -122,9 +122,9 @@ class PayloadTest extends TestCase {
         $requester = new FakeHttpRequester();
         $client = new \org\generated\api\TypeArrayImpl( $requester, 'http://gateway' );
 
-        $item1 = new \org\generated\types\LittleObject();
+        $item1 = new \org\generated\api\types\LittleObject();
         $item1 -> withName( "toto1" );
-        $item2 = new \org\generated\types\LittleObject();
+        $item2 = new \org\generated\api\types\LittleObject();
         $item2 -> withName( "toto2" );
 
         $payload = new \org\generated\api\typearraypostrequest\TypeArrayPostRequestPayloadList();
@@ -149,9 +149,9 @@ class PayloadTest extends TestCase {
         $requester = new FakeHttpRequester();
         $client = new \org\generated\api\TypeArrayShortImpl( $requester, 'http://gateway' );
 
-        $item1 = new \org\generated\types\LittleObject();
+        $item1 = new \org\generated\api\types\LittleObject();
         $item1 -> withName( "toto1" );
-        $item2 = new \org\generated\types\LittleObject();
+        $item2 = new \org\generated\api\types\LittleObject();
         $item2 -> withName( "toto2" );
 
         $payload = new \org\generated\api\typearrayshortpostrequest\TypeArrayShortPostRequestPayloadList();

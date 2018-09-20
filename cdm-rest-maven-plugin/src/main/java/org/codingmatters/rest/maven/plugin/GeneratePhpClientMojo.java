@@ -41,7 +41,7 @@ public class GeneratePhpClientMojo extends AbstractGenerateAPIMojo {
         try {
             this.clientPackage = this.destinationPackage + ".client";
             this.apiPackage = this.destinationPackage + ".api";
-            this.typesPackage = this.destinationPackage + ".types";
+            this.typesPackage = this.destinationPackage + ".api.types";
             generateTypes( ramlModel );
             generateApi( ramlModel );
             generateClient( ramlModel );

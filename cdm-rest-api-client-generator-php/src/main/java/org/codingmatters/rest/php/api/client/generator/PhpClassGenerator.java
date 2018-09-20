@@ -186,7 +186,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                         writer.write( "$contentType = $" + requestVarName + " -> contentType();" );
                         newLine( writer, 2 );
                     } else {
-                        writer.write( "$content = json_encode( $" + requestVarName + " -> payload() );" );
+                        writer.write( "$content = json_encode( $" + requestVarName + " -> payload(), JSON_PRESERVE_ZERO_FRACTION );" );
                         newLine( writer, 2 );
                         writer.write( "$contentType = 'application/json';" );
                         newLine( writer, 2 );
@@ -275,12 +275,12 @@ public class PhpClassGenerator extends AbstractGenerator {
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
                         if( typeDeclaration instanceof ArrayTypeDeclaration ) {
                             writer.write( "$list = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), typeDeclaration.name(), "list" ) + "();" );
-                            writer.write( "foreach( $responseDelegate -> header('" + typeDeclaration.name() + "') as $item ){" );
+                            writer.write( "foreach( $responseDelegate -> header( strtolower( '" + typeDeclaration.name() + "' )) as $item ){" );
                             writer.write( "$list[] = " + readSingleValueFromArray( "$item", ((ArrayTypeDeclaration) typeDeclaration).items().type() ) + ";" );
                             writer.write( "}" );
                             writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $list );" );
                         } else {
-                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$responseDelegate -> header('" + typeDeclaration.name() + "')[0]", typeDeclaration.type() ) + " );" );
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$responseDelegate -> header( strtolower('" + typeDeclaration.name() + "' ))[0]", typeDeclaration.type() ) + " );" );
                         }
                         newLine( writer, 3 );
                     }
