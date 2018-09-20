@@ -38,7 +38,6 @@ public class RunPhpTest {
             out.write( buffer );
         }
         System.out.println( new String( out.toByteArray() ) );
-
     }
 
     @Test

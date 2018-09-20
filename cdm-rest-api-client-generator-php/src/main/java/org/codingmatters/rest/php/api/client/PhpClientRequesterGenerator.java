@@ -26,13 +26,13 @@ public class PhpClientRequesterGenerator {
     private final Utils utils;
     private final PhpClassGenerator phpClassGenerator;
 
-    public PhpClientRequesterGenerator( String clientPackage, String apiPackage, String typesPackage, File rootDir ) {
+    public PhpClientRequesterGenerator( String clientPackage, String apiPackage, String typesPackage, File rootDir, boolean useReturnType ) {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
         this.typesPackage = typesPackage;
         this.rootDir = rootDir;
         this.utils = new Utils();
-        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), apiPackage, typesPackage, clientPackage );
+        this.phpClassGenerator = new PhpClassGenerator( rootDir.getPath(), apiPackage, typesPackage, clientPackage, useReturnType );
     }
 
     public void generate( RamlModelResult model ) throws RamlSpecException, IOException {

@@ -89,12 +89,12 @@ public class ApiGeneratorTest {
 
         Spec spec = new ApiGeneratorPhp( "org.generated" ).generate( ramlModel );
         ValueSpec valueSpec = this.getValueSpec( spec, "ObjectPostRequest" );
-        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
 
         valueSpec = this.getValueSpec( spec, "ObjectPostResponse" );
-        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
     }
@@ -111,14 +111,14 @@ public class ApiGeneratorTest {
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeRef(), is( "org.generated.objectarrayshortpostrequest.ObjectArrayShortPostRequestArrayList" ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
         valueSpec = this.getValueSpec( spec, "ObjectArrayShortPostResponse" );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeRef(), is( "org.generated.objectarrayshortpostresponse.ObjectArrayShortPostResponseArrayList" ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
     }
 
@@ -134,14 +134,14 @@ public class ApiGeneratorTest {
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeRef(), is( "org.generated.objectarraypostrequest.ObjectArrayPostRequestArrayList" ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
         valueSpec = this.getValueSpec( spec, "ObjectArrayPostResponse" );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeRef(), is( "org.generated.objectarraypostresponse.ObjectArrayPostResponseArrayList" ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "array" ) );
+        assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "\\ArrayObject" ) );
         assertThat( valueSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "payload" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
     }
 

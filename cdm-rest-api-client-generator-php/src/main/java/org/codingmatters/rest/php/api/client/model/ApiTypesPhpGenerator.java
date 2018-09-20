@@ -75,7 +75,7 @@ public class ApiTypesPhpGenerator {
                         .typeRef( typeRef )
                         .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty(
                                 PropertySpec.property()
-                                        .type( PropertyTypeSpec.type().typeKind( TypeKind.JAVA_TYPE ).typeRef( "array" ) )
+                                        .type( PropertyTypeSpec.type().typeKind( TypeKind.JAVA_TYPE ).typeRef( "\\ArrayObject" ) )
                                         .build()
                         ).build() );
             } else {
@@ -85,7 +85,7 @@ public class ApiTypesPhpGenerator {
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
-                    .typeRef( "array" );
+                    .typeRef( "\\ArrayObject" );
         } else if( declaration.type().equals( "object" ) ) {
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )

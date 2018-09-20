@@ -7,12 +7,15 @@ import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
+import org.raml.v2.api.model.v10.resources.Resource;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PhpClassGenerator extends AbstractGenerator {
 
@@ -22,14 +25,16 @@ public class PhpClassGenerator extends AbstractGenerator {
     private final String typesPackage;
     private final Naming naming;
     private final String clienPackage;
+    private final boolean useReturnType;
 
-    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage, String clientPackage ) {
+    public PhpClassGenerator( String rootDir, String rootPackage, String typesPackage, String clientPackage, boolean useReturnType ) {
         this.rootDir = rootDir + "/" + rootPackage.replace( ".", "/" );
         this.rootPackage = rootPackage.replace( ".", "\\" );
         this.typesPackage = typesPackage.replace( ".", "\\" );
         this.clienPackage = clientPackage.replace( ".", "\\" );
         this.utils = new Utils();
         this.naming = new Naming();
+        this.useReturnType = useReturnType;
     }
 
     public void generateInterface( ResourceClientDescriptor resourceClientDescriptor ) throws IOException {
@@ -48,16 +53,22 @@ public class PhpClassGenerator extends AbstractGenerator {
 
             for( ResourceClientDescriptor clientDescriptor : resourceClientDescriptor.nextFloorResourceClientGetters() ) {
                 String descriptorLowerCase = utils.firstLetterLowerCase( clientDescriptor.getClassName() );
-                writer.write( "public function " + descriptorLowerCase + "(): " + clientDescriptor.getClassName() + ";" );
+                writer.write( "public function " + descriptorLowerCase + "()" );
+                if( useReturnType ) {
+                    writer.write( ": " + clientDescriptor.getClassName() );
+                }
+                writer.write( ";" );
                 twoLine( writer, 1 );
             }
 
             for( HttpMethodDescriptor httpMethodDescriptor : resourceClientDescriptor.methodDescriptors() ) {
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " ): " +
-                        httpMethodDescriptor.getResponseType() + ";"
-                );
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() ) + " )" );
+                if( useReturnType ) {
+                    writer.write( ": " + httpMethodDescriptor.getResponseType() );
+                }
+                writer.write( ";" );
                 twoLine( writer, 1 );
             }
             newLine( writer, 0 );
@@ -86,7 +97,11 @@ public class PhpClassGenerator extends AbstractGenerator {
 
             for( ResourceClientDescriptor clientDescriptor : resourceClientDescriptor.nextFloorResourceClientGetters() ) {
                 String descriptorLowerCase = utils.firstLetterLowerCase( clientDescriptor.getClassName() );
-                writer.write( "public function " + descriptorLowerCase + "(): " + clientDescriptor.getClassName() + "{" );
+                writer.write( "public function " + descriptorLowerCase + "()" );
+                if( useReturnType ) {
+                    writer.write( ": " + clientDescriptor.getClassName() );
+                }
+                writer.write( " {" );
                 newLine( writer, 2 );
                 writer.write( "return $this->" + descriptorLowerCase + ";" );
                 newLine( writer, 1 );
@@ -98,28 +113,38 @@ public class PhpClassGenerator extends AbstractGenerator {
                 String requestVarName = utils.firstLetterLowerCase( httpMethodDescriptor.getRequestType() );
                 writer.write( "public function " +
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
-                        "( " + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " ): " +
-                        httpMethodDescriptor.getResponseType() + " {"
-                );
+                        "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " )" );
+                if( useReturnType ) {
+                    writer.write( httpMethodDescriptor.getResponseType() );
+                }
+                writer.write( " {" );
                 String responseVar = "$" + utils.firstLetterLowerCase( httpMethodDescriptor.getResponseType() );
                 newLine( writer, 2 );
                 writer.write( "$path = $this -> gatewayUrl.'" + httpMethodDescriptor.path() + "';" );
                 newLine( writer, 2 );
                 if( httpMethodDescriptor.method().resource() != null ) {
-                    for( TypeDeclaration typeDeclaration : httpMethodDescriptor.method().resource().uriParameters() ) {
-                        if( typeDeclaration instanceof ArrayTypeDeclaration ) {
-                            writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
-                            newLine( writer, 3 );
-                            writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
-                            newLine( writer, 2 );
-                            writer.write( "}" );
-                            newLine( writer, 2 );
-                        } else {
-                            String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
-                            writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
-                            newLine( writer, 2 );
+                    Resource resource = httpMethodDescriptor.method().resource();
+                    List<String> handledParams = new ArrayList<>();
+                    do {
+                        List<TypeDeclaration> params = resource.uriParameters();
+                        for( TypeDeclaration typeDeclaration : params ) {
+                            if( typeDeclaration instanceof ArrayTypeDeclaration && !handledParams.contains( typeDeclaration.name() ) ) {
+                                writer.write( "foreach( $" + requestVarName + " -> " + typeDeclaration.name() + "() as $item ){" );
+                                newLine( writer, 3 );
+                                writer.write( "$path = preg_replace( '/{" + typeDeclaration.name() + "}/', " + getValue( ((ArrayTypeDeclaration) typeDeclaration).items(), "$item" ) + ", $path, 1 );" );
+                                newLine( writer, 2 );
+                                writer.write( "}" );
+                                newLine( writer, 2 );
+                                handledParams.add( typeDeclaration.name() );
+                            } else if( !handledParams.contains( typeDeclaration.name() ) ) {
+                                String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
+                                writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
+                                newLine( writer, 2 );
+                                handledParams.add( typeDeclaration.name() );
+                            }
                         }
-                    }
+                        resource = resource.parentResource();
+                    } while( resource != null );
                 }
                 writer.write( "$this -> httpRequester -> path( $path );" );
                 newLine( writer, 2 );
@@ -196,14 +221,14 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 writer.write( "$status -> withPayload( $list );" );
                                 newLine( writer, 3 );
                             } else {
-                                writer.write( "$body = json_decode( $responseDelegate -> body(), true );" );
+                                writer.write( "$body = new \\ArrayObject( json_decode( $responseDelegate -> body(), true ));" );
                                 newLine( writer, 3 );
                                 writer.write( "$status -> withPayload( $body );" );
                                 newLine( writer, 3 );
                             }
                         } else {
                             if( response.body().get( 0 ) instanceof ArrayTypeDeclaration ) {
-
+                                // #TODO Handle array of external value object, as below
                                 String type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().type();
                                 if( type.equals( "object" ) && ((ArrayTypeDeclaration) response.body().get( 0 )).items().name() != null ) {
                                     type = ((ArrayTypeDeclaration) response.body().get( 0 )).items().name();
@@ -223,8 +248,23 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 writer.write( "$status->withPayload( $list );" );
                                 newLine( writer, 3 );
                             } else {
-                                writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
-                                newLine( writer, 3 );
+                                TypeDeclaration typeDeclaration = response.body().get( 0 );
+                                final TypeDeclaration[] parents = { typeDeclaration };
+                                boolean parentIsAlreadyDefined = typeDeclaration.parentTypes() != null && response.body().get( 0 ).parentTypes().stream().anyMatch( parent->{
+                                    boolean test = naming.isAlreadyDefined( parent );
+                                    parents[0] = parent;
+                                    return test;
+                                });
+                                if( naming.isAlreadyDefined( typeDeclaration ) || parentIsAlreadyDefined ) {
+                                    String[] reference = naming.alreadyDefined( parents[0] ).split( "\\." );
+                                    reference[reference.length-1] = "json\\" + reference[reference.length-1] + "Reader";
+                                    String fullReference = String.join( "\\", reference );
+                                    writer.write( "$reader = new \\" + fullReference  + "();" );
+                                    newLine( writer, 3 );
+                                } else {
+                                    writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
+                                    newLine( writer, 3 );
+                                }
                                 writer.write( "$body = $reader -> read( $responseDelegate->body() );" );
                                 newLine( writer, 3 );
                                 writer.write( "$status -> withPayload( $body );" );

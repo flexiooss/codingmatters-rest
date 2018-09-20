@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class Utils {
 
     public String firstLetterUpperCase( String name ) {
-        return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 ).toLowerCase( Locale.ENGLISH );
+        return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 );
     }
 
     public String firstLetterLowerCase( String name ) {
