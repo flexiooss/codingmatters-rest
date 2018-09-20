@@ -55,13 +55,18 @@ public class ApiTypesGenerator {
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration declaration) throws RamlSpecException {
         if(declaration instanceof ArrayTypeDeclaration) {
-            if(((ArrayTypeDeclaration)declaration).items().type().equals("object")) {
-                if(this.naming.isArbitraryObject(((ArrayTypeDeclaration) declaration).items())) {
+            if (((ArrayTypeDeclaration) declaration).items().type().equals("object")) {
+                if (this.naming.isAlreadyDefined(((ArrayTypeDeclaration) declaration).items())) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeRef(this.naming.alreadyDefined(((ArrayTypeDeclaration) declaration).items()));
+                } else if (this.naming.isArbitraryObject(((ArrayTypeDeclaration) declaration).items())) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                             .typeRef(ObjectValue.class.getName());
-                } else if(((ArrayTypeDeclaration)declaration).items().name().equals("object")) {
+                } else if (((ArrayTypeDeclaration) declaration).items().name().equals("object")) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EMBEDDED)
@@ -70,11 +75,16 @@ public class ApiTypesGenerator {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
-                            .typeRef(((ArrayTypeDeclaration)declaration).items().name());
+                            .typeRef(((ArrayTypeDeclaration) declaration).items().name());
                 }
             } else {
-                return this.simpleProperty(((ArrayTypeDeclaration)declaration).items(), PropertyCardinality.LIST);
+                return this.simpleProperty(((ArrayTypeDeclaration) declaration).items(), PropertyCardinality.LIST);
             }
+        } else if(this.naming.isAlreadyDefined(declaration)) {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                    .typeRef(this.naming.alreadyDefined(declaration));
         } else if(this.naming.isArbitraryObject(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)

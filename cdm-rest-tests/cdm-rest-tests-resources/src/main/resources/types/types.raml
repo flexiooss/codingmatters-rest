@@ -99,3 +99,14 @@ types:
     AlreadyDefinedType:
         (already-defined): org.codingmatters.AnExternalValueObject
         type: object
+
+    TypeWithAlreadyDefinedProperty:
+        type: object
+        properties:
+            prop:
+                (already-defined): org.codingmatters.AnAlreadyDefinedValueObject
+                type: object
+            props:
+                (already-defined): org.codingmatters.AnAlreadyDefinedValueObject
+                type: array
+                items: object
