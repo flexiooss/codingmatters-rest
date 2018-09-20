@@ -334,13 +334,13 @@ public class TypesTest {
         assertThat(
                 this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("props"),
                 is(PropertySpec.property()
-                        .name("prop")
+                        .name("props")
                         .type(PropertyTypeSpec.type()
                                 .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                 .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
                                 .cardinality(PropertyCardinality.LIST)
                         )
-                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .hints(new HashSet<String>(){{add("property:raw(props)");}})
                         .build())
         );
     }
