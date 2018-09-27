@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class PhpClassGenerator extends AbstractGenerator {
 
@@ -137,7 +136,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                                 newLine( writer, 2 );
                                 handledParams.add( typeDeclaration.name() );
                             } else if( !handledParams.contains( typeDeclaration.name() ) ) {
-                                String variableName = "$" + requestVarName + " -> " + typeDeclaration.name() + "()";
+                                String variableName = "$" + requestVarName + " -> " + naming.property( typeDeclaration.name() ) + "()";
                                 writer.write( "$path = str_replace( '{" + typeDeclaration.name() + "}', " + getValue( typeDeclaration, variableName ) + ", $path );" );
                                 newLine( writer, 2 );
                                 handledParams.add( typeDeclaration.name() );
@@ -254,12 +253,12 @@ public class PhpClassGenerator extends AbstractGenerator {
                                     boolean test = naming.isAlreadyDefined( parent );
                                     parents[0] = parent;
                                     return test;
-                                });
+                                } );
                                 if( naming.isAlreadyDefined( typeDeclaration ) || parentIsAlreadyDefined ) {
                                     String[] reference = naming.alreadyDefined( parents[0] ).split( "\\." );
-                                    reference[reference.length-1] = "json\\" + reference[reference.length-1] + "Reader";
+                                    reference[reference.length - 1] = "json\\" + reference[reference.length - 1] + "Reader";
                                     String fullReference = String.join( "\\", reference );
-                                    writer.write( "$reader = new \\" + fullReference  + "();" );
+                                    writer.write( "$reader = new \\" + fullReference + "();" );
                                     newLine( writer, 3 );
                                 } else {
                                     writer.write( "$reader = new \\" + typesPackage + "\\json\\" + response.body().get( 0 ).type() + "Reader();" );
