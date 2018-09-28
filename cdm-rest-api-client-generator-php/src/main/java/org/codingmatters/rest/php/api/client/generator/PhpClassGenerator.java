@@ -185,7 +185,9 @@ public class PhpClassGenerator extends AbstractGenerator {
                         writer.write( "$contentType = $" + requestVarName + " -> contentType();" );
                         newLine( writer, 2 );
                     } else {
-                        writer.write( "$content = json_encode( $" + requestVarName + " -> payload(), JSON_PRESERVE_ZERO_FRACTION );" );
+                        writer.write( "$writer = new " + getWriterFromReference( httpMethodDescriptor.payload().typeRef() ) );
+                        newLine( writer, 2 );
+                        writer.write( "$content = $writer->write( $" + requestVarName + " -> payload() );" );
                         newLine( writer, 2 );
                         writer.write( "$contentType = 'application/json';" );
                         newLine( writer, 2 );
@@ -300,6 +302,11 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.flush();
         }
 
+    }
+
+    private String getWriterFromReference( String typeRef ) {
+        int index = typeRef.lastIndexOf( "." );
+        return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Writer").replace( ".", "\\" );
     }
 
     private String readSingleValueFromArray( String variableName, String type ) {
