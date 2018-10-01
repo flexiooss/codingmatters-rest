@@ -4,6 +4,7 @@ import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -179,18 +180,45 @@ public class PhpClassGenerator extends AbstractGenerator {
 
                 String method = httpMethodDescriptor.method().method().toLowerCase( Locale.ENGLISH );
                 if( httpMethodDescriptor.payload() != null ) {
-                    if( httpMethodDescriptor.payload().typeRef().equals( "string" ) ) {
-                        writer.write( "$content = $" + requestVarName + " -> payload();" );
-                        newLine( writer, 2 );
-                        writer.write( "$contentType = $" + requestVarName + " -> contentType();" );
-                        newLine( writer, 2 );
+                    if( httpMethodDescriptor.payload().cardinality() == PropertyCardinality.LIST ) {
+                        if( httpMethodDescriptor.payload().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
+                            newLine( writer, 2 );
+                            writer.write( "$content = json_encode( $" + requestVarName + "->payload(), JSON_PRESERVE_ZERO_FRACTION );" );
+                            newLine( writer, 2 );
+                            writer.write( "$contentType = 'application/json';" );
+                        } else {
+                            newLine( writer, 2 );
+                            writer.write( "$list = array();" );
+                            newLine( writer, 2 );
+                            writer.write( "$writer = new \\" + getWriterFromReference( httpMethodDescriptor.payload().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
+                            newLine( writer, 2 );
+                            writer.write( "foreach( $" + requestVarName + "->payload() as $item ) {" );
+                            newLine( writer, 3 );
+                            writer.write( "$list[] = $writer->getArray( $item );" );
+                            newLine( writer, 2 );
+                            writer.write( "}" );
+                            newLine( writer, 2 );
+                            writer.write( "$content = json_encode( $list, JSON_PRESERVE_ZERO_FRACTION );" );
+                            newLine( writer, 2 );
+                            writer.write( "$contentType = 'application/json';" );
+                        }
                     } else {
-                        writer.write( "$writer = new " + getWriterFromReference( httpMethodDescriptor.payload().typeRef() ) );
-                        newLine( writer, 2 );
-                        writer.write( "$content = $writer->write( $" + requestVarName + " -> payload() );" );
-                        newLine( writer, 2 );
-                        writer.write( "$contentType = 'application/json';" );
-                        newLine( writer, 2 );
+                        if( httpMethodDescriptor.payload().typeRef().equals( "string" ) ) {
+                            writer.write( "$content = $" + requestVarName + "->payload();" );
+                            newLine( writer, 2 );
+                            writer.write( "$contentType = $" + requestVarName + "->contentType();" );
+                            newLine( writer, 2 );
+                        } else if( httpMethodDescriptor.payload().typeRef().equals( "\\ArrayObject" ) ) {
+                            writer.write( "$content = json_encode( $" + requestVarName + "->payload(), JSON_PRESERVE_ZERO_FRACTION);" );
+                            writer.write( "$contentType = 'application/json';" );
+                        } else {
+                            writer.write( "$writer = new \\" + getWriterFromReference( httpMethodDescriptor.payload().typeRef() ) + "();" );
+                            newLine( writer, 2 );
+                            writer.write( "$content = $writer->write( $" + requestVarName + " -> payload() );" );
+                            newLine( writer, 2 );
+                            writer.write( "$contentType = 'application/json';" );
+                            newLine( writer, 2 );
+                        }
                     }
                     writer.write( "$responseDelegate = $this->httpRequester->" + method + "( $contentType, $content );" );
                 } else {
@@ -305,6 +333,7 @@ public class PhpClassGenerator extends AbstractGenerator {
     }
 
     private String getWriterFromReference( String typeRef ) {
+        System.out.println( "****************" + typeRef + "****************" );
         int index = typeRef.lastIndexOf( "." );
         return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Writer").replace( ".", "\\" );
     }
