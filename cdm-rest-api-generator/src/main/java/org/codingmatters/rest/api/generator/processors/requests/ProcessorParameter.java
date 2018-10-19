@@ -2,7 +2,7 @@ package org.codingmatters.rest.api.generator.processors.requests;
 
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.Processor;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Parameter;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.slf4j.Logger;

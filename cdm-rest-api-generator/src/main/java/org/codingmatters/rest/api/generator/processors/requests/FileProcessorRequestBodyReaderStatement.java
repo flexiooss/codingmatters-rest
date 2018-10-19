@@ -1,7 +1,7 @@
 package org.codingmatters.rest.api.generator.processors.requests;
 
 import com.squareup.javapoet.MethodSpec;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.types.File;
 import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.methods.Method;

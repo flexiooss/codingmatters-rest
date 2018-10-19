@@ -10,7 +10,7 @@ import org.codingmatters.rest.api.generator.processors.requests.TextProcessorReq
 import org.codingmatters.rest.api.generator.processors.responses.FileProcessorResponseStatement;
 import org.codingmatters.rest.api.generator.processors.responses.JsonProcessorResponseStatement;
 import org.codingmatters.rest.api.generator.processors.responses.TextProcessorResponseStatement;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.methods.Method;
 

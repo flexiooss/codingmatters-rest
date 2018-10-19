@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.codingmatters.value.objects.generation.Naming;
 
 public class Parameter {
     static private final Logger log = LoggerFactory.getLogger(Parameter.class);

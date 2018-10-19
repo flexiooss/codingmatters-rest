@@ -1,7 +1,7 @@
 package org.codingmatters.rest.api.generator.client;
 
 import com.squareup.javapoet.ClassName;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 import org.raml.v2.api.model.v10.system.types.StatusCodeString;

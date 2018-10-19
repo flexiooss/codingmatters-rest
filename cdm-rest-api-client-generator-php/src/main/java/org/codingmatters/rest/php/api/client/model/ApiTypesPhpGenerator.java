@@ -2,7 +2,7 @@ package org.codingmatters.rest.php.api.client.model;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;

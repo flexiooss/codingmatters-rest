@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;

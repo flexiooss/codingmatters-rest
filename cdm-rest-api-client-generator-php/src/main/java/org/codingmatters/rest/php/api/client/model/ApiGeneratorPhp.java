@@ -3,7 +3,7 @@ package org.codingmatters.rest.php.api.client.model;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.codingmatters.value.objects.php.generator.TypeTokenPhp;
 import org.codingmatters.value.objects.spec.*;

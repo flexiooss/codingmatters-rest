@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.values.json.ObjectValueReader;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
