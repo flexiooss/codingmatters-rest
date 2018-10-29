@@ -1,6 +1,6 @@
 package org.codingmatters.rest.php.api.client.generator;
 
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;

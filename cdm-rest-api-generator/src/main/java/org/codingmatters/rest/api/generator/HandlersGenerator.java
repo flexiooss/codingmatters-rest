@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.handlers.HandlersInterface;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.RamlModelResult;
 
 import java.io.File;

@@ -3,7 +3,7 @@ package org.codingmatters.rest.api.generator.processors;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 
 public interface ProcessorResponseBodyWriterStatement {

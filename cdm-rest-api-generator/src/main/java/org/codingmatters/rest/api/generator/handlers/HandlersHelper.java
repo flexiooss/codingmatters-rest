@@ -2,8 +2,8 @@ package org.codingmatters.rest.api.generator.handlers;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
-import org.codingmatters.rest.api.generator.utils.Naming;
 import org.raml.v2.api.RamlModelResult;
+import org.codingmatters.value.objects.generation.Naming;
 
 import java.util.function.Function;
 

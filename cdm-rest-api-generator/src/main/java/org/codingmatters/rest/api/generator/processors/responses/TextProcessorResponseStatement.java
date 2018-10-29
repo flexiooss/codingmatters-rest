@@ -2,7 +2,7 @@ package org.codingmatters.rest.api.generator.processors.responses;
 
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 

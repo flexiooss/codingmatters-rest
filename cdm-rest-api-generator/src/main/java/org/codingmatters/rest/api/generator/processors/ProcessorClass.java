@@ -10,7 +10,7 @@ import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.processors.requests.ProcessorParameter;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Parameter;
 import org.codingmatters.rest.api.generator.utils.Resolver;
 import org.raml.v2.api.RamlModelResult;

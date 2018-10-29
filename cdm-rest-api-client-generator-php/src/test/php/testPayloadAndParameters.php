@@ -28,15 +28,15 @@ class PayloadTest extends TestCase {
 
     public function testObjectPayload() {
         $requester = new FakeHttpRequester();
-        $client = new \org\generated\api\ObjectImpl( $requester, 'http://gateway' );
-        $request = new \org\generated\api\ObjectPostRequest();
+        $client = new \org\generated\api\SimpleObjectImpl( $requester, 'http://gateway' );
+        $request = new \org\generated\api\SimpleObjectPostRequest();
 
         $array = $this -> getTestArray();
 
         $request -> withPayload( $array );
 
         $requester -> nextBody('{"foo":"bar", "list":["foo", "bar"]}');
-        $response = $client->objectPost( $request );
+        $response = $client->simpleObjectPost( $request );
 
         $this-> assertSame( $requester->getPath(), 'http://gateway/object' );
         $this-> assertSame( $requester->lastMethod(), 'post' );
