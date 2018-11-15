@@ -7,6 +7,7 @@ import org.codingmatters.rest.api.client.RequesterFactory;
 public class OkHttpRequesterFactory implements RequesterFactory {
     private final HttpClientWrapper client;
 
+    @Deprecated
     public OkHttpRequesterFactory(OkHttpClient client) {
         this.client = OkHttpClientWrapper.from(client);
     }
