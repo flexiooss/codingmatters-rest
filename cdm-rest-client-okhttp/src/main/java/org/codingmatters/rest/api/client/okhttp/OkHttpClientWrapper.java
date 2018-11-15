@@ -10,13 +10,13 @@ import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
-public class OkHttpClientWrapper {
+public class OkHttpClientWrapper implements HttpClientWrapper {
 
     static public final String OK_WRAPPER_CONNECT_TIMEOUT_ENV = "OK_WRAPPER_CONNECT_TIMEOUT";
     static public final String OK_WRAPPER_READ_TIMEOUT_ENV = "OK_WRAPPER_READ_TIMEOUT";
     static public final String OK_WRAPPER_WRITE_TIMEOUT_ENV = "OK_WRAPPER_WRITE_TIMEOUT";
 
-    static public OkHttpClientWrapper build() {
+    static public HttpClientWrapper build() {
         return build(new OkHttpClient.Builder()
                 .connectTimeout(envLong(OK_WRAPPER_CONNECT_TIMEOUT_ENV, "2000"), TimeUnit.MILLISECONDS)
                 .readTimeout(envLong(OK_WRAPPER_READ_TIMEOUT_ENV, "40000"), TimeUnit.MILLISECONDS)
@@ -33,7 +33,7 @@ public class OkHttpClientWrapper {
      * @return
      */
     @Deprecated
-    static public OkHttpClientWrapper build(OkHttpClient.Builder builder) {
+    static public HttpClientWrapper build(OkHttpClient.Builder builder) {
         return from(builder.build());
     }
 
@@ -46,7 +46,7 @@ public class OkHttpClientWrapper {
      * @return
      */
     @Deprecated
-    static public OkHttpClientWrapper from(OkHttpClient client) {
+    static public HttpClientWrapper from(OkHttpClient client) {
         return new OkHttpClientWrapper(client);
     }
 
@@ -68,6 +68,7 @@ public class OkHttpClientWrapper {
         this.delegate = delegate;
     }
 
+    @Override
     public Response execute(Request request) throws IOException {
         try {
             return this.delegate.newCall(request).execute();

@@ -28,13 +28,13 @@ public class OkHttpWrapperTests {
 
     @Test(expected = UnknownHostException.class)
     public void whenUnknownHost__thenUnknownHostExceptionIsThrown() throws Exception {
-        OkHttpClientWrapper client = OkHttpClientWrapper.build();
+        HttpClientWrapper client = OkHttpClientWrapper.build();
         client.execute(new Request.Builder().url("http://unknown.host.loc").build());
     }
 
     @Test(timeout = 1000L)
     public void connectionTimeout() throws Exception {
-        OkHttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
+        HttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
                 .connectTimeout(500, TimeUnit.MILLISECONDS)
         );
 
@@ -46,7 +46,7 @@ public class OkHttpWrapperTests {
 
     @Test(timeout = 1000L)
     public void readTimeout() throws Exception {
-        OkHttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
+        HttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
                 .readTimeout(500, TimeUnit.MILLISECONDS)
         );
 

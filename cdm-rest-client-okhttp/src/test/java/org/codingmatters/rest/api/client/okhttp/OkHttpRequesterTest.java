@@ -14,7 +14,7 @@ public class OkHttpRequesterTest {
     @Rule
     public BehaviouralUndertowResource undertow = new BehaviouralUndertowResource();
 
-    private OkHttpClientWrapper client = OkHttpClientWrapper.build();
+    private HttpClientWrapper client = OkHttpClientWrapper.build();
     private Requester requester;
 
     @Before

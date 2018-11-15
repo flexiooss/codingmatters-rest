@@ -17,7 +17,7 @@ import java.util.TreeMap;
 
 public class BaseOkHttpRequester implements Requester {
 
-    private final OkHttpClientWrapper client;
+    private final HttpClientWrapper client;
     private final UrlProvider baseUrl;
 
     private String path = "/";
@@ -25,7 +25,7 @@ public class BaseOkHttpRequester implements Requester {
     private final TreeMap<String, String[]> headers = new TreeMap<>();
 
 
-    public BaseOkHttpRequester(OkHttpClientWrapper client, UrlProvider url) {
+    public BaseOkHttpRequester(HttpClientWrapper client, UrlProvider url) {
         this.client = client;
         this.baseUrl = url;
     }

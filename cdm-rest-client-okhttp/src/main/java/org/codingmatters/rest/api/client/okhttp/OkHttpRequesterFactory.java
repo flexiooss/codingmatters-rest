@@ -5,13 +5,13 @@ import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
 
 public class OkHttpRequesterFactory implements RequesterFactory {
-    private final OkHttpClientWrapper client;
+    private final HttpClientWrapper client;
 
     public OkHttpRequesterFactory(OkHttpClient client) {
         this.client = OkHttpClientWrapper.from(client);
     }
 
-    public OkHttpRequesterFactory(OkHttpClientWrapper client) {
+    public OkHttpRequesterFactory(HttpClientWrapper client) {
         this.client = client;
     }
 
