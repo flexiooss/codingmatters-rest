@@ -1,6 +1,5 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.codingmatters.rest.api.client.okhttp.exception.ConnectionTimeoutException;
 import org.codingmatters.rest.undertow.support.UndertowResource;
@@ -34,8 +33,7 @@ public class OkHttpWrapperTests {
 
     @Test(timeout = 1000L)
     public void connectionTimeout() throws Exception {
-        HttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
-                .connectTimeout(500, TimeUnit.MILLISECONDS)
+        HttpClientWrapper client = OkHttpClientWrapper.build(builder -> builder.connectTimeout(500, TimeUnit.MILLISECONDS)
         );
 
         this.exception.expect(ConnectionTimeoutException.class);
@@ -46,8 +44,7 @@ public class OkHttpWrapperTests {
 
     @Test(timeout = 1000L)
     public void readTimeout() throws Exception {
-        HttpClientWrapper client = OkHttpClientWrapper.build(new OkHttpClient.Builder()
-                .readTimeout(500, TimeUnit.MILLISECONDS)
+        HttpClientWrapper client = OkHttpClientWrapper.build(builder -> builder.readTimeout(500, TimeUnit.MILLISECONDS)
         );
 
         this.exception.expect(SocketTimeoutException.class);

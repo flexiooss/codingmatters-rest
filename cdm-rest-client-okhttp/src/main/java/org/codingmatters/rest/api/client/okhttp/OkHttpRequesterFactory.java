@@ -1,16 +1,10 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import okhttp3.OkHttpClient;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
 
 public class OkHttpRequesterFactory implements RequesterFactory {
     private final HttpClientWrapper client;
-
-    @Deprecated
-    public OkHttpRequesterFactory(OkHttpClient client) {
-        this.client = OkHttpClientWrapper.from(client);
-    }
 
     public OkHttpRequesterFactory(HttpClientWrapper client) {
         this.client = client;

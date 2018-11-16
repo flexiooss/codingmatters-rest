@@ -4,6 +4,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.api.client.okhttp.exception.ConnectionTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -14,75 +16,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
 public class OkHttpClientWrapper implements HttpClientWrapper {
+
+    static private final Logger log = LoggerFactory.getLogger(OkHttpClientWrapper.class);
 
     static public final String OK_WRAPPER_CONNECT_TIMEOUT_ENV = "OK_WRAPPER_CONNECT_TIMEOUT";
     static public final String OK_WRAPPER_READ_TIMEOUT_ENV = "OK_WRAPPER_READ_TIMEOUT";
     static public final String OK_WRAPPER_WRITE_TIMEOUT_ENV = "OK_WRAPPER_WRITE_TIMEOUT";
 
     static public HttpClientWrapper build() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        return build(defaultConfiguration(builder)
-        );
+        return build(builder -> builder);
     }
 
-    static public HttpClientWrapper buildWithTruststore(String path) {
+    static public HttpClientWrapper build(Config config) {
+        OkHttpClient.Builder builder = defaultConfiguration(new OkHttpClient.Builder());
         try {
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
-            SSLContext context = SSLContext.getInstance("TLS");
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            try (InputStream is = new FileInputStream(path)) {
-                keyStore.load(is, null);
-            }
-            trustManagerFactory.init(keyStore);
-            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-
-            context.init(null, trustManagers, null);
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .sslSocketFactory(context.getSocketFactory(), (X509TrustManager) trustManagers[0]);
-            return build(defaultConfiguration(builder)
-            );
-        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException | KeyManagementException e) {
-            throw new RuntimeException("failed configuring http client with trusstore " + path, e);
+            return new OkHttpClientWrapper(config.apply(builder).build());
+        } catch (Exception e) {
+            throw new RuntimeException("error building http client from config", e);
         }
     }
-
-    /**
-     * This one should only used in unit tests.
-     *
-     * Please consider using the no arg build() anv set timeout values with env / system property variables.
-     *
-     * @param builder
-     * @return
-     */
-    @Deprecated
-    static public HttpClientWrapper build(OkHttpClient.Builder builder) {
-        return from(builder.build());
-    }
-
-    /**
-     * This one should only used in unit tests.
-     *
-     * Please consider using the no arg build() anv set timeout values with env / system property variables.
-     *
-     * @param client
-     * @return
-     */
-    @Deprecated
-    static public HttpClientWrapper from(OkHttpClient client) {
-        return new OkHttpClientWrapper(client);
-    }
-
-
-
 
     private static OkHttpClient.Builder defaultConfiguration(OkHttpClient.Builder builder) {
         return builder
@@ -123,4 +79,28 @@ public class OkHttpClientWrapper implements HttpClientWrapper {
             throw new ConnectionTimeoutException("connection timed out", e);
         }
     }
+
+    @FunctionalInterface
+    public interface Config {
+        OkHttpClient.Builder apply(OkHttpClient.Builder builder) throws Exception;
+
+        static Config truststoreFrompath(String path) {
+            return builder -> {
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
+                SSLContext context = SSLContext.getInstance("TLS");
+                KeyStore keyStore = KeyStore.getInstance("JKS");
+                try (InputStream is = new FileInputStream(path)) {
+                    keyStore.load(is, null);
+                }
+                trustManagerFactory.init(keyStore);
+                TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+
+                context.init(null, trustManagers, null);
+
+                return builder.sslSocketFactory(context.getSocketFactory(), (X509TrustManager) trustManagers[0]);
+            };
+        }
+
+    }
+
 }
