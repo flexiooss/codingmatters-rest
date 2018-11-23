@@ -18,16 +18,16 @@ import java.util.TreeMap;
 public class BaseOkHttpRequester implements Requester {
 
     private final HttpClientWrapper client;
-    private final UrlProvider baseUrl;
+    private final UrlProvider urlProvider;
 
     private String path = "/";
     private final TreeMap<String, String[]> parameters = new TreeMap<>();
     private final TreeMap<String, String[]> headers = new TreeMap<>();
 
 
-    public BaseOkHttpRequester(HttpClientWrapper client, UrlProvider url) {
+    public BaseOkHttpRequester(HttpClientWrapper client, UrlProvider urlProvider) {
         this.client = client;
-        this.baseUrl = url;
+        this.urlProvider = urlProvider;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class BaseOkHttpRequester implements Requester {
 
 
     private Request.Builder prepareRequestBuilder() throws UnsupportedEncodingException, IOException {
-        String url = this.baseUrl.baseUrl() + this.path();
+        String url = this.urlProvider.baseUrl() + this.path();
 
         boolean first = true;
         for (Map.Entry<String, String[]> queryParameterEntry : this.parameters().entrySet()) {
