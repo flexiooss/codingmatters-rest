@@ -27,7 +27,7 @@ public class ProxyRequestTest {
             this.requesterFactory.clear().nextResponse(this.factoryMethod(method), 200);
 
             ProxyRequest.from(TestRequestDeleguate.request(method, "https://some/where").build())
-                    .to(requesterFactory.forBaseUrl("https://else/where"));
+                    .to(requesterFactory.create());
 
             TestRequesterFactory.Call call = this.requesterFactory.calls().get(0);
             assertThat("Method " + method, call.method(), is(this.factoryMethod(method)));
@@ -43,7 +43,7 @@ public class ProxyRequestTest {
 
         ResponseDelegate response = ProxyRequest
                 .from(TestRequestDeleguate.request(RequestDelegate.Method.GET, "https://some/where").build())
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(response.code(), is(200));
         assertThat(response.body(), is("my content is rich".getBytes()));
@@ -61,7 +61,7 @@ public class ProxyRequestTest {
                         .contentType("text/plain")
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).method(), is(POST));
@@ -82,7 +82,7 @@ public class ProxyRequestTest {
                         .contentType("text/plain")
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).method(), is(PATCH));
@@ -103,7 +103,7 @@ public class ProxyRequestTest {
                         .contentType("text/plain")
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).method(), is(PUT));
@@ -125,7 +125,7 @@ public class ProxyRequestTest {
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
                 .withHeader("h2", "h2v1", "h2v2")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv1", "hv2")));
@@ -141,7 +141,7 @@ public class ProxyRequestTest {
                         .addHeader("h", "hv1", "hv2")
                         .build())
                 .withAddedHeader("h", "hv3", "hv4")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         System.out.println(Arrays.asList(this.requesterFactory.calls().get(0).headers().get("h")));
@@ -157,7 +157,7 @@ public class ProxyRequestTest {
                         .addHeader("h", "hv1", "hv2")
                         .build())
                 .withHeader("h", "hv3", "hv4")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv3", "hv4")));
@@ -172,7 +172,7 @@ public class ProxyRequestTest {
                         .addHeader("h", "hv1", "hv2")
                         .build())
                 .withoutHeader("h")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(nullValue()));
@@ -191,7 +191,7 @@ public class ProxyRequestTest {
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
                 .withQueryParameters("q2", "q2v1", "q2v2")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv1", "qv2")));
@@ -209,7 +209,7 @@ public class ProxyRequestTest {
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
                 .withAddedQueryParameters("q", "qv3", "qv4")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv1", "qv2", "qv3", "qv4")));
@@ -226,7 +226,7 @@ public class ProxyRequestTest {
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
                 .withQueryParameters("q", "qv3", "qv4")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(arrayContaining("qv3", "qv4")));
@@ -243,7 +243,7 @@ public class ProxyRequestTest {
                         .payload(new ByteArrayInputStream("my request content is rich".getBytes()))
                         .build())
                 .withoutQueryParameters("q")
-                .to(requesterFactory.forBaseUrl("https://else/where"));
+                .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
         assertThat(this.requesterFactory.calls().get(0).parameters().get("q"), is(nullValue()));
