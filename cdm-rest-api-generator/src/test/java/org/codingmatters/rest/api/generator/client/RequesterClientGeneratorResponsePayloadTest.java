@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.client.support.RequesterClientTestSetup;
 import org.codingmatters.tests.compile.FileHelper;
@@ -42,14 +43,14 @@ public class RequesterClientGeneratorResponsePayloadTest {
 
     @Test
     public void payload() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200, "{\"prop\":\"value\"}".getBytes("UTF-8"));
 
         ObjectHelper resource = this.classes.get(c(CLIENT_PACK + ".TestAPIRequesterClient"))
-                .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
+                .newInstance(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .with(requesterFactory, jsonFactory, baseUrl)
                     .call("payload");
 
@@ -79,16 +80,16 @@ public class RequesterClientGeneratorResponsePayloadTest {
 
     @Test
     public void payloadList() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200, "[{\"prop\":\"v1\"},{\"prop\":\"v2\"}]".getBytes("UTF-8"));
 
 
         ObjectHelper resource =
                 this.classes.get(CLIENT_PACK + ".TestAPIRequesterClient")
-                    .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
+                    .newInstance(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                     .with(requesterFactory, jsonFactory, baseUrl)
                 .call("payloadList");
 

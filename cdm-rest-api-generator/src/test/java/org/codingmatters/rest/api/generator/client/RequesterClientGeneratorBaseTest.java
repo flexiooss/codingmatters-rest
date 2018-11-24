@@ -101,12 +101,12 @@ public class RequesterClientGeneratorBaseTest {
 
     @Test
     public void resourceChaining() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         assertThat(client, is(notNullValue()));
@@ -131,14 +131,14 @@ public class RequesterClientGeneratorBaseTest {
 
     @Test
     public void rootResourceGet() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
         Object resource = this.compiled.on(client).invoke("rootResource");
 
@@ -160,14 +160,14 @@ public class RequesterClientGeneratorBaseTest {
 
     @Test
     public void firstResourceGet() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
         Object resource = this.compiled.on(this.compiled.on(this.compiled.on(client)
                 .invoke("rootResource"))
@@ -194,16 +194,15 @@ public class RequesterClientGeneratorBaseTest {
 
     @Test
     public void rootResourceGetWithUrlProvider() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
-        UrlProvider urlProvider = () -> baseUrl;
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.compiled.getClass(CLIENT_PACK + ".SimpleResourceTreeAPIRequesterClient")
                 .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
-                .newInstance(requesterFactory, jsonFactory, urlProvider);
+                .newInstance(requesterFactory, jsonFactory, baseUrl);
         Object resource = this.compiled.on(client).invoke("rootResource");
 
         Object request = this.compiled

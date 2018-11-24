@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.client.support.RequesterClientTestSetup;
 import org.codingmatters.tests.compile.FileHelper;
@@ -30,16 +31,16 @@ public class RequesterClientGeneratorRequestQueryParametersTest {
 
     @Test
     public void queryParams() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         ClassLoaderHelper classes = this.testSetup.compiled().classLoader();
 
         ObjectHelper client = classes.get(CLIENT_PACK + ".TestAPIRequesterClient")
-                .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
+                .newInstance(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .with(requesterFactory, jsonFactory, baseUrl);
 
         ObjectHelper resource = client.call("queryParams");
@@ -59,16 +60,16 @@ public class RequesterClientGeneratorRequestQueryParametersTest {
 
     @Test
     public void queryParamsWithBooleans() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         ClassLoaderHelper classes = this.testSetup.compiled().classLoader();
 
         ObjectHelper client = classes.get(CLIENT_PACK + ".TestAPIRequesterClient")
-                .newInstance(RequesterFactory.class, JsonFactory.class, String.class)
+                .newInstance(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .with(requesterFactory, jsonFactory, baseUrl);
 
         ObjectHelper resource = client.call("queryParamsWithBooleans");

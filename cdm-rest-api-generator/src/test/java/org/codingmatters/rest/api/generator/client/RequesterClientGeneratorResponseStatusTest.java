@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.client.support.RequesterClientTestSetup;
 import org.codingmatters.tests.compile.FileHelper;
@@ -35,14 +36,14 @@ public class RequesterClientGeneratorResponseStatusTest {
 
     @Test
     public void status200() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.support.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.support.compiled().on(client).invoke("status");
@@ -76,14 +77,14 @@ public class RequesterClientGeneratorResponseStatusTest {
 
     @Test
     public void status201() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 201);
 
         Object client = this.support.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.support.compiled().on(client).invoke("status");
@@ -117,14 +118,14 @@ public class RequesterClientGeneratorResponseStatusTest {
 
     @Test
     public void status202() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 202);
 
         Object client = this.support.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.support.compiled().on(client).invoke("status");

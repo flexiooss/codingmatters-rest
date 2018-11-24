@@ -50,7 +50,7 @@ public class RequesterCaller {
                 .addException(IOException.class);
 
         caller.addStatement(
-                "$T requester = this.requesterFactory.forBaseUrl(this.urlProvider.baseUrl())",
+                "$T requester = this.requesterFactory.create()",
                 Requester.class);
 
         new CallerParameters(this.method, naming).addStatement(caller);

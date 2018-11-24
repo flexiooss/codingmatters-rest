@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 
 public class ProxyRequestTest {
 
-    private TestRequesterFactory requesterFactory = new TestRequesterFactory();
+    private TestRequesterFactory requesterFactory = new TestRequesterFactory(() -> "https://else/where");
 
     @Test
     public void methods() throws Exception {

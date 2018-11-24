@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.codingmatters.rest.api.client.RequesterFactory;
+import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.api.client.test.TestRequesterFactory;
 import org.codingmatters.rest.api.generator.client.support.RequesterClientTestSetup;
 import org.codingmatters.tests.compile.FileHelper;
@@ -29,14 +30,14 @@ public class RequesterClientGeneratorRequestUriParametersTest {
 
     @Test
     public void uriParams() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.testSetup.compiled().on(client).invoke("uriParams");
@@ -60,14 +61,14 @@ public class RequesterClientGeneratorRequestUriParametersTest {
 
     @Test
     public void twoUriParams() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.testSetup.compiled().on(client).invoke("uriParams");
@@ -93,14 +94,14 @@ public class RequesterClientGeneratorRequestUriParametersTest {
 
     @Test
     public void arrayUriParams() throws Exception {
-        TestRequesterFactory requesterFactory = new TestRequesterFactory();
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
-        String baseUrl = "https://path.to/me";
 
         requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
 
         Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
-                .getConstructor(RequesterFactory.class, JsonFactory.class, String.class)
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
                 .newInstance(requesterFactory, jsonFactory, baseUrl);
 
         Object resource = this.testSetup.compiled().on(client).invoke("uriParams");

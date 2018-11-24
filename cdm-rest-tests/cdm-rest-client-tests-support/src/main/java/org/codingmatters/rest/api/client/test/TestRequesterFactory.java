@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.client.test;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.RequesterFactory;
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.api.client.UrlProvider;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,6 +12,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class TestRequesterFactory implements RequesterFactory {
+
+    private final UrlProvider urlProvider;
+
+    public TestRequesterFactory(UrlProvider urlProvider) {
+        this.urlProvider = urlProvider;
+    }
 
     public enum Method {
         GET, HEAD, POST, PUT, PATCH, DELETE
@@ -92,6 +99,11 @@ public class TestRequesterFactory implements RequesterFactory {
     @Override
     public Requester forBaseUrl(String url) {
         return new TestRequester(url, this);
+    }
+
+    @Override
+    public Requester create() {
+        return new TestRequester(this.urlProvider, this);
     }
 
     protected ResponseDelegate registeredNextResponse(Method method, TestRequester requester) throws IOException {
