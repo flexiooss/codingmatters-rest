@@ -97,11 +97,6 @@ public class TestRequesterFactory implements RequesterFactory {
     }
 
     @Override
-    public Requester forBaseUrl(String url) {
-        return new TestRequester(url, this);
-    }
-
-    @Override
     public Requester create() {
         return new TestRequester(this.urlProvider, this);
     }
