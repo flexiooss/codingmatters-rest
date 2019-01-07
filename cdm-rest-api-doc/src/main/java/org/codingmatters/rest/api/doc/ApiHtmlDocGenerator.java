@@ -38,11 +38,20 @@ public class ApiHtmlDocGenerator {
                     .appendLine("    <meta charset=\"utf-8\">")
                     .appendLine("    <title>%s</title>", ramlModel.getApiV10().title().value())
                     .appendLine("  </head>")
-                    .appendLine("  <body>")
+                    .appendLine("  <body>");
+
+            html
+                    .appendLine("    <header>")
+                    .appendLine("      <h1>%s</h1>", ramlModel.getApiV10().title().value())
+                    .appendLine("    </header>")
+            ;
+            this.appendNavigation(html, "    ");
+
+
+            html
                     .appendLine("    <main>")
             ;
 
-            this.appendHeader(html, "      ");
             this.appendResourceArticles(this.ramlModel.getApiV10().resources(), html, "      ");
             this.appendOverviewArticle(html, "      ");
             this.appendTypesArticle(html, "      ");
@@ -55,9 +64,9 @@ public class ApiHtmlDocGenerator {
         }
     }
 
-    private void appendHeader(FormattedWriter html, String prefix) throws IOException {
+    private void appendNavigation(FormattedWriter html, String prefix) throws IOException {
         html
-                .appendLine("%s<header>", prefix)
+                .appendLine("%s<aside>", prefix)
                 .appendLine("%s  <nav>", prefix)
                 .appendLine("%s    <ul>", prefix)
                 .appendLine("%s      <li>", prefix)
@@ -89,7 +98,7 @@ public class ApiHtmlDocGenerator {
                 .appendLine("%s      <li><a href=\"#overview\">Overview</a></li>", prefix)
                 .appendLine("%s    </ul>", prefix)
                 .appendLine("%s  </nav>", prefix)
-                .appendLine("%s</header>", prefix)
+                .appendLine("%s</aside>", prefix)
                 ;
     }
 
@@ -102,10 +111,7 @@ public class ApiHtmlDocGenerator {
                 ;
 
         for (Resource resource : resources) {
-            html.appendLine("%s    <li>", prefix);
-            html.appendLine("%s      <a href=\"#%s\">%s</a>", prefix, camelCased(resource.displayName().value()) + "-resource", resource.displayName().value());
-            this.appendResourceNav(resource.resources(), html, prefix + "      ");
-            html.appendLine("%s    </li>", prefix);
+            this.appendRessourceItems(html, prefix, resource);
         }
 
 
@@ -115,11 +121,21 @@ public class ApiHtmlDocGenerator {
         ;
     }
 
+    private void appendRessourceItems(FormattedWriter html, String prefix, Resource resource) throws IOException {
+        html.appendLine("%s    <li>", prefix);
+        html.appendLine("%s      <a href=\"#%s\">%s</a>", prefix, camelCased(resource.displayName().value()) + "-resource", this.resourceUrl(resource));
+        html.appendLine("%s    </li>", prefix);
+        for (Resource sub : resource.resources()) {
+            this.appendRessourceItems(html, prefix, sub);
+        }
+
+    }
+
     private void appendOverviewArticle(FormattedWriter html, String prefix) throws IOException {
         html
                 .appendLine("%s<article id=\"%s\">", prefix, "overview")
                 .appendLine("%s  <header>", prefix)
-                .appendLine("%s    <h1>Overview</h1>", prefix)
+                .appendLine("%s    <h2>Overview</h2>", prefix)
                 .appendLine("%s  </header>", prefix)
                 .appendLine("%s  <section class=\"sequence-diagram\">", prefix)
                 .appendLine("%s    %s", prefix, this.svg(this.fileContent(overallSvgSequenceFile(this.ramlModel, this.toDirectory))))
@@ -138,7 +154,8 @@ public class ApiHtmlDocGenerator {
         html
                 .appendLine("%s<article class=\"resource\" id=\"%s\">", prefix, camelCased(resource.displayName().value())+ "-resource")
                 .appendLine("%s  <header>", prefix)
-                .appendLine("%s    <h1>%s</h1>", prefix, resource.displayName().value())
+                .appendLine("%s    <h2>%s</h2>", prefix, this.resourceUrl(resource))
+                .appendLine("%s    <ressource-name>%s</ressource-name>", prefix, resource.displayName().value())
                 .appendLine("%s  </header>", prefix)
                 ;
 
@@ -173,7 +190,7 @@ public class ApiHtmlDocGenerator {
                         camelCased(method.resource().displayName().value()),
                         method.method().toLowerCase()
                 )
-                .appendLine("%s  <h2>%s %s</h2>", prefix, method.method().toUpperCase(), this.resourceUrl(method.resource(), method))
+                .appendLine("%s  <h3>%s %s</h3>", prefix, method.method().toUpperCase(), this.resourceUrl(method.resource()))
                 .appendLine("%s  <section class=\"documentation\">", prefix)
                 ;
 
@@ -181,38 +198,38 @@ public class ApiHtmlDocGenerator {
         List<TypeDeclaration> uriParameters = this.resolvedUriParameters(method.resource());
         if(! uriParameters.isEmpty()) {
             html.appendLine("%s    <section class=\"uri-parameters\">", prefix);
-            html.appendLine("%s      <h3>uri parameters</h3>", prefix);
-            this.parameterSections(uriParameters, html, prefix + "      ", "uri-parameter", "h4");
+            html.appendLine("%s      <h4>uri parameters</h4>", prefix);
+            this.parameterSections(uriParameters, html, prefix + "      ", "uri-parameter", "h5");
             html.appendLine("%s    </section>", prefix);
         }
 
         if(! method.queryParameters().isEmpty()) {
             html.appendLine("%s    <section class=\"query-parameters\">", prefix);
-            html.appendLine("%s      <h3>query parameters</h3>", prefix);
-            this.parameterSections(method.queryParameters(), html, prefix + "      ", "query-parameter", "h4");
+            html.appendLine("%s      <h4>query parameters</h4>", prefix);
+            this.parameterSections(method.queryParameters(), html, prefix + "      ", "query-parameter", "h5");
             html.appendLine("%s    </section>", prefix);
         }
 
         if(! method.headers().isEmpty()) {
             html.appendLine("%s    <section class=\"headers\">", prefix);
-            html.appendLine("%s      <h3>headers</h3>", prefix);
-            this.parameterSections(method.headers(), html, prefix + "      ", "header", "h4");
+            html.appendLine("%s      <h4>headers</h4>", prefix);
+            this.parameterSections(method.headers(), html, prefix + "      ", "header", "h5");
             html.appendLine("%s    </section>", prefix);
         }
 
         if(! method.body().isEmpty()) {
             html.appendLine("%s    <section class=\"request-payload-parts\">", prefix);
-            html.appendLine("%s      <h3>request payload</h3>", prefix);
-            this.parameterSections(method.body(), html, prefix + "      ", "request-payload-part", "h4");
+            html.appendLine("%s      <h4>request payload</h4>", prefix);
+            this.parameterSections(method.body(), html, prefix + "      ", "request-payload-part", "h5");
             html.appendLine("%s    </section>", prefix);
         }
 
         if(method.responses() != null && ! method.responses().isEmpty()) {
             html.appendLine("%s    <section class=\"responses\">", prefix);
-            html.appendLine("%s      <h3>responses</h3>", prefix);
+            html.appendLine("%s      <h4>responses</h4>", prefix);
             for (Response response : method.responses()) {
                 html.appendLine("%s      <section class=\"response\">", prefix);
-                html.appendLine("%s        <h4>%s</h4>", prefix, response.code().value());
+                html.appendLine("%s        <h5>%s</h5>", prefix, response.code().value());
                 if(response.description() != null) {
                     html.appendLine("%s        <div class=\"description\">%s</div>", prefix, markdownToHtml(response.description().value()));
                 }
@@ -220,14 +237,14 @@ public class ApiHtmlDocGenerator {
 
                 if(! response.headers().isEmpty()) {
                     html.appendLine("%s        <section class=\"headers\">", prefix);
-                    html.appendLine("%s        <h5>headers</h5>", prefix);
-                    this.parameterSections(response.headers(), html, prefix + "        ", "header", "h6");
+                    html.appendLine("%s        <h6>headers</h6>", prefix);
+                    this.parameterSections(response.headers(), html, prefix + "        ", "header", "h7");
                     html.appendLine("%s        </section>", prefix);
                 }
                 if(! response.body().isEmpty()) {
                     html.appendLine("%s        <section class=\"response-payload-part\">", prefix);
-                    html.appendLine("%s        <h5>response payload</h5>", prefix);
-                    this.parameterSections(response.body(), html, prefix + "        ", "response-payload-part", "h6");
+                    html.appendLine("%s        <h6>response payload</h6>", prefix);
+                    this.parameterSections(response.body(), html, prefix + "        ", "response-payload-part", "h7");
                     html.appendLine("%s        </section>", prefix);
                 }
 
@@ -243,7 +260,7 @@ public class ApiHtmlDocGenerator {
                 ;
     }
 
-    private String resourceUrl(Resource resource, Method method) {
+    private String resourceUrl(Resource resource) {
         String path = resource.resourcePath();
         List<TypeDeclaration> uriParameters = new LinkedList<>();
         Resource r = resource;
@@ -254,7 +271,7 @@ public class ApiHtmlDocGenerator {
 
         if (!uriParameters.isEmpty()) {
             for (TypeDeclaration uriParam : uriParameters) {
-                path = path.replaceAll("\\{" + uriParam.name() + "\\}", "{<b>" + uriParam.name() + "</b>}");
+                path = path.replaceAll("\\{" + uriParam.name() + "\\}", "<span class=\"uri-param\">" + uriParam.name() + "</span>");
             }
         }
 
@@ -294,7 +311,7 @@ public class ApiHtmlDocGenerator {
     private void appendTypesArticle(FormattedWriter html, String prefix) throws IOException {
         html
                 .appendLine("%s<article class=\"types\" id=\"api-types\">", prefix)
-                .appendLine("%s<h1>API Types</h1>", prefix)
+                .appendLine("%s<h2>API Types</h2>", prefix)
                 ;
 
         String parentPrefix = prefix;
@@ -303,7 +320,7 @@ public class ApiHtmlDocGenerator {
         for (TypeDeclaration type : this.ramlModel.getApiV10().types()) {
             html
                     .appendLine("%s<article class=\"type\" id=\"%s-type\">", prefix, type.name())
-                    .appendLine("%s  <h2>%s</h2>", prefix, type.name())
+                    .appendLine("%s  <h3>%s</h3>", prefix, type.name())
                     .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
                             prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, type, toDirectory))))
                     .appendLine("%s</article>", prefix)
@@ -313,7 +330,7 @@ public class ApiHtmlDocGenerator {
 
         html
                 .appendLine("%s<article class=\"type\" id=\"all-types\">", prefix)
-                .appendLine("%s  <h2>All Types</h2>", prefix)
+                .appendLine("%s  <h3>All Types</h3>", prefix)
                 .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
                         prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, toDirectory))))
                 .appendLine("%s</article>", prefix)
