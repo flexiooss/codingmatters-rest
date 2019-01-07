@@ -232,7 +232,7 @@ public class ApiHtmlDocGenerator {
                 }
 
 
-                html.appendLine("%s      <section>", prefix);
+                html.appendLine("%s      </section>", prefix);
             }
             html.appendLine("%s    </section>", prefix);
         }
@@ -297,6 +297,9 @@ public class ApiHtmlDocGenerator {
                 .appendLine("%s<h1>API Types</h1>", prefix)
                 ;
 
+        String parentPrefix = prefix;
+        prefix += "  ";
+
         for (TypeDeclaration type : this.ramlModel.getApiV10().types()) {
             html
                     .appendLine("%s<article class=\"type\" id=\"%s-type\">", prefix, type.name())
@@ -315,6 +318,9 @@ public class ApiHtmlDocGenerator {
                         prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, toDirectory))))
                 .appendLine("%s</article>", prefix)
                 ;
+
+        prefix = parentPrefix;
+        html.appendLine("%s</article>", prefix);
     }
 
     private List<TypeDeclaration> resolvedUriParameters(Resource resource) {
@@ -330,7 +336,7 @@ public class ApiHtmlDocGenerator {
     }
 
     private String svg(String content) {
-        int start = content.indexOf("<svg class=\"diagram\" ");
+        int start = content.indexOf("<svg");
         if(start != -1) {
             return content.substring(start);
         } else {
@@ -345,6 +351,7 @@ public class ApiHtmlDocGenerator {
             for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
                 result.append(buffer, 0, read);
             }
+            System.out.println("IMPORTING FILE CONTENT : " + file.getAbsolutePath() + "\n" + result.toString() + "#######\n\n");
             return result.toString();
         }
     }
