@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.generator;
 
+import com.squareup.javapoet.FieldSpec;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
@@ -14,6 +15,8 @@ import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
+
+import javax.lang.model.element.Modifier;
 
 /**
  * Created by nelt on 5/2/17.
@@ -30,6 +33,7 @@ public class ApiGenerator {
 
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
+
         for (Resource resource : ramlModel.getApiV10().resources()) {
             this.generateResourceValues(result, resource);
         }

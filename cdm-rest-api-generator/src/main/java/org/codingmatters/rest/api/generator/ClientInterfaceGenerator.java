@@ -1,9 +1,7 @@
 package org.codingmatters.rest.api.generator;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
+import org.codingmatters.rest.api.generator.client.ClientNamingHelper;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -40,8 +38,36 @@ public class ClientInterfaceGenerator {
     }
 
     private TypeSpec clientInterface(RamlModelResult model) {
-        TypeSpec.Builder parent = TypeSpec.interfaceBuilder(this.naming.type(model.getApiV10().title().value() , "Client"))
+        TypeSpec.Builder parent = TypeSpec.interfaceBuilder(ClientNamingHelper.interfaceName(this.naming, model))
                 .addModifiers(Modifier.PUBLIC);
+
+        parent.addField(
+                FieldSpec.builder(
+                    String.class,
+                    "REQUESTER_CLASSNAME",
+                    Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL)
+                        .initializer("$S", ClassName.get(this.clientPackage, ClientNamingHelper.requesterClassName(this.naming, model)))
+                        .build()
+
+        );
+        parent.addField(
+                FieldSpec.builder(
+                    String.class,
+                    "HANDLERS_CLASSNAME",
+                    Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL)
+                        .initializer("$S", ClassName.get(this.clientPackage, ClientNamingHelper.handlersClassName(this.naming, model)))
+                        .build()
+
+        );
+        parent.addField(
+                FieldSpec.builder(
+                    String.class,
+                    "API_NAME",
+                    Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL)
+                        .initializer("$S", this.naming.apiName(model))
+                        .build()
+
+        );
 
         for (Resource resource : model.getApiV10().resources()) {
             this.resourceInterface(parent, resource);

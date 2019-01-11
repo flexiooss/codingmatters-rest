@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.client.RequesterFactory;
 import org.codingmatters.rest.api.client.UrlProvider;
+import org.codingmatters.rest.api.generator.client.ClientNamingHelper;
 import org.codingmatters.rest.api.generator.client.RequesterCaller;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
@@ -42,7 +43,7 @@ public class ClientRequesterImplementation {
     public void generate(RamlModelResult model) throws IOException {
         DeclaredTypeRegistry.initialize(model);
 
-        ClassName clientInterface = ClassName.get(this.clientPackage, this.naming.type(model.getApiV10().title().value(), "Client"));
+        ClassName clientInterface = ClassName.get(this.clientPackage, ClientNamingHelper.interfaceName(this.naming, model));
         TypeSpec clientClass = this.clientClass(clientInterface, model);
         writeJavaFile(
                 packageDir(this.dir, this.clientPackage),
@@ -60,7 +61,7 @@ public class ClientRequesterImplementation {
     }
 
     private TypeSpec clientClass(ClassName clientInterface, RamlModelResult model) {
-        TypeSpec.Builder result = TypeSpec.classBuilder(this.naming.type(model.getApiV10().title().value() , "RequesterClient"))
+        TypeSpec.Builder result = TypeSpec.classBuilder(ClientNamingHelper.requesterClassName(this.naming, model))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(clientInterface)
                 ;

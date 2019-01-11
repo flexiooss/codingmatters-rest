@@ -4,9 +4,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codingmatters.rest.api.generator.ApiDescriptorGenerator;
 import org.codingmatters.rest.api.generator.ApiGenerator;
 import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.rest.api.generator.HandlersGenerator;
+import org.codingmatters.rest.api.generator.api.ApiDescriptor;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
@@ -65,6 +67,17 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
             ).generate(ramlModel);
         } catch (IOException e) {
             throw new MojoExecutionException("error generating handlers from raml model", e);
+        }
+
+        try {
+            new ApiDescriptorGenerator(
+                    this.destinationPackage,
+                    this.destinationPackage + ".types",
+                    this.destinationPackage,
+                    this.outputDirectory
+            ).generate(ramlModel);
+        } catch (IOException e) {
+            throw new MojoExecutionException("error generating api descriptor from raml model", e);
         }
     }
 

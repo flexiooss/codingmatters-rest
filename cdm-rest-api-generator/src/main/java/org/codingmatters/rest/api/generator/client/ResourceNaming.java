@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.client;
 
 import com.squareup.javapoet.ClassName;
 import org.codingmatters.value.objects.generation.Naming;
+import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 import org.raml.v2.api.model.v10.system.types.StatusCodeString;
@@ -46,5 +47,9 @@ public class ResourceNaming extends Naming {
 
         String pack = this.apiPackage + "." + this.type(this.resourceType(method.resource()), method.method(), "Response").toLowerCase();
         return ClassName.get(pack, this.type("Status", status.value()));
+    }
+
+    public String apiName(RamlModelResult model) {
+        return model.getApiV10().title().value().toLowerCase().replaceAll("\\s+", "-");
     }
 }

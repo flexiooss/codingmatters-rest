@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.generator;
 
 import com.squareup.javapoet.*;
+import org.codingmatters.rest.api.generator.client.ClientNamingHelper;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -36,7 +37,7 @@ public class ClientHandlerImplementation {
     }
 
     public void generate(RamlModelResult model) throws IOException {
-        ClassName clientInterface = ClassName.get(this.clientPackage, this.naming.type(model.getApiV10().title().value(), "Client"));
+        ClassName clientInterface = ClassName.get(this.clientPackage, ClientNamingHelper.interfaceName(this.naming, model));
         TypeSpec clientClass = this.clientClass(clientInterface, model);
 
         writeJavaFile(
@@ -46,7 +47,7 @@ public class ClientHandlerImplementation {
     }
 
     private TypeSpec clientClass(ClassName clientInterface, RamlModelResult model) {
-        TypeSpec.Builder clientClass = TypeSpec.classBuilder(this.naming.type(model.getApiV10().title().value(), "HandlersClient"))
+        TypeSpec.Builder clientClass = TypeSpec.classBuilder(ClientNamingHelper.handlersClassName(this.naming, model))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(clientInterface)
                 ;
