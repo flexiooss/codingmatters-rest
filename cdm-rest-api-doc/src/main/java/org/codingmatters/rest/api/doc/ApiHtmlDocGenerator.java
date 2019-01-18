@@ -357,10 +357,14 @@ public class ApiHtmlDocGenerator {
             html
                     .appendLine("%s<article class=\"type\" id=\"%s-type\">", prefix, type.name())
                     .appendLine("%s  <h3>%s</h3>", prefix, type.name())
-                    .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
-                            prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, type, toDirectory))))
-                    .appendLine("%s</article>", prefix)
                     ;
+            if(typesSvgClassFile(ramlModel, type, toDirectory).exists()) {
+                html
+                        .appendLine("%s  <section class=\"class-diaggram\">%s</section>",
+                                prefix, this.svg(this.fileContent(typesSvgClassFile(ramlModel, type, toDirectory))))
+                ;
+            }
+            html.appendLine("%s</article>", prefix);
         }
 
 
