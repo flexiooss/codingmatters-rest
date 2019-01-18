@@ -6,10 +6,7 @@ import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class TestRequesterFactory implements RequesterFactory {
 
@@ -69,6 +66,27 @@ public class TestRequesterFactory implements RequesterFactory {
         public byte[] requestBody() {
             return requestBody;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Call call = (Call) o;
+            return method == call.method &&
+                    Objects.equals(url, call.url) &&
+                    Objects.equals(path, call.path) &&
+                    Objects.equals(parameters, call.parameters) &&
+                    Objects.equals(headers, call.headers) &&
+                    Objects.equals(requestContentType, call.requestContentType) &&
+                    Arrays.equals(requestBody, call.requestBody);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(method, url, path, parameters, headers, requestContentType);
+            result = 31 * result + Arrays.hashCode(requestBody);
+            return result;
+        }
     }
 
     private final HashMap<Method, LinkedList<TestResponseDeleguate>> nextResponses = new HashMap<>();
@@ -117,5 +135,13 @@ public class TestRequesterFactory implements RequesterFactory {
 
     public LinkedList<Call> calls() {
         return calls;
+    }
+
+    public Optional<Call> lastCall() {
+        if(! calls.isEmpty()) {
+            return Optional.of(this.calls.getLast());
+        } else {
+            return Optional.empty();
+        }
     }
 }
