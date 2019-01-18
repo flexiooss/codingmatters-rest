@@ -1,9 +1,9 @@
 package org.codingmatters.rest.php.api.client.generator;
 
-import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.php.api.client.Utils;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -115,7 +115,7 @@ public class PhpClassGenerator extends AbstractGenerator {
                         resourceNameLC + utils.firstLetterUpperCase( httpMethodDescriptor.method().method() ) +
                         "( \\" + httpMethodDescriptor.getRequestPackage().replace( ".", "\\" ) + "\\" + httpMethodDescriptor.getRequestType() + " $" + requestVarName + " )" );
                 if( useReturnType ) {
-                    writer.write( httpMethodDescriptor.getResponseType() );
+                    writer.write( ":" + httpMethodDescriptor.getResponseType() );
                 }
                 writer.write( " {" );
                 String responseVar = "$" + utils.firstLetterLowerCase( httpMethodDescriptor.getResponseType() );
@@ -414,6 +414,8 @@ public class PhpClassGenerator extends AbstractGenerator {
             writer.write( "namespace " + clienPackage + ";" );
             twoLine( writer, 0 );
             writer.write( "interface " + className + " {" );
+            twoLine( writer, 1 );
+            writer.write( "const b = '" + naming.apiName( apiName ) + "';" );
             twoLine( writer, 1 );
             for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
                 writer.write( "public function " + naming.property( clientDescriptor.getClassName() ) + "(): \\" + rootPackage + "\\" + naming.type( clientDescriptor.getClassName() ) + ";" );
