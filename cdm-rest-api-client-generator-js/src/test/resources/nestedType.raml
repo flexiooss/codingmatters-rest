@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+
+types:
+    NestedType:
+        type: object
+        properties:
+            nested:
+                type: object
+#                properties:
+#                    stringProp: string
+#                    subNested:
+#                        type: object
+                properties:
+                    stringProp: string
+                    enumProp:
+                      enum: [A, B, C]
+                    enumArrayProp: #TODO
+                      type: array
+                      items:
+                        enum: [D, E, F]
+#            nestedArray:  # UNSUPPORTED
+#                type: array
+#                items:
+#                    type: object
+#                    properties:
+#                        stringProp: string
