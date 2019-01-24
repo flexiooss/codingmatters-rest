@@ -1,9 +1,10 @@
-package org.codingmatters.rest.js.api.client.types;
+package org.codingmatters.rest.js.api.client;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.js.api.client.PackagesConfiguration;
 import org.codingmatters.value.objects.generation.Naming;
+import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
@@ -41,11 +42,6 @@ public class ApiTypesJsGenerator {
 
     public ApiTypesJsGenerator( PackagesConfiguration packagesConfiguration ) {
         this.packagesConfiguration = packagesConfiguration;
-    }
-
-    public void generate( RamlModelResult model ) throws RamlSpecException {
-        List<ParsedValueObject> valueObjects = parseValueObjects( model );
-
     }
 
     public List<ParsedValueObject> parseValueObjects( RamlModelResult model ) throws RamlSpecException {
@@ -191,7 +187,7 @@ public class ApiTypesJsGenerator {
     }
 
     private ParsedValueObject nestedType( TypeDeclaration typeDeclaration, ObjectTypeDeclaration declaration ) throws RamlSpecException {
-        ParsedValueObject valueObject = new ParsedValueObject( declaration.name() );
+        ParsedValueObject valueObject = new ParsedValueObject( NamingUtility.className( declaration.name() ));
         for( TypeDeclaration property : declaration.properties() ) {
             ValueObjectType type = parseType( typeDeclaration, property );
             valueObject.properties().add( new ValueObjectProperty( property.name(), type ) );
