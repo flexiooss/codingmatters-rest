@@ -2,7 +2,6 @@ package org.codingmatters.rest.js.api.client;
 
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
-import org.codingmatters.rest.js.api.client.PackagesConfiguration;
 import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -44,14 +43,14 @@ public class ApiTypesJsGenerator {
         this.packagesConfiguration = packagesConfiguration;
     }
 
-    public List<ParsedValueObject> parseValueObjects( RamlModelResult model ) throws RamlSpecException {
+    public List<ParsedValueObject> parseRamlTypes( RamlModelResult model ) throws RamlSpecException {
         List<ParsedValueObject> valueObjects = new ArrayList<>();
-        for( TypeDeclaration typeDeclaration : model.getApiV10().types() ) {
-            if( typeDeclaration.type().equals( "object" ) ) {
-                if( !this.naming.isAlreadyDefined( typeDeclaration ) ) {
+        for( TypeDeclaration typeDeclaration : model.getApiV10().types() ){
+            if( typeDeclaration.type().equals( "object" ) ){
+                if( !this.naming.isAlreadyDefined( typeDeclaration ) ){
                     ParsedValueObject valueObject = new ParsedValueObject( typeDeclaration.name() );
-                    for( TypeDeclaration property : ((ObjectTypeDeclaration) typeDeclaration).properties() ) {
-                        ValueObjectType type = parseType( typeDeclaration, property );
+                    for( TypeDeclaration property : ((ObjectTypeDeclaration) typeDeclaration).properties() ){
+                        ValueObjectType type = parseType( typeDeclaration.name(), property );
                         valueObject.properties().add( new ValueObjectProperty( property.name(), type ) );
                     }
                     valueObjects.add( valueObject );
@@ -61,54 +60,54 @@ public class ApiTypesJsGenerator {
         return valueObjects;
     }
 
-    private ValueObjectType parseType( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
-        if( declaration instanceof ArrayTypeDeclaration ) {
+    public ValueObjectType parseType( String typeDeclarationName, TypeDeclaration declaration ) throws RamlSpecException {
+        if( declaration instanceof ArrayTypeDeclaration ){
             String type;
             ArrayTypeDeclaration arrayTypeDeclaration = (ArrayTypeDeclaration) declaration;
             String alreadyDefinedType;
-            if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
+            if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = arrayTypeDeclaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
-                if( alreadyDefinedType == null ) {
+                if( alreadyDefinedType == null ){
                     alreadyDefinedType = isAlreadyDefined( declaration );
                 }
             } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
             }
-            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ) { /** IS OBJECT VALUE */
-                String typeRef = packagesConfiguration.typesPackage() + "." + typeDeclaration.name().toLowerCase();
-                String name = naming.type( typeDeclaration.name(), declaration.name(), "list" );
+            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ){ /** IS OBJECT VALUE */
+                String typeRef = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
+                String name = naming.type( typeDeclarationName, declaration.name(), "list" );
                 return new ValueObjectTypeList(
                         name,
                         new ValueObjectTypePrimitiveType( "object" ),
                         typeRef
                 );
             } else {
-                return this.simplePropertyArray( typeDeclaration, ((ArrayTypeDeclaration) declaration) );
+                return this.simplePropertyArray( typeDeclarationName, ((ArrayTypeDeclaration) declaration) );
             }
-        } else if( this.naming.isArbitraryObject( declaration ) ) {
+        } else if( this.naming.isArbitraryObject( declaration ) ){
             return new ValueObjectTypePrimitiveType( "object" );
-        } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ) {
-            return new ObjectTypeNested( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration ), packagesConfiguration.typesPackage() );
+        } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ){
+            return new ObjectTypeNested( this.nestedType( typeDeclarationName, (ObjectTypeDeclaration) declaration ), packagesConfiguration.typesPackage() );
         } else {
-            return this.simpleProperty( typeDeclaration, declaration );
+            return this.simpleProperty( typeDeclarationName, declaration );
         }
     }
 
-    private ValueObjectType simplePropertyArray( TypeDeclaration typeDeclaration, ArrayTypeDeclaration declaration ) {
-        String namespace = packagesConfiguration.typesPackage() + "." + typeDeclaration.name().toLowerCase();
-        String name = naming.type( typeDeclaration.name(), declaration.name(), "list" );
-        if( this.isEnum( declaration.items() ) ) {
+    private ValueObjectType simplePropertyArray( String typeDeclarationName, ArrayTypeDeclaration declaration ) {
+        String namespace = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
+        String name = naming.type( typeDeclarationName, declaration.name(), "list" );
+        if( this.isEnum( declaration.items() ) ){
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
             return new ValueObjectTypeList(
                     name,
-                    new YamlEnumInSpecEnum( naming.type( typeDeclaration.name(), declaration.name() ), namespace, values ),
+                    new YamlEnumInSpecEnum( naming.type( typeDeclarationName, declaration.name() ), namespace, values ),
                     namespace );
             /** RAML PRIMITIVE TYPE */
-        } else if( RamlType.isRamlType( declaration.items() ) ) {
+        } else if( RamlType.isRamlType( declaration.items() ) ){
             String type;
-            if( "array".equals( declaration.type() ) ) {
+            if( "array".equals( declaration.type() ) ){
                 type = declaration.items().type().replace( "[]", "" );
             } else {
                 type = declaration.type().replace( "[]", "" );
@@ -121,17 +120,17 @@ public class ApiTypesJsGenerator {
         } else {
             String type;
             String alreadyDefinedType;
-            if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
+            if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = declaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
-                if( alreadyDefinedType == null ) {
+                if( alreadyDefinedType == null ){
                     alreadyDefinedType = isAlreadyDefined( declaration );
                 }
             } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
             }
-            if( alreadyDefinedType != null ) {
+            if( alreadyDefinedType != null ){
                 return new ValueObjectTypeList(
                         name,
                         new ObjectTypeExternalValue( alreadyDefinedType ),
@@ -146,21 +145,21 @@ public class ApiTypesJsGenerator {
         }
     }
 
-    private ValueObjectType simpleProperty( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
-        if( this.isEnum( declaration ) ) {
+    private ValueObjectType simpleProperty( String typeDeclarationName, TypeDeclaration declaration ) {
+        if( this.isEnum( declaration ) ){
             String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
-            String name = naming.type( typeDeclaration.name(), declaration.name() );
-            String namespace = packagesConfiguration.typesPackage() + "." + typeDeclaration.name().toLowerCase();
+            String name = naming.type( typeDeclarationName, declaration.name() );
+            String namespace = packagesConfiguration.typesPackage() + "." + typeDeclarationName.toLowerCase();
             return new YamlEnumInSpecEnum(
                     name,
                     namespace,
                     values
             );
-        } else if( isRamlType( declaration ) ) {
+        } else if( isRamlType( declaration ) ){
             return new ValueObjectTypePrimitiveType( typeMapping.get( declaration.type() ) );
         } else {
             String type = isAlreadyDefined( declaration );
-            if( type != null ) {
+            if( type != null ){
                 return new ObjectTypeExternalValue( type );
             }
             return new ObjectTypeInSpecValueObject( declaration.type() );
@@ -168,14 +167,14 @@ public class ApiTypesJsGenerator {
     }
 
     private String isAlreadyDefined( TypeDeclaration declaration ) {
-        for( AnnotationRef annotationRef : declaration.annotations() ) {
-            if( "already-defined".equals( annotationRef.annotation().name() ) ) {
+        for( AnnotationRef annotationRef : declaration.annotations() ){
+            if( "already-defined".equals( annotationRef.annotation().name() ) ){
                 return annotationRef.structuredValue().value().toString();
             }
         }
-        for( TypeDeclaration typeDeclaration : declaration.parentTypes() ) {
+        for( TypeDeclaration typeDeclaration : declaration.parentTypes() ){
             String type = isAlreadyDefined( typeDeclaration );
-            if( type != null ) {
+            if( type != null ){
                 return type;
             }
         }
@@ -186,10 +185,10 @@ public class ApiTypesJsGenerator {
         return declaration instanceof StringTypeDeclaration && !((StringTypeDeclaration) declaration).enumValues().isEmpty();
     }
 
-    private ParsedValueObject nestedType( TypeDeclaration typeDeclaration, ObjectTypeDeclaration declaration ) throws RamlSpecException {
-        ParsedValueObject valueObject = new ParsedValueObject( NamingUtility.className( declaration.name() ));
-        for( TypeDeclaration property : declaration.properties() ) {
-            ValueObjectType type = parseType( typeDeclaration, property );
+    private ParsedValueObject nestedType( String typeDeclarationName, ObjectTypeDeclaration declaration ) throws RamlSpecException {
+        ParsedValueObject valueObject = new ParsedValueObject( NamingUtility.className( declaration.name() ) );
+        for( TypeDeclaration property : declaration.properties() ){
+            ValueObjectType type = parseType( typeDeclarationName, property );
             valueObject.properties().add( new ValueObjectProperty( property.name(), type ) );
         }
         return valueObject;

@@ -30,7 +30,7 @@ public class ApiTypesJsGeneratorTest {
         ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         ApiTypesJsGenerator generator = new ApiTypesJsGenerator( packageConfig );
-        List<ParsedValueObject> valueObjects = generator.parseValueObjects( ramlModel );
+        List<ParsedValueObject> valueObjects = generator.parseRamlTypes( ramlModel );
 
         assertThat( valueObjects.size(), is( 1 ) );
         ParsedValueObject object = valueObjects.get( 0 );
@@ -92,7 +92,7 @@ public class ApiTypesJsGeneratorTest {
         ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         ApiTypesJsGenerator generator = new ApiTypesJsGenerator( packageConfig );
-        List<ParsedValueObject> valueObjects = generator.parseValueObjects( ramlModel );
+        List<ParsedValueObject> valueObjects = generator.parseRamlTypes( ramlModel );
         assertThat( valueObjects.size(), is( 1 ) );
         ParsedValueObject object = valueObjects.get( 0 );
 
@@ -126,7 +126,7 @@ public class ApiTypesJsGeneratorTest {
         ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         ApiTypesJsGenerator generator = new ApiTypesJsGenerator( packageConfig );
-        List<ParsedValueObject> valueObjects = generator.parseValueObjects( ramlModel );
+        List<ParsedValueObject> valueObjects = generator.parseRamlTypes( ramlModel );
         assertThat( valueObjects.size(), is( 2 ) );
         ParsedValueObject object = valueObjects.get( 1 );
 
@@ -152,7 +152,7 @@ public class ApiTypesJsGeneratorTest {
         ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         ApiTypesJsGenerator generator = new ApiTypesJsGenerator( packageConfig );
-        List<ParsedValueObject> valueObjects = generator.parseValueObjects( ramlModel );
+        List<ParsedValueObject> valueObjects = generator.parseRamlTypes( ramlModel );
         assertThat( valueObjects.size(), is( 1 ) );
         ParsedValueObject object = valueObjects.get( 0 );
 
@@ -180,7 +180,7 @@ public class ApiTypesJsGeneratorTest {
         ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         ApiTypesJsGenerator generator = new ApiTypesJsGenerator( packageConfig );
-        List<ParsedValueObject> valueObjects = generator.parseValueObjects( ramlModel );
+        List<ParsedValueObject> valueObjects = generator.parseRamlTypes( ramlModel );
         assertThat( valueObjects.size(), is( 2 ) );
         ParsedValueObject object = valueObjects.get( 0 );
 
