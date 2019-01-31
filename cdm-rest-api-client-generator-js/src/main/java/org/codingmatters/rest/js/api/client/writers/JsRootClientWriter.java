@@ -35,7 +35,7 @@ public class JsRootClientWriter extends JsFileWriter {
         line( "*/" );
         line( "constrcutor( requester, gatewayUrl ) {" );
         for( ResourceClientDescriptor clientDescriptor : clientDescriptors ) {
-            line( "this." + NamingUtility.propertyName( clientDescriptor.getClassName() ) + " = new " + clientDescriptor.getClassName() + "( $request, $gateway );" );
+            line( "this." + NamingUtility.propertyName( clientDescriptor.getClassName() ) + " = new " + clientDescriptor.getClassName() + "( requester, gatewayUrl );" );
         }
         line( "}" );
     }

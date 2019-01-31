@@ -77,7 +77,7 @@ public class ApiTypesJsGenerator {
             }
             if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ){ /** IS OBJECT VALUE */
                 String typeRef = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
-                String name = naming.type( typeDeclarationName, declaration.name(), "list" );
+                String name = naming.type( typeDeclarationName, type, "list" );
                 return new ValueObjectTypeList(
                         name,
                         new ValueObjectTypePrimitiveType( "object" ),
@@ -97,7 +97,7 @@ public class ApiTypesJsGenerator {
 
     private ValueObjectType simplePropertyArray( String typeDeclarationName, ArrayTypeDeclaration declaration ) {
         String namespace = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
-        String name = naming.type( typeDeclarationName, declaration.name(), "list" );
+        String name = naming.type( typeDeclarationName, declaration.items().name(), "list" ); // TODO application here
         if( this.isEnum( declaration.items() ) ){
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
             return new ValueObjectTypeList(

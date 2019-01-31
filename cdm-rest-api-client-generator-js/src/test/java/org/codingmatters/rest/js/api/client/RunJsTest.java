@@ -11,7 +11,7 @@ public class RunJsTest {
     @Test
     public void whenName_then() throws Exception {
         PackagesConfiguration packagesConfiguration
-                = new PackagesConfiguration( "org.generated.client", "org.generated.api", "org.generated.types" );
+                = new PackagesConfiguration( "org.generated.client", "org.generated.api", "org.generated.api.types" );
         String dir = System.getProperty( "project.build.directory", "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-js/target" ) + "/js-test";
         System.out.println( "Generating in " + dir );
         JsClientGenerator generator = new JsClientGenerator( packagesConfiguration, new File( dir ) );
