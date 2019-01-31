@@ -141,7 +141,7 @@ public class ApiTypesJsGeneratorTest {
         property = object.properties().get( 2 );
         assertThat( property.name(), is( "referenceArray" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.referencestype" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "ReferencesTypeReferenceArrayList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "ReferencesTypeSimplePropertyTypeList" ) );
         assertThat( ((ObjectTypeInSpecValueObject) ((ValueObjectTypeList) property.type()).type()).inSpecValueObjectName(), is( "SimplePropertyType" ) );
     }
 
@@ -163,13 +163,13 @@ public class ApiTypesJsGeneratorTest {
         property = object.properties().get( 1 );
         assertThat( property.name(), is( "objs" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.typewithobjectproperty" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithObjectPropertyObjsList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithObjectPropertyObjectList" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) property.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.OBJECT ) );
 
         property = object.properties().get( 2 );
         assertThat( property.name(), is( "shortObjs" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.typewithobjectproperty" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithObjectPropertyShortObjsList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithObjectPropertyObjectList" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) property.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.OBJECT ) );
     }
 
@@ -195,13 +195,13 @@ public class ApiTypesJsGeneratorTest {
         property = object.properties().get( 2 );
         assertThat( property.name(), is( "adtShortList" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.includeadt" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "IncludeADTAdtShortListList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "IncludeADTAlreadyDefinedTypeList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) property.type()).type()).objectReference(), is( "org.codingmatters.AnExternalValueObject" ) );
 
         property = object.properties().get( 3 );
         assertThat( property.name(), is( "adtList" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.includeadt" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "IncludeADTAdtListList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "IncludeADTAlreadyDefinedTypeList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) property.type()).type()).objectReference(), is( "org.codingmatters.AnExternalValueObject" ) );
 
 
@@ -215,7 +215,7 @@ public class ApiTypesJsGeneratorTest {
 
         assertThat( property.name(), is( "propList" ) );
         assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "org.generated.types.typewithalreadydefinedproperty" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithAlreadyDefinedPropertyPropListList" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).name(), is( "TypeWithAlreadyDefinedPropertyObjectList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) property.type()).type()).objectReference(), is( "io.flexio.services.resources.api.types.Schema" ) );
     }
 

@@ -76,12 +76,12 @@ public class ApiTypesJsGenerator {
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
             }
             if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ){ /** IS OBJECT VALUE */
-                String typeRef = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
+                String namespace = packagesConfiguration.typesPackage() == null ? typeDeclarationName : packagesConfiguration.typesPackage() + "." + typeDeclarationName;
                 String name = naming.type( typeDeclarationName, type, "list" );
                 return new ValueObjectTypeList(
                         name,
                         new ValueObjectTypePrimitiveType( "object" ),
-                        typeRef
+                        namespace
                 );
             } else {
                 return this.simplePropertyArray( typeDeclarationName, ((ArrayTypeDeclaration) declaration) );
@@ -96,8 +96,8 @@ public class ApiTypesJsGenerator {
     }
 
     private ValueObjectType simplePropertyArray( String typeDeclarationName, ArrayTypeDeclaration declaration ) {
-        String namespace = packagesConfiguration.typesPackage() + "." + typeDeclarationName;
-        String name = naming.type( typeDeclarationName, declaration.items().name(), "list" ); // TODO application here
+        String namespace = packagesConfiguration.typesPackage() == null ? typeDeclarationName : packagesConfiguration.typesPackage() + "." + typeDeclarationName;
+        String name = naming.type( typeDeclarationName, declaration.name(), "list" );
         if( this.isEnum( declaration.items() ) ){
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
             return new ValueObjectTypeList(
@@ -122,15 +122,18 @@ public class ApiTypesJsGenerator {
             String alreadyDefinedType;
             if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = declaration.items().type().replace( "[]", "" );
+                name = naming.type( typeDeclarationName, type, "list" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
                 if( alreadyDefinedType == null ){
                     alreadyDefinedType = isAlreadyDefined( declaration );
                 }
             } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
+                name = naming.type( typeDeclarationName, type, "list" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
             }
             if( alreadyDefinedType != null ){
+//                name = naming.type( typeDeclarationName, alreadyDefinedType, "list" );
                 return new ValueObjectTypeList(
                         name,
                         new ObjectTypeExternalValue( alreadyDefinedType ),
@@ -149,7 +152,7 @@ public class ApiTypesJsGenerator {
         if( this.isEnum( declaration ) ){
             String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
             String name = naming.type( typeDeclarationName, declaration.name() );
-            String namespace = packagesConfiguration.typesPackage() + "." + typeDeclarationName.toLowerCase();
+            String namespace = packagesConfiguration.typesPackage() == null ? typeDeclarationName : packagesConfiguration.typesPackage() + "." + typeDeclarationName.toLowerCase();
             return new YamlEnumInSpecEnum(
                     name,
                     namespace,

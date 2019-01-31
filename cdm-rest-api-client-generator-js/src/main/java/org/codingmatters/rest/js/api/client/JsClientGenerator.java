@@ -8,8 +8,10 @@ import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
 import org.codingmatters.rest.php.api.client.model.HttpMethodDescriptor;
 import org.codingmatters.rest.php.api.client.model.ResourceClientDescriptor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
+import org.codingmatters.value.objects.js.generator.packages.PackageFilesGenerator;
 import org.codingmatters.value.objects.js.generator.visitor.JsClassGeneratorSpecProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
@@ -41,7 +43,7 @@ public class JsClientGenerator {
         this.apiGenerator = new ApiJsGenerator( packagesConfiguration );
     }
 
-    public void generateTypes( RamlModelResult model ) throws RamlSpecException, ProcessingException {
+    public void generateTypes( RamlModelResult model ) throws RamlSpecException, ProcessingException, GenerationException {
         List<ParsedValueObject> valueObjects = apiTypesGenerator.parseRamlTypes( model );
         ParsedYAMLSpec yamlSpec = new ParsedYAMLSpec();
         yamlSpec.valueObjects().addAll( valueObjects );
@@ -54,6 +56,9 @@ public class JsClientGenerator {
         yamlSpec.valueObjects().addAll( requestsResponseObjects );
         processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.apiPackage(), packageBuilder );
         processor.process( yamlSpec );
+
+        PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, rootDir.getPath() );
+        packageFilesGenerator.generateFiles();
     }
 
     public void generateApi( RamlModelResult model ) throws Exception {
@@ -83,7 +88,7 @@ public class JsClientGenerator {
     private ParsedValueObject generateRequest( Resource resource, Method method ) throws RamlSpecException {
         String requestClassName = NamingUtility.className( resource.displayName().value(), method.method(), "Request" );
         ParsedValueObject valueObject = new ParsedValueObject( requestClassName );
-        PackagesConfiguration config = new PackagesConfiguration( packagesConfiguration.clientPackage(), packagesConfiguration.apiPackage(), "" );
+        PackagesConfiguration config = new PackagesConfiguration( packagesConfiguration.clientPackage(), packagesConfiguration.apiPackage(), null );
         ApiTypesJsGenerator typeParser = new ApiTypesJsGenerator( config );
 
         for( TypeDeclaration typeDeclaration : method.queryParameters() ){
@@ -106,7 +111,7 @@ public class JsClientGenerator {
     }
 
     private List<ParsedValueObject> generateResponse( Resource resource, Method method ) throws RamlSpecException {
-        PackagesConfiguration config = new PackagesConfiguration( packagesConfiguration.clientPackage(), packagesConfiguration.apiPackage(), "" );
+        PackagesConfiguration config = new PackagesConfiguration( packagesConfiguration.clientPackage(), packagesConfiguration.apiPackage(), null );
         ApiTypesJsGenerator typeGenerator = new ApiTypesJsGenerator( config );
         List<ParsedValueObject> valueObjects = new ArrayList<>();
         String requestClassName = NamingUtility.className( resource.displayName().value(), method.method(), "Response" );
