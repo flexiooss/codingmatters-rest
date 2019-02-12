@@ -6,10 +6,7 @@ import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class TestRequesterFactory implements RequesterFactory {
 
@@ -27,8 +24,8 @@ public class TestRequesterFactory implements RequesterFactory {
         private final Method method;
         private final String url;
         private final String path;
-        private final HashMap<String, String[]> parameters;
-        private final HashMap<String, String[]> headers;
+        private final HashMap<String, List<String>> parameters;
+        private final HashMap<String, List<String>> headers;
         private final String requestContentType;
         private final byte [] requestBody;
 
@@ -36,8 +33,8 @@ public class TestRequesterFactory implements RequesterFactory {
             this.method = method;
             this.url = url;
             this.path = path;
-            this.parameters = parameters;
-            this.headers = headers;
+            this.parameters = this.arrayHashMapToListHashmap(parameters);
+            this.headers = this.arrayHashMapToListHashmap(headers);
             this.requestContentType = requestContentType;
             this.requestBody = requestBody;
         }
@@ -55,11 +52,11 @@ public class TestRequesterFactory implements RequesterFactory {
         }
 
         public HashMap<String, String[]> parameters() {
-            return parameters;
+            return this.listToArrayHashMap(parameters);
         }
 
         public HashMap<String, String[]> headers() {
-            return headers;
+            return this.listToArrayHashMap(this.headers);
         }
 
         public String requestContentType() {
@@ -68,6 +65,43 @@ public class TestRequesterFactory implements RequesterFactory {
 
         public byte[] requestBody() {
             return requestBody;
+        }
+
+        private HashMap<String, List<String>> arrayHashMapToListHashmap(HashMap<String, String[]> arrayHashMap) {
+            HashMap<String, List<String>> listHashMap = new HashMap<>();
+            arrayHashMap.forEach(
+                    (k,v) -> listHashMap.put(k, Arrays.asList(v))
+            );
+            return listHashMap;
+        }
+
+        private HashMap<String, String[]> listToArrayHashMap(HashMap<String, List<String>> listHashMap) {
+            HashMap<String, String[]> arrayHashMap = new HashMap<>();
+            listHashMap.forEach(
+                    (k,v) -> arrayHashMap.put(k, v.stream().toArray(String[]::new))
+            );
+            return arrayHashMap;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Call call = (Call) o;
+            return method == call.method &&
+                    Objects.equals(url, call.url) &&
+                    Objects.equals(path, call.path) &&
+                    Objects.equals(parameters, call.parameters) &&
+                    Objects.equals(headers, call.headers) &&
+                    Objects.equals(requestContentType, call.requestContentType) &&
+                    Arrays.equals(requestBody, call.requestBody);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(method, url, path, parameters, headers, requestContentType);
+            result = 31 * result + Arrays.hashCode(requestBody);
+            return result;
         }
     }
 
@@ -117,5 +151,13 @@ public class TestRequesterFactory implements RequesterFactory {
 
     public LinkedList<Call> calls() {
         return calls;
+    }
+
+    public Optional<Call> lastCall() {
+        if(! calls.isEmpty()) {
+            return Optional.of(this.calls.getLast());
+        } else {
+            return Optional.empty();
+        }
     }
 }

@@ -6,9 +6,9 @@
 
     <parent>
         <groupId>org.codingmatters.rest</groupId>
-        <artifactId>cdm-rest-parent</artifactId>
+        <artifactId>codingmatters-rest</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../cdm-rest-parent</relativePath>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>cdm-rest-undertow</artifactId>
