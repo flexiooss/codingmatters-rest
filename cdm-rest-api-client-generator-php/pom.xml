@@ -8,6 +8,7 @@
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>cdm-rest-api-client-generator-php</artifactId>
