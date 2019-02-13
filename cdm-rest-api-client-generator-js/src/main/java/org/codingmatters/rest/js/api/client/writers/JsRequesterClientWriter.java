@@ -46,7 +46,6 @@ public class JsRequesterClientWriter extends JsFileWriter {
             replaceUriParameters( method, requestVarName );
             setQueryParameters( method.method().queryParameters(), requestVarName );
             setHeaders( method.method().headers(), requestVarName );
-            line( "}" );
             String httpMethod = method.method().method().toLowerCase();
             if( method.payload() != null ) {
                 if( method.payload().typeRef().equals( "string" ) ) {
@@ -60,6 +59,7 @@ public class JsRequesterClientWriter extends JsFileWriter {
             }
             line( "var status;" );
             parseResponse( method );
+            line( "}" );
         }
     }
 

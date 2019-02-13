@@ -43,32 +43,34 @@ public class JsClientGenerator {
         this.apiGenerator = new ApiJsGenerator( packagesConfiguration );
     }
 
-    public void generateTypes( RamlModelResult model ) throws RamlSpecException, ProcessingException, GenerationException {
+    public void generateTypes( RamlModelResult model, PackageFilesBuilder packageBuilder ) throws RamlSpecException, ProcessingException, GenerationException {
         List<ParsedValueObject> valueObjects = apiTypesGenerator.parseRamlTypes( model );
         ParsedYAMLSpec yamlSpec = new ParsedYAMLSpec();
         yamlSpec.valueObjects().addAll( valueObjects );
-        PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
         JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.typesPackage(), packageBuilder );
         processor.process( yamlSpec );
 
         List<ParsedValueObject> requestsResponseObjects = parseRequests( model );
         yamlSpec = new ParsedYAMLSpec();
         yamlSpec.valueObjects().addAll( requestsResponseObjects );
-        processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.apiPackage(), packageBuilder );
+        processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.apiPackage(), packagesConfiguration.typesPackage(), packageBuilder );
         processor.process( yamlSpec );
 
-        PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, rootDir.getPath() );
-        packageFilesGenerator.generateFiles();
     }
 
     public void generateApi( RamlModelResult model ) throws Exception {
+        PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
+        generateTypes( model, packageBuilder );
         Api api = model.getApiV10();
         if( api != null ){
             List<ResourceClientDescriptor> clientDescriptors = processApi( api );
             for( ResourceClientDescriptor clientDescriptor : clientDescriptors ){
-                processGeneration( clientDescriptor );
+                processGeneration( clientDescriptor, packageBuilder );
             }
-            generateRootClient( model.getApiV10().title().value(), clientDescriptors );
+            generateRootClient( model.getApiV10().title().value(), clientDescriptors, packageBuilder );
+
+            PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, rootDir.getPath() );
+            packageFilesGenerator.generateFiles();
         } else {
             throw new RamlSpecException( "Cannot parse th raml spec v10" );
         }
@@ -137,21 +139,24 @@ public class JsClientGenerator {
         return valueObjects;
     }
 
-    private void generateRootClient( String apiName, List<ResourceClientDescriptor> clientDescriptors ) throws Exception {
+    private void generateRootClient( String apiName, List<ResourceClientDescriptor> clientDescriptors, PackageFilesBuilder packageBuilder ) throws Exception {
         String filePath = rootDir.getPath() + "/" + packagesConfiguration.clientPackage().replace( ".", "/" ) + "/" + NamingUtility.className( apiName ) + "Client.js";
         System.out.println( "Generating root client at " + filePath );
-        try( JsRootClientWriter jsClientWriter = new JsRootClientWriter( filePath, apiName, clientDescriptors ) ) {
+        String className = NamingUtility.className( apiName ) + "Client";
+        packageBuilder.addList( packagesConfiguration.clientPackage(), className );
+        try( JsRootClientWriter jsClientWriter = new JsRootClientWriter( filePath, className, clientDescriptors, packagesConfiguration.apiPackage() ) ) {
             jsClientWriter.generateRootClient();
         }
     }
 
-    private void processGeneration( ResourceClientDescriptor clientDescriptor ) throws Exception {
+    private void processGeneration( ResourceClientDescriptor clientDescriptor, PackageFilesBuilder packageBuilder ) throws Exception {
         String filePath = rootDir.getPath() + "/" + packagesConfiguration.apiPackage().replace( ".", "/" ) + "/" + NamingUtility.className( clientDescriptor.getClassName() ) + ".js";
         System.out.println( "Generating client at " + filePath );
         try( JsRequesterClientWriter jsClientWriter = new JsRequesterClientWriter( filePath, clientDescriptor ) ) {
             jsClientWriter.generateClient();
+            packageBuilder.addList( packagesConfiguration.apiPackage(), clientDescriptor.getClassName() );
             for( ResourceClientDescriptor subClient : clientDescriptor.nextFloorResourceClientGetters() ){
-                processGeneration( subClient );
+                processGeneration( subClient, packageBuilder );
             }
         }
     }

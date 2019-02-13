@@ -60,10 +60,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codingmatters.value.objects</groupId>
-            <artifactId>cdm-value-objects-values</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.codingmatters.rest</groupId>
             <artifactId>cdm-rest-tests-resources</artifactId>
             <scope>test</scope>
@@ -87,10 +83,6 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codingmatters.value.objects</groupId>
-            <artifactId>cdm-value-objects-generation-commons</artifactId>
         </dependency>
     </dependencies>
     
