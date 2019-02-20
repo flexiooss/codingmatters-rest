@@ -42,7 +42,7 @@ public class OkHttpWrapperTests {
         client.execute(new Request.Builder().url("http://192.168.76.78").build());
     }
 
-    @Test(timeout = 1000L)
+    @Test(timeout = 2000L)
     public void readTimeout() throws Exception {
         HttpClientWrapper client = OkHttpClientWrapper.build(builder -> builder.readTimeout(500, TimeUnit.MILLISECONDS)
         );
