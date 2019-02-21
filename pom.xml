@@ -58,7 +58,6 @@
     </pluginRepositories>
 
     <modules>
-        <!--<module>cdm-rest-bom</module>-->
         <module>cdm-rest-io</module>
         <module>cdm-rest-api</module>
         <module>cdm-rest-client-api</module>
@@ -185,11 +184,6 @@
             <!--//BOM-->
         </dependencies>
     </dependencyManagement>
-
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
     
     <build>
         <pluginManagement>

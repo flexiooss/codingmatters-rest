@@ -16,6 +16,10 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
 
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <dependencies>
         <dependency>
             <groupId>org.codingmatters.value.objects</groupId>
