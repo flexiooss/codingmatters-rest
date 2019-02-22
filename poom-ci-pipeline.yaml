@@ -21,7 +21,7 @@ stages:
     timeout: 15
     exec:
       - $NOTIFY --data-urlencode "status=2" --data-urlencode "current-stage=$STAGE"
-      - $MVN deploy -DskipTests
+      - $MVN_DEPLOY
     onlyWhen:
       - branch in (master, develop)
 
