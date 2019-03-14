@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codingmatters.rest</groupId>
     <artifactId>codingmatters-rest</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Codingmatter's HTTP</name>
@@ -42,38 +42,33 @@
 
     <repositories>
         <repository>
-            <id>oss-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+            <releases><enabled>true</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>oss-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+            <releases><enabled>true</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </pluginRepository>
     </pluginRepositories>
 
     <modules>
-        <module>cdm-rest-bom</module>
         <module>cdm-rest-io</module>
         <module>cdm-rest-api</module>
         <module>cdm-rest-client-api</module>
         <module>cdm-rest-proxy-api</module>
-
         <module>cdm-rest-undertow</module>
         <module>cdm-rest-client-okhttp</module>
-
         <module>cdm-rest-api-generator</module>
         <module>cdm-rest-api-client-generator-php</module>
         <module>cdm-rest-api-client-generator-js</module>
         <module>cdm-rest-api-doc</module>
-
         <module>cdm-rest-maven-plugin</module>
-
         <module>cdm-rest-tests</module>
     </modules>
 
@@ -92,39 +87,97 @@
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
-                <artifactId>cdm-value-objects-bom</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <artifactId>codingmatters-value-objects</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
-            <dependency>
-                <groupId>org.codingmatters.rest</groupId>
-                <artifactId>cdm-rest-bom</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.4.0-SNAPSHOT</version>
             </dependency>
+
+            <!--BOM-->
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-io</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-api</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-api-generator</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-undertow</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-client-okhttp</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-client-api</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-tests-resources</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-tests-support</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-client-tests-support</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-proxy-api</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-api-doc</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-api-client-generator-php</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-maven-plugin</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-io</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <!--//BOM-->
         </dependencies>
     </dependencyManagement>
-
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
     
     <build>
         <pluginManagement>
@@ -132,11 +185,10 @@
                 <plugin>
                     <groupId>org.codingmatters.value.objects</groupId>
                     <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                    <version>0.0.1-SNAPSHOT</version>
+                    <version>1.2.0-SNAPSHOT</version>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
-
 
 </project>

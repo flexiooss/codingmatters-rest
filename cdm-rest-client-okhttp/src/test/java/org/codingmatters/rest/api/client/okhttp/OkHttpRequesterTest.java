@@ -19,7 +19,7 @@ public class OkHttpRequesterTest {
 
     @Before
     public void setUp() throws Exception {
-        this.requester = new OkHttpRequester(client, this.undertow.baseUrl());
+        this.requester = new OkHttpRequester(client, () -> this.undertow.baseUrl());
     }
 
     @Test
