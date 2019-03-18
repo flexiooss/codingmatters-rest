@@ -190,7 +190,7 @@ public class JsRequesterClientWriter extends JsFileWriter {
         line( "* @param {string} gatewayUrl" );
         line( "*/" );
         line( "constrcutor( requester, gatewayUrl ) {" );
-        for( ResourceClientDescriptor clientDescriptor : clientDescriptor.nextFloorResourceClientGetters() ) {
+        for( ResourceClientDescriptor clientDescriptor : this.clientDescriptor.nextFloorResourceClientGetters() ) {
             line( "this." + NamingUtility.attributeName( clientDescriptor.getClassName() ) + " = new " + clientDescriptor.getClassName() + "( $request, $gateway );" );
         }
         line( "this._gatewayUrl = gatewayUrl;" );

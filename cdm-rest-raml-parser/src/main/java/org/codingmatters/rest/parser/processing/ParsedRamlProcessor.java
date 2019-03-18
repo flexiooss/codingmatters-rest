@@ -16,7 +16,7 @@ public interface ParsedRamlProcessor {
 
     void process( ParsedRoute parsedRoute ) throws ProcessingException;
 
-    void process( ParsedRequest parsedRequest );
+    void process( ParsedRequest parsedRequest ) throws ProcessingException;
 
     void process( ParsedResponse parsedResponse );
 

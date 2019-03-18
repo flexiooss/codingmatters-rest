@@ -12,6 +12,7 @@ import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
+import org.codingmatters.value.objects.js.generator.packages.PackageFilesGenerator;
 import org.codingmatters.value.objects.js.generator.visitor.JsClassGeneratorSpecProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
@@ -60,8 +61,8 @@ public class JsClientGenerator {
 
     public void generateApi( RamlModelResult model ) throws Exception {
         RamlParser ramlParser = new RamlParser();
-        /*
-        ramlParser.parseFile(  )
+
+//        ramlParser.parseFile(  )
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
         generateTypes( model, packageBuilder );
         Api api = model.getApiV10();
@@ -77,7 +78,7 @@ public class JsClientGenerator {
         } else {
             throw new RamlSpecException( "Cannot parse th raml spec v10" );
         }
-        */
+//        */
     }
 
     private List<ParsedValueObject> parseRequests( RamlModelResult model ) throws RamlSpecException {

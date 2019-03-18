@@ -18,8 +18,8 @@ public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+//    @BeforeClass
+    public static void setUp( ) throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
@@ -27,7 +27,7 @@ public class RunJsTest {
         System.out.println( "Running 'yarn install'" );
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ){
+        if( process.exitValue() != 0 ) {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
@@ -36,23 +36,23 @@ public class RunJsTest {
         System.out.println( "Running 'yarn link flexio-jshelpers'" );
         process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ){
+        if( process.exitValue() != 0 ) {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
     }
 
     private static void printError( Process process ) throws IOException {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[ 1024 ];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try( InputStream stream = process.getInputStream() ) {
-            while( stream.read( buffer ) != -1 ){
+            while( stream.read( buffer ) != -1 ) {
                 out.write( buffer );
             }
             System.out.println( "Out = " + new String( out.toByteArray() ) );
         }
         try( InputStream stream = process.getErrorStream() ) {
-            while( stream.read( buffer ) != -1 ){
+            while( stream.read( buffer ) != -1 ) {
                 out.write( buffer );
             }
             System.out.println( "Error = " + new String( out.toByteArray() ) );
@@ -60,7 +60,16 @@ public class RunJsTest {
     }
 
     @Test
-    public void whenName_then() throws Exception {
+    public void name( ) throws Exception {
+        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "test.raml" ).getPath();
+        String dir = System.getProperty( "project.build.directory" ) + "/js-test";
+        System.out.println( "Generating in " + dir );
+        JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated" );
+        generator.generateClientApi( ramlLocation );
+    }
+
+    @Test
+    public void whenName_then( ) throws Exception {
         PackagesConfiguration packagesConfiguration
                 = new PackagesConfiguration( "org.generated.client", "org.generated.api", "org.generated.api.types" );
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
@@ -80,7 +89,7 @@ public class RunJsTest {
         Process process = processBuilder.start();
 
         process.waitFor( 120, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ){
+        if( process.exitValue() != 0 ) {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
