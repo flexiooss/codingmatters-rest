@@ -2,12 +2,15 @@ package org.codingmatters.rest.parser.model;
 
 import org.codingmatters.rest.parser.model.typed.TypedBody;
 import org.codingmatters.rest.parser.model.typed.TypedHeader;
+import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
+import org.codingmatters.rest.parser.processing.ProcessableRaml;
+import org.codingmatters.value.objects.js.error.ProcessingException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ParsedResponse {
+public class ParsedResponse implements ProcessableRaml {
 
     private final int code;
     private final List<TypedHeader> headers;
@@ -38,6 +41,11 @@ public class ParsedResponse {
 
     public Optional<TypedBody> body() {
         return body;
+    }
+
+    @Override
+    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
+        processor.process( this );
     }
 }
 

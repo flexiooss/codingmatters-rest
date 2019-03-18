@@ -3,12 +3,15 @@ package org.codingmatters.rest.parser.model;
 import org.codingmatters.rest.parser.model.typed.TypedBody;
 import org.codingmatters.rest.parser.model.typed.TypedHeader;
 import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
+import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
+import org.codingmatters.rest.parser.processing.ProcessableRaml;
+import org.codingmatters.value.objects.js.error.ProcessingException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ParsedRequest {
+public class ParsedRequest implements ProcessableRaml {
 
     private final RequestMethod httpMethod;
     private final List<ParsedResponse> responses;
@@ -50,5 +53,10 @@ public class ParsedRequest {
 
     public Optional<TypedBody> body() {
         return body;
+    }
+
+    @Override
+    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
+        processor.process( this );
     }
 }

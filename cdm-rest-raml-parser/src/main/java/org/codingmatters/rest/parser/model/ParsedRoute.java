@@ -1,11 +1,14 @@
 package org.codingmatters.rest.parser.model;
 
 import org.codingmatters.rest.parser.model.typed.TypedUriParams;
+import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
+import org.codingmatters.rest.parser.processing.ProcessableRaml;
+import org.codingmatters.value.objects.js.error.ProcessingException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParsedRoute {
+public class ParsedRoute implements ProcessableRaml {
 
     private final List<TypedUriParams> uriParameters;
     private final List<ParsedRequest> requests;
@@ -39,6 +42,11 @@ public class ParsedRoute {
 
     public ArrayList<ParsedRoute> subRoutes() {
         return subRoutes;
+    }
+
+    @Override
+    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
+        processor.process( this );
     }
 }
 

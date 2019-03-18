@@ -39,6 +39,12 @@
             <groupId>org.codingmatters.rest</groupId>
             <artifactId>cdm-rest-api-client-generator-php</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-raml-parser</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -159,7 +159,7 @@ public class ParsingUtils {
             Optional<TypedBody> requestBody = Optional.empty();
             String method = NamingUtility.firstLetterUpperCase( request.method().toLowerCase() );
             RequestMethod httpMethod = RequestMethod.valueOf( request.method().toUpperCase() );
-            String requestClassName = NamingUtility.className( displayName, method, "Request" );
+            String requestClassName = NamingUtility.requestName( displayName, method );
             if( hasBody( request ) ){
                 requestBody = Optional.of( new TypedBody( parseType(
                         requestClassName,
@@ -175,7 +175,7 @@ public class ParsingUtils {
             }
             for( Response response : request.responses() ){
                 Optional<TypedBody> responseBody = Optional.empty();
-                String responseClassName = NamingUtility.className( displayName, method, "Response" );
+                String responseClassName = NamingUtility.responseName( displayName, method );
                 if( hasBody( response ) ){
                     responseBody = Optional.of( new TypedBody( parseType(
                             responseClassName,

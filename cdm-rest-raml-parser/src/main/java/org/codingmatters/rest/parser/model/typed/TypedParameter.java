@@ -1,8 +1,9 @@
 package org.codingmatters.rest.parser.model.typed;
 
+import org.codingmatters.rest.parser.processing.ProcessableRaml;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
 
-public abstract class TypedParameter {
+public abstract class TypedParameter implements ProcessableRaml {
 
     private final String name;
     private final ValueObjectType type;
