@@ -13,7 +13,7 @@ import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesGenerator;
-import org.codingmatters.value.objects.js.generator.visitor.JsClassGeneratorSpecProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsValueObjectGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -48,13 +48,13 @@ public class JsClientGenerator {
         List<ParsedValueObject> valueObjects = apiTypesGenerator.parseRamlTypes( model );
         ParsedYAMLSpec yamlSpec = new ParsedYAMLSpec();
         yamlSpec.valueObjects().addAll( valueObjects );
-        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.typesPackage(), packageBuilder );
+        JsValueObjectGenerator processor = new JsValueObjectGenerator( rootDir, packagesConfiguration.typesPackage(), packageBuilder );
         processor.process( yamlSpec );
 
         List<ParsedValueObject> requestsResponseObjects = parseRequests( model );
         yamlSpec = new ParsedYAMLSpec();
         yamlSpec.valueObjects().addAll( requestsResponseObjects );
-        processor = new JsClassGeneratorSpecProcessor( rootDir, packagesConfiguration.apiPackage(), packagesConfiguration.typesPackage(), packageBuilder );
+        processor = new JsValueObjectGenerator( rootDir, packagesConfiguration.apiPackage(), packagesConfiguration.typesPackage(), packageBuilder );
         processor.process( yamlSpec );
 
     }

@@ -8,7 +8,7 @@ import java.util.Optional;
 public enum RAML_PRIMITIVE_TYPES {
     STRING( "string", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ),
     INTEGER( "integer", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.LONG ),
-    NUMBER( "number", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.LONG ),
+    NUMBER( "number", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.FLOAT ),
     DATE( "date-only", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE ),
     TIME( "time-only", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TIME ),
     DATE_TIME( "datetime-only", ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE_TIME ),

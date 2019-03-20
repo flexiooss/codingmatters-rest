@@ -206,6 +206,12 @@ public class RamlParserTypesTest {
         assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "nested" ) );
     }
 
+    @Test
+    public void testBiDim() throws Exception {
+        ParsedRaml raml = new RamlParser().parseFile( getRaml( "toto.raml" ) );
+        System.out.println( "end" );
+    }
+
     private String getRaml( String ramlFile ) {
         return Thread.currentThread().getContextClassLoader().getResource( ramlFile ).getPath();
     }

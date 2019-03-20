@@ -2,6 +2,7 @@ package org.codingmatters.rest.parser;
 
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
@@ -24,7 +25,7 @@ public class RamlParser {
     }
 
     private ParsedRaml parseRamlModel( RamlModelResult ramlModel ) throws ProcessingException {
-        ParsedRaml parsedRaml = new ParsedRaml();
+        ParsedRaml parsedRaml = new ParsedRaml( ramlModel.getApiV10().title().value()  );
         Api api = ramlModel.getApiV10();
         ParsingUtils parsingUtils = this.parseTypes( parsedRaml, api );
         this.parseApi( parsedRaml, api, parsingUtils );

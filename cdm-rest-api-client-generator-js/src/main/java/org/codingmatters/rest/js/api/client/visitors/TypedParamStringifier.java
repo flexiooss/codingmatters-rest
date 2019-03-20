@@ -1,37 +1,23 @@
 package org.codingmatters.rest.js.api.client.visitors;
 
-import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
-import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeExternalValue;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeInSpecValueObject;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeNested;
-import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeExternalType;
-import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeList;
-import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType;
-import org.codingmatters.value.objects.js.parser.model.types.YamlEnumExternalEnum;
-import org.codingmatters.value.objects.js.parser.model.types.YamlEnumInSpecEnum;
+import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.io.IOException;
 
-/**
- * Created by nico on 18/03/19.
- */
-public class TypedParamUriReplacer implements ParsedYamlProcessor {
+public class TypedParamStringifier implements ParsedYamlProcessor {
 
-    private final JsFileWriter write;
-    private final TypedUriParams uriParams;
     private String varName;
+    private final JsFileWriter write;
 
-    public TypedParamUriReplacer( TypedUriParams uriParams, JsFileWriter write, String requestVarName ) {
+    public TypedParamStringifier( JsFileWriter write, String varName ) {
         this.write = write;
-        this.uriParams = uriParams;
-        this.varName = requestVarName + "." + NamingUtility.propertyName( uriParams.name() ) + "()";
+        this.varName = varName;
     }
 
     @Override
@@ -51,74 +37,85 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
 
     @Override
     public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
-
+        throw new ProcessingException( "Not implemented" );
     }
 
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
-
+        throw new ProcessingException( "Not implemented" );
     }
 
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
-
+        throw new ProcessingException( "Not implemented" );
     }
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            write.line( varName + ".forEach( function( element ){" );
-//            write.string( "path.replace( '{" + uriParams.name() + "}', " );
+            write.string( varName + ".map( element => " );
             this.varName = "element";
             list.type().process( this );
-//            write.string( " );" );
-            write.newLine();
-            write.unindent();
-            write.line( "});" );
-        } catch( Exception e ) {
-            throw new ProcessingException( "Error processing uri param", e );
+            write.string( " )" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error stringify list", e );
         }
     }
 
     @Override
     public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException {
         try {
-            write.indent();
-            write.string( "path.replace( '{" + uriParams.name() + "}', " );
-            switch( primitiveType.type() ) {
+            switch( primitiveType.type() ){
                 case BOOL:
                     write.string( varName + " ? 'true' : 'false'" );
                     break;
-                case DATE:
-                case DATE_TIME:
-                case TIME:
                 case TZ_DATE_TIME:
-                    write.string( varName + "->toJSON()" );
+                case DATE_TIME:
+                case DATE:
+                case TIME:
+                    write.string( varName + ".toJSON()" );
                     break;
-                default:
+                case OBJECT:
+                    write.string( "JSON.stringify( " + varName + " ) " );
+                    break;
+                case STRING:
+                case BYTES:
                     write.string( varName );
                     break;
+                case DOUBLE:
+                case LONG:
+                case FLOAT:
+                case INT:
+                    write.string( varName + ".toString()" );
+                    break;
+                default:
+                    break;
             }
-            write.string( " );" );
-            write.newLine();
-        } catch( IOException e ) {
-            throw new ProcessingException( "Error processing uri parameter", e );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error stringify primitive type", e );
         }
-
     }
 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
-
+        try {
+            write.string( varName + ".name" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error stringifying primitive type", e );
+        }
     }
 
     @Override
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
-
+        try {
+            write.string( varName + ".name" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error stringifying primitive type", e );
+        }
     }
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-
+        throw new ProcessingException( "Not implemented" );
     }
 }

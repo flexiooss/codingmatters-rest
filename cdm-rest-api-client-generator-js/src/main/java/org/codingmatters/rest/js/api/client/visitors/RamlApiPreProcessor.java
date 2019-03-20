@@ -4,71 +4,77 @@ import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedResponse;
 import org.codingmatters.rest.parser.model.ParsedRoute;
-import org.codingmatters.rest.parser.model.typed.TypedBody;
-import org.codingmatters.rest.parser.model.typed.TypedHeader;
-import org.codingmatters.rest.parser.model.typed.TypedParameter;
-import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
-import org.codingmatters.rest.parser.model.typed.TypedUriParams;
+import org.codingmatters.rest.parser.model.typed.*;
 import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
-import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeInSpecValueObject;
+import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeExternalValue;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RamlApiPreProcessor implements ParsedRamlProcessor {
 
+    private final String apiPackage;
+    private Map<String, List<ParsedValueObject>> processedValueObjects;
 
-    private List<ParsedValueObject> processedValueObjects;
-
-    public RamlApiPreProcessor( File rootDirectory, String typesPackage, PackageFilesBuilder packageBuilder ) {
-
+    public RamlApiPreProcessor( String apiPackage ) {
+        this.apiPackage = apiPackage;
     }
 
     @Override
     public void process( ParsedRaml parsedRaml ) throws ProcessingException {
-        this.processedValueObjects = new ArrayList<>();
-        for( ParsedRoute parsedRoute : parsedRaml.routes() ) {
+        this.processedValueObjects = new HashMap<>();
+        for( ParsedRoute parsedRoute : parsedRaml.routes() ){
             parsedRoute.process( this );
         }
     }
 
     @Override
     public void process( ParsedRoute parsedRoute ) throws ProcessingException {
-        for( ParsedRequest parsedRequest : parsedRoute.requests() ) {
+        for( ParsedRequest parsedRequest : parsedRoute.requests() ){
             ParsedValueObject requestValueObject = new ParsedValueObject( NamingUtility.requestName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ) );
-            for( TypedQueryParam typedQueryParam : parsedRequest.queryParameters() ) {
+            for( TypedUriParams typedUriParams : parsedRoute.uriParameters() ){
+                requestValueObject.properties().add( parsePropertyFromTypedParam( typedUriParams ) );
+            }
+            for( TypedQueryParam typedQueryParam : parsedRequest.queryParameters() ){
                 requestValueObject.properties().add( parsePropertyFromTypedParam( typedQueryParam ) );
             }
-            for( TypedHeader typedHeader : parsedRequest.headers() ) {
+            for( TypedHeader typedHeader : parsedRequest.headers() ){
                 requestValueObject.properties().add( parsePropertyFromTypedParam( typedHeader ) );
             }
             ParsedValueObject responseValueObject = new ParsedValueObject( NamingUtility.responseName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ) );
-            for( ParsedResponse parsedResponse : parsedRequest.responses() ) {
+            for( ParsedResponse parsedResponse : parsedRequest.responses() ){
                 String statusClass = NamingUtility.statusClassName( parsedResponse.code() );
                 ParsedValueObject statusValueObject = new ParsedValueObject( statusClass );
-                for( TypedHeader typedHeader : parsedResponse.headers() ) {
+                for( TypedHeader typedHeader : parsedResponse.headers() ){
                     statusValueObject.properties().add( parsePropertyFromTypedParam( typedHeader ) );
                 }
-                if( parsedResponse.body().isPresent() ) {
+                if( parsedResponse.body().isPresent() ){
                     statusValueObject.properties().add( parsePropertyFromTypedParam( parsedResponse.body().get() ) );
                 }
+                String statusPackage = apiPackage + "." + NamingUtility.className( parsedRoute.displayName() + parsedRequest.httpMethod().name() + "response" ).toLowerCase();
                 responseValueObject.properties().add( new ValueObjectProperty(
                         NamingUtility.statusProperty( parsedResponse.code() ),
-                        new ObjectTypeInSpecValueObject( statusClass ) // todo pb with that ? use external + full name ?
+                        new ObjectTypeExternalValue( statusPackage + "." + statusClass )
                 ) );
+                addValueObject( statusValueObject, statusPackage );
             }
-            processedValueObjects.add( requestValueObject );
-            processedValueObjects.add( responseValueObject );
-            for( ParsedRoute subRoute : parsedRoute.subRoutes() ) {
+            addValueObject( requestValueObject, apiPackage );
+            addValueObject( responseValueObject, apiPackage );
+            for( ParsedRoute subRoute : parsedRoute.subRoutes() ){
                 this.process( subRoute );
             }
         }
+    }
+
+    private void addValueObject( ParsedValueObject valueObject, String packageName ) {
+        this.processedValueObjects.putIfAbsent( packageName, new ArrayList<>() );
+        this.processedValueObjects.get( packageName ).add( valueObject );
     }
 
 
@@ -107,7 +113,7 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
 
     }
 
-    public List<ParsedValueObject> processedValueObjects( ) {
+    public Map<String, List<ParsedValueObject>> processedValueObjects() {
         return processedValueObjects;
     }
 }

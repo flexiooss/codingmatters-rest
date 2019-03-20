@@ -18,7 +18,7 @@ public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
 
-//    @BeforeClass
+    @BeforeClass
     public static void setUp( ) throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         processBuilder = new ProcessBuilder();
@@ -60,28 +60,12 @@ public class RunJsTest {
     }
 
     @Test
-    public void name( ) throws Exception {
-        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "test.raml" ).getPath();
+    public void testParameters( ) throws Exception {
+        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath();
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Generating in " + dir );
         JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated" );
         generator.generateClientApi( ramlLocation );
-    }
-
-    @Test
-    public void whenName_then( ) throws Exception {
-        PackagesConfiguration packagesConfiguration
-                = new PackagesConfiguration( "org.generated.client", "org.generated.api", "org.generated.api.types" );
-        String dir = System.getProperty( "project.build.directory" ) + "/js-test";
-        System.out.println( "Generating in " + dir );
-        JsClientGenerator generator = new JsClientGenerator( packagesConfiguration, new File( dir ) );
-
-        RamlModelResult ramlModel;
-        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "test.raml" ).getPath();
-        ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
-
-        generator.generateApi( ramlModel );
-//        generator.generateTypes( ramlModel );
 
         System.out.println( "Running 'yarn test' in " + dir );
         processBuilder.directory( new File( dir ) );
@@ -95,5 +79,33 @@ public class RunJsTest {
         assertThat( process.exitValue(), is( 0 ) );
         System.out.println( "EXIT == " + process.exitValue() );
     }
+
+//    @Test
+//    public void whenName_then( ) throws Exception {
+//        PackagesConfiguration packagesConfiguration
+//                = new PackagesConfiguration( "org.generated.client", "org.generated.api", "org.generated.api.types" );
+//        String dir = System.getProperty( "project.build.directory" ) + "/js-test";
+//        System.out.println( "Generating in " + dir );
+//        JsClientGenerator generator = new JsClientGenerator( packagesConfiguration, new File( dir ) );
+//
+//        RamlModelResult ramlModel;
+//        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "test.raml" ).getPath();
+//        ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
+//
+//        generator.generateApi( ramlModel );
+////        generator.generateTypes( ramlModel );
+//
+//        System.out.println( "Running 'yarn test' in " + dir );
+//        processBuilder.directory( new File( dir ) );
+//        processBuilder.command( "yarn", "test", "-v" );
+//        Process process = processBuilder.start();
+//
+//        process.waitFor( 120, TimeUnit.SECONDS );
+//        if( process.exitValue() != 0 ) {
+//            printError( process );
+//        }
+//        assertThat( process.exitValue(), is( 0 ) );
+//        System.out.println( "EXIT == " + process.exitValue() );
+//    }
 
 }

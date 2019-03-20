@@ -10,10 +10,12 @@ import java.util.List;
 
 public class ParsedRaml implements ProcessableRaml {
 
+    private final String apiName;
     private final List<ParsedValueObject> types;
     private final List<ParsedRoute> routes;
 
-    public ParsedRaml() {
+    public ParsedRaml( String apiName ) {
+        this.apiName = apiName;
         this.types = new ArrayList<>();
         this.routes = new ArrayList<>();
     }
@@ -29,5 +31,9 @@ public class ParsedRaml implements ProcessableRaml {
     @Override
     public void process( ParsedRamlProcessor processor ) throws ProcessingException {
         processor.process( this );
+    }
+
+    public String apiName() {
+        return apiName;
     }
 }
