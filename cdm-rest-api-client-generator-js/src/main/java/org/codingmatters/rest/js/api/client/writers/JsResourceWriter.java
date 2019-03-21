@@ -37,7 +37,7 @@ public class JsResourceWriter {
         for( ParsedRoute subRoute : parsedRoute.subRoutes() ){
             String propertyName = NamingUtility.propertyName( subRoute.displayName() );
             String className = NamingUtility.classFullName( clientPackage + "." + subRoute.displayName() );
-            write.line( "this._" + propertyName + " = new " + className + "();" );
+            write.line( "this._" + propertyName + " = new " + className + "( requester, gatewayUrl );" );
         }
         write.line( "}" );
     }

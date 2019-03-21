@@ -84,7 +84,7 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
     public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException {
         try {
             write.indent();
-            write.string( "path.replace( '{" + uriParams.name() + "}', " );
+            write.string( "path = path.replace( '{" + uriParams.name() + "}', " );
             switch( primitiveType.type() ) {
                 case BOOL:
                     write.string( varName + " ? 'true' : 'false'" );
