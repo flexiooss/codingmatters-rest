@@ -10,7 +10,7 @@ class PayloadAndParameterTest extends TestCase {
 
     testObjectPayload(){
         var requester = new FakeHttpRequester();
-        requester._responseHeaders["stringParam"] = "resp-stringParam";
+        requester._responseHeaders["string-param"] = "resp-stringParam";
         requester._responseHeaders["stringArrayParam"] = [ "v1", "v2" ];
         requester._responseHeaders["intParam"] = "7";
         requester._responseHeaders["intArrayParam"] = [ "7", "8" ];
@@ -27,7 +27,9 @@ class PayloadAndParameterTest extends TestCase {
 
         var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
         var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.HeaderParamsGetRequestBuilder();
+
         request.uriParams( "myUriParam" );
+
         request.stringParam( "myStringParam" );
         request.stringArrayParam(
             new window[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestStringArrayParamList( "tata", "yoyo" )
@@ -80,7 +82,7 @@ class PayloadAndParameterTest extends TestCase {
         assert.deepStrictEqual( response.status200().boolParam(), true );
         assert.deepStrictEqual( response.status200().boolArrayParam()[0], true );
 
-        assert.deepStrictEqual( requester._headers["stringParam"], "myStringParam" );
+        assert.deepStrictEqual( requester._headers["string-param"], "myStringParam" );
         assert.deepStrictEqual( requester._headers["stringArrayParam"][0], "tata" );
         assert.deepStrictEqual( requester._headers["stringArrayParam"][1], "yoyo" );
         assert.deepStrictEqual( requester._headers["intParam"], "7" );
@@ -113,7 +115,6 @@ class PayloadAndParameterTest extends TestCase {
         var uriParams = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarray.ParamsArrayUriParamsList( "p1", "p2" );
         request.uriParams( uriParams );
         var response = client.headerParams().paramsArray().paramsArrayGet( request.build() );
-
         assert.deepStrictEqual( requester._path, "http://gateway/header-params/p1/p2" );
     }
 
