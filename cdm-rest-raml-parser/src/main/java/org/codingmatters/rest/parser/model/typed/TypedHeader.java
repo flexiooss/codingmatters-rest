@@ -10,8 +10,4 @@ public class TypedHeader extends TypedParameter {
         super( name, type );
     }
 
-    @Override
-    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
-        processor.process( this  );
-    }
 }

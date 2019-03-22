@@ -29,11 +29,13 @@ import java.util.Stack;
 public class ParsingUtils {
 
     private final Map<String, TypeDeclaration> allTypes;
+    private final String typesPackage;
     private Stack<String> context;
 
-    public ParsingUtils( Map<String, TypeDeclaration> allTypes ) {
+    public ParsingUtils( Map<String, TypeDeclaration> allTypes, String typesPackage ) {
         this.allTypes = allTypes;
         this.context = new Stack<>();
+        this.typesPackage = typesPackage;
     }
 
     public boolean isArray( TypeDeclaration property ) {
@@ -109,11 +111,14 @@ public class ParsingUtils {
 
     public ValueObjectType parseType( String typeDeclarationName, TypeDeclaration property ) throws ProcessingException {
         if( isArray( property ) ){
-            return new ValueObjectTypeList(
-                    NamingUtility.className( typeDeclarationName, property.name(), "List" ),
-                    parseListType( typeDeclarationName, (ArrayTypeDeclaration) property ),
-                    NamingUtility.namespace( typeDeclarationName )
-            );
+            String propName = property.name();
+            if( propName.equals( "application/json" ) ){
+                propName = "payload";
+            }
+            String name = NamingUtility.className( typeDeclarationName, propName, "List" );
+            ValueObjectType type = parseListType( typeDeclarationName, (ArrayTypeDeclaration) property );
+            String namespace = NamingUtility.namespace( typeDeclarationName );
+            return new ValueObjectTypeList( name, type, namespace );
 
         } else if( isEnum( property ) ){
             return new YamlEnumInSpecEnum(
@@ -124,7 +129,7 @@ public class ParsingUtils {
         } else if( isAlreadyDefined( property ).isPresent() ){
             return new ObjectTypeExternalValue( isAlreadyDefined( property ).get() );
         } else if( isInSpecValueObject( property ).isPresent() ){
-            return new ObjectTypeInSpecValueObject( getPropertyType( property ) );
+            return new ObjectTypeInSpecValueObject( getPropertyType( property ), typesPackage );
         } else if( isSinglePrimitiveType( property ).isPresent() ){
             return new ValueObjectTypePrimitiveType( isSinglePrimitiveType( property ).get().toYaml().name() );
         } else if( isNested( property ) ){

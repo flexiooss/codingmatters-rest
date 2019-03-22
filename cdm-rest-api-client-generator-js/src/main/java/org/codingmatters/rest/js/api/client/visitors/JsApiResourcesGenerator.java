@@ -1,6 +1,6 @@
 package org.codingmatters.rest.js.api.client.visitors;
 
-import org.codingmatters.rest.js.api.client.writers.JsResourceWriter;
+import org.codingmatters.rest.js.api.client.writer.JsResourceWriter;
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedResponse;
@@ -40,7 +40,7 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
         this.apiPackage = apiPackage;
         this.typesPackage = typesPackage;
         this.packageBuilder = packageBuilder;
-        this.jsResourceWriter = new JsResourceWriter( clientPackage, apiPackage );
+        this.jsResourceWriter = new JsResourceWriter( clientPackage, apiPackage, typesPackage );
     }
 
     @Override
@@ -121,11 +121,6 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
         }
     }
 
-    @Override
-    public void process( ParsedRequest parsedRequest ) throws ProcessingException {
-
-    }
-
     private boolean isDate( ValueObjectType type ) {
         return type instanceof ValueObjectTypePrimitiveType
                 && ((ValueObjectTypePrimitiveType) type).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE;
@@ -144,30 +139,5 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     private boolean isTzDateTime( ValueObjectType type ) {
         return type instanceof ValueObjectTypePrimitiveType
                 && ((ValueObjectTypePrimitiveType) type).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME;
-    }
-
-    @Override
-    public void process( ParsedResponse parsedResponse ) {
-
-    }
-
-    @Override
-    public void process( TypedBody typedBody ) {
-
-    }
-
-    @Override
-    public void process( TypedHeader typedHeader ) {
-
-    }
-
-    @Override
-    public void process( TypedQueryParam typedQueryParam ) {
-
-    }
-
-    @Override
-    public void process( TypedUriParams typedUriParams ) {
-
     }
 }

@@ -47,6 +47,10 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
             for( TypedHeader typedHeader : parsedRequest.headers() ){
                 requestValueObject.properties().add( parsePropertyFromTypedParam( typedHeader ) );
             }
+            if( parsedRequest.body().isPresent() ){
+                ValueObjectProperty body = parsePropertyFromTypedParam( parsedRequest.body().get() );
+                requestValueObject.properties().add( body );
+            }
             ParsedValueObject responseValueObject = new ParsedValueObject( NamingUtility.responseName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ) );
             for( ParsedResponse parsedResponse : parsedRequest.responses() ){
                 String statusClass = NamingUtility.statusClassName( parsedResponse.code() );
@@ -80,37 +84,6 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
 
     private ValueObjectProperty parsePropertyFromTypedParam( TypedParameter typedQueryParam ) {
         return new ValueObjectProperty( typedQueryParam.name(), typedQueryParam.type() );
-    }
-
-    @Override
-    public void process( ParsedRequest parsedRequest ) {
-
-    }
-
-    @Override
-    public void process( ParsedResponse parsedResponse ) {
-
-    }
-
-
-    @Override
-    public void process( TypedBody typedBody ) {
-
-    }
-
-    @Override
-    public void process( TypedHeader typedHeader ) {
-
-    }
-
-    @Override
-    public void process( TypedQueryParam typedQueryParam ) {
-
-    }
-
-    @Override
-    public void process( TypedUriParams typedUriParams ) {
-
     }
 
     public Map<String, List<ParsedValueObject>> processedValueObjects() {

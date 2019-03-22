@@ -27,6 +27,7 @@ class FakeHttpRequester {
 
     post( contentType, body ){
         this._lastMethod = "post";
+        this._lastBody = body;
         return new FakeResponseDelegate( this._nextCode, this._nextBody, this._responseHeaders );
     }
 
@@ -37,7 +38,7 @@ class FakeHttpRequester {
 
     patch( contentType, body ){
         this._lastMethod = "patch";
-        return new FakeResponseDelegate( this._nextCode, body, this._responseHeaders );
+        return new FakeResponseDelegate( this._nextCode, _nextBody, this._responseHeaders );
     }
 
     arrayParameter( name, values ){
@@ -59,6 +60,14 @@ class FakeHttpRequester {
     path( path ){
         this._path = path;
     }
+
+    nextBody( body ){
+        this._nextBody = body;
+    }
+
+    lastBody(){
+        return this._lastBody;
+    }
 }
 
 class FakeResponseDelegate {
@@ -79,6 +88,10 @@ class FakeResponseDelegate {
 
     code(){
         return this._code;
+    }
+
+    payload(){
+        return this._body;
     }
 
 }

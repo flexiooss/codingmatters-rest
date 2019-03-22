@@ -10,8 +10,4 @@ public class TypedBody extends TypedParameter {
         super( "payload", type );
     }
 
-    @Override
-    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
-        processor.process( this );
-    }
 }

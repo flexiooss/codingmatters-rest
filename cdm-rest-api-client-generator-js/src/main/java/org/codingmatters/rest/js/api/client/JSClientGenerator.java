@@ -30,26 +30,28 @@ public class JSClientGenerator {
         this.clientPackage = rootPackage + ".client";
     }
 
-    public void generateClientApi( String ramlFilePath ) throws ProcessingException, GenerationException {
+    public void generateClientApi( String... ramlFilePath ) throws ProcessingException, GenerationException {
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
-        RamlParser ramlParser = new RamlParser();
-        ParsedRaml parsedRaml = ramlParser.parseFile( ramlFilePath );
-        RamlApiPreProcessor ramlApiPreProcessor = new RamlApiPreProcessor( apiPackage );
-        ramlApiPreProcessor.process( parsedRaml );
+        RamlParser ramlParser = new RamlParser( typesPackage );
 
-        new JsValueObjectGenerator( rootDirectory, typesPackage, packageBuilder )
-                .process( new ParsedYAMLSpec( parsedRaml.types() ) );
+        for( String ramlFile : ramlFilePath ){
+            ParsedRaml parsedRaml = ramlParser.parseFile( ramlFile );
+            RamlApiPreProcessor ramlApiPreProcessor = new RamlApiPreProcessor( apiPackage );
+            ramlApiPreProcessor.process( parsedRaml );
 
-        for( String subPackage : ramlApiPreProcessor.processedValueObjects().keySet() ){
-            new JsValueObjectGenerator( rootDirectory, subPackage, apiPackage, packageBuilder )
-                    .process( new ParsedYAMLSpec( ramlApiPreProcessor.processedValueObjects().get( subPackage ) ) );
+            new JsValueObjectGenerator( rootDirectory, typesPackage, packageBuilder )
+                    .process( new ParsedYAMLSpec( parsedRaml.types() ) );
+
+            for( String subPackage : ramlApiPreProcessor.processedValueObjects().keySet() ){
+                new JsValueObjectGenerator( rootDirectory, subPackage, apiPackage, packageBuilder )
+                        .process( new ParsedYAMLSpec( ramlApiPreProcessor.processedValueObjects().get( subPackage ) ) );
+            }
+
+            new JsApiResourcesGenerator( rootDirectory, resourcesPackage, apiPackage, typesPackage, packageBuilder )
+                    .process( parsedRaml );
+            new JsApiRootClientGenerator( rootDirectory, clientPackage, resourcesPackage, packageBuilder )
+                    .process( parsedRaml );
         }
-
-        new JsApiResourcesGenerator( rootDirectory, resourcesPackage, apiPackage, typesPackage, packageBuilder )
-                .process( parsedRaml );
-        new JsApiRootClientGenerator( rootDirectory, clientPackage, resourcesPackage, packageBuilder )
-                .process( parsedRaml );
-
         new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
     }
 }

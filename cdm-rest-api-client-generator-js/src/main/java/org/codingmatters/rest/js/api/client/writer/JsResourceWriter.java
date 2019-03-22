@@ -1,6 +1,7 @@
-package org.codingmatters.rest.js.api.client.writers;
+package org.codingmatters.rest.js.api.client.writer;
 
 import org.codingmatters.rest.js.api.client.visitors.TypedParamStringifier;
+import org.codingmatters.rest.js.api.client.visitors.TypedParamUnStringifier;
 import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedResponse;
 import org.codingmatters.rest.parser.model.ParsedRoute;
@@ -9,7 +10,6 @@ import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
-import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializationProcessor;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeList;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType;
 
@@ -19,10 +19,12 @@ public class JsResourceWriter {
 
     private final String clientPackage;
     private final String apiPackage;
+    private final String typesPackage;
 
-    public JsResourceWriter( String clientPackage, String apiPackage ) {
+    public JsResourceWriter( String clientPackage, String apiPackage, String typesPackage ) {
         this.clientPackage = clientPackage;
         this.apiPackage = apiPackage;
+        this.typesPackage = typesPackage;
     }
 
     public void generateConstructor( ParsedRoute parsedRoute, JsFileWriter write ) throws IOException {
@@ -45,17 +47,20 @@ public class JsResourceWriter {
     public void sendRequest( JsFileWriter write, ParsedRequest parsedRequest, String requestVar ) throws IOException {
         String httpMethod = parsedRequest.httpMethod().name().toLowerCase();
         if( parsedRequest.body().isPresent() ){
-            if( parsedRequest.body().get().type() instanceof ValueObjectTypePrimitiveType ){
-                if( ((ValueObjectTypePrimitiveType) parsedRequest.body().get().type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ){
-                    write.line( "var contentType = " + requestVar + ".contentType();" );
-                } else {
-                    write.line( "var contentType = 'application/json';" );
-                }
+            if( payloadIsFile( parsedRequest ) ){
+                write.line( "var contentType = " + requestVar + ".contentType();" );
+            } else {
+                write.line( "var contentType = 'application/json';" );
             }
             write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, JSON.stringify( " + requestVar + ".payload() ));" );
         } else {
             write.line( "var responseDelegate = this._requester." + httpMethod + "();" );
         }
+    }
+
+    private boolean payloadIsFile( ParsedRequest parsedRequest ) {
+        return (parsedRequest.body().get().type() instanceof ValueObjectTypePrimitiveType)
+                && (((ValueObjectTypePrimitiveType) parsedRequest.body().get().type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES);
     }
 
     public void generateGetters( ParsedRoute parsedRoute, JsFileWriter write ) throws IOException {
@@ -74,7 +79,7 @@ public class JsResourceWriter {
 
     public void parseResponse( ParsedRequest parsedRequest, JsFileWriter write, String responseVar ) throws ProcessingException {
         try {
-            PropertiesDeserializationProcessor processor = new PropertiesDeserializationProcessor( write, apiPackage );
+            TypedParamUnStringifier processor = new TypedParamUnStringifier( write, apiPackage );
             write.line( "var status;" );
             for( ParsedResponse parsedResponse : parsedRequest.responses() ){
                 write.line( "if( responseDelegate.code() == " + parsedResponse.code() + " ){" );
@@ -93,10 +98,15 @@ public class JsResourceWriter {
                     write.line( "}" );
                 }
                 if( parsedResponse.body().isPresent() ){
+                    TypedParamUnStringifier bodyProcessor = new TypedParamUnStringifier( write, typesPackage );
                     write.indent();
                     write.string( "status.payload( " );
-                    processor.currentVariable( "responseDelegate.payload() " );
-                    parsedResponse.body().get().type().process( processor );
+                    if( parsedResponse.body().get().type() instanceof ValueObjectTypeList ){
+                        bodyProcessor.currentVariable( "JSON.parse( responseDelegate.payload() )" );
+                    }else {
+                        bodyProcessor.currentVariable( "responseDelegate.payload()" );
+                    }
+                    parsedResponse.body().get().type().process( bodyProcessor );
                     write.string( ");" );
                     write.newLine();
                 }

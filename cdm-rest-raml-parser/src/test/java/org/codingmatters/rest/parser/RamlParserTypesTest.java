@@ -13,9 +13,11 @@ import static org.junit.Assert.assertTrue;
 
 public class RamlParserTypesTest {
 
+    private String typesPackage = "org.generated";
+
     @Test
     public void testBasicProperties() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "01_primitiveProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "01_primitiveProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "SimplePropertyType" ) );
@@ -45,7 +47,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testObjectValueType() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "02_objectValueType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "02_objectValueType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "TypeWithObjectProperty" ) );
@@ -76,7 +78,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testInSpecProperties() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "03_inSpecProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "03_inSpecProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 2 ) );
         assertThat( raml.types().get( 0 ).name(), is( "InSpecPropertyType" ) );
@@ -107,7 +109,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testEnumProperties() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "04_enumProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "04_enumProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "EnumPropertyType" ) );
@@ -132,7 +134,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testAlreadyDefinedType() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "05_alreadyDefinedType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "05_alreadyDefinedType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 2 ) );
         assertThat( raml.types().get( 0 ).name(), is( "IncludeADT" ) );
@@ -173,7 +175,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testNestedTypes() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "06_nestedType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "06_nestedType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "NestedType" ) );
@@ -206,9 +208,9 @@ public class RamlParserTypesTest {
         assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "nested" ) );
     }
 
-    @Test
+//    @Test
     public void testBiDim() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "toto.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "toto.raml" ) );
         System.out.println( "end" );
     }
 

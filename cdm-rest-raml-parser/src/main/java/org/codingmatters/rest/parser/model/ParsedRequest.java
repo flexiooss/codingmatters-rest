@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ParsedRequest implements ProcessableRaml {
+public class ParsedRequest {
 
     private final RequestMethod httpMethod;
     private final List<ParsedResponse> responses;
@@ -55,8 +55,5 @@ public class ParsedRequest implements ProcessableRaml {
         return body;
     }
 
-    @Override
-    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
-        processor.process( this );
-    }
+
 }

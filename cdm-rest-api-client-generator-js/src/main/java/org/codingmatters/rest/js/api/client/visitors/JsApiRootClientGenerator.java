@@ -81,33 +81,4 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
         }
     }
 
-    @Override
-    public void process( ParsedRequest parsedRequest ) throws ProcessingException {
-
-    }
-
-    @Override
-    public void process( ParsedResponse parsedResponse ) {
-
-    }
-
-    @Override
-    public void process( TypedBody typedBody ) {
-
-    }
-
-    @Override
-    public void process( TypedHeader typedHeader ) {
-
-    }
-
-    @Override
-    public void process( TypedQueryParam typedQueryParam ) {
-
-    }
-
-    @Override
-    public void process( TypedUriParams typedUriParams ) {
-
-    }
 }

@@ -21,7 +21,7 @@ public class RamlParserClientTest {
 
     @Test
     public void testParameters() throws Exception {
-        ParsedRaml raml = new RamlParser().parseFile( getRaml( "parameters.raml" ) );
+        ParsedRaml raml = new RamlParser( "org.generated.types" ).parseFile( getRaml( "parameters.raml" ) );
         assertThat( raml.types().size(), is( 0 ) );
         assertThat( raml.routes().size(), is( 1 ) );
 
@@ -89,12 +89,12 @@ public class RamlParserClientTest {
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
         header = headers.get( 4 );
         assertThat( header.name(), is( "floatParam" ) );
-        assertThat( ((ValueObjectTypePrimitiveType) header.type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
+        assertThat( ((ValueObjectTypePrimitiveType) header.type()).type(), is( YAML_PRIMITIVE_TYPES.FLOAT ) );
         header = headers.get( 5 );
         assertThat( header.name(), is( "floatArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "FloatArrayParamList" ) );
         assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
-        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.FLOAT ) );
         header = headers.get( 6 );
         assertThat( header.name(), is( "dateParam" ) );
         assertThat( ((ValueObjectTypePrimitiveType) header.type()).type(), is( YAML_PRIMITIVE_TYPES.DATE ) );

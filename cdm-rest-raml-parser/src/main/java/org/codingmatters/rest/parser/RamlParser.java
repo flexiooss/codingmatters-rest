@@ -2,7 +2,6 @@ package org.codingmatters.rest.parser;
 
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.value.objects.js.error.ProcessingException;
-import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
@@ -17,6 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RamlParser {
+
+    private final String typesPackage;
+
+    public RamlParser( String typesPackage ) {
+        this.typesPackage = typesPackage;
+    }
 
     public ParsedRaml parseFile( String ramlFilePath ) throws ProcessingException {
         RamlModelResult ramlModel;
@@ -41,7 +46,7 @@ public class RamlParser {
     private ParsingUtils parseTypes( ParsedRaml parsedRaml, Api api ) throws ProcessingException {
         Map<String, TypeDeclaration> allTypes = new HashMap<>();
         api.types().forEach( type->allTypes.put( type.name(), type ) );
-        ParsingUtils parsingUtils = new ParsingUtils( allTypes );
+        ParsingUtils parsingUtils = new ParsingUtils( allTypes, typesPackage );
 
         for( TypeDeclaration typeDeclaration : api.types() ){
             if( typeDeclaration.type().equals( "object" ) ){

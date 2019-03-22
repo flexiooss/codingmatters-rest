@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ParsedResponse implements ProcessableRaml {
+public class ParsedResponse {
 
     private final int code;
     private final List<TypedHeader> headers;
@@ -43,9 +43,5 @@ public class ParsedResponse implements ProcessableRaml {
         return body;
     }
 
-    @Override
-    public void process( ParsedRamlProcessor processor ) throws ProcessingException {
-        processor.process( this );
-    }
 }
 
