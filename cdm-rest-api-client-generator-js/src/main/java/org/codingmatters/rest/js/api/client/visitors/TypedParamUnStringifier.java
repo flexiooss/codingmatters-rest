@@ -20,10 +20,12 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     protected String currentVariable;
     private char currentIndex = 'a';
     protected final String typesPackage;
+    private String deserializeFunction;
 
     public TypedParamUnStringifier( JsFileWriter jsClassGenerator, String typesPackage ) {
         this.write = jsClassGenerator;
         this.typesPackage = typesPackage;
+        this.deserializeFunction = "fromJson";
     }
 
     public void currentVariable( String currentVariable ) {
@@ -60,7 +62,7 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
         try {
             String reference = externalValueObject.objectReference();
             String builderName = NamingUtility.builderFullName( reference );
-            write.string( builderName + ".fromJson( " + currentVariable + " ).build()" );
+            write.string( builderName + "." + deserializeFunction + "( " + currentVariable + " ).build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -70,7 +72,7 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
             String builderName = NamingUtility.builderFullName( typesPackage + "." + inSpecValueObject.inSpecValueObjectName() );
-            write.string( builderName + ".fromJson( " + currentVariable + " ).build()" );
+            write.string( builderName + "." + deserializeFunction + "(" + currentVariable + ").build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -80,7 +82,7 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
         try {
             String builderName = NamingUtility.builderFullName( typesPackage + "." + nestedValueObject.namespace() + "." + nestedValueObject.nestValueObject().name() );
-            write.string( builderName + ".fromJson( " + currentVariable + " ).build()" );
+            write.string( builderName + "." + deserializeFunction + "( " + currentVariable + " ).build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -90,7 +92,11 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
             String var = generateVarName();
-            String listClassName = NamingUtility.classFullName( typesPackage + "." + list.namespace() + "." + list.name() );
+            String listClassName = NamingUtility.classFullName( list.packageName() + "." + list.name() );
+            if( deserializeFunction.equals( "fromJson" ) && isObjectList( list ) ){
+                currentVariable = "JSON.parse( " + currentVariable + ")";
+                deserializeFunction = "fromObject";
+            }
             write.string( "new " + listClassName + "( ..." + currentVariable + ".map( " + var + "=>" );
             currentVariable = var;
             list.type().process( this );
@@ -98,6 +104,13 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
+    }
+
+    private boolean isObjectList( ValueObjectTypeList list ) {
+        if( list.type() instanceof ValueObjectTypeList ){
+            return isObjectList( (ValueObjectTypeList) list.type() );
+        }
+        return list.type() instanceof ObjectType;
     }
 
     private String generateVarName() {

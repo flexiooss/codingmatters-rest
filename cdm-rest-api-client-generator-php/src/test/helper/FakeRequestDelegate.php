@@ -1,6 +1,6 @@
 <?php
 
-namespace org\utils;
+packageName org\utils;
 
 use \io\flexio\utils\http\RequestDelegate;
 

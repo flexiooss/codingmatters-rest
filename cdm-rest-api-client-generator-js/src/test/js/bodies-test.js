@@ -25,24 +25,24 @@ class BodiesTest extends TestCase {
     }
 
     testTypeArrayShortPayload(){
-            var requester = new FakeHttpRequester();
-            requester.nextBody( '[{"name":"Morillo"}]' );
-            var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        var requester = new FakeHttpRequester();
+        requester.nextBody( '[{"name":"Morillo"}]' );
+        var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-            var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.TypeArrayShortPostRequestBuilder();
-            var littleObj1 = new window[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
-            littleObj1.name( "Morillo" );
-            var littleObj2 = new window[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
-            littleObj2.name( "Jungle Patrol" );
+        var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.TypeArrayShortPostRequestBuilder();
+        var littleObj1 = new window[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        littleObj1.name( "Morillo" );
+        var littleObj2 = new window[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        littleObj2.name( "Jungle Patrol" );
 
-            var list = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1, littleObj2 );
-            request.payload( list );
+        var list = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
+        request.payload( list );
 
-            var response = client.typeArrayShort().typeArrayShortPost( request.build() );
-            console.log( response.status200().payload() );
-            assert.equal( response.status200().payload()[0].name(), "Morillo" );
-//            assert.equal( requester.lastBody(), '[{"name":"Morillo"},{"name":"Jungle Patrol"}]' );
-        }
+        var response = client.typeArrayShort().typeArrayShortPost( request.build() );
+        console.log( response.status200().payload() );
+        assert.equal( response.status200().payload()[0].name(), "Morillo" );
+        assert.equal( requester.lastBody(), '[{"name":"Morillo"},{"name":"Jungle Patrol"}]' );
+    }
 
 }
 runTest( BodiesTest );

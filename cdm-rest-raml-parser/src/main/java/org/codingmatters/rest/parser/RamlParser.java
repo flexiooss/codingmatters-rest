@@ -18,9 +18,11 @@ import java.util.Map;
 public class RamlParser {
 
     private final String typesPackage;
+    private final String apiPackage;
 
-    public RamlParser( String typesPackage ) {
+    public RamlParser( String typesPackage, String apiPackage ) {
         this.typesPackage = typesPackage;
+        this.apiPackage = apiPackage;
     }
 
     public ParsedRaml parseFile( String ramlFilePath ) throws ProcessingException {
@@ -30,7 +32,7 @@ public class RamlParser {
     }
 
     private ParsedRaml parseRamlModel( RamlModelResult ramlModel ) throws ProcessingException {
-        ParsedRaml parsedRaml = new ParsedRaml( ramlModel.getApiV10().title().value()  );
+        ParsedRaml parsedRaml = new ParsedRaml( ramlModel.getApiV10().title().value() );
         Api api = ramlModel.getApiV10();
         ParsingUtils parsingUtils = this.parseTypes( parsedRaml, api );
         this.parseApi( parsedRaml, api, parsingUtils );
@@ -38,6 +40,7 @@ public class RamlParser {
     }
 
     private void parseApi( ParsedRaml parsedRaml, Api api, ParsingUtils parsingUtils ) throws ProcessingException {
+        parsingUtils.typesPackage( apiPackage );
         for( Resource resource : api.resources() ){
             parsedRaml.routes().add( parsingUtils.parseRoute( resource ) );
         }
@@ -52,7 +55,7 @@ public class RamlParser {
             if( typeDeclaration.type().equals( "object" ) ){
                 parsingUtils.context().push( typeDeclaration.name() );
                 if( !parsingUtils.isAlreadyDefined( typeDeclaration ).isPresent() ){
-                    ParsedValueObject valueObject = new ParsedValueObject( typeDeclaration.name() );
+                    ParsedValueObject valueObject = new ParsedValueObject( typeDeclaration.name(), typesPackage );
                     for( TypeDeclaration property : ((ObjectTypeDeclaration) typeDeclaration).properties() ){
                         parsingUtils.context().push( property.name() );
                         ValueObjectType type = parsingUtils.parseType( typeDeclaration.name(), property );
@@ -60,6 +63,7 @@ public class RamlParser {
                         valueObject.properties().add( new ValueObjectProperty( property.name(), type ) );
                     }
                     parsedRaml.types().add( valueObject );
+                    parsingUtils.addValueObject( valueObject );
                 }
                 parsingUtils.context().pop();
             } else {

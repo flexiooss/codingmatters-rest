@@ -22,20 +22,21 @@ import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 
 public class ParsingUtils {
 
     private final Map<String, TypeDeclaration> allTypes;
-    private final String typesPackage;
+    private final List<ParsedValueObject> valueObjects;
+    private String typesPackage;
     private Stack<String> context;
 
     public ParsingUtils( Map<String, TypeDeclaration> allTypes, String typesPackage ) {
         this.allTypes = allTypes;
         this.context = new Stack<>();
         this.typesPackage = typesPackage;
+        this.valueObjects = new ArrayList<>();
+
     }
 
     public boolean isArray( TypeDeclaration property ) {
@@ -118,7 +119,7 @@ public class ParsingUtils {
             String name = NamingUtility.className( typeDeclarationName, propName, "List" );
             ValueObjectType type = parseListType( typeDeclarationName, (ArrayTypeDeclaration) property );
             String namespace = NamingUtility.namespace( typeDeclarationName );
-            return new ValueObjectTypeList( name, type, namespace );
+            return new ValueObjectTypeList( name, type, typesPackage + "." + namespace );
 
         } else if( isEnum( property ) ){
             return new YamlEnumInSpecEnum(
@@ -129,7 +130,12 @@ public class ParsingUtils {
         } else if( isAlreadyDefined( property ).isPresent() ){
             return new ObjectTypeExternalValue( isAlreadyDefined( property ).get() );
         } else if( isInSpecValueObject( property ).isPresent() ){
-            return new ObjectTypeInSpecValueObject( getPropertyType( property ), typesPackage );
+            String propertyType = getPropertyType( property );
+            Optional<ParsedValueObject> valueObject = valueObjects.stream().filter( vo->vo.name().equals( propertyType ) ).findFirst();
+            if( valueObject.isPresent() ){
+                return new ObjectTypeInSpecValueObject( propertyType, valueObject.get().packageName() );
+            }
+            return new ObjectTypeInSpecValueObject( propertyType, typesPackage );
         } else if( isSinglePrimitiveType( property ).isPresent() ){
             return new ValueObjectTypePrimitiveType( isSinglePrimitiveType( property ).get().toYaml().name() );
         } else if( isNested( property ) ){
@@ -139,7 +145,7 @@ public class ParsingUtils {
     }
 
     private ParsedValueObject parseNested( String typeDeclarationName, ObjectTypeDeclaration property ) throws ProcessingException {
-        ParsedValueObject parsedValueObject = new ParsedValueObject( NamingUtility.className( typeDeclarationName, property.name() ) );
+        ParsedValueObject parsedValueObject = new ParsedValueObject( NamingUtility.className( typeDeclarationName, property.name() ), typesPackage );
         for( TypeDeclaration typeDeclaration : property.properties() ){
             ValueObjectType type = this.parseType( property.name(), typeDeclaration );
             parsedValueObject.properties().add( new ValueObjectProperty( typeDeclaration.name(), type ) );
@@ -209,5 +215,13 @@ public class ParsingUtils {
 
     private boolean hasBody( Method method ) {
         return method.body() != null && !method.body().isEmpty();
+    }
+
+    public void typesPackage( String typesPackage ) {
+        this.typesPackage = typesPackage;
+    }
+
+    public void addValueObject( ParsedValueObject valueObject ) {
+        this.valueObjects.add( valueObject );
     }
 }

@@ -79,7 +79,6 @@ public class JsResourceWriter {
 
     public void parseResponse( ParsedRequest parsedRequest, JsFileWriter write, String responseVar ) throws ProcessingException {
         try {
-            TypedParamUnStringifier processor = new TypedParamUnStringifier( write, apiPackage );
             write.line( "var status;" );
             for( ParsedResponse parsedResponse : parsedRequest.responses() ){
                 write.line( "if( responseDelegate.code() == " + parsedResponse.code() + " ){" );
@@ -88,6 +87,8 @@ public class JsResourceWriter {
                 );
                 write.line( "status = new " + statusBuilder + "();" );
                 for( TypedHeader typedHeader : parsedResponse.headers() ){
+
+                    TypedParamUnStringifier processor = new TypedParamUnStringifier( write, apiPackage );
                     write.line( "if( responseDelegate.header( '" + typedHeader.name() + "') != null ) {" );
                     write.indent();
                     write.string( "status." + NamingUtility.propertyName( typedHeader.name() ) + "( " );
@@ -101,11 +102,7 @@ public class JsResourceWriter {
                     TypedParamUnStringifier bodyProcessor = new TypedParamUnStringifier( write, typesPackage );
                     write.indent();
                     write.string( "status.payload( " );
-                    if( parsedResponse.body().get().type() instanceof ValueObjectTypeList ){
-                        bodyProcessor.currentVariable( "JSON.parse( responseDelegate.payload() )" );
-                    }else {
-                        bodyProcessor.currentVariable( "responseDelegate.payload()" );
-                    }
+                    bodyProcessor.currentVariable( "responseDelegate.payload()" );
                     parsedResponse.body().get().type().process( bodyProcessor );
                     write.string( ");" );
                     write.newLine();

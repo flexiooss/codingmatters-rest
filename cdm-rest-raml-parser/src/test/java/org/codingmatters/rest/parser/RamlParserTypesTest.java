@@ -13,11 +13,12 @@ import static org.junit.Assert.assertTrue;
 
 public class RamlParserTypesTest {
 
-    private String typesPackage = "org.generated";
+    private String typesPackage = "org.generated.types";
+    private String apiPackage = "org.generated.api";
 
     @Test
     public void testBasicProperties() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "01_primitiveProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "01_primitiveProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "SimplePropertyType" ) );
@@ -35,19 +36,19 @@ public class RamlParserTypesTest {
         property = raml.types().get( 0 ).properties().get( 2 );
         assertThat( property.name(), is( "intArraySimple" ) );
         assertThat( ((ValueObjectTypeList) property.type()).name(), is( "SimplePropertyTypeIntArraySimpleList" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "simplepropertytype" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).packageName(), is( "org.generated.types.simplepropertytype" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) property.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
 
         property = raml.types().get( 0 ).properties().get( 3 );
         assertThat( property.name(), is( "intArrayShortcut" ) );
         assertThat( ((ValueObjectTypeList) property.type()).name(), is( "SimplePropertyTypeIntArrayShortcutList" ) );
-        assertThat( ((ValueObjectTypeList) property.type()).namespace(), is( "simplepropertytype" ) );
+        assertThat( ((ValueObjectTypeList) property.type()).packageName(), is( "org.generated.types.simplepropertytype" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) property.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
     }
 
     @Test
     public void testObjectValueType() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "02_objectValueType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "02_objectValueType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "TypeWithObjectProperty" ) );
@@ -66,19 +67,19 @@ public class RamlParserTypesTest {
         prop = raml.types().get( 0 ).properties().get( 2 );
         assertThat( prop.name(), is( "objArraySimple" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "TypeWithObjectPropertyObjArraySimpleList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "typewithobjectproperty" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.typewithobjectproperty" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) prop.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.OBJECT ) );
 
         prop = raml.types().get( 0 ).properties().get( 3 );
         assertThat( prop.name(), is( "objArrayShortcut" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "TypeWithObjectPropertyObjArrayShortcutList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "typewithobjectproperty" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.typewithobjectproperty" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) prop.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.OBJECT ) );
     }
 
     @Test
     public void testInSpecProperties() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "03_inSpecProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "03_inSpecProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 2 ) );
         assertThat( raml.types().get( 0 ).name(), is( "InSpecPropertyType" ) );
@@ -97,19 +98,19 @@ public class RamlParserTypesTest {
         prop = raml.types().get( 0 ).properties().get( 2 );
         assertThat( prop.name(), is( "objArraySimple" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "InSpecPropertyTypeObjArraySimpleList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "inspecpropertytype" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.inspecpropertytype" ) );
         assertThat( ((ObjectTypeInSpecValueObject) ((ValueObjectTypeList) prop.type()).type()).inSpecValueObjectName(), is( "Toto" ) );
 
         prop = raml.types().get( 0 ).properties().get( 3 );
         assertThat( prop.name(), is( "objArrayShortcut" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "InSpecPropertyTypeObjArrayShortcutList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "inspecpropertytype" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.inspecpropertytype" ) );
         assertThat( ((ObjectTypeInSpecValueObject) ((ValueObjectTypeList) prop.type()).type()).inSpecValueObjectName(), is( "Toto" ) );
     }
 
     @Test
     public void testEnumProperties() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "04_enumProperties.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "04_enumProperties.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "EnumPropertyType" ) );
@@ -126,7 +127,7 @@ public class RamlParserTypesTest {
         prop = raml.types().get( 0 ).properties().get( 1 );
         assertThat( prop.name(), is( "enumList" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "EnumPropertyTypeEnumListList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "enumpropertytype" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.enumpropertytype" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).name(), is( "EnumPropertyTypeEnumList" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).namespace(), is( "enumpropertytype" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).values().toArray( new String[0] ), is( new String[]{ "D", "E", "F" } ) );
@@ -134,7 +135,7 @@ public class RamlParserTypesTest {
 
     @Test
     public void testAlreadyDefinedType() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "05_alreadyDefinedType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "05_alreadyDefinedType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 2 ) );
         assertThat( raml.types().get( 0 ).name(), is( "IncludeADT" ) );
@@ -153,13 +154,13 @@ public class RamlParserTypesTest {
         assertThat( prop.name(), is( "adtShortList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) prop.type()).type()).objectReference(), is( "org.codingmatters.AnExternalValueObject" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "IncludeADTAdtShortListList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "includeadt" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.includeadt" ) );
 
         prop = raml.types().get( 0 ).properties().get( 3 );
         assertThat( prop.name(), is( "adtList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) prop.type()).type()).objectReference(), is( "org.codingmatters.AnExternalValueObject" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "IncludeADTAdtListList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "includeadt" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.includeadt" ) );
 
 
         prop = raml.types().get( 1 ).properties().get( 0 );
@@ -170,12 +171,12 @@ public class RamlParserTypesTest {
         assertThat( prop.name(), is( "propList" ) );
         assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) prop.type()).type()).objectReference(), is( "io.flexio.services.resources.api.types.Schema" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "TypeWithAlreadyDefinedPropertyPropListList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "typewithalreadydefinedproperty" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.typewithalreadydefinedproperty" ) );
     }
 
     @Test
     public void testNestedTypes() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "06_nestedType.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "06_nestedType.raml" ) );
         assertTrue( raml.routes().isEmpty() );
         assertThat( raml.types().size(), is( 1 ) );
         assertThat( raml.types().get( 0 ).name(), is( "NestedType" ) );
@@ -205,12 +206,12 @@ public class RamlParserTypesTest {
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).name(), is( "NestedTypeNested" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).namespace(), is( "nested" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "NestedEnumArrayPropList" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).namespace(), is( "nested" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.nested" ) );
     }
 
-//    @Test
+    //    @Test
     public void testBiDim() throws Exception {
-        ParsedRaml raml = new RamlParser( typesPackage ).parseFile( getRaml( "toto.raml" ) );
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "toto.raml" ) );
         System.out.println( "end" );
     }
 

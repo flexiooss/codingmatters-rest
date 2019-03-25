@@ -1,6 +1,6 @@
 <?php
 
-namespace Test;
+packageName Test;
 
 use PHPUnit\Framework\TestCase;
 

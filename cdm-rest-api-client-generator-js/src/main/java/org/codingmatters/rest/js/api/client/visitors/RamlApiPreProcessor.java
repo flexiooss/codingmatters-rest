@@ -4,7 +4,10 @@ import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedResponse;
 import org.codingmatters.rest.parser.model.ParsedRoute;
-import org.codingmatters.rest.parser.model.typed.*;
+import org.codingmatters.rest.parser.model.typed.TypedHeader;
+import org.codingmatters.rest.parser.model.typed.TypedParameter;
+import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
+import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
@@ -37,7 +40,7 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
     @Override
     public void process( ParsedRoute parsedRoute ) throws ProcessingException {
         for( ParsedRequest parsedRequest : parsedRoute.requests() ){
-            ParsedValueObject requestValueObject = new ParsedValueObject( NamingUtility.requestName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ) );
+            ParsedValueObject requestValueObject = new ParsedValueObject( NamingUtility.requestName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ), apiPackage );
             for( TypedUriParams typedUriParams : parsedRoute.uriParameters() ){
                 requestValueObject.properties().add( parsePropertyFromTypedParam( typedUriParams ) );
             }
@@ -51,10 +54,10 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
                 ValueObjectProperty body = parsePropertyFromTypedParam( parsedRequest.body().get() );
                 requestValueObject.properties().add( body );
             }
-            ParsedValueObject responseValueObject = new ParsedValueObject( NamingUtility.responseName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ) );
+            ParsedValueObject responseValueObject = new ParsedValueObject( NamingUtility.responseName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ), apiPackage );
             for( ParsedResponse parsedResponse : parsedRequest.responses() ){
                 String statusClass = NamingUtility.statusClassName( parsedResponse.code() );
-                ParsedValueObject statusValueObject = new ParsedValueObject( statusClass );
+                ParsedValueObject statusValueObject = new ParsedValueObject( statusClass, apiPackage );
                 for( TypedHeader typedHeader : parsedResponse.headers() ){
                     statusValueObject.properties().add( parsePropertyFromTypedParam( typedHeader ) );
                 }

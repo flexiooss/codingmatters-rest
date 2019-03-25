@@ -60,7 +60,7 @@ public class RunJsTest {
     @Test
     public void testParameters() throws Exception {
         String[] ramlLocation = {
-//                Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
+                Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath()
         };
 

@@ -21,7 +21,7 @@ public class RamlParserClientTest {
 
     @Test
     public void testParameters() throws Exception {
-        ParsedRaml raml = new RamlParser( "org.generated.types" ).parseFile( getRaml( "parameters.raml" ) );
+        ParsedRaml raml = new RamlParser( "org.generated.types", "org.generated.api" ).parseFile( getRaml( "parameters.raml" ) );
         assertThat( raml.types().size(), is( 0 ) );
         assertThat( raml.routes().size(), is( 1 ) );
 
@@ -64,7 +64,7 @@ public class RamlParserClientTest {
         assertThat( subRoute.uriParameters().size(), is( 1 ) );
         assertThat( subRoute.uriParameters().get( 0 ).name(), is( "uriParams" ) );
         assertThat( ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).name(), is( "ParamsArrayUriParamsList" ) );
-        assertThat( ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).namespace(), is( "paramsarray" ) );
+        assertThat( ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).packageName(), is( "org.generated.api.paramsarray" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
     }
 
@@ -77,7 +77,7 @@ public class RamlParserClientTest {
         header = headers.get( 1 );
         assertThat( header.name(), is( "stringArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "StringArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
         header = headers.get( 2 );
         assertThat( header.name(), is( "intParam" ) );
@@ -85,7 +85,7 @@ public class RamlParserClientTest {
         header = headers.get( 3 );
         assertThat( header.name(), is( "intArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "IntArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.LONG ) );
         header = headers.get( 4 );
         assertThat( header.name(), is( "floatParam" ) );
@@ -93,7 +93,7 @@ public class RamlParserClientTest {
         header = headers.get( 5 );
         assertThat( header.name(), is( "floatArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "FloatArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.FLOAT ) );
         header = headers.get( 6 );
         assertThat( header.name(), is( "dateParam" ) );
@@ -101,7 +101,7 @@ public class RamlParserClientTest {
         header = headers.get( 7 );
         assertThat( header.name(), is( "dateArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "DateArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.DATE ) );
         header = headers.get( 8 );
         assertThat( header.name(), is( "datetimeParam" ) );
@@ -109,7 +109,7 @@ public class RamlParserClientTest {
         header = headers.get( 9 );
         assertThat( header.name(), is( "datetimeArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "DatetimeArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.DATE_TIME ) );
         header = headers.get( 10 );
         assertThat( header.name(), is( "timeParam" ) );
@@ -117,7 +117,7 @@ public class RamlParserClientTest {
         header = headers.get( 11 );
         assertThat( header.name(), is( "timeArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "TimeArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.TIME ) );
         header = headers.get( 12 );
         assertThat( header.name(), is( "boolParam" ) );
@@ -125,7 +125,7 @@ public class RamlParserClientTest {
         header = headers.get( 13 );
         assertThat( header.name(), is( "boolArrayParam" ) );
         assertThat( ((ValueObjectTypeList) header.type()).name(), is( "HeaderParamsGet" + request + "BoolArrayParamList" ) );
-        assertThat( ((ValueObjectTypeList) header.type()).namespace(), is( "headerparamsget" + requestNamespace ) );
+        assertThat( ((ValueObjectTypeList) header.type()).packageName(), is( "org.generated.api.headerparamsget" + requestNamespace ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) header.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.BOOL ) );
     }
 

@@ -32,10 +32,10 @@ public class JSClientGenerator {
 
     public void generateClientApi( String... ramlFilePath ) throws ProcessingException, GenerationException {
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
-        RamlParser ramlParser = new RamlParser( typesPackage );
+        RamlParser typesRamlParser = new RamlParser( typesPackage, apiPackage );
 
         for( String ramlFile : ramlFilePath ){
-            ParsedRaml parsedRaml = ramlParser.parseFile( ramlFile );
+            ParsedRaml parsedRaml = typesRamlParser.parseFile( ramlFile );
             RamlApiPreProcessor ramlApiPreProcessor = new RamlApiPreProcessor( apiPackage );
             ramlApiPreProcessor.process( parsedRaml );
 
