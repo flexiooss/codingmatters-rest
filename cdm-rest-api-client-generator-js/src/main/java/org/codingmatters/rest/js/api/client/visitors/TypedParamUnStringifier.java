@@ -110,7 +110,9 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
         if( list.type() instanceof ValueObjectTypeList ){
             return isObjectList( (ValueObjectTypeList) list.type() );
         }
-        return list.type() instanceof ObjectType;
+        return list.type() instanceof ObjectType ||
+                ((list.type() instanceof ValueObjectTypePrimitiveType) &&
+                        (((ValueObjectTypePrimitiveType) list.type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.OBJECT));
     }
 
     private String generateVarName() {
@@ -141,6 +143,13 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
                 case TZ_DATE_TIME:
                     write.string( "new FlexZonedDateTime( " + currentVariable + " )" );
                     break;
+                case OBJECT:
+                    if( dataUnstringified() ){
+                        write.string( currentVariable );
+                    } else {
+                        write.string( "JSON.parse( " + currentVariable + " )" );
+                    }
+                    break;
                 case BOOL:
                     write.string( currentVariable + " == 'true' ? true : false" );
                     break;
@@ -151,6 +160,10 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
+    }
+
+    private boolean dataUnstringified() {
+        return deserializeFunction.equals( "fromObject" );
     }
 
     @Override

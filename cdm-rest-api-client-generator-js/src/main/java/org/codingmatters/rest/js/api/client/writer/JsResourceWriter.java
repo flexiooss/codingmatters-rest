@@ -5,6 +5,7 @@ import org.codingmatters.rest.js.api.client.visitors.TypedParamUnStringifier;
 import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedResponse;
 import org.codingmatters.rest.parser.model.ParsedRoute;
+import org.codingmatters.rest.parser.model.typed.TypedBody;
 import org.codingmatters.rest.parser.model.typed.TypedHeader;
 import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
 import org.codingmatters.value.objects.js.error.ProcessingException;
@@ -52,10 +53,19 @@ public class JsResourceWriter {
             } else {
                 write.line( "var contentType = 'application/json';" );
             }
-            write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, JSON.stringify( " + requestVar + ".payload() ));" );
+            if( payloadIsFile( parsedRequest ) || payloadIsString( parsedRequest ) ){
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, " + requestVar + ".payload() );" );
+            } else {
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, JSON.stringify( " + requestVar + ".payload() ));" );
+            }
         } else {
             write.line( "var responseDelegate = this._requester." + httpMethod + "();" );
         }
+    }
+
+    private boolean payloadIsString( ParsedRequest parsedRequest ) {
+        return (parsedRequest.body().get().type() instanceof ValueObjectTypePrimitiveType)
+                && (((ValueObjectTypePrimitiveType) parsedRequest.body().get().type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING);
     }
 
     private boolean payloadIsFile( ParsedRequest parsedRequest ) {
@@ -103,9 +113,13 @@ public class JsResourceWriter {
                     write.indent();
                     write.string( "status.payload( " );
                     bodyProcessor.currentVariable( "responseDelegate.payload()" );
-                    parsedResponse.body().get().type().process( bodyProcessor );
+                    TypedBody body = parsedResponse.body().get();
+                    body.type().process( bodyProcessor );
                     write.string( ");" );
                     write.newLine();
+                    if( body.type() instanceof ValueObjectTypePrimitiveType && ((ValueObjectTypePrimitiveType) body.type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES ){
+                        write.line( "status.contentType( responseDelegate.header( 'Content-Type' ));" );
+                    }
                 }
                 write.line( responseVar + ".status" + parsedResponse.code() + "( status.build() );" );
                 write.line( "}" );

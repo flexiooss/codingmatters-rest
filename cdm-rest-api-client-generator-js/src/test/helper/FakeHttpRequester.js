@@ -2,6 +2,7 @@ class FakeHttpRequester {
 
     constructor(){
         this._responseHeaders = {};
+        this._responseHeaders["Content-Type"] = "Shit";
         this._headers = {};
         this._parameters = {};
         this._nextCode = 200;
@@ -28,6 +29,7 @@ class FakeHttpRequester {
     post( contentType, body ){
         this._lastMethod = "post";
         this._lastBody = body;
+        this._lastContentType = contentType;
         return new FakeResponseDelegate( this._nextCode, this._nextBody, this._responseHeaders );
     }
 
