@@ -1,6 +1,6 @@
 <?php
 
-packageName org\utils;
+namespace org\utils;
 
 use io\flexio\utils\http\HttpRequester;
 use io\flexio\utils\http\ResponseDelegate;
