@@ -30,7 +30,7 @@ onSuccess:
     exec:
       - $NOTIFY --data-urlencode "status=2" --data-urlencode "current-stage=$STAGE"
       - $UPLOAD_PROJECT_METADATA
-#      - $TRIGGER_DOWNSTREAM
+      - $TRIGGER_DOWNSTREAM
     onlyWhen:
       - branch in (master, develop)
   - name: notify-flexio
@@ -58,7 +58,7 @@ env:
 
   - PIPELINES_URL: https://pipelines.ci.flexio.io/pipelines
   - DEPENDENCIES_URL: https://dependencies.ci.flexio.io/poomci-dependency-api
-  - CI_TOOLS_IMAGE: codingmatters/ci-tools:0.0.1-SNAPSHOT
+  - CI_TOOLS_IMAGE: codingmatters/ci-tools:1.2.0-SNAPSHOT
 
   - M2: /tmp/m2
   - DOCKER_VOLUMES: -v $SRC:/src -v $M2:/m2 -v $WORKSPACE/secrets/settings.xml:/settings.xml -v $WORKSPACE/gnupg:/gnupg -v $WORKSPACE/flexio-ci-scripts:/flexio-ci-scripts -v $WORKSPACE/.composer:/.composer
@@ -71,7 +71,7 @@ env:
   - MVN_DEPLOY: $MVN deploy -DskipTests -Pattach-source-and-javadocs,sign-artifacts -Dgpg.passphrase=$GPG_PASS -Dgpg.homedir=/gnupg
 
   - UPLOAD_PROJECT_METADATA: $DOCKER /flexio-ci-scripts/bin/upload-project-metadata.sh $DEPENDENCIES_URL /src
-  - TRIGGER_DOWNSTREAM: $DOCKER /flexio-ci-scripts/bin/trigger-downstream.sh $PIPELINES_URL $DEPENDENCIES_URL $REPOSITORY_ID "$REPOSITORY" "$CHECKOUT_SPEC"
+  - TRIGGER_DOWNSTREAM: docker run --rm $DOCKER_ENV $DOCKER_VOLUMES $CI_TOOLS_IMAGE /usr/local/bin/trigger-downstream.sh $PIPELINES_URL $DEPENDENCIES_URL $REPOSITORY_ID "$REPOSITORY" "$CHECKOUT_SPEC"
 
   - NOTIFY: curl -G "https://my.flexio.io/channelApi/flexHttpInOut/59d3a0105d443519843d0496/5adf40aededdbb452368cfca" --data-urlencode "repository=$REPOSITORY" --data-urlencode "branch=$BRANCH" --data-urlencode "pipeline-id=$PIPELINE_ID"
 
