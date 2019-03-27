@@ -66,7 +66,7 @@
         <module>cdm-rest-client-okhttp</module>
         <module>cdm-rest-api-generator</module>
         <module>cdm-rest-api-client-generator-php</module>
-        <module>cdm-rest-api-client-generator-js</module>
+        <!--<module>cdm-rest-api-client-generator-js</module>-->
         <module>cdm-rest-api-doc</module>
         <module>cdm-rest-maven-plugin</module>
         <module>cdm-rest-tests</module>
