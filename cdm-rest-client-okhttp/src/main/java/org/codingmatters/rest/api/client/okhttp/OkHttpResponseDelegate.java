@@ -54,6 +54,11 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     }
 
     @Override
+    public InputStream bodyStream() throws IOException {
+        return this.bodyFile.inputStream();
+    }
+
+    @Override
     public String[] header(String name) {
         List<String> headerValues = this.headers.get(name.toLowerCase());
         return headerValues != null ? headerValues.toArray(new String [headerValues.size()]) : null;

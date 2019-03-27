@@ -2,7 +2,9 @@ package org.codingmatters.rest.api.client.test;
 
 import org.codingmatters.rest.api.client.ResponseDelegate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,6 +39,11 @@ public class TestResponseDeleguate implements ResponseDelegate {
     @Override
     public byte[] body() throws IOException {
         return this.body;
+    }
+
+    @Override
+    public InputStream bodyStream() throws IOException {
+        return new ByteArrayInputStream(this.body);
     }
 
     @Override

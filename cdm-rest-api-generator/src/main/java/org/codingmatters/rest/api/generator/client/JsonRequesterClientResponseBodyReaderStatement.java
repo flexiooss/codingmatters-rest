@@ -9,6 +9,8 @@ import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
+import java.io.InputStream;
+
 public class JsonRequesterClientResponseBodyReaderStatement implements ClientResponseBodyReaderStatement {
 
     private final Response response;
@@ -24,8 +26,8 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
     @Override
     public void append(MethodSpec.Builder caller) {
         TypeDeclaration body = this.response.body().get(0);
-        caller.beginControlFlow("try($T parser = this.jsonFactory.createParser(response.body()))",
-                JsonParser.class
+        caller.beginControlFlow("try($T bodyStream = response.bodyStream() ; $T parser = this.jsonFactory.createParser(bodyStream))",
+                InputStream.class, JsonParser.class
         );
 
         if(body.type().endsWith("[]")) {
