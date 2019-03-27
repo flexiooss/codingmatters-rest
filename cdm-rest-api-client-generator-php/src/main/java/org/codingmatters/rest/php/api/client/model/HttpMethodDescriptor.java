@@ -1,8 +1,11 @@
 package org.codingmatters.rest.php.api.client.model;
 
+import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
 import org.codingmatters.value.objects.spec.PropertyTypeSpec;
-import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpMethodDescriptor {
 
@@ -14,6 +17,7 @@ public class HttpMethodDescriptor {
     private Method method;
     private String path;
     private PropertyTypeSpec payload;
+    private Map<Integer, ValueObjectType> responseBodies = new HashMap<>();
 
 
     public HttpMethodDescriptor( String httpMethodName ) {
@@ -77,5 +81,9 @@ public class HttpMethodDescriptor {
 
     public String path() {
         return path;
+    }
+
+    public Map<Integer, ValueObjectType> responseBodies() {
+        return responseBodies;
     }
 }

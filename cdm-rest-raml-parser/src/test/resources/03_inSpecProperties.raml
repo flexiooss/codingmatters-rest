@@ -1,0 +1,21 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+    InSpecPropertyType:
+        type: object
+        properties:
+            objSimple: Toto
+            objComplex:
+                type: Toto
+            objArraySimple:
+                type: array
+                items: Toto
+            objArrayShortcut: Toto[]
+    Toto:
+      type: object
+      properties:
+        prop: string

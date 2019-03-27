@@ -35,6 +35,10 @@
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-spec</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.value.objects</groupId>
+            <artifactId>cdm-value-objects-yaml-parser</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
