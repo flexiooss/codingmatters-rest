@@ -114,8 +114,61 @@ class PayloadAndParameterTest extends TestCase {
         var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.ParamsArrayGetRequestBuilder();
         var uriParams = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarray.ParamsArrayUriParamsList( "p1", "p2" );
         request.uriParams( uriParams );
+
+        request.stringParam( "myStringParam" );
+        request.stringArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestStringArrayParamList( "tata", "yoyo" )
+        );
+        request.intParam( 7 );
+        request.intArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestIntArrayParamList( 1, 2 )
+        );
+        request.floatParam( 7.1 );
+        request.floatArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestFloatArrayParamList( 1.3, 22.2 )
+        );
+        request.dateParam( new FlexDate( "1992-10-17" ) );
+        request.dateArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
+        );
+        request.datetimeParam( new FlexDateTime( "1992-10-17T14:12:07" ) );
+        request.datetimeArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
+        );
+        request.timeParam( new FlexTime( "14:12:07" ) );
+        request.timeArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
+        );
+        request.boolParam( true );
+        request.boolArrayParam(
+            new window[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestBoolArrayParamList( true, true, false )
+        );
+
         var response = client.headerParams().paramsArray().paramsArrayGet( request.build() );
         assert.deepStrictEqual( requester._path, "http://gateway/header-params/p1/p2" );
+
+        assert.deepStrictEqual( requester._parameters["string-param"], "myStringParam" );
+        assert.deepStrictEqual( requester._parameters["stringArrayParam"][0], "tata" );
+        assert.deepStrictEqual( requester._parameters["stringArrayParam"][1], "yoyo" );
+        assert.deepStrictEqual( requester._parameters["intParam"], "7" );
+        assert.deepStrictEqual( requester._parameters["intArrayParam"][0], "1" );
+        assert.deepStrictEqual( requester._parameters["intArrayParam"][1], "2" );
+        assert.deepStrictEqual( requester._parameters["floatParam"], "7.1" );
+        assert.deepStrictEqual( requester._parameters["floatArrayParam"][0], "1.3" );
+        assert.deepStrictEqual( requester._parameters["floatArrayParam"][1], "22.2" );
+        assert.deepStrictEqual( requester._parameters["dateParam"], "1992-10-17" );
+        assert.deepStrictEqual( requester._parameters["dateArrayParam"][0], "1992-10-02" );
+        assert.deepStrictEqual( requester._parameters["dateArrayParam"][1], "1992-10-17" );
+        assert.deepStrictEqual( requester._parameters["datetimeParam"], "1992-10-17T14:12:07" );
+        assert.deepStrictEqual( requester._parameters["datetimeArrayParam"][0], "1992-10-17T14:12:07" );
+        assert.deepStrictEqual( requester._parameters["datetimeArrayParam"][1], "1992-10-02T13:00:00" );
+        assert.deepStrictEqual( requester._parameters["timeParam"], "14:12:07" );
+        assert.deepStrictEqual( requester._parameters["timeArrayParam"][0], "14:12:07" );
+        assert.deepStrictEqual( requester._parameters["timeArrayParam"][1], "13:00:00" );
+        assert.deepStrictEqual( requester._parameters["boolParam"], "true" );
+        assert.deepStrictEqual( requester._parameters["boolArrayParam"][0], "true" );
+        assert.deepStrictEqual( requester._parameters["boolArrayParam"][1], "true" );
+        assert.deepStrictEqual( requester._parameters["boolArrayParam"][2], "false" );
     }
 
 }

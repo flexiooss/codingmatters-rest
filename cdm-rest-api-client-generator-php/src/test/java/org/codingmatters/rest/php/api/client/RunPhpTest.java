@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class RunPhpTest {
 
@@ -23,7 +24,7 @@ public class RunPhpTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "composer", "install" );
         Process process = processBuilder.start();
-        process.waitFor( 60, TimeUnit.SECONDS );
+        assertTrue( "composer install took too much time", process.waitFor( 3, TimeUnit.MINUTES ) );
         if( process.exitValue() != 0 ) {
             printError( process.getInputStream() );
             printError( process.getErrorStream() );

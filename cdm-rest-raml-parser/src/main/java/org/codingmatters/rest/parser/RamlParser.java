@@ -31,7 +31,7 @@ public class RamlParser {
         return parseRamlModel( ramlModel );
     }
 
-    private ParsedRaml parseRamlModel( RamlModelResult ramlModel ) throws ProcessingException {
+    public ParsedRaml parseRamlModel( RamlModelResult ramlModel ) throws ProcessingException {
         ParsedRaml parsedRaml = new ParsedRaml( ramlModel.getApiV10().title().value() );
         Api api = ramlModel.getApiV10();
         ParsingUtils parsingUtils = this.parseTypes( parsedRaml, api );

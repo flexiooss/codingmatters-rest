@@ -141,4 +141,28 @@ public class OkHttpRequesterTest {
                 is(200)
         );
     }
+
+    @Test
+    public void oneHeaderWithSpecialCharacters() throws Exception {
+        this.undertow
+                .when( exchange->exchange.getRequestHeaders().get( "X-Test*" ).get( 0 ).equals( "utf-8''k%C3%A9k%C3%A9" ) )
+                .then( exchange->exchange.setStatusCode( 200 ) );
+
+        assertThat( this.requester
+                        .header( "X-Test", "kék\u00e9" ).get().code(),
+                is( 200 ) );
+
+        this.undertow
+                .when( exchange->exchange.getRequestHeaders().get( "X-Test*" ).get( 0 ).equals( "utf-8''k%C3%A9k%C3%A9" ) &&
+                        exchange.getRequestHeaders().get( "X-Test" ).get( 0 ).equals( "des" ) &&
+                        exchange.getRequestHeaders().get( "X-Test" ).get( 1 ).equals( "plages" )
+                )
+                .then( exchange->exchange.setStatusCode( 200 ) );
+
+        assertThat( this.requester
+                        .header( "X-Test", new String[]{ "kéké", "des", "plages" } ).get().code(),
+                is( 200 ) );
+    }
+
+
 }

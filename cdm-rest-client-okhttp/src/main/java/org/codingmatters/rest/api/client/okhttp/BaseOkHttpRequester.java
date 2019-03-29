@@ -170,13 +170,28 @@ public class BaseOkHttpRequester implements Requester {
 
         for (Map.Entry<String, String[]> headerEntry : this.headers.entrySet()) {
             if(headerEntry.getValue() != null) {
-                for (String value : headerEntry.getValue()) {
-                    result.addHeader(headerEntry.getKey(), value);
+                for( String value : headerEntry.getValue() ){
+                    if( this.needEncoding( value )){
+                        String name = headerEntry.getKey() + "*";
+                        String value1 = "utf-8''" + this.encode( value );
+                        result.addHeader( name, value1 );
+                    }else {
+                        result.addHeader( headerEntry.getKey(), value );
+                    }
                 }
             }
         }
-
         return result;
+    }
+
+    private boolean needEncoding( String value ) throws UnsupportedEncodingException {
+        for( int i = 0; i < value.length(); i++ ){
+            char c = value.charAt( i );
+            if( c <= 31 && c != '\t' || c >= 127 ){
+                return true;
+            }
+        }
+        return false;
     }
 
     private String encode(String str) throws UnsupportedEncodingException {
