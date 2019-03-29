@@ -141,4 +141,27 @@ public class OkHttpRequesterTest {
                 is(200)
         );
     }
+
+    @Test
+    public void oneEncodedHeader() throws Exception {
+        this.undertow
+                .when( exchange->
+                        exchange.getRequestHeaders().get( "X-Test*" ).getFirst().equals( "utf-8''k%C3%A9k%C3%A9" )
+                ).then( exchange->exchange.setStatusCode( 200 ) );
+        assertThat(
+                this.requester.header( "X-Test*", "kéké" ).get().code(),
+                is( 200 )
+        );
+
+        this.undertow
+                .when( exchange->
+                        exchange.getRequestHeaders().get( "X-Test*" ).getFirst().equals( "utf-8''toto" )
+                ).then( exchange->exchange.setStatusCode( 200 ) );
+        assertThat(
+                this.requester.header( "X-Test*", "toto" ).get().code(),
+                is( 200 )
+        );
+    }
+
+
 }

@@ -1,24 +1,18 @@
 {
   "name": "rest-tests",
+  "hotballoon-shed": {
+    "build": {
+      "builder": "webpack4"
+    },
+    "test": {
+      "tester": "code-altimeter-js",
+      "path": "__tests__"
+    }
+  },
   "devDependencies": {
-    "eslint": "^5.2.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-plugin-html": "^4.0.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-jest": "^21.18.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "regenerator-runtime": "^0.12.0",
-    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git",
-    "hotballoon-shed": "https://github.com/flexiooss/hotballoon-shed.git"
+    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git"
   },
   "dependencies": {
     "flexio-jshelpers": "https://github.com/flexiooss/flexio-jshelpers.git"
-  },
-  "scripts": {
-    "hotballoon-shed": "node ./node_modules/hotballoon-shed",
-    "test": "yarn hotballoon-shed --test"
   }
 }
