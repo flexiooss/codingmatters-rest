@@ -11,9 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public interface Content {
     Logger log = LoggerFactory.getLogger(Content.class);
@@ -30,18 +27,18 @@ public interface Content {
         return new FileContent(file);
     }
 
-    ThreadLocal<List<CountedReferenceTemporaryFile>> temporaryFiles = ThreadLocal.withInitial(LinkedList::new);
-
-    static void cleanupTemporaryFiles() {
-        for (CountedReferenceTemporaryFile temporaryFile : new ArrayList<>(temporaryFiles.get())) {
-            try {
-                temporaryFile.close();
-            } catch (Exception e) {
-                log.error("error closing temporary file", e);
-            }
-        }
-        temporaryFiles.get().clear();
-    }
+//    ThreadLocal<List<CountedReferenceTemporaryFile>> temporaryFiles = ThreadLocal.withInitial(LinkedList::new);
+//
+//    static void cleanupTemporaryFiles() {
+//        for (CountedReferenceTemporaryFile temporaryFile : new ArrayList<>(temporaryFiles.get())) {
+//            try {
+//                temporaryFile.close();
+//            } catch (Exception e) {
+//                log.error("error closing temporary file", e);
+//            }
+//        }
+//        temporaryFiles.get().clear();
+//    }
 
     static Content from(InputStream in) {
         try {

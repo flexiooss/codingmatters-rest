@@ -22,7 +22,7 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     public OkHttpResponseDelegate(Response response) throws IOException {
         this.code = response.code();
         try(ResponseBody body = response.body()) {
-            this.contentType = response.body().contentType() != null ? response.body().contentType().toString() : null;
+            this.contentType = body.contentType() != null ? body.contentType().toString() : null;
             this.bodyFile = CountedReferenceTemporaryFile.create();
 
             try(OutputStream out = this.bodyFile.outputStream(); InputStream in = body.byteStream()) {

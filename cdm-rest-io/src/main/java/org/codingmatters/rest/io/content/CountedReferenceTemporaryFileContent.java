@@ -32,4 +32,10 @@ public class CountedReferenceTemporaryFileContent implements Content {
     public int length() {
         return this.length;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        this.temporaryFile.close();
+    }
 }
