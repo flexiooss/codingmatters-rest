@@ -7,10 +7,12 @@ import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
     private final int code;
@@ -54,11 +56,9 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public String[] header(String name) {
-        List<String> headerValues = this.headers.get(name.toLowerCase());
-        if( name.endsWith( "*" )){
-            headerValues = headerValues.stream().map( this::decodeValue ).collect( Collectors.toList() );
-        }
-        return headerValues != null ? headerValues.toArray(new String [headerValues.size()]) : null;
+        List<String> encodedHeaderValues = this.headers.getOrDefault( name.toLowerCase() + "*", Collections.emptyList() );
+        List<String> headerValues = this.headers.getOrDefault( name.toLowerCase(), Collections.emptyList() );
+        return Stream.concat( headerValues.stream(), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray(String[]::new );
     }
 
     private String decodeValue( String value ) {

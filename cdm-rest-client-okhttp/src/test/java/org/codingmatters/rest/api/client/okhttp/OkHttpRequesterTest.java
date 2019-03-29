@@ -143,24 +143,25 @@ public class OkHttpRequesterTest {
     }
 
     @Test
-    public void oneEncodedHeader() throws Exception {
+    public void oneHeaderWithSpecialCharacters() throws Exception {
         this.undertow
-                .when( exchange->
-                        exchange.getRequestHeaders().get( "X-Test*" ).getFirst().equals( "utf-8''k%C3%A9k%C3%A9" )
-                ).then( exchange->exchange.setStatusCode( 200 ) );
-        assertThat(
-                this.requester.header( "X-Test*", "kéké" ).get().code(),
-                is( 200 )
-        );
+                .when( exchange->exchange.getRequestHeaders().get( "X-Test*" ).get( 0 ).equals( "utf-8''k%C3%A9k%C3%A9" ) )
+                .then( exchange->exchange.setStatusCode( 200 ) );
+
+        assertThat( this.requester
+                        .header( "X-Test", "kéké" ).get().code(),
+                is( 200 ) );
 
         this.undertow
-                .when( exchange->
-                        exchange.getRequestHeaders().get( "X-Test*" ).getFirst().equals( "utf-8''toto" )
-                ).then( exchange->exchange.setStatusCode( 200 ) );
-        assertThat(
-                this.requester.header( "X-Test*", "toto" ).get().code(),
-                is( 200 )
-        );
+                .when( exchange->exchange.getRequestHeaders().get( "X-Test*" ).get( 0 ).equals( "utf-8''k%C3%A9k%C3%A9" ) &&
+                        exchange.getRequestHeaders().get( "X-Test" ).get( 0 ).equals( "des" ) &&
+                        exchange.getRequestHeaders().get( "X-Test" ).get( 1 ).equals( "plages" )
+                )
+                .then( exchange->exchange.setStatusCode( 200 ) );
+
+        assertThat( this.requester
+                        .header( "X-Test", new String[]{ "kéké", "des", "plages" } ).get().code(),
+                is( 200 ) );
     }
 
 

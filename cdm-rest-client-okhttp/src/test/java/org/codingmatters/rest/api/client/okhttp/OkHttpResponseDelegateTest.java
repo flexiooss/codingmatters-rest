@@ -12,9 +12,12 @@ public class OkHttpResponseDelegateTest {
     public void testEncodedHeader() throws Exception {
         Response response = createFakeResponse();
         OkHttpResponseDelegate responseDelegate = new OkHttpResponseDelegate( response );
-        assertThat( responseDelegate.header( "X-Encoded*" )[0], is( "kéké" ) );
-        assertThat( responseDelegate.header( "X-No-Need-Encoding*" )[0], is( "toto" ) );
+        assertThat( responseDelegate.header( "X-Encoded" )[0], is( "kéké" ) );
+        assertThat( responseDelegate.header( "X-No-Need-Encoding" )[0], is( "toto" ) );
         assertThat( responseDelegate.header( "X-Encoded-No-Decoded" )[0], is( "utf-8''k%C3%A9k%C3%A9" ) );
+        assertThat( responseDelegate.header( "X-Toto" )[1], is( "plages" ) );
+        assertThat( responseDelegate.header( "X-Toto" )[0], is( "des" ) );
+        assertThat( responseDelegate.header( "X-Toto" )[2], is( "kéké" ) );
     }
 
     private Response createFakeResponse() {
@@ -23,6 +26,9 @@ public class OkHttpResponseDelegateTest {
                 .header( "X-Encoded*", "utf-8''k%C3%A9k%C3%A9" )
                 .header( "X-No-Need-Encoding*", "utf-8''toto" )
                 .header( "X-Encoded-No-Decoded", "utf-8''k%C3%A9k%C3%A9" )
+                .addHeader( "X-Toto", "des" )
+                .addHeader( "X-Toto*", "utf-8''plages" )
+                .addHeader( "X-Toto*", "utf-8''k%C3%A9k%C3%A9" )
                 .request( new Request.Builder().url( "https://toto.com" ).build() )
                 .protocol( Protocol.HTTP_1_0 )
                 .message( "Hello" )
