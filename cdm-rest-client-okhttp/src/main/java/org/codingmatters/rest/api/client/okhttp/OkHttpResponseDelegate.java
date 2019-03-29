@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
@@ -55,10 +54,11 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     }
 
     @Override
-    public String[] header(String name) {
+    public String[] header( String name ) {
         List<String> encodedHeaderValues = this.headers.getOrDefault( name.toLowerCase() + "*", Collections.emptyList() );
         List<String> headerValues = this.headers.getOrDefault( name.toLowerCase(), Collections.emptyList() );
-        return Stream.concat( headerValues.stream(), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray(String[]::new );
+        return headerValues.isEmpty() && encodedHeaderValues.isEmpty() ? null
+                : Stream.concat( headerValues.stream(), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray( String[]::new );
     }
 
     private String decodeValue( String value ) {

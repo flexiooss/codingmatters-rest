@@ -149,7 +149,7 @@ public class OkHttpRequesterTest {
                 .then( exchange->exchange.setStatusCode( 200 ) );
 
         assertThat( this.requester
-                        .header( "X-Test", "kéké" ).get().code(),
+                        .header( "X-Test", "kék\u00e9" ).get().code(),
                 is( 200 ) );
 
         this.undertow
