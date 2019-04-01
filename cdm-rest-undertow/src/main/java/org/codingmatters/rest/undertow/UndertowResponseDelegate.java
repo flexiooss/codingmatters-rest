@@ -4,6 +4,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.codingmatters.rest.api.ResponseDelegate;
+import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +41,13 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     public ResponseDelegate addHeader(String name, String ... values) {
         if(values != null) {
             for (String value : values) {
-                this.exchange.getResponseHeaders().add(HttpString.tryFromString(name), value);
+                if( HeaderEncodingHandler.needEncoding( value )){
+                    this.exchange.getResponseHeaders().add( HttpString.tryFromString( name + "*" ), HeaderEncodingHandler.encodeHeader( value ));
+                } else {
+                    this.exchange.getResponseHeaders().add( HttpString.tryFromString( name ), value );
+                }
             }
         }
-
         return this;
     }
 

@@ -7,6 +7,7 @@ import okhttp3.Response;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
+import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -171,27 +172,16 @@ public class BaseOkHttpRequester implements Requester {
         for (Map.Entry<String, String[]> headerEntry : this.headers.entrySet()) {
             if(headerEntry.getValue() != null) {
                 for( String value : headerEntry.getValue() ){
-                    if( this.needEncoding( value )){
+                    if( HeaderEncodingHandler.needEncoding( value )){
                         String name = headerEntry.getKey() + "*";
-                        String value1 = "utf-8''" + this.encode( value );
-                        result.addHeader( name, value1 );
-                    }else {
+                        result.addHeader( name, HeaderEncodingHandler.encodeHeader( value ) );
+                    } else {
                         result.addHeader( headerEntry.getKey(), value );
                     }
                 }
             }
         }
         return result;
-    }
-
-    private boolean needEncoding( String value ) throws UnsupportedEncodingException {
-        for( int i = 0; i < value.length(); i++ ){
-            char c = value.charAt( i );
-            if( c <= 31 && c != '\t' || c >= 127 ){
-                return true;
-            }
-        }
-        return false;
     }
 
     private String encode(String str) throws UnsupportedEncodingException {
