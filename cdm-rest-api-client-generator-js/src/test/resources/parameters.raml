@@ -90,5 +90,41 @@ mediaType: application/json
         type: array
         items: string
     get:
+      queryParameters: 
+        string-param:
+          type: string
+        stringArrayParam:
+          type: array
+          items: string
+        intParam:
+          type: integer
+        intArrayParam:
+          type: array
+          items: integer
+        floatParam:
+          type: number
+        floatArrayParam:
+          type: array
+          items: number
+        dateParam:
+          type: date-only
+        dateArrayParam:
+          type: array
+          items: date-only
+        datetimeParam:
+          type: datetime-only
+        datetimeArrayParam:
+          type: array
+          items: datetime-only
+        timeParam:
+          type: time-only
+        timeArrayParam:
+          type: array
+          items: time-only
+        boolParam:
+          type: boolean
+        boolArrayParam:
+          type: array
+          items: boolean
       responses:
         200:

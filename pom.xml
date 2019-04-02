@@ -65,8 +65,8 @@
         <module>cdm-rest-undertow</module>
         <module>cdm-rest-client-okhttp</module>
         <module>cdm-rest-api-generator</module>
-        <!--<module>cdm-rest-api-client-generator-php</module>-->
-        <!--<module>cdm-rest-api-client-generator-js</module>-->
+        <module>cdm-rest-api-client-generator-php</module>
+        <module>cdm-rest-api-client-generator-js</module>
         <module>cdm-rest-api-doc</module>
         <module>cdm-rest-maven-plugin</module>
         <module>cdm-rest-tests</module>
@@ -174,6 +174,11 @@
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-io</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-raml-parser</artifactId>
                 <version>1.5.0-SNAPSHOT</version>
             </dependency>
             <!--//BOM-->
