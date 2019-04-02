@@ -81,9 +81,9 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
             }
             addValueObject( requestValueObject, apiPackage );
             addValueObject( responseValueObject, apiPackage );
-            for( ParsedRoute subRoute : parsedRoute.subRoutes() ){
-                this.process( subRoute );
-            }
+        }
+        for( ParsedRoute subRoute : parsedRoute.subRoutes() ){
+            this.process( subRoute );
         }
     }
 
