@@ -168,12 +168,12 @@
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
-                <artifactId>cdm-rest-maven-plugin</artifactId>
+                <artifactId>cdm-rest-api-client-generator-js</artifactId>
                 <version>1.5.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
-                <artifactId>cdm-rest-io</artifactId>
+                <artifactId>cdm-rest-maven-plugin</artifactId>
                 <version>1.5.0-SNAPSHOT</version>
             </dependency>
             <dependency>
