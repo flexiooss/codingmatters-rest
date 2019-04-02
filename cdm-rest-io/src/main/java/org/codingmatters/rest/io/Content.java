@@ -27,19 +27,6 @@ public interface Content {
         return new FileContent(file);
     }
 
-//    ThreadLocal<List<CountedReferenceTemporaryFile>> temporaryFiles = ThreadLocal.withInitial(LinkedList::new);
-//
-//    static void cleanupTemporaryFiles() {
-//        for (CountedReferenceTemporaryFile temporaryFile : new ArrayList<>(temporaryFiles.get())) {
-//            try {
-//                temporaryFile.close();
-//            } catch (Exception e) {
-//                log.error("error closing temporary file", e);
-//            }
-//        }
-//        temporaryFiles.get().clear();
-//    }
-
     static Content from(InputStream in) {
         try {
             CountedReferenceTemporaryFile temp = CountedReferenceTemporaryFile.create();
