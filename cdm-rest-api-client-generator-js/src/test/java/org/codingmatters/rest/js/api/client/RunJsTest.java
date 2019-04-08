@@ -16,12 +16,12 @@ public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
 
-//    @BeforeClass
+    @BeforeClass
     public static void setUp() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "hbshed", "clean" , "install" );
+        processBuilder.command( "hbshed", "install" );
         System.out.println( "Running 'yarn install'" );
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );

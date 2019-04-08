@@ -44,7 +44,7 @@ public class RamlParserClientTest {
         assertThat( request.responses().get( 0 ).code(), is( 200 ) );
         assertThat( request.responses().get( 0 ).body(), is( Optional.empty() ) );
         assertThat( request.responses().get( 0 ).headers().size(), is( 14 ) );
-        assertParams( new ArrayList<>( request.responses().get( 0 ).headers() ), "Response" );
+        assertParams( new ArrayList<>( request.responses().get( 0 ).headers() ), "Status200Response" );
 
         assertThat( route.subRoutes().size(), is( 1 ) );
         ParsedRoute subRoute = route.subRoutes().get( 0 );

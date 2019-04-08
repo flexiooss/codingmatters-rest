@@ -186,7 +186,7 @@ public class ParsingUtils {
             }
             for( Response response : request.responses() ){
                 Optional<TypedBody> responseBody = Optional.empty();
-                String responseClassName = NamingUtility.responseName( displayName, method );
+                String responseClassName = NamingUtility.responseName( displayName, method, "Status", response.code().value() );
                 if( hasBody( response ) ){
                     responseBody = Optional.of( new TypedBody( parseType(
                             responseClassName,
