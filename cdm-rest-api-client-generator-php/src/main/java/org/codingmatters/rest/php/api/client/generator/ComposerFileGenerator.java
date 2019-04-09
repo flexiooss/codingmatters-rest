@@ -25,9 +25,9 @@ public class ComposerFileGenerator {
         try( BufferedWriter writer = new BufferedWriter( new FileWriter( new File( rootDir, "composer.json" ) ) ) ) {
             writer.write( "{" );
             writer.newLine();
-            writer.write( "  \"name\": \"${flexio-vendor}/${project.artifactId}\"," );
+            writer.write( "  \"name\": \"" + vendor + "/" + artifactId + "\"," );
             writer.newLine();
-            writer.write( "  \"version\": \"${project.version}\"," );
+            writer.write( "  \"version\": \"" + version.replace( "SNAPSHOT", "dev" ) + "\"," );
             writer.newLine();
             writer.write( "  \"require\": {" );
             writer.newLine();
