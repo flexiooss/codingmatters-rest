@@ -23,14 +23,20 @@ public class JSClientGenerator {
     private final String resourcesPackage;
     private final String clientPackage;
     private final RamlParser typesRamlParser;
+    private final String vendor;
+    private final String version;
+    private final String artifactId;
 
-    public JSClientGenerator( File rootDirectory, String rootPackage ) {
+    public JSClientGenerator( File rootDirectory, String rootPackage, String vendor, String artifactId, String version ) {
         this.rootDirectory = rootDirectory;
         this.typesPackage = rootPackage + ".types";
         this.apiPackage = rootPackage + ".api";
         this.resourcesPackage = rootPackage + ".client.resources";
         this.clientPackage = rootPackage + ".client";
         this.typesRamlParser = new RamlParser( typesPackage, apiPackage );
+        this.vendor = vendor;
+        this.version = version;
+        this.artifactId = artifactId;
     }
 
     public void generateClientApi( String... ramlFilePath ) throws ProcessingException, GenerationException {
@@ -67,5 +73,9 @@ public class JSClientGenerator {
                 .process( parsedRaml );
         new JsApiRootClientGenerator( rootDirectory, clientPackage, resourcesPackage, packageBuilder )
                 .process( parsedRaml );
+
+        new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
     }
+
+
 }

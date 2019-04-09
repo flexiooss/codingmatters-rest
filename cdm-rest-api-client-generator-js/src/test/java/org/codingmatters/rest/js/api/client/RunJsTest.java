@@ -66,9 +66,9 @@ public class RunJsTest {
 
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Generating in " + dir );
-        JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated" );
+        JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated", "phpGeneration", "unitTests", "1.0" );
         generator.generateClientApi( ramlLocation );
-//
+
 //        System.out.println( "Running 'yarn test' in " + dir );
 //        processBuilder.directory( new File( dir ) );
 //        processBuilder.command( "hbshed", "test", "-V" );
