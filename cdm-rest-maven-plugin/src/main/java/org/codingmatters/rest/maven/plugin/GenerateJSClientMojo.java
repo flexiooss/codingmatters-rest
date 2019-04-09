@@ -18,11 +18,20 @@ public class GenerateJSClientMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
     private File outputDirectory;
 
+    @Parameter( required = true )
+    private String vendor;
+
+    @Parameter( defaultValue = "${project.artifactId}" )
+    private String artifactId;
+
+    @Parameter( defaultValue = "${project.version}" )
+    private String version;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             RamlModelResult ramlModel = this.resolveRamlModel();
-            JSClientGenerator generator = new JSClientGenerator( this.outputDirectory, this.rootPackage );
+            JSClientGenerator generator = new JSClientGenerator( this.outputDirectory, this.rootPackage, this.vendor, this.artifactId, this.version );
             generator.generateClientApi( ramlModel );
         } catch( Exception e ){
             throw new MojoFailureException( "Error generating JS client", e );
