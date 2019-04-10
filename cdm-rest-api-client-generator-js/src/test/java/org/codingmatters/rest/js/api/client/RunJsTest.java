@@ -61,9 +61,8 @@ public class RunJsTest {
     public void testParameters() throws Exception {
         String[] ramlLocation = {
                 Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
-                Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath()
-//                ,
-//                Thread.currentThread().getContextClassLoader().getResource( "factorized_enum.raml" ).getPath()
+                Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath(),
+                Thread.currentThread().getContextClassLoader().getResource( "factorized_enum.raml" ).getPath()
         };
 
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
