@@ -2,6 +2,7 @@ package org.codingmatters.rest.js.api.client.visitors;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -53,7 +54,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            write.string( varName + ".map( element => " );
+            write.string( varName + ".mapToArray( element => " );
             this.varName = "element";
             list.type().process( this );
             write.string( " )" );
@@ -101,7 +102,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
         try {
             write.string( varName + ".name" );
         } catch( IOException e ){
-            throw new ProcessingException( "Error stringifying primitive type", e );
+            throw new ProcessingException( "Error stringifying enum type", e );
         }
     }
 
@@ -110,12 +111,21 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
         try {
             write.string( varName + ".name" );
         } catch( IOException e ){
-            throw new ProcessingException( "Error stringifying primitive type", e );
+            throw new ProcessingException( "Error stringifying enum type", e );
         }
     }
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new ProcessingException( "Not implemented" );
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        try {
+            write.string( varName + ".name" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error stringifying enum type", e );
+        }
     }
 }

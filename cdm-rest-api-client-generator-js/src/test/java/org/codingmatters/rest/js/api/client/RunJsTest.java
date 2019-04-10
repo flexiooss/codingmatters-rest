@@ -62,24 +62,26 @@ public class RunJsTest {
         String[] ramlLocation = {
                 Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath()
+//                ,
+//                Thread.currentThread().getContextClassLoader().getResource( "factorized_enum.raml" ).getPath()
         };
 
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Generating in " + dir );
         JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated", "phpGeneration", "unitTests", "1.0" );
-        generator.generateClientApi( ramlLocation );
+        generator.generateClientApi( false, ramlLocation );
 
-//        System.out.println( "Running 'yarn test' in " + dir );
-//        processBuilder.directory( new File( dir ) );
-//        processBuilder.command( "hbshed", "test", "-V" );
-//        Process process = processBuilder.start();
-//
-//        process.waitFor( 120, TimeUnit.SECONDS );
-//        if( process.exitValue() != 0 ){
-//            printError( process );
-//        }
-//        assertThat( process.exitValue(), is( 0 ) );
-//        System.out.println( "EXIT == " + process.exitValue() );
+        System.out.println( "Running 'yarn test' in " + dir );
+        processBuilder.directory( new File( dir ) );
+        processBuilder.command( "hbshed", "test", "-V" );
+        Process process = processBuilder.start();
+
+        process.waitFor( 120, TimeUnit.SECONDS );
+        if( process.exitValue() != 0 ){
+        }
+            printError( process );
+        assertThat( process.exitValue(), is( 0 ) );
+        System.out.println( "EXIT == " + process.exitValue() );
     }
 
 }

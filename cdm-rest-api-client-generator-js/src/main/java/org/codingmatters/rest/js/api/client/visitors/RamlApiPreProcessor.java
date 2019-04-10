@@ -11,6 +11,7 @@ import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.parser.model.ParsedType;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeExternalValue;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class RamlApiPreProcessor implements ParsedRamlProcessor {
 
     private final String apiPackage;
-    private Map<String, List<ParsedValueObject>> processedValueObjects;
+    private Map<String, List<ParsedType>> processedValueObjects;
 
     public RamlApiPreProcessor( String apiPackage ) {
         this.apiPackage = apiPackage;
@@ -97,7 +98,7 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
         return new ValueObjectProperty( typedQueryParam.name(), typedQueryParam.type() );
     }
 
-    public Map<String, List<ParsedValueObject>> processedValueObjects() {
+    public Map<String, List<ParsedType>> processedValueObjects() {
         return processedValueObjects;
     }
 }

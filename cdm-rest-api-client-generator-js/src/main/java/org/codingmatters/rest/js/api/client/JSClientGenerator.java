@@ -39,12 +39,16 @@ public class JSClientGenerator {
         this.artifactId = artifactId;
     }
 
-    public void generateClientApi( String... ramlFilePath ) throws ProcessingException, GenerationException {
+    public void generateClientApi( String... ramlFilePath ) throws GenerationException, ProcessingException {
+        this.generateClientApi( true, ramlFilePath );
+    }
+
+    public void generateClientApi( boolean generatePackage, String... ramlFilePath ) throws ProcessingException, GenerationException {
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
 
         for( String ramlFile : ramlFilePath ){
             ParsedRaml parsedRaml = typesRamlParser.parseFile( ramlFile );
-            generateClient( packageBuilder, parsedRaml );
+            generateClient( packageBuilder, parsedRaml, generatePackage );
         }
         new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
     }
@@ -52,12 +56,12 @@ public class JSClientGenerator {
     public void generateClientApi( RamlModelResult ramlModel ) throws ProcessingException, GenerationException {
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
         ParsedRaml parsedRaml = typesRamlParser.parseRamlModel( ramlModel );
-        generateClient( packageBuilder, parsedRaml );
+        generateClient( packageBuilder, parsedRaml, true );
         new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
     }
 
 
-    private void generateClient( PackageFilesBuilder packageBuilder, ParsedRaml parsedRaml ) throws ProcessingException {
+    private void generateClient( PackageFilesBuilder packageBuilder, ParsedRaml parsedRaml, boolean generatePackage ) throws ProcessingException {
         RamlApiPreProcessor ramlApiPreProcessor = new RamlApiPreProcessor( apiPackage );
         ramlApiPreProcessor.process( parsedRaml );
 
@@ -74,7 +78,9 @@ public class JSClientGenerator {
         new JsApiRootClientGenerator( rootDirectory, clientPackage, resourcesPackage, packageBuilder )
                 .process( parsedRaml );
 
-        new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
+        if( generatePackage ){
+            new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
+        }
     }
 
 

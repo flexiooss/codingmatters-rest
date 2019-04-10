@@ -4,6 +4,7 @@ import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -119,6 +120,11 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
+
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
 
     }
 }

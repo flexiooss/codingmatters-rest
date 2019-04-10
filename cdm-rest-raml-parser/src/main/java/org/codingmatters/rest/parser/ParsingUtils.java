@@ -100,12 +100,20 @@ public class ParsingUtils {
             if( type == null || (type.equals( "object" ) && property instanceof ObjectTypeDeclaration && !((ObjectTypeDeclaration) property).properties().isEmpty()) ){
                 type = property.name();
             }
+            if( type != null &&
+                    type.equals( "string" ) &&
+                    property instanceof StringTypeDeclaration &&
+                    allTypes.containsKey( property.name() ) &&
+                    isFactorizedEnum( allTypes.get( property.name() ) ) ){
+                type = property.name();
+            }
         }
         return type.replace( "[]", "" );
     }
 
     public ValueObjectType parseListType( String typeDeclarationName, ArrayTypeDeclaration property ) throws ProcessingException {
         ValueObjectType valueObjectType = parseType( typeDeclarationName, property.items() );
+
         return valueObjectType;
     }
 
@@ -120,8 +128,10 @@ public class ParsingUtils {
             ValueObjectType type = parseListType( typeDeclarationName, (ArrayTypeDeclaration) property );
             String namespace = NamingUtility.namespace( typeDeclarationName );
             return new ValueObjectTypeList( name, type, typesPackage + "." + namespace );
-
         } else if( isEnum( property ) ){
+            if( isTypeEnum( property ).isPresent() ){
+                return new YamlEnumExternalEnum( typesPackage + "." + NamingUtility.className( isTypeEnum( property ).get() ));
+            }
             return new YamlEnumInSpecEnum(
                     NamingUtility.className( context.toArray( new String[0] ) ),
                     NamingUtility.namespace( typeDeclarationName ),
@@ -142,6 +152,20 @@ public class ParsingUtils {
             return new ObjectTypeNested( parseNested( typeDeclarationName, (ObjectTypeDeclaration) property ), NamingUtility.namespace( typeDeclarationName ) );
         }
         throw new ProcessingException( "Cannot parse this declaration" );
+    }
+
+    private Optional<String> isTypeEnum( TypeDeclaration typeDeclaration ) {
+        String type = getPropertyType( typeDeclaration );
+        if( allTypes.containsKey( type ) && isFactorizedEnum( allTypes.get( type ) ) ){
+            return Optional.of( type );
+        }
+        return Optional.empty();
+    }
+
+    public boolean isFactorizedEnum( TypeDeclaration typeDeclaration ) {
+        return typeDeclaration instanceof StringTypeDeclaration &&
+                ((StringTypeDeclaration) typeDeclaration).enumValues() != null &&
+                !((StringTypeDeclaration) typeDeclaration).enumValues().isEmpty();
     }
 
     private ParsedValueObject parseNested( String typeDeclarationName, ObjectTypeDeclaration property ) throws ProcessingException {

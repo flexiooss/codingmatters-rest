@@ -4,6 +4,7 @@ import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializationProcessor;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -189,6 +190,16 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        try {
+            String className = NamingUtility.classFullName( parsedEnum.packageName() + "." + parsedEnum.name() );
+            write.string( className + ".enumValueOf( " + currentVariable + " )" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error processing type", e );
+        }
     }
 
 

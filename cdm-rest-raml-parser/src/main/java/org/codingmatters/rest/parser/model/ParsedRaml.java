@@ -3,6 +3,7 @@ package org.codingmatters.rest.parser.model;
 import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
 import org.codingmatters.rest.parser.processing.ProcessableRaml;
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.model.ParsedType;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 public class ParsedRaml implements ProcessableRaml {
 
     private final String apiName;
-    private final List<ParsedValueObject> types;
+    private final List<ParsedType> types;
     private final List<ParsedRoute> routes;
 
     public ParsedRaml( String apiName ) {
@@ -20,7 +21,7 @@ public class ParsedRaml implements ProcessableRaml {
         this.routes = new ArrayList<>();
     }
 
-    public List<ParsedValueObject> types() {
+    public List<ParsedType> types() {
         return types;
     }
 
