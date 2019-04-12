@@ -5,6 +5,7 @@ import org.codingmatters.rest.parser.model.ParsedRequest;
 import org.codingmatters.rest.parser.model.ParsedRoute;
 import org.codingmatters.rest.parser.model.RequestMethod;
 import org.codingmatters.rest.parser.model.typed.TypedParameter;
+import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeList;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES;
@@ -27,9 +28,12 @@ public class RamlParserClientTest {
 
         ParsedRoute route = raml.routes().get( 0 );
         assertThat( route.displayName(), is( "HeaderParams" ) );
-        assertThat( route.path(), is( "/header-params/{uriParams}" ) );
-        assertThat( route.uriParameters().size(), is( 1 ) );
+        assertThat( route.path(), is( "/{header-params}/{uriParams}" ) );
+        assertThat( route.uriParameters().size(), is( 2 ) );
         assertThat( ((ValueObjectTypePrimitiveType) route.uriParameters().get( 0 ).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
+        assertThat( route.uriParameters().get( 0 ).name(), is( "header-params" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) route.uriParameters().get( 1 ).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
+        assertThat( route.uriParameters().get( 1 ).name(), is( "uriParams" ) );
 
         assertThat( route.requests().size(), is( 1 ) );
         ParsedRequest request = route.requests().get( 0 );
@@ -49,7 +53,7 @@ public class RamlParserClientTest {
         assertThat( route.subRoutes().size(), is( 1 ) );
         ParsedRoute subRoute = route.subRoutes().get( 0 );
         assertThat( subRoute.displayName(), is( "ParamsArray" ) );
-        assertThat( subRoute.path(), is( "/header-params/{uriParams}/{uriParams}" ) );
+        assertThat( subRoute.path(), is( "/{header-params}/{uriParams}/{uriParams}" ) );
         assertThat( subRoute.subRoutes().size(), is( 0 ) );
         assertThat( subRoute.requests().size(), is( 1 ) );
         assertThat( subRoute.requests().get( 0 ).headers().size(), is( 0 ) );
@@ -61,11 +65,15 @@ public class RamlParserClientTest {
         assertThat( subRoute.requests().get( 0 ).responses().get( 0 ).headers().size(), is( 0 ) );
         assertThat( subRoute.requests().get( 0 ).responses().get( 0 ).code(), is( 200 ) );
 
-        assertThat( subRoute.uriParameters().size(), is( 1 ) );
-        assertThat( subRoute.uriParameters().get( 0 ).name(), is( "uriParams" ) );
-        assertThat( ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).name(), is( "ParamsArrayUriParamsList" ) );
-        assertThat( ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).packageName(), is( "org.generated.api.paramsarray" ) );
-        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) subRoute.uriParameters().get( 0 ).type()).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
+        assertThat( subRoute.uriParameters().size(), is( 2 ) );
+        assertThat( subRoute.uriParameters().get( 1 ).name(), is( "header-params" ) );
+        assertThat( ((ValueObjectTypePrimitiveType)subRoute.uriParameters().get( 1 ).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
+
+        TypedUriParams uriParam = subRoute.uriParameters().get( 0 );
+        assertThat( uriParam.name(), is( "uriParams" ) );
+        assertThat( ((ValueObjectTypeList) uriParam.type()).name(), is( "ParamsArrayUriParamsList" ) );
+        assertThat( ((ValueObjectTypeList) uriParam.type()).packageName(), is( "org.generated.api.paramsarray" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) uriParam.type()).type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
     }
 
     private void assertParams( List<TypedParameter> headers, String request ) {

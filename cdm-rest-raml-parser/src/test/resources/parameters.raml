@@ -4,9 +4,10 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
-/header-params/{uriParams}:
+/{header-params}/{uriParams}:
   displayName: HeaderParams
   uriParameters:
+    header-params: string
     uriParams: string
   get:
     queryParameters:

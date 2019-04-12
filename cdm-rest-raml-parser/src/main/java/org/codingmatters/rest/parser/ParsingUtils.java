@@ -185,9 +185,7 @@ public class ParsingUtils {
         String displayName = NamingUtility.getJoinedName( resource.displayName().value() );
         ParsedRoute route = new ParsedRoute( resource.resourcePath(), displayName );
         if( resource.uriParameters() != null ){
-            for( TypeDeclaration parameters : resource.uriParameters() ){
-                route.uriParameters().add( new TypedUriParams( parameters.name(), parseType( displayName, parameters ) ) );
-            }
+            route.uriParameters().addAll( collectParentUriParam(resource) );
         }
         for( Method request : resource.methods() ){
             ParsedRequest parsedRequest;
@@ -226,11 +224,28 @@ public class ParsingUtils {
             route.requests().add( parsedRequest );
         }
         if( resource.resources() != null ){
-            for( Resource subRresource : resource.resources() ){
-                route.subRoutes().add( parseRoute( subRresource ) );
+            for( Resource subResource : resource.resources() ){
+                route.subRoutes().add( parseRoute( subResource ) );
             }
         }
         return route;
+    }
+
+    private List<TypedUriParams>  collectParentUriParam( Resource resource ) throws ProcessingException {
+        String displayName = NamingUtility.getJoinedName( resource.displayName().value() );
+        List<TypedUriParams> uriParameters = new ArrayList<>();
+        for( TypeDeclaration parameters : resource.uriParameters() ){
+            uriParameters.add( new TypedUriParams( parameters.name(), parseType( displayName, parameters ) ) );
+        }
+        Resource parent = resource.parentResource();
+        if( parent != null ){
+            for( TypedUriParams typedUriParam : collectParentUriParam( parent ) ){
+                if( uriParameters.stream().noneMatch( param->param.name().equals( typedUriParam.name() ) ) ){
+                    uriParameters.add( typedUriParam );
+                }
+            }
+        }
+        return uriParameters;
     }
 
     private boolean hasBody( Response response ) {
