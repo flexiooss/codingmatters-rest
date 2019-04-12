@@ -22,7 +22,7 @@ public class JsonPackageGenerator {
             write.line( "\"flexio-jshelpers\": \"https://github.com/flexiooss/flexio-jshelpers.git\"" );
             write.unindent();
             write.line( "}," );
-            write.line( "\"main\": \"io/packages.js\"" );
+            write.line( "\"main\": \"io/package.js\"" );
             write.line( "}" );
             write.flush();
         } catch( Exception e ){
