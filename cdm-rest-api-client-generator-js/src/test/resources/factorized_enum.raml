@@ -1,0 +1,35 @@
+#%RAML 1.0
+title: Factorized enums API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+
+  MyClass:
+    type: object
+    properties:
+      toto: MyEnum
+      totoList:
+        type: array
+        items: MyEnum
+      totoListShort: MyEnum[]
+
+  MyEnum:
+    enum: [ AC, DC ]
+
+/toto:
+  displayName: Toto
+  post:
+    body: MyClass
+    responses:
+      200:
+        body: MyClass
+
+/yoyo:
+  displayName: Yoyo
+  post:
+    body: MyEnum
+    responses:
+      200:
+        body: MyEnum

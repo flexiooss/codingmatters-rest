@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.3.0</version>
+        <version>1.5.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -34,6 +34,10 @@
         <dependency>
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.value.objects</groupId>
+            <artifactId>cdm-value-objects-yaml-parser</artifactId>
         </dependency>
     </dependencies>
 

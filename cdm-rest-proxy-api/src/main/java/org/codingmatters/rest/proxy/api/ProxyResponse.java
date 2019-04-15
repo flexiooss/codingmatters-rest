@@ -49,7 +49,7 @@ public class ProxyResponse {
                 response.addHeader(header, values);
             }
 
-            response.payload(this.originalResponse.body());
+            response.payload(this.originalResponse.bodyStream());
             if (this.modifiedBody != null) {
                 response.payload(this.modifiedBody.orElse(null));
             }

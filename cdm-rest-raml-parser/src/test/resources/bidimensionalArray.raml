@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: bidimensional array API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+
+types:
+    bidim:
+        type: object
+        properties:
+            objSimple: string[][]
+            objCplx:
+              type: array
+              items:
+                type: array
+                items: string

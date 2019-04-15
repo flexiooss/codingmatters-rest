@@ -45,7 +45,7 @@ public enum RamlType {
         }
     }
 
-    static private String ramlTypeName(TypeDeclaration declaration) {
+    static public String ramlTypeName(TypeDeclaration declaration) {
         String name = declaration.type();
         if( name == null ){
             name = declaration.name();

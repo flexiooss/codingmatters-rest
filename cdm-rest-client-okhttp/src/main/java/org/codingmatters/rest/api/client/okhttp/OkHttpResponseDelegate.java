@@ -5,13 +5,13 @@ import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
     private final int code;
@@ -22,7 +22,7 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     public OkHttpResponseDelegate(Response response) throws IOException {
         this.code = response.code();
         try(ResponseBody body = response.body()) {
-            this.contentType = response.body().contentType() != null ? response.body().contentType().toString() : null;
+            this.contentType = body.contentType() != null ? body.contentType().toString() : null;
             this.bodyFile = CountedReferenceTemporaryFile.create();
 
             try(OutputStream out = this.bodyFile.outputStream(); InputStream in = body.byteStream()) {
@@ -54,9 +54,29 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
     }
 
     @Override
-    public String[] header(String name) {
-        List<String> headerValues = this.headers.get(name.toLowerCase());
-        return headerValues != null ? headerValues.toArray(new String [headerValues.size()]) : null;
+    public InputStream bodyStream() throws IOException {
+        return this.bodyFile.inputStream();
+    }
+
+    @Override
+    public String[] header( String name ) {
+        List<String> encodedHeaderValues = this.headers.getOrDefault( name.toLowerCase() + "*", Collections.emptyList() );
+        List<String> headerValues = this.headers.getOrDefault( name.toLowerCase(), Collections.emptyList() );
+        return headerValues.isEmpty() && encodedHeaderValues.isEmpty() ? null
+                : Stream.concat( headerValues.stream(), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray( String[]::new );
+    }
+
+    private String decodeValue( String value ) {
+        String[] parts = value.split( "'" );
+        if( parts.length == 3 ){
+            try {
+                return URLDecoder.decode( parts[2], parts[0] );
+            } catch( UnsupportedEncodingException e ){
+                return value;
+            }
+        } else {
+            return value;
+        }
     }
 
     @Override

@@ -1,0 +1,24 @@
+#%RAML 1.0
+title: SimpleResources API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+
+types:
+
+  SimplePropertyType:
+    type: object
+    properties:
+      stringProp: string
+
+  ReferencesType:
+      type: object
+      properties:
+          reference: SimplePropertyType
+          typeReference:
+              type: SimplePropertyType
+          referenceArray: SimplePropertyType[]
+          typeReferenceArray:
+              type: array
+              items: SimplePropertyType

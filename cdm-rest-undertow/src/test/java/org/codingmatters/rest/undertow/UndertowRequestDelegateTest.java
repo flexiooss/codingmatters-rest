@@ -155,4 +155,17 @@ public class UndertowRequestDelegateTest extends AbstractUndertowTest {
         this.client.newCall(this.requestBuilder("").get().build()).execute();
         assertThat(req.get().path(), is("/"));
     }
+
+    @Test
+    public void headers() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+        this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto", "val1" ).get().build()).execute();
+        assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "val1" ) );
+
+        this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto*", "utf-8''val%C3%A9" ).get().build()).execute();
+        assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "valé" ) );
+    }
 }

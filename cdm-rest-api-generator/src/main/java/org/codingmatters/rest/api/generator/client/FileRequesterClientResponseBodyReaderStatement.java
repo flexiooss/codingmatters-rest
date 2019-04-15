@@ -5,6 +5,8 @@ import org.codingmatters.rest.api.types.File;
 import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.bodies.Response;
 
+import java.io.InputStream;
+
 public class FileRequesterClientResponseBodyReaderStatement implements ClientResponseBodyReaderStatement {
     private final Response response;
     private final String typesPackage;
@@ -18,8 +20,10 @@ public class FileRequesterClientResponseBodyReaderStatement implements ClientRes
 
     @Override
     public void append(MethodSpec.Builder caller) {
-        caller.addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content($T.from(response.body())).build())",
-                File.class, Content.class
-        );
+        caller
+                .beginControlFlow("try($T bodyStream = response.bodyStream())", InputStream.class)
+                .addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content($T.from(bodyStream)).build())",File.class, Content.class)
+                .endControlFlow()
+        ;
     }
 }
