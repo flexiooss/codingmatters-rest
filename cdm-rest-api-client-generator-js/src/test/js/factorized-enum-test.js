@@ -28,6 +28,50 @@ class FactorizedEnumTest extends TestCase {
         assert.equal( myClass.totoList()[0].name, "AC" )
         assert.equal( myClass.totoList()[1].name, "DC" )
     }
+//
+//    testEnumObjectBody(){
+//        var requester = new FakeHttpRequester();
+//        requester.nextBody( '{"toto":"DC","totoList":["DC","DC"],"totoListShort":["AC","DC"]}' );
+//        var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
+//
+//        var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.TotoPostRequestBuilder();
+//
+//        var myEnum1 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myEnum2 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myClass =  new window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder();
+//        myClass.toto( myEnum1 );
+//        myClass.totoList( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
+//        myClass.totoListShort( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+//
+//        request.payload( myClass.build() );
+//        var response = client.toto().totoPost( request.build() );
+//
+//        assert.equal( response.status200().payload().toto().name, "DC" );
+//        assert.equal( response.status200().payload().totoList()[0].name, "DC" );
+//        assert.equal( response.status200().payload().totoList()[1].name, "DC" );
+//        assert.equal( response.status200().payload().totoListShort()[0].name, "AC" );
+//        assert.equal( response.status200().payload().totoListShort()[1].name, "DC" );
+//
+//        assert.equal( requester.lastBody(), '{"toto":"DC","totoList":["DC","DC"],"totoListShort":["DC","DC"]}' );
+//
+//    }
+//
+//    testEnumBody(){
+//        var myEnum1 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myEnum2 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//
+//        var requester = new FakeHttpRequester();
+//        requester.nextBody( 'AC' );
+//        var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
+//
+//        var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.YoyoPostRequestBuilder();
+//        request.payload( myEnum1 );
+//
+//        var response = client.toto().totoPost( request.build() );
+//
+//        assert.equal( response.status200().payload().name, "AC" );
+//
+//    }
 
 }
 runTest( FactorizedEnumTest );

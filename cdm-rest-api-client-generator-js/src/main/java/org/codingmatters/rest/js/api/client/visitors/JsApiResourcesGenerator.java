@@ -57,6 +57,7 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
             this.write = write;
             this.imports = new HashSet<>();
             imports.add( "FLEXIO_IMPORT_OBJECT" );
+            imports.add( "globalScope" );
             collectAllImports( parsedRoute );
             write.line( "import {" + String.join( ", ", imports ) + "} from 'flexio-jshelpers'" );
             write.line( "class " + parsedRoute.displayName() + " {" );
@@ -73,7 +74,14 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 write.line( " * @returns {" + responseClass + "}" );
                 write.line( " */" );
                 write.line( methodName + "( " + requestVar + " ){" );
-                write.line( "var " + responseVar + " = new " + NamingUtility.builderFullName( apiPackage + "." + responseClass ) + "()" );
+                write.line("var response = this." + methodName + "Execute( " + requestVar + " );");
+                write.line("return this." + methodName + "Parse( response );");
+                write.line("}");
+                write.line( "/**" );
+                write.line( " * @param {" + requestClass + "} " + requestVar );
+                write.line( " * @returns { ResponseDelegate }" );
+                write.line( " */" );
+                write.line( methodName + "Execute( " + requestVar + " ){" );
                 write.line( "var path = this._gatewayUrl + '" + parsedRoute.path() + "';" );
                 for( TypedUriParams uriParam : parsedRoute.uriParameters() ){
                     uriParam.type().process( new TypedParamUriReplacer( uriParam, write, requestVar ) );
@@ -82,6 +90,14 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 jsResourceWriter.setHeaders( write, parsedRequest, requestVar );
                 jsResourceWriter.setQueryParams( write, parsedRequest, requestVar );
                 jsResourceWriter.sendRequest( write, parsedRequest, requestVar );
+                write.line("return responseDelegate;");
+                write.line("}");
+                write.line( "/**" );
+                write.line( " * @param { ResponseDelegate } responseDelegate"  );
+                write.line( " * @returns {" + responseClass + "}" );
+                write.line( " */" );
+                write.line( methodName + "Parse( responseDelegate ){" );
+                write.line( "var " + responseVar + " = new " + NamingUtility.builderFullName( apiPackage + "." + responseClass ) + "()" );
                 jsResourceWriter.parseResponse( parsedRequest, write, responseVar );
                 write.line( "}" );
             }
