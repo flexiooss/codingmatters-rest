@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -44,12 +46,26 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${project.version}")
     private String version;
 
+    @Parameter( alias = "raml-list" )
+    private String[] ramlList;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        RamlModelResult ramlModel = this.resolveRamlModel();
-        generateJSClient( ramlModel );
-        generateJavaClient( ramlModel );
-        generatePhpClient( ramlModel );
+        if( ramlList != null ) {
+            List<RamlModelResult> collect = new ArrayList<>();
+            for (String ramlFile : ramlList) {
+                RamlModelResult ramlModelResult = parseFile( ramlFile );
+                collect.add( ramlModelResult );
+                generateJavaClient( ramlModelResult );
+                generatePhpClient( ramlModelResult );
+            }
+            generateJSClients( collect.toArray( new RamlModelResult[0] ));
+        } else {
+            RamlModelResult ramlModel = this.resolveRamlModel();
+            generateJSClient( ramlModel );
+            generateJavaClient( ramlModel );
+            generatePhpClient( ramlModel );
+        }
     }
 
     private void generatePhpClient( RamlModelResult ramlModel ) throws MojoExecutionException {
@@ -117,6 +133,16 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             new ClientHandlerImplementation( destinationPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
         } catch( IOException e ){
             throw new MojoExecutionException( "error generating handler client implementation from raml model", e );
+        }
+    }
+
+    private void generateJSClients( RamlModelResult[] ramlModel ) throws MojoExecutionException {
+        try {
+            File jsOutputDir = new File( this.outputDirectory, "js-generated-client" );
+            JSClientGenerator generator = new JSClientGenerator( jsOutputDir, rootPackage, vendor, artifactId, version );
+            generator.generateClientApi( ramlModel );
+        } catch( ProcessingException | GenerationException e ){
+            throw new MojoExecutionException( "Error generating JS client", e );
         }
     }
 

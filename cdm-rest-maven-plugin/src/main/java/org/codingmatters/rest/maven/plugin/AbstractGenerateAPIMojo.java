@@ -39,6 +39,10 @@ public abstract class AbstractGenerateAPIMojo extends AbstractMojo {
             throw new MojoFailureException("must provide path to the RAML spec, either as a file in apiSpecFile property, or as a classpath resource with apiSpecResource property.");
         }
 
+        return parseFile(resource);
+    }
+
+    protected RamlModelResult parseFile(String resource) throws MojoFailureException {
         RamlFileCollector.Builder builder = RamlFileCollector.spec(resource);
         try {
             this.appendArtifactsJars(builder);
