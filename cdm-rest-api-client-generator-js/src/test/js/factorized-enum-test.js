@@ -4,17 +4,17 @@ const assert = require( 'assert' )
 import "../org/package"
 import {FakeHttpRequester} from "./utils/FakeHttpRequester";
 
-import {FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime} from 'flexio-jshelpers';
+import {globalScope, FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime} from 'flexio-jshelpers';
 
 class FactorizedEnumTest extends TestCase {
 
     testTypeConstruction(){
-        var myEnum1 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.AC;
-        var myEnum2 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
-        var myClass =  new window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder();
+        var myEnum1 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.AC;
+        var myEnum2 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+        var myClass =  new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder();
         myClass.toto( myEnum1 );
-        myClass.totoList( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
-        myClass.totoListShort( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+        myClass.totoList( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
+        myClass.totoListShort( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
 
         var json = '{"toto":"AC","totoList":["AC","DC"],"totoListShort":["AC","DC"]}';
         assert.equal( JSON.stringify( myClass.build() ), json );
@@ -22,7 +22,7 @@ class FactorizedEnumTest extends TestCase {
 
     testDeserialization(){
         var json = '{"toto":"AC","totoList":["AC","DC"],"totoListShort":["AC","DC"]}';
-        var myClass = window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder.fromJson( json ).build();
+        var myClass = globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder.fromJson( json ).build();
 
         assert.equal( myClass.toto().name, "AC" );
         assert.equal( myClass.totoList()[0].name, "AC" )
@@ -32,16 +32,16 @@ class FactorizedEnumTest extends TestCase {
 //    testEnumObjectBody(){
 //        var requester = new FakeHttpRequester();
 //        requester.nextBody( '{"toto":"DC","totoList":["DC","DC"],"totoListShort":["AC","DC"]}' );
-//        var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
+//        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
 //
-//        var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.TotoPostRequestBuilder();
+//        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.TotoPostRequestBuilder();
 //
-//        var myEnum1 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
-//        var myEnum2 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
-//        var myClass =  new window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder();
+//        var myEnum1 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myEnum2 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myClass =  new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyClassBuilder();
 //        myClass.toto( myEnum1 );
-//        myClass.totoList( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
-//        myClass.totoListShort( new window[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+//        myClass.totoList( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
+//        myClass.totoListShort( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
 //
 //        request.payload( myClass.build() );
 //        var response = client.toto().totoPost( request.build() );
@@ -57,14 +57,14 @@ class FactorizedEnumTest extends TestCase {
 //    }
 //
 //    testEnumBody(){
-//        var myEnum1 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
-//        var myEnum2 =  window[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myEnum1 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
+//        var myEnum2 =  globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.MyEnum.DC;
 //
 //        var requester = new FakeHttpRequester();
 //        requester.nextBody( 'AC' );
-//        var client = new window[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
+//        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.FactorizedEnumsAPIClient( requester, "http://gateway" );
 //
-//        var request = new window[FLEXIO_IMPORT_OBJECT].org.generated.api.YoyoPostRequestBuilder();
+//        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.YoyoPostRequestBuilder();
 //        request.payload( myEnum1 );
 //
 //        var response = client.toto().totoPost( request.build() );
