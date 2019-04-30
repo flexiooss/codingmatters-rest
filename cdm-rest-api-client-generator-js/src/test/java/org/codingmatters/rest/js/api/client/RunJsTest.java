@@ -54,6 +54,7 @@ public class RunJsTest {
                 Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "factorized_enum.raml" ).getPath()
+//            Thread.currentThread().getContextClassLoader().getResource( "flexio-external-processing-base.raml" ).getPath()
         };
 
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
