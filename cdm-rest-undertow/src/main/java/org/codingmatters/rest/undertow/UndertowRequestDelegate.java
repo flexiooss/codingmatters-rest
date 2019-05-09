@@ -28,7 +28,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     static private final Logger log = LoggerFactory.getLogger(UndertowRequestDelegate.class);
 
     private final HttpServerExchange exchange;
-    private Map<String, List<String>> uriParamsCache = null;
+    private Map<String, Map<String, List<String>>> uriParamsCache = new HashMap<>();
     private Map<String, List<String>> queryParamsCache = null;
     private Map<String, List<String>> headersCache = null;
 
@@ -101,10 +101,10 @@ public class UndertowRequestDelegate implements RequestDelegate {
 
     @Override
     public Map<String, List<String>> uriParameters(String pathExpression) {
-        if(this.uriParamsCache == null) {
-            this.uriParamsCache = new UriParameterProcessor(this).process(pathExpression);
+        if(! this.uriParamsCache.containsKey(pathExpression)) {
+            this.uriParamsCache.put(pathExpression, new UriParameterProcessor(this).process(pathExpression));
         }
-        return this.uriParamsCache;
+        return this.uriParamsCache.get(pathExpression);
     }
 
     @Override
