@@ -71,17 +71,24 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 this.responseVar = NamingUtility.firstLetterLowerCase( responseClass );
                 write.line( "/**" );
                 write.line( " * @param {" + requestClass + "} " + requestVar );
-                write.line( " * @returns {" + responseClass + "}" );
+                write.line( " * @param {" + methodName + "~callbackUser } callbackUser" );
                 write.line( " */" );
-                write.line( methodName + "( " + requestVar + " ){" );
-                write.line("var response = this." + methodName + "Execute( " + requestVar + " );");
-                write.line("return this." + methodName + "Parse( response );");
+                write.line( methodName + "( " + requestVar + ", callbackUser ){" );
+                write.line("var response = this." + methodName + "Execute( " + requestVar + ", callbackUser );");
+//                write.line("return this." + methodName + "Parse( response, callbackUser );");
                 write.line("}");
                 write.line( "/**" );
+                write.line( "* @callback {" + methodName +"~callbackUser} callback"  );
+                write.line( "* @param {" + responseClass + "} response" );
+                write.line( "*/" );
+
+                write.line( "" );
+
+                write.line( "/**" );
                 write.line( " * @param {" + requestClass + "} " + requestVar );
-                write.line( " * @returns { ResponseDelegate }" );
+                write.line( " * @param {" + methodName + "Execute~callbackUser } callbackUser" );
                 write.line( " */" );
-                write.line( methodName + "Execute( " + requestVar + " ){" );
+                write.line( methodName + "Execute( " + requestVar + ", callbackUser ){" );
                 write.line( "var path = this._gatewayUrl + '" + parsedRoute.path() + "';" );
                 for( TypedUriParams uriParam : parsedRoute.uriParameters() ){
                     uriParam.type().process( new TypedParamUriReplacer( uriParam, write, requestVar ) );
@@ -89,9 +96,10 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 write.line( "this._requester.path( path );" );
                 jsResourceWriter.setHeaders( write, parsedRequest, requestVar );
                 jsResourceWriter.setQueryParams( write, parsedRequest, requestVar );
-                jsResourceWriter.sendRequest( write, parsedRequest, requestVar );
-                write.line("return responseDelegate;");
+                jsResourceWriter.sendRequest( write, parsedRequest, requestVar, methodName );
+//                write.line("return responseDelegate;");
                 write.line("}");
+
                 write.line( "/**" );
                 write.line( " * @param { ResponseDelegate } responseDelegate"  );
                 write.line( " * @returns {" + responseClass + "}" );

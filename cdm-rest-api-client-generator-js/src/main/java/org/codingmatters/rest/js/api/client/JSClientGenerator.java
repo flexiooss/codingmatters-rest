@@ -67,7 +67,7 @@ public class JSClientGenerator {
             generateClient( packageBuilder, parsedRaml, false );
         }
         new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
-        new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
+        new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version, typesPackage.split( "\\." )[0] );
     }
 
 
@@ -89,7 +89,7 @@ public class JSClientGenerator {
                 .process( parsedRaml );
 
         if( generatePackage ){
-            new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
+            new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version, typesPackage.split( "\\." )[0] );
         }
     }
 

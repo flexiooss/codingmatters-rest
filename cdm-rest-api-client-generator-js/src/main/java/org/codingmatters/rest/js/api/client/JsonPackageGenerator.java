@@ -13,7 +13,7 @@ public class JsonPackageGenerator {
         this.rootDirectory = rootDirectory;
     }
 
-    public void generatePackageJson( String vendor, String artifactId, String version ) throws ProcessingException {
+    public void generatePackageJson( String vendor, String artifactId, String version, String rootPackage ) throws ProcessingException {
         try( JsFileWriter write = new JsFileWriter( new File( rootDirectory, "package.json" ).getPath() ) ) {
             write.line( "{" );
             write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
@@ -22,7 +22,7 @@ public class JsonPackageGenerator {
             write.line( "\"flexio-jshelpers\": \"https://github.com/flexiooss/flexio-jshelpers.git\"" );
             write.unindent();
             write.line( "}," );
-            write.line( "\"main\": \"io/package.js\"" );
+            write.line( "\"main\": \"" + rootPackage + "/package.js\"" );
             write.line( "}" );
             write.flush();
         } catch( Exception e ){

@@ -11,9 +11,9 @@ class FakeHttpRequester {
         this._lastMethod = null;
     }
 
-    get(){
+    get(callback){
         this._lastMethod = "get";
-        return new FakeResponseDelegate( this._nextCode, null, this._responseHeaders );
+        callback(  new FakeResponseDelegate( this._nextCode, null, this._responseHeaders ) );
     }
 
     delete(){
@@ -26,11 +26,11 @@ class FakeHttpRequester {
         return new FakeResponseDelegate( this._nextCode, null, this._responseHeaders );
     }
 
-    post( contentType, body ){
+    post( contentType, body, callback ){
         this._lastMethod = "post";
         this._lastBody = body;
         this._lastContentType = contentType;
-        return new FakeResponseDelegate( this._nextCode, this._nextBody, this._responseHeaders );
+        callback( new FakeResponseDelegate( this._nextCode, this._nextBody, this._responseHeaders ) );
     }
 
     put( contentType, body ){
