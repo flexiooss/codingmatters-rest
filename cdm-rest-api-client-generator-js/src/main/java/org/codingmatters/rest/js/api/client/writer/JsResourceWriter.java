@@ -54,15 +54,15 @@ public class JsResourceWriter {
                 write.line( "var contentType = 'application/json';" );
             }
             if( payloadIsFile( parsedRequest ) || payloadIsString( parsedRequest ) ){
-                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, " + requestVar + ".payload(), (responseDelegate)=>{" );
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
                 write.line( "var clientResponse = this." + methodName + "Parse( responseDelegate );" );
                 write.line( "callbackUser( clientResponse );" );
-                write.line( " });" );
+                write.line( " }, contentType, " + requestVar + ".payload() );" );
             } else {
-                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, JSON.stringify( " + requestVar + ".payload() ), (responseDelegate)=>{" );
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
                 write.line( "var clientResponse = this." + methodName + "Parse( responseDelegate );" );
                 write.line( "callbackUser( clientResponse );" );
-                write.line( " });" );
+                write.line( " }, contentType, JSON.stringify( \" + requestVar + \".payload() ) );" );
             }
         } else {
             write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
