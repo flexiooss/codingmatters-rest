@@ -45,7 +45,7 @@ public class JsResourceWriter {
         write.line( "}" );
     }
 
-    public void sendRequest( JsFileWriter write, ParsedRequest parsedRequest, String requestVar ) throws IOException {
+    public void sendRequest( JsFileWriter write, ParsedRequest parsedRequest, String requestVar, String methodName ) throws IOException {
         String httpMethod = parsedRequest.httpMethod().name().toLowerCase();
         if( parsedRequest.body().isPresent() ){
             if( payloadIsFile( parsedRequest ) ){
@@ -54,12 +54,21 @@ public class JsResourceWriter {
                 write.line( "var contentType = 'application/json';" );
             }
             if( payloadIsFile( parsedRequest ) || payloadIsString( parsedRequest ) ){
-                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, " + requestVar + ".payload() );" );
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
+                write.line( "var clientResponse = this." + methodName + "Parse( responseDelegate );" );
+                write.line( "callbackUser( clientResponse );" );
+                write.line( " }, contentType, " + requestVar + ".payload() );" );
             } else {
-                write.line( "var responseDelegate = this._requester." + httpMethod + "( contentType, JSON.stringify( " + requestVar + ".payload() ));" );
+                write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
+                write.line( "var clientResponse = this." + methodName + "Parse( responseDelegate );" );
+                write.line( "callbackUser( clientResponse );" );
+                write.line( " }, contentType, JSON.stringify( \" + requestVar + \".payload() ) );" );
             }
         } else {
-            write.line( "var responseDelegate = this._requester." + httpMethod + "();" );
+            write.line( "var responseDelegate = this._requester." + httpMethod + "( (responseDelegate)=>{" );
+            write.line( "var clientResponse = this." + methodName + "Parse( responseDelegate );" );
+            write.line( "callbackUser( clientResponse );" );
+            write.line( " });" );
         }
     }
 

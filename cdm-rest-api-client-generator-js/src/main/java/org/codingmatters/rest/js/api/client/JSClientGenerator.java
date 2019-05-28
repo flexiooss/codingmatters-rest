@@ -60,6 +60,16 @@ public class JSClientGenerator {
         new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
     }
 
+    public void generateClientApi( RamlModelResult[] ramlModels ) throws ProcessingException, GenerationException {
+        PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
+        for (RamlModelResult ramlModel : ramlModels) {
+            ParsedRaml parsedRaml = typesRamlParser.parseRamlModel( ramlModel );
+            generateClient( packageBuilder, parsedRaml, false );
+        }
+        new PackageFilesGenerator( packageBuilder, rootDirectory.getPath() ).generateFiles();
+        new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version, typesPackage.split( "\\." )[0] );
+    }
+
 
     private void generateClient( PackageFilesBuilder packageBuilder, ParsedRaml parsedRaml, boolean generatePackage ) throws ProcessingException {
         RamlApiPreProcessor ramlApiPreProcessor = new RamlApiPreProcessor( apiPackage );
@@ -79,7 +89,7 @@ public class JSClientGenerator {
                 .process( parsedRaml );
 
         if( generatePackage ){
-            new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version );
+            new JsonPackageGenerator( rootDirectory ).generatePackageJson( vendor, artifactId, version, typesPackage.split( "\\." )[0] );
         }
     }
 

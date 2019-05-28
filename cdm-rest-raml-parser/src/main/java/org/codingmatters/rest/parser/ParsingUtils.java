@@ -171,7 +171,9 @@ public class ParsingUtils {
     private ParsedValueObject parseNested( String typeDeclarationName, ObjectTypeDeclaration property ) throws ProcessingException {
         ParsedValueObject parsedValueObject = new ParsedValueObject( NamingUtility.className( typeDeclarationName, property.name() ), typesPackage );
         for( TypeDeclaration typeDeclaration : property.properties() ){
+            context.push( typeDeclaration.name() );
             ValueObjectType type = this.parseType( property.name(), typeDeclaration );
+            context.pop();
             parsedValueObject.properties().add( new ValueObjectProperty( typeDeclaration.name(), type ) );
         }
         return parsedValueObject;
@@ -235,7 +237,9 @@ public class ParsingUtils {
         String displayName = NamingUtility.getJoinedName( resource.displayName().value() );
         List<TypedUriParams> uriParameters = new ArrayList<>();
         for( TypeDeclaration parameters : resource.uriParameters() ){
+            context.push( NamingUtility.getJoinedName( parameters.name() ) );
             uriParameters.add( new TypedUriParams( parameters.name(), parseType( displayName, parameters ) ) );
+            context.pop();
         }
         Resource parent = resource.parentResource();
         if( parent != null ){

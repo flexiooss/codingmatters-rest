@@ -168,4 +168,40 @@ public class UndertowRequestDelegateTest extends AbstractUndertowTest {
         this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto*", "utf-8''val%C3%A9" ).get().build()).execute();
         assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "valé" ) );
     }
+
+    @Test
+    public void uriParams() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/path").get().build()).execute();
+        assertThat(req.get().path(), is("/request/path"));
+
+        Map<String, List<String>> params = req.get().uriParameters("/{a}/{b}");
+        assertThat(params.size(), is(2));
+        assertThat(params.get("a").get(0), is("request"));
+        assertThat(params.get("b").get(0), is("path"));
+    }
+
+    @Test
+    public void uriParams__whenChangingPathExpression__thenParametersAreParsedAgain() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/path").get().build()).execute();
+        assertThat(req.get().path(), is("/request/path"));
+
+        Map<String, List<String>> params = req.get().uriParameters("/request/{b}");
+        assertThat(params.size(), is(1));
+        assertThat(params.get("b").get(0), is("path"));
+
+        params = req.get().uriParameters("/{a}/{b}");
+        assertThat(params.size(), is(2));
+        assertThat(params.get("a").get(0), is("request"));
+        assertThat(params.get("b").get(0), is("path"));
+    }
 }

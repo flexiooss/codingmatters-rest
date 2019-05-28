@@ -29,15 +29,6 @@ public class RunJsTest {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
-//
-//        processBuilder.command( "yarn", "link", "flexio-jshelpers" );
-//        System.out.println( "Running 'yarn link flexio-jshelpers'" );
-//        process = processBuilder.start();
-//        process.waitFor( 60, TimeUnit.SECONDS );
-//        if( process.exitValue() != 0 ){
-//            printError( process );
-//        }
-//        assertThat( process.exitValue(), is( 0 ) );
     }
 
     private static void printError( Process process ) throws IOException {
@@ -58,11 +49,12 @@ public class RunJsTest {
     }
 
     @Test
-    public void testParameters() throws Exception {
+    public void runTests() throws Exception {
         String[] ramlLocation = {
                 Thread.currentThread().getContextClassLoader().getResource( "parameters.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "requestBody.raml" ).getPath(),
                 Thread.currentThread().getContextClassLoader().getResource( "factorized_enum.raml" ).getPath()
+//            Thread.currentThread().getContextClassLoader().getResource( "flexio-external-processing-base.raml" ).getPath()
         };
 
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
