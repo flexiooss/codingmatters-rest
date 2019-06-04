@@ -62,7 +62,7 @@ public class JsResourceWriter {
                 write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
                 write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
                 write.line( "callbackUser(clientResponse)" );
-                write.line( " }, contentType, JSON.stringify( " + requestVar + ".payload()))" );
+                write.line( " }, contentType, JSON.stringify(" + requestVar + ".payload()))" );
             }
         } else {
             write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );

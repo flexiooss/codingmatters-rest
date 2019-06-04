@@ -32,7 +32,7 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     private String requestVar;
     private String methodName;
     private String responseVar;
-    private Set<String> imports;
+    private Set<String> importsTypes;
 
     public JsApiResourcesGenerator( File rootDirectory, String clientPackage, String apiPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
         this.rootDirectory = rootDirectory;
@@ -55,11 +55,10 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + parsedRoute.displayName() + ".js" ) ) {
             packageBuilder.addList( clientPackage, parsedRoute.displayName() );
             this.write = write;
-            this.imports = new HashSet<>();
-            imports.add( "FLEXIO_IMPORT_OBJECT" );
-            imports.add( "globalScope" );
+            this.importsTypes = new HashSet<>();
             collectAllImports( parsedRoute );
-            write.line( "import { " + String.join( ", ", imports ) + " } from 'flexio-jshelpers'" );
+            write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
+            write.line( "import { " + String.join( ", ", importsTypes ) + " } from '@flexio-oss/flex-types'" );
             write.line( "class " + parsedRoute.displayName() + " {" );
             jsResourceWriter.generateConstructor( parsedRoute, write );
             jsResourceWriter.generateGetters( parsedRoute, write );
@@ -134,13 +133,13 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     private void collectImports( List<ValueObjectType> types ) {
         for( ValueObjectType type : types ){
             if( isDate( type ) ){
-                imports.add( "FlexDate" );
+                importsTypes.add( "FlexDate" );
             } else if( isDateTime( type ) ){
-                imports.add( "FlexDateTime" );
+                importsTypes.add( "FlexDateTime" );
             } else if( isTime( type ) ){
-                imports.add( "FlexTime" );
+                importsTypes.add( "FlexTime" );
             } else if( isTzDateTime( type ) ){
-                imports.add( "FlexZonedDateTime" );
+                importsTypes.add( "FlexZonedDateTime" );
             }
         }
     }
