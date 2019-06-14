@@ -88,13 +88,16 @@ public class TestRequesterFactory implements RequesterFactory {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Call call = (Call) o;
+            int requestBodyLength = requestBody == null ? 0 : requestBody.length;
+            int callBodyLength = call.requestBody == null ? 0 : call.requestBody.length;
+
             return method == call.method &&
                     Objects.equals(url, call.url) &&
                     Objects.equals(path, call.path) &&
                     Objects.equals(parameters, call.parameters) &&
                     Objects.equals(headers, call.headers) &&
                     Objects.equals(requestContentType, call.requestContentType) &&
-                    Arrays.equals(requestBody, call.requestBody);
+                    Objects.equals(requestBodyLength, callBodyLength);
         }
 
         @Override
