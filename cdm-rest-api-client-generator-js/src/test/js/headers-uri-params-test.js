@@ -1,15 +1,15 @@
 import {TestCase} from 'code-altimeter-js'
-
-const assert = require( 'assert' )
-import "../org/package"
+import "../org/generated/package"
 import {FakeHttpRequester} from "./utils/FakeHttpRequester";
+import { globalFlexioImport } from '@flexio-oss/global-import-registry'
+import { FlexDate, FlexDateTime, FlexTime} from '@flexio-oss/flex-types';
 
-import {globalScope, FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime} from 'flexio-jshelpers';
+const assert = require('assert')
 
 class PayloadAndParameterTest extends TestCase {
 
     testObjectPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester._responseHeaders["string-param"] = "resp-stringParam";
         requester._responseHeaders["stringArrayParam"] = [ "v1", "v2" ];
         requester._responseHeaders["intParam"] = "7";
@@ -25,38 +25,38 @@ class PayloadAndParameterTest extends TestCase {
         requester._responseHeaders["boolParam"] = "true";
         requester._responseHeaders["boolArrayParam"] = [ "true" ];
 
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.HeaderParamsGetRequestBuilder();
+        let client = new globalFlexioImport.org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
+        let request = new globalFlexioImport.org.generated.api.HeaderParamsGetRequestBuilder();
 
         request.uriParams( "myUriParam" );
 
         request.stringParam( "myStringParam" );
         request.stringArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestStringArrayParamList( "tata", "yoyo" )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestStringArrayParamList( "tata", "yoyo" )
         );
         request.intParam( 7 );
         request.intArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestIntArrayParamList( 1, 2 )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestIntArrayParamList( 1, 2 )
         );
         request.floatParam( 7.1 );
         request.floatArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestFloatArrayParamList( 1.3, 22.2 )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestFloatArrayParamList( 1.3, 22.2 )
         );
         request.dateParam( new FlexDate( "1992-10-17" ) );
         request.dateArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
         );
         request.datetimeParam( new FlexDateTime( "1992-10-17T14:12:07" ) );
         request.datetimeArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
         );
         request.timeParam( new FlexTime( "14:12:07" ) );
         request.timeArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
         );
         request.boolParam( true );
         request.boolArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestBoolArrayParamList( true, true, false )
+            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestBoolArrayParamList( true, true, false )
         );
 
         client.headerParams().headerParamsGet( request.build(), (response)=>{
@@ -109,39 +109,39 @@ class PayloadAndParameterTest extends TestCase {
     }
 
     testDoubleUriParam(){
-        var requester = new FakeHttpRequester();
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.ParamsArrayGetRequestBuilder();
-        var uriParams = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarray.ParamsArrayUriParamsList( "p1", "p2" );
+        let requester = new FakeHttpRequester();
+        let client = new globalFlexioImport.org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
+        let request = new globalFlexioImport.org.generated.api.ParamsArrayGetRequestBuilder();
+        let uriParams = new globalFlexioImport.org.generated.api.paramsarray.ParamsArrayUriParamsList( "p1", "p2" );
         request.uriParams( uriParams );
 
         request.stringParam( "myStringParam" );
         request.stringArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestStringArrayParamList( "tata", "yoyo" )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestStringArrayParamList( "tata", "yoyo" )
         );
         request.intParam( 7 );
         request.intArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestIntArrayParamList( 1, 2 )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestIntArrayParamList( 1, 2 )
         );
         request.floatParam( 7.1 );
         request.floatArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestFloatArrayParamList( 1.3, 22.2 )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestFloatArrayParamList( 1.3, 22.2 )
         );
         request.dateParam( new FlexDate( "1992-10-17" ) );
         request.dateArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
         );
         request.datetimeParam( new FlexDateTime( "1992-10-17T14:12:07" ) );
         request.datetimeArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
         );
         request.timeParam( new FlexTime( "14:12:07" ) );
         request.timeArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
         );
         request.boolParam( true );
         request.boolArrayParam(
-            new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestBoolArrayParamList( true, true, false )
+            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestBoolArrayParamList( true, true, false )
         );
 
         client.headerParams().paramsArray().paramsArrayGet( request.build(), (response)=>{

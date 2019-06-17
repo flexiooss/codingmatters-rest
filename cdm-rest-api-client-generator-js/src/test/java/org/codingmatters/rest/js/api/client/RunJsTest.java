@@ -22,7 +22,7 @@ public class RunJsTest {
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "hbshed", "install" );
-        System.out.println( "Running 'yarn install'" );
+        System.out.println( "Running 'hbshed install'" );
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ){
@@ -62,7 +62,7 @@ public class RunJsTest {
         JSClientGenerator generator = new JSClientGenerator( new File( dir ), "org.generated", "phpGeneration", "unitTests", "1.0" );
         generator.generateClientApi( false, ramlLocation );
 
-        System.out.println( "Running 'yarn test' in " + dir );
+        System.out.println( "Running 'hbshed test' in " + dir );
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "hbshed", "test", "-V" );
         Process process = processBuilder.start();

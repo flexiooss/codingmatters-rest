@@ -38,20 +38,20 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + className + ".js" ) ) {
             this.write = write;
             packageBuilder.addList( clientPackage, className );
-            write.line( "import {globalScope, FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
+            write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
             write.line( "class " + className + "{" );
             write.line( "/**" );
             write.line( "* @returns string" );
             write.line( "*/" );
             write.line( "apiName() {");
-            write.line( "return \"" + NamingUtility.getApiName( parsedRaml.apiName() ) + "\";" );
+            write.line( "return '" + NamingUtility.getApiName( parsedRaml.apiName() ) + "'" );
             write.line( "}" );
             generateConstructor( parsedRaml );
             for( ParsedRoute parsedRoute : parsedRaml.routes() ){
                 parsedRoute.process( this );
             }
             write.line( "}" );
-            write.line( "export { " + className + "}" );
+            write.line( "export { " + className + " }" );
         } catch( Exception e ){
             throw new ProcessingException( "Error processing root client" );
         }
@@ -63,9 +63,9 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
         write.line( "* @param {string} gatewayUrl" );
         write.line( "* @param {string} gatewayUrl" );
         write.line( "*/" );
-        write.line( "constructor( requester, gatewayUrl ) {" );
+        write.line( "constructor(requester, gatewayUrl) {" );
         for( ParsedRoute route : parsedRaml.routes() ){
-            write.line( "this._" + NamingUtility.propertyName( route.displayName() ) + " = new " + NamingUtility.classFullName( resourcesPackage + "." + route.displayName() ) + "( requester, gatewayUrl );" );
+            write.line( "this._" + NamingUtility.propertyName( route.displayName() ) + " = new " + NamingUtility.classFullName( resourcesPackage + "." + route.displayName() ) + "(requester, gatewayUrl)" );
         }
         write.line( "}" );
     }
@@ -77,10 +77,10 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
             String className = NamingUtility.className( parsedRoute.displayName() );
             write.newLine();
             write.line( "/**" );
-            write.line( "* @returns{" + className + "}" );
+            write.line( "* @returns {" + className + "}" );
             write.line( "*/" );
             write.line( propertyName + "() {" );
-            write.line( "return this._" + propertyName + ";" );
+            write.line( "return this._" + propertyName );
             write.line( "}" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing route", e );
