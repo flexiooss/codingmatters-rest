@@ -32,7 +32,7 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     private String requestVar;
     private String methodName;
     private String responseVar;
-    private Set<String> imports;
+    private Set<String> importsTypes;
 
     public JsApiResourcesGenerator( File rootDirectory, String clientPackage, String apiPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
         this.rootDirectory = rootDirectory;
@@ -55,11 +55,10 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + parsedRoute.displayName() + ".js" ) ) {
             packageBuilder.addList( clientPackage, parsedRoute.displayName() );
             this.write = write;
-            this.imports = new HashSet<>();
-            imports.add( "FLEXIO_IMPORT_OBJECT" );
-            imports.add( "globalScope" );
+            this.importsTypes = new HashSet<>();
             collectAllImports( parsedRoute );
-            write.line( "import {" + String.join( ", ", imports ) + "} from 'flexio-jshelpers'" );
+            write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
+            write.line( "import { " + String.join( ", ", importsTypes ) + " } from '@flexio-oss/flex-types'" );
             write.line( "class " + parsedRoute.displayName() + " {" );
             jsResourceWriter.generateConstructor( parsedRoute, write );
             jsResourceWriter.generateGetters( parsedRoute, write );
@@ -73,8 +72,8 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 write.line( " * @param {" + requestClass + "} " + requestVar );
                 write.line( " * @param {" + methodName + "~callbackUser } callbackUser" );
                 write.line( " */" );
-                write.line( methodName + "( " + requestVar + ", callbackUser ){" );
-                write.line("var response = this." + methodName + "Execute( " + requestVar + ", callbackUser );");
+                write.line( methodName + "(" + requestVar + ", callbackUser) {" );
+                write.line("let response = this." + methodName + "Execute( " + requestVar + ", callbackUser)");
 //                write.line("return this." + methodName + "Parse( response, callbackUser );");
                 write.line("}");
                 write.line( "/**" );
@@ -86,14 +85,14 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
 
                 write.line( "/**" );
                 write.line( " * @param {" + requestClass + "} " + requestVar );
-                write.line( " * @param {" + methodName + "Execute~callbackUser } callbackUser" );
+                write.line( " * @param {" + methodName + "Execute~callbackUser} callbackUser" );
                 write.line( " */" );
-                write.line( methodName + "Execute( " + requestVar + ", callbackUser ){" );
-                write.line( "var path = this._gatewayUrl + '" + parsedRoute.path() + "';" );
+                write.line( methodName + "Execute(" + requestVar + ", callbackUser) {" );
+                write.line( "let path = this._gatewayUrl + '" + parsedRoute.path() + "'" );
                 for( TypedUriParams uriParam : parsedRoute.uriParameters() ){
                     uriParam.type().process( new TypedParamUriReplacer( uriParam, write, requestVar ) );
                 }
-                write.line( "this._requester.path( path );" );
+                write.line( "this._requester.path(path)" );
                 jsResourceWriter.setHeaders( write, parsedRequest, requestVar );
                 jsResourceWriter.setQueryParams( write, parsedRequest, requestVar );
                 jsResourceWriter.sendRequest( write, parsedRequest, requestVar, methodName );
@@ -101,16 +100,16 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
                 write.line("}");
 
                 write.line( "/**" );
-                write.line( " * @param { ResponseDelegate } responseDelegate"  );
+                write.line( " * @param {ResponseDelegate} responseDelegate"  );
                 write.line( " * @returns {" + responseClass + "}" );
                 write.line( " */" );
-                write.line( methodName + "Parse( responseDelegate ){" );
-                write.line( "var " + responseVar + " = new " + NamingUtility.builderFullName( apiPackage + "." + responseClass ) + "()" );
+                write.line( methodName + "Parse(responseDelegate) {" );
+                write.line( "let " + responseVar + " = new " + NamingUtility.builderFullName( apiPackage + "." + responseClass ) + "()" );
                 jsResourceWriter.parseResponse( parsedRequest, write, responseVar );
                 write.line( "}" );
             }
             write.line( "}" );
-            write.line( "export {" + parsedRoute.displayName() + "}" );
+            write.line( "export { " + parsedRoute.displayName() + " }" );
 
         } catch( Exception e ){
             throw new ProcessingException( "Error processing route " + parsedRoute.displayName(), e );
@@ -134,13 +133,13 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     private void collectImports( List<ValueObjectType> types ) {
         for( ValueObjectType type : types ){
             if( isDate( type ) ){
-                imports.add( "FlexDate" );
+                importsTypes.add( "FlexDate" );
             } else if( isDateTime( type ) ){
-                imports.add( "FlexDateTime" );
+                importsTypes.add( "FlexDateTime" );
             } else if( isTime( type ) ){
-                imports.add( "FlexTime" );
+                importsTypes.add( "FlexTime" );
             } else if( isTzDateTime( type ) ){
-                imports.add( "FlexZonedDateTime" );
+                importsTypes.add( "FlexZonedDateTime" );
             }
         }
     }

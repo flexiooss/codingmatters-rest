@@ -54,10 +54,10 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            write.string( varName + ".mapToArray( element => " );
+            write.string( varName + ".mapToArray(element => " );
             this.varName = "element";
             list.type().process( this );
-            write.string( " )" );
+            write.string( ")" );
         } catch( IOException e ){
             throw new ProcessingException( "Error stringify list", e );
         }
@@ -77,7 +77,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
                     write.string( varName + ".toJSON()" );
                     break;
                 case OBJECT:
-                    write.string( "JSON.stringify( " + varName + " ) " );
+                    write.string( "JSON.stringify(" + varName + ")" );
                     break;
                 case STRING:
                 case BYTES:

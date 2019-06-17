@@ -26,7 +26,7 @@ class FakeHttpRequester {
         return new FakeResponseDelegate( this._nextCode, null, this._responseHeaders );
     }
 
-    post( contentType, body, callback ){
+    post(callback, contentType = null, body = null ){
         this._lastMethod = "post";
         this._lastBody = body;
         this._lastContentType = contentType;

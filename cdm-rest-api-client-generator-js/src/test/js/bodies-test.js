@@ -1,21 +1,21 @@
 import {TestCase} from 'code-altimeter-js'
-
-const assert = require( 'assert' )
-import "../org/package"
+import "../org/generated/package"
 import {FakeHttpRequester} from "./utils/FakeHttpRequester";
+import { globalFlexioImport } from '@flexio-oss/global-import-registry'
+import { FlexDate, FlexDateTime, FlexTime} from '@flexio-oss/flex-types';
 
-import {globalScope, FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime} from 'flexio-jshelpers';
+const assert = require('assert')
 
 class BodiesTest extends TestCase {
 
     testTypePayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '{"name":"Morillo"}' );
 
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.TypePostRequestBuilder();
-        var littleObj = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        let request = new globalFlexioImport.org.generated.api.TypePostRequestBuilder();
+        let littleObj = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
         littleObj.name( "Jungle Patrol" );
         request.payload( littleObj.build() );
 
@@ -26,17 +26,17 @@ class BodiesTest extends TestCase {
     }
 
     testTypeArrayShortPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '[{"name":"Morillo"}]' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.TypeArrayShortPostRequestBuilder();
-        var littleObj1 = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        let request = new globalFlexioImport.org.generated.api.TypeArrayShortPostRequestBuilder();
+        let littleObj1 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
         littleObj1.name( "Morillo" );
-        var littleObj2 = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        let littleObj2 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
-        var list = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
+        let list = new globalFlexioImport.org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
         request.payload( list );
 
         client.typeArrayShort().typeArrayShortPost( request.build(),(response)=>{
@@ -46,17 +46,17 @@ class BodiesTest extends TestCase {
     }
 
     testTypeArrayPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '[{"name":"Morillo"}]' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.TypeArrayPostRequestBuilder();
-        var littleObj1 = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        let request = new globalFlexioImport.org.generated.api.TypeArrayPostRequestBuilder();
+        let littleObj1 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
         littleObj1.name( "Morillo" );
-        var littleObj2 = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.types.LittleObjectBuilder();
+        let littleObj2 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
-        var list = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.typearraypostrequest.TypeArrayPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
+        let list = new globalFlexioImport.org.generated.api.typearraypostrequest.TypeArrayPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
         request.payload( list );
 
         client.typeArray().typeArrayPost( request.build(),(response)=>{
@@ -66,12 +66,12 @@ class BodiesTest extends TestCase {
     }
 
     testObjectPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '{"Romare":"The Blues"}' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.ObjectPostRequestBuilder();
-        var obj1 = {};
+        let request = new globalFlexioImport.org.generated.api.ObjectPostRequestBuilder();
+        let obj1 = {};
         obj1['High'] = 'Klassified'
         obj1['1250'] = 1919
         request.payload( obj1 );
@@ -83,17 +83,17 @@ class BodiesTest extends TestCase {
     }
 
     testObjectArrayShortPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '[{"Romare":"The Blues"},{"Eprom":"9 To Ya Dome"}]' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.ObjectArrayShortPostRequestBuilder();
-        var obj1 = {};
+        let request = new globalFlexioImport.org.generated.api.ObjectArrayShortPostRequestBuilder();
+        let obj1 = {};
         obj1['High'] = 'Klassified';
-        var obj2 = {};
+        let obj2 = {};
         obj2['1250'] = 1919;
 
-        request.payload( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.objectarrayshortpostrequest.ObjectArrayShortPostRequestPayloadList( obj1, obj2 ) );
+        request.payload( new globalFlexioImport.org.generated.api.objectarrayshortpostrequest.ObjectArrayShortPostRequestPayloadList( obj1, obj2 ) );
 
         client.objectArrayShort().objectArrayShortPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );
@@ -103,17 +103,17 @@ class BodiesTest extends TestCase {
     }
 
     testObjectArrayPayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( '[{"Romare":"The Blues"},{"Eprom":"9 To Ya Dome"}]' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.ObjectArrayPostRequestBuilder();
-        var obj1 = {};
+        let request = new globalFlexioImport.org.generated.api.ObjectArrayPostRequestBuilder();
+        let obj1 = {};
         obj1['High'] = 'Klassified';
-        var obj2 = {};
+        let obj2 = {};
         obj2['1250'] = 1919;
 
-        request.payload( new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.objectarraypostrequest.ObjectArrayPostRequestPayloadList( obj1, obj2 ) );
+        request.payload( new globalFlexioImport.org.generated.api.objectarraypostrequest.ObjectArrayPostRequestPayloadList( obj1, obj2 ) );
 
         client.objectArray().objectArrayPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );
@@ -124,11 +124,11 @@ class BodiesTest extends TestCase {
 
 
     testFilePayload(){
-        var requester = new FakeHttpRequester();
+        let requester = new FakeHttpRequester();
         requester.nextBody( 'hello' );
-        var client = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
+        let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
-        var request = new globalScope[FLEXIO_IMPORT_OBJECT].org.generated.api.FilePostRequestBuilder();
+        let request = new globalFlexioImport.org.generated.api.FilePostRequestBuilder();
 
         request.payload( "this is binary data" );
         request.contentType( "Toto" );

@@ -68,14 +68,14 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            write.line( varName + ".forEach( function( element ){" );
+            write.line( varName + ".forEach(function(element) {" );
 //            write.string( "path.replace( '{" + uriParams.name() + "}', " );
             this.varName = "element";
             list.type().process( this );
 //            write.string( " );" );
             write.newLine();
             write.unindent();
-            write.line( "});" );
+            write.line( "})" );
         } catch( Exception e ) {
             throw new ProcessingException( "Error processing uri param", e );
         }
@@ -85,7 +85,7 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
     public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException {
         try {
             write.indent();
-            write.string( "path = path.replace( '{" + uriParams.name() + "}', " );
+            write.string( "path = path.replace('{" + uriParams.name() + "}', " );
             switch( primitiveType.type() ) {
                 case BOOL:
                     write.string( varName + " ? 'true' : 'false'" );
