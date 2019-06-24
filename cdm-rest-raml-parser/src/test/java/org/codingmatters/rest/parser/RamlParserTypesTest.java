@@ -190,28 +190,28 @@ public class RamlParserTypesTest {
         ValueObjectProperty prop;
 
         prop = ((ParsedValueObject) raml.types().get( 0 )).properties().get( 0 );
-        assertThat( prop.name(), is( "nested" ) );
+        assertThat( prop.name(), is( "nes-ted" ) );
         assertThat( ((ObjectTypeNested) prop.type()).namespace(), is( "nestedtype" ) );
         ParsedValueObject nestValueObject = ((ObjectTypeNested) prop.type()).nestValueObject();
-        assertThat( nestValueObject.name(), is( "NestedTypeNested" ) );
+        assertThat( nestValueObject.name(), is( "NestedTypeNesTed" ) );
         assertThat( nestValueObject.properties().size(), is( 3 ) );
 
         prop = nestValueObject.properties().get( 0 );
-        assertThat( prop.name(), is( "stringProp" ) );
+        assertThat( prop.name(), is( "string-prop" ) );
         assertThat( ((ValueObjectTypePrimitiveType) prop.type()).type(), is( YAML_PRIMITIVE_TYPES.STRING ) );
 
         prop = nestValueObject.properties().get( 1 );
-        assertThat( prop.name(), is( "enumProp" ) );
+        assertThat( prop.name(), is( "enum-prop" ) );
         assertThat( ((YamlEnumInSpecEnum) prop.type()).values().toArray( new String[0] ), is( new String[]{ "A", "B", "C" } ) );
         assertThat( ((YamlEnumInSpecEnum) prop.type()).namespace(), is( "nested" ) );
-        assertThat( ((YamlEnumInSpecEnum) prop.type()).name(), is( "NestedTypeNestedEnumProp" ) );
+        assertThat( ((YamlEnumInSpecEnum) prop.type()).name(), is( "NestedTypeNesTedEnumProp" ) );
 
         prop = nestValueObject.properties().get( 2 );
-        assertThat( prop.name(), is( "enumArrayProp" ) );
+        assertThat( prop.name(), is( "enum-array-prop" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).values().toArray( new String[0] ), is( new String[]{ "D", "E", "F" } ) );
-        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).name(), is( "NestedTypeNestedEnumArrayProp" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).name(), is( "NestedTypeNesTedEnumArrayProp" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) prop.type()).type()).namespace(), is( "nested" ) );
-        assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "NestedEnumArrayPropList" ) );
+        assertThat( ((ValueObjectTypeList) prop.type()).name(), is( "NesTedEnumArrayPropList" ) );
         assertThat( ((ValueObjectTypeList) prop.type()).packageName(), is( "org.generated.types.nested" ) );
     }
 
