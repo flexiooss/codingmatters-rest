@@ -113,13 +113,18 @@ public class ProcessorClass {
     private void addResourceProcessing(MethodSpec.Builder method, Resource resource) {
         if(resource.methods().isEmpty()) return;
 
+        String resourcePath = resource.resourcePath();
+        while(resourcePath.endsWith("/")) {
+            resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
+        }
+
         if(! Resolver.resolvedUriParameters(resource).isEmpty()) {
-            String pathRegex = resource.resourcePath().replaceAll("\\{[^\\}]*}", "[^/]+");
+            String pathRegex = resourcePath.replaceAll("\\{[^\\}]*}", "[^/]+");
             method.beginControlFlow("if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())", pathRegex);
         } else {
             method.beginControlFlow(
                     "if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
-                    resource.resourcePath()
+                    resourcePath
             );
         }
         for (Method resourceMethod : resource.methods()) {
@@ -231,36 +236,6 @@ public class ProcessorClass {
             ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
             param.addStatement(method, Parameter.ParameterSource.URI);
         }
-
-//        for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
-//            String property = this.naming.property(typeDeclaration.name());
-//            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-//                method
-//                        .addStatement(
-//                                "$T $L = uriParameters.get($S) != null " +
-//                                        "&& ! uriParameters.get($S).isEmpty() ? " +
-//                                        "uriParameters.get($S).get(0) : null",
-//                                String.class, property, typeDeclaration.name(),
-//                                typeDeclaration.name(),
-//                                typeDeclaration.name()
-//                        )
-//                        .addStatement(
-//                                "requestBuilder.$L($L)", property, property
-//                        );
-//            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-//                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-//                method
-//                        .addStatement(
-//                                "$T<$T> $L = uriParameters.get($S)",
-//                                List.class, String.class, property, typeDeclaration.name()
-//                        )
-//                        .addStatement(
-//                                "requestBuilder.$L($L)", property, property
-//                        );
-//            } else {
-//                log.warn("not yet implemented : {} uri parameter", typeDeclaration);
-//            }
-//        }
     }
 
     private void addResponseProcessingStatements(Method resourceMethod, MethodSpec.Builder method) {
