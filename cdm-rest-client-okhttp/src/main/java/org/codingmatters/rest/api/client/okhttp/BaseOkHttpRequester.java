@@ -150,7 +150,10 @@ public class BaseOkHttpRequester implements Requester {
 
 
     private Request.Builder prepareRequestBuilder() throws UnsupportedEncodingException, IOException {
-        String url = this.urlProvider.baseUrl() + this.path();
+        String baseUrl = this.urlProvider.baseUrl();
+        String path = this.path();
+
+        String url = new UrlNormalizer(baseUrl, path).normalize();
 
         boolean first = true;
         for (Map.Entry<String, String[]> queryParameterEntry : this.parameters().entrySet()) {
@@ -187,4 +190,5 @@ public class BaseOkHttpRequester implements Requester {
     private String encode(String str) throws UnsupportedEncodingException {
         return URLEncoder.encode(str, "UTF-8");
     }
+
 }
