@@ -65,7 +65,7 @@ public class ApiTypesGenerator {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(ObjectValue.class.getName());
+                            .typeRef(this.naming.arbitraryObjectImpl(declaration));
                 } else if (((ArrayTypeDeclaration) declaration).items().name().equals("object")) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
@@ -89,7 +89,7 @@ public class ApiTypesGenerator {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                    .typeRef(ObjectValue.class.getName());
+                    .typeRef(this.naming.arbitraryObjectImpl(declaration));
         } else if(declaration.type().equals("object")) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)

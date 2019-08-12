@@ -5,6 +5,7 @@ import org.codingmatters.rest.api.types.File;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.vals.Val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,6 +74,45 @@ public class RequestPayloadTest {
         assertThat(
                 this.spec.valueSpec("ArbitraryObjectPostRequest"),
                 is(ValueSpec.valueSpec().name("ArbitraryObjectPostRequest")
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void objectImplValPayload() throws Exception {
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            System.out.println(valueSpec);
+        }
+
+        assertThat(
+                this.spec.valueSpec("ArbitraryObjectImplValPostRequest"),
+                is(ValueSpec.valueSpec().name("ArbitraryObjectImplValPostRequest")
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(Val.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+    @Test
+    public void objectImplObjectValuePayload() throws Exception {
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            System.out.println(valueSpec);
+        }
+
+        assertThat(
+                this.spec.valueSpec("ArbitraryObjectImplObjectValuePostRequest"),
+                is(ValueSpec.valueSpec().name("ArbitraryObjectImplObjectValuePostRequest")
                         .addProperty(PropertySpec.property()
                                 .name("payload")
                                 .type(PropertyTypeSpec.type()

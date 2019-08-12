@@ -4,6 +4,10 @@ version: v1
 baseUri: https://api.codingmatters.org/query-headers
 mediaType: application/json
 
+annotationTypes:
+   object-impl:
+      enum: [ Val, ObjectValue ]
+
 /root:
     displayName: RootResource
     get:
@@ -20,6 +24,20 @@ mediaType: application/json
     displayName: ArbitraryObject
     post:
         body:
+            type: object
+
+/object-impl-val:
+    displayName: ArbitraryObjectImplVal
+    post:
+        body:
+            (object-impl): Val
+            type: object
+
+/object-impl-object-value:
+    displayName: ArbitraryObjectImplObjectValue
+    post:
+        body:
+            (object-impl): ObjectValue
             type: object
 
 types:

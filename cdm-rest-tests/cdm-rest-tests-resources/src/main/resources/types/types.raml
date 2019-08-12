@@ -12,6 +12,8 @@ annotationTypes:
       type: string[]
    already-defined:
       type: string
+   object-impl:
+      enum: [ Val, ObjectValue ]
 
 types:
     SimplePropertyType:
@@ -92,9 +94,18 @@ types:
         type: object
         properties:
             obj: object
+            objVal:
+              type: object
+              (object-impl): Val
+
             objs:
                type: array
                items: object
+            objVals:
+               type: array
+               (object-impl): Val
+               items:
+                type: object
 
     AlreadyDefinedType:
         (already-defined): org.codingmatters.AnExternalValueObject

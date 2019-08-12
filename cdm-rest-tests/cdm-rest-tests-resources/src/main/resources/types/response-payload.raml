@@ -4,6 +4,10 @@ version: v1
 baseUri: https://api.codingmatters.org/query-headers
 mediaType: application/json
 
+annotationTypes:
+   object-impl:
+      enum: [ Val, ObjectValue ]
+
 /root:
     displayName: RootResource
     get:
@@ -33,6 +37,14 @@ mediaType: application/json
       responses:
          200:
             body: object
+         201:
+            body:
+              (object-impl): Val
+              type: object
+         202:
+            body:
+              (object-impl): ObjectValue
+              type: object
 
 types:
     AType:

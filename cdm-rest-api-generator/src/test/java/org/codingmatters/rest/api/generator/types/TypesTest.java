@@ -4,6 +4,7 @@ import org.codingmatters.rest.api.generator.ApiTypesGenerator;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.vals.Val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -293,12 +294,30 @@ public class TypesTest {
                                 )
                         )
                         .addProperty(PropertySpec.property()
+                                .name("objVal")
+                                .hints(set("property:raw(objVal)"))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(Val.class.getName())
+                                )
+                        )
+                        .addProperty(PropertySpec.property()
                                 .name("objs")
                                 .hints(set("property:raw(objs)"))
                                 .type(PropertyTypeSpec.type()
                                         .cardinality(PropertyCardinality.LIST)
                                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("objVals")
+                                .hints(set("property:raw(objVals)"))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.LIST)
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(Val.class.getName())
                                 )
                         )
                         .build())

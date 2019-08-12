@@ -5,6 +5,7 @@ import org.codingmatters.rest.api.types.File;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.*;
 import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.vals.Val;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,6 +81,32 @@ public class ResponsePayloadTest {
     public void objectPayload() throws Exception {
         assertThat(
                 this.spec.valueSpec("ObjectPayloadGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec(),
+                is(AnonymousValueSpec.anonymousValueSpec()
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .build())
+        );
+
+        assertThat(
+                this.spec.valueSpec("ObjectPayloadGetResponse").propertySpec("status201").typeSpec().embeddedValueSpec(),
+                is(AnonymousValueSpec.anonymousValueSpec()
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef(Val.class.getName())
+                                )
+                        )
+                        .build())
+        );
+
+        assertThat(
+                this.spec.valueSpec("ObjectPayloadGetResponse").propertySpec("status202").typeSpec().embeddedValueSpec(),
                 is(AnonymousValueSpec.anonymousValueSpec()
                         .addProperty(PropertySpec.property()
                                 .name("payload")
