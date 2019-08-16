@@ -94,7 +94,7 @@ public class ApiGenerator {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(ObjectValue.class.getName());
+                            .typeRef(this.naming.arbitraryObjectImpl(typeDeclaration));
                 } else {
                     String typeRef;
                     if (((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
@@ -118,7 +118,7 @@ public class ApiGenerator {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.SINGLE)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(ObjectValue.class.getName());
+                            .typeRef(this.naming.arbitraryObjectImpl(typeDeclaration));
                 } else {
                     String typeRef;
                     if (typeDeclaration.type().equals("file")) {
