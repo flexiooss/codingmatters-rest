@@ -80,14 +80,15 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         this.clientPackage = this.rootPackage + ".client";
         this.apiPackage = this.rootPackage + ".api";
         this.typesPackage = this.rootPackage + ".api.types";
-
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( baseDir ) );
-        processBuilder.command( "flexio-flow", "version", "--scheme", "package" );
+        System.out.println( "Trying to convert version from maven to package with flexio-flow" );
+        processBuilder.command( "flexio-flow", "convert", "--version", version, "--from", "maven", "--to", "package" );
         try{
             this.jsVersion = getOutput( processBuilder );
+            System.out.println( "Flexio-flow returned js version: " + jsVersion );
         } catch( Exception e ) {
-            System.out.println( "Error getting js version from flexio-flow" );
+            System.out.println( "Cannot get js version from flexio-flow, using default version: " + version );
             this.jsVersion = version;
         }
     }
@@ -95,16 +96,17 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     private String getOutput( ProcessBuilder processBuilder ) throws IOException, InterruptedException {
         Process process = processBuilder.start();
         processBuilder.start();
-        BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
-        StringJoiner sj = new StringJoiner( System.getProperty( "line.separator" ) );
-        reader.lines().iterator().forEachRemaining( sj::add );
-        process.waitFor( 5, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ){
-            throw new IOException( "Bad exit code" );
+        try( BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) ) ){
+            StringJoiner sj = new StringJoiner( System.getProperty( "line.separator" ) );
+            reader.lines().iterator().forEachRemaining( sj::add );
+            process.waitFor( 5, TimeUnit.SECONDS );
+            if( process.exitValue() != 0 ){
+                throw new IOException( "Bad exit code " + process.exitValue() );
+            }
+            return sj.toString();
+        } finally {
+            process.destroy();
         }
-        String jsVersion = sj.toString();
-        process.destroy();
-        return jsVersion;
     }
 
     private void generatePhpClient( RamlModelResult ramlModel ) throws MojoExecutionException {
