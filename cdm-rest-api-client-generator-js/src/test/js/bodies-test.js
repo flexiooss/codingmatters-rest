@@ -15,7 +15,7 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.TypePostRequestBuilder();
-        let littleObj = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
+        let littleObj = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj.name( "Jungle Patrol" );
         request.payload( littleObj.build() );
 
@@ -31,9 +31,9 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.TypeArrayShortPostRequestBuilder();
-        let littleObj1 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
+        let littleObj1 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj1.name( "Morillo" );
-        let littleObj2 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
+        let littleObj2 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
         let list = new globalFlexioImport.org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
@@ -51,9 +51,9 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.TypeArrayPostRequestBuilder();
-        let littleObj1 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
+        let littleObj1 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj1.name( "Morillo" );
-        let littleObj2 = new globalFlexioImport.org.generated.types.LittleObjectBuilder();
+        let littleObj2 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
         let list = new globalFlexioImport.org.generated.api.typearraypostrequest.TypeArrayPostRequestPayloadList( littleObj1.build(), littleObj2.build() );

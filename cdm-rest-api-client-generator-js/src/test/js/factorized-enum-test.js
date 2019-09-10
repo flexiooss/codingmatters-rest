@@ -10,12 +10,12 @@ const assert = require('assert')
 class FactorizedEnumTest extends TestCase {
 
     testTypeConstruction(){
-        let myEnum1 =  globalFlexioImport.org.generated.types.MyEnum.AC;
-        let myEnum2 =  globalFlexioImport.org.generated.types.MyEnum.DC;
-        let myClass =  new globalFlexioImport.org.generated.types.MyClassBuilder();
+        let myEnum1 =  globalFlexioImport.org.generated.api.types.MyEnum.AC;
+        let myEnum2 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
+        let myClass =  new globalFlexioImport.org.generated.api.types.MyClassBuilder();
         myClass.toto( myEnum1 );
-        myClass.totoList( new globalFlexioImport.org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
-        myClass.totoListShort( new globalFlexioImport.org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+        myClass.totoList( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
+        myClass.totoListShort( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
 
         let json = '{"toto":"AC","totoList":["AC","DC"],"totoListShort":["AC","DC"]}';
         assert.equal( JSON.stringify( myClass.build() ), json );
@@ -23,7 +23,7 @@ class FactorizedEnumTest extends TestCase {
 
     testDeserialization(){
         let json = '{"toto":"AC","totoList":["AC","DC"],"totoListShort":["AC","DC"]}';
-        let myClass = globalFlexioImport.org.generated.types.MyClassBuilder.fromJson( json ).build();
+        let myClass = globalFlexioImport.org.generated.api.types.MyClassBuilder.fromJson( json ).build();
 
         assert.equal( myClass.toto().name, "AC" );
         assert.equal( myClass.totoList()[0].name, "AC" )
@@ -37,12 +37,12 @@ class FactorizedEnumTest extends TestCase {
 //
 //        let request = new globalFlexioImport.org.generated.api.TotoPostRequestBuilder();
 //
-//        let myEnum1 =  globalFlexioImport.org.generated.types.MyEnum.DC;
-//        let myEnum2 =  globalFlexioImport.org.generated.types.MyEnum.DC;
-//        let myClass =  new globalFlexioImport.org.generated.types.MyClassBuilder();
+//        let myEnum1 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
+//        let myEnum2 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
+//        let myClass =  new globalFlexioImport.org.generated.api.types.MyClassBuilder();
 //        myClass.toto( myEnum1 );
-//        myClass.totoList( new globalFlexioImport.org.generated.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
-//        myClass.totoListShort( new globalFlexioImport.org.generated.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+//        myClass.totoList( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
+//        myClass.totoListShort( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
 //
 //        request.payload( myClass.build() );
 //        let response = client.toto().totoPost( request.build() );
@@ -58,8 +58,8 @@ class FactorizedEnumTest extends TestCase {
 //    }
 //
 //    testEnumBody(){
-//        let myEnum1 =  globalFlexioImport.org.generated.types.MyEnum.DC;
-//        let myEnum2 =  globalFlexioImport.org.generated.types.MyEnum.DC;
+//        let myEnum1 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
+//        let myEnum2 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
 //
 //        let requester = new FakeHttpRequester();
 //        requester.nextBody( 'AC' );
