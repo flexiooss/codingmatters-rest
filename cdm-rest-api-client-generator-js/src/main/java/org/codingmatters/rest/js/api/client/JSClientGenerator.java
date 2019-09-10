@@ -7,6 +7,7 @@ import org.codingmatters.rest.parser.RamlParser;
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.GenerationException;
+import org.codingmatters.value.objects.js.generator.packages.PackageConfiguration;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesGenerator;
 import org.codingmatters.value.objects.js.generator.visitor.JsValueObjectGenerator;
@@ -27,12 +28,12 @@ public class JSClientGenerator {
     private final String version;
     private final String artifactId;
 
-    public JSClientGenerator( File rootDirectory, String rootPackage, String vendor, String artifactId, String version ) {
+    public JSClientGenerator( File rootDirectory, String clientPackage, String typesPackage, String apiPackage, String vendor, String artifactId, String version ) {
         this.rootDirectory = rootDirectory;
-        this.typesPackage = rootPackage + ".types";
-        this.apiPackage = rootPackage + ".api";
-        this.resourcesPackage = rootPackage + ".client.resources";
-        this.clientPackage = rootPackage + ".client";
+        this.typesPackage = typesPackage;
+        this.apiPackage = apiPackage;
+        this.clientPackage = clientPackage;
+        this.resourcesPackage = clientPackage + ".resources";
         this.typesRamlParser = new RamlParser( typesPackage, apiPackage );
         this.vendor = vendor;
         this.version = version;
@@ -62,7 +63,7 @@ public class JSClientGenerator {
 
     public void generateClientApi( RamlModelResult[] ramlModels ) throws ProcessingException, GenerationException {
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
-        for (RamlModelResult ramlModel : ramlModels) {
+        for( RamlModelResult ramlModel : ramlModels ){
             ParsedRaml parsedRaml = typesRamlParser.parseRamlModel( ramlModel );
             generateClient( packageBuilder, parsedRaml, false );
         }
