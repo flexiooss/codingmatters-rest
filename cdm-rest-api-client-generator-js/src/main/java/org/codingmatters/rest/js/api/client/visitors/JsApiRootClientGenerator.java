@@ -43,7 +43,7 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
             write.line( "/**" );
             write.line( "* @returns string" );
             write.line( "*/" );
-            write.line( "apiName() {");
+            write.line( "static apiName() {");
             write.line( "return '" + NamingUtility.getApiName( parsedRaml.apiName() ) + "'" );
             write.line( "}" );
             generateConstructor( parsedRaml );
@@ -60,7 +60,7 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
     private void generateConstructor( ParsedRaml parsedRaml ) throws IOException {
         write.line( "/**" );
         write.line( "* @constructor" );
-        write.line( "* @param {string} gatewayUrl" );
+        write.line( "* @param {HttpRequester} requester" );
         write.line( "* @param {string} gatewayUrl" );
         write.line( "*/" );
         write.line( "constructor(requester, gatewayUrl) {" );

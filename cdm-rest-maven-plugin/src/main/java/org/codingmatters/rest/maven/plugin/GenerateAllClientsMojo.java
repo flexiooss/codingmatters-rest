@@ -19,12 +19,11 @@ import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 import org.raml.v2.api.RamlModelResult;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -46,20 +45,29 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${project.version}")
     private String version;
 
-    @Parameter( alias = "raml-list" )
+    @Parameter(alias = "raml-list")
     private String[] ramlList;
+
+    @Parameter(defaultValue = "${basedir}")
+    private String baseDir;
+
+    private String jsVersion;
+    private String typesPackage;
+    private String clientPackage;
+    private String apiPackage;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if( ramlList != null ) {
+        initPackages();
+        if( ramlList != null ){
             List<RamlModelResult> collect = new ArrayList<>();
-            for (String ramlFile : ramlList) {
+            for( String ramlFile : ramlList ){
                 RamlModelResult ramlModelResult = parseFile( ramlFile );
                 collect.add( ramlModelResult );
                 generateJavaClient( ramlModelResult );
                 generatePhpClient( ramlModelResult );
             }
-            generateJSClients( collect.toArray( new RamlModelResult[0] ));
+            generateJSClients( collect.toArray( new RamlModelResult[0] ) );
         } else {
             RamlModelResult ramlModel = this.resolveRamlModel();
             generateJSClient( ramlModel );
@@ -68,90 +76,117 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         }
     }
 
+    private void initPackages() {
+        this.clientPackage = this.rootPackage + ".client";
+        this.apiPackage = this.rootPackage + ".api";
+        this.typesPackage = this.rootPackage + ".api.types";
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory( new File( baseDir ) );
+        System.out.println( "Trying to convert version from maven to package with flexio-flow" );
+        processBuilder.command( "flexio-flow", "convert", "--version", version, "--from", "maven", "--to", "package" );
+        try{
+            this.jsVersion = getOutput( processBuilder );
+            System.out.println( "Flexio-flow returned js version: " + jsVersion );
+        } catch( Exception e ) {
+            System.out.println( "Cannot get js version from flexio-flow, using default version: " + version );
+            this.jsVersion = version;
+        }
+    }
+
+    private String getOutput( ProcessBuilder processBuilder ) throws IOException, InterruptedException {
+        Process process = processBuilder.start();
+        processBuilder.start();
+        try( BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) ) ){
+            StringJoiner sj = new StringJoiner( System.getProperty( "line.separator" ) );
+            reader.lines().iterator().forEachRemaining( sj::add );
+            process.waitFor( 5, TimeUnit.SECONDS );
+            if( process.exitValue() != 0 ){
+                throw new IOException( "Bad exit code " + process.exitValue() );
+            }
+            return sj.toString();
+        } finally {
+            process.destroy();
+        }
+    }
+
     private void generatePhpClient( RamlModelResult ramlModel ) throws MojoExecutionException {
         File phpOutputDirectory = new File( outputDirectory, "php-generated-client" );
         boolean useTypeHintingReturnValue = false;
-        String clientPackage = this.rootPackage + ".client";
-        String apiPackage = this.rootPackage + ".api";
-        String typesPackage = this.rootPackage + ".api.types";
-        try {
+        try{
             Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( ramlModel );
             new SpecPhpGenerator( spec, typesPackage, phpOutputDirectory, useTypeHintingReturnValue ).generate();
-        } catch( RamlSpecException | IOException e ){
+        } catch( RamlSpecException | IOException e ) {
             throw new MojoExecutionException( "Error generating php client", e );
         }
-        try {
+        try{
             Spec spec = new ApiGeneratorPhp( typesPackage ).generate( ramlModel );
             new SpecPhpGenerator( spec, apiPackage, phpOutputDirectory, useTypeHintingReturnValue ).generate();
-        } catch( RamlSpecException | IOException e ){
+        } catch( RamlSpecException | IOException e ) {
             throw new MojoExecutionException( "Error generating php client", e );
         }
-        try {
+        try{
             PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, phpOutputDirectory, useTypeHintingReturnValue );
             requesterGenerator.generate( ramlModel );
-        } catch( RamlSpecException | IOException e ){
+        } catch( RamlSpecException | IOException e ) {
             throw new MojoExecutionException( "Error generating php client", e );
         }
-        try {
+        try{
             ComposerFileGenerator requesterGenerator = new ComposerFileGenerator( phpOutputDirectory, vendor, artifactId, version );
             requesterGenerator.generateComposerFile();
-        } catch( Exception e ){
+        } catch( Exception e ) {
             throw new MojoExecutionException( "Error generating php client", e );
         }
-        try {
+        try{
             zipPhpClient( phpOutputDirectory );
-        } catch( Exception e ){
+        } catch( Exception e ) {
             throw new MojoExecutionException( "Error generating php client", e );
         }
 
     }
 
     private void zipPhpClient( File fileToZip ) throws IOException {
-        try( FileOutputStream fos = new FileOutputStream( new File( fileToZip.getParentFile(), "php-generated-client.zip" ) ) ) {
-            try( ZipOutputStream zipOut = new ZipOutputStream( fos ) ) {
+        try( FileOutputStream fos = new FileOutputStream( new File( fileToZip.getParentFile(), "php-generated-client.zip" ) ) ){
+            try( ZipOutputStream zipOut = new ZipOutputStream( fos ) ){
                 zipFile( fileToZip, null, zipOut );
             }
         }
     }
 
     private void generateJavaClient( RamlModelResult ramlModel ) throws MojoExecutionException {
-        String destinationPackage = rootPackage + ".client";
-        String typesPackage = rootPackage + ".api.types";
-        String apiPackage = rootPackage + ".api";
         File javaOutputDirectory = new File( this.outputDirectory, "generated-sources" );
-        try {
-            new ClientInterfaceGenerator( destinationPackage, apiPackage, javaOutputDirectory ).generate( ramlModel );
-        } catch( IOException e ){
+        try{
+            new ClientInterfaceGenerator( clientPackage, apiPackage, javaOutputDirectory ).generate( ramlModel );
+        } catch( IOException e ) {
             throw new MojoExecutionException( "error generating client interface from raml model", e );
         }
-        try {
-            new ClientRequesterImplementation( destinationPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
-        } catch( IOException e ){
+        try{
+            new ClientRequesterImplementation( clientPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
+        } catch( IOException e ) {
             throw new MojoExecutionException( "error generating requester client implementation from raml model", e );
         }
-        try {
-            new ClientHandlerImplementation( destinationPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
-        } catch( IOException e ){
+        try{
+            new ClientHandlerImplementation( clientPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
+        } catch( IOException e ) {
             throw new MojoExecutionException( "error generating handler client implementation from raml model", e );
         }
     }
 
     private void generateJSClients( RamlModelResult[] ramlModel ) throws MojoExecutionException {
-        try {
+        try{
             File jsOutputDir = new File( this.outputDirectory, "js-generated-client" );
-            JSClientGenerator generator = new JSClientGenerator( jsOutputDir, rootPackage, vendor, artifactId, version );
+            JSClientGenerator generator = new JSClientGenerator( jsOutputDir, clientPackage, typesPackage, apiPackage, vendor, artifactId, version );
             generator.generateClientApi( ramlModel );
-        } catch( ProcessingException | GenerationException e ){
+        } catch( ProcessingException | GenerationException e ) {
             throw new MojoExecutionException( "Error generating JS client", e );
         }
     }
 
     private void generateJSClient( RamlModelResult ramlModel ) throws MojoExecutionException {
-        try {
+        try{
             File jsOutputDir = new File( this.outputDirectory, "js-generated-client" );
-            JSClientGenerator generator = new JSClientGenerator( jsOutputDir, rootPackage, vendor, artifactId, version );
+            JSClientGenerator generator = new JSClientGenerator( jsOutputDir, clientPackage, typesPackage, apiPackage, vendor, artifactId, version );
             generator.generateClientApi( ramlModel );
-        } catch( ProcessingException | GenerationException e ){
+        } catch( ProcessingException | GenerationException e ) {
             throw new MojoExecutionException( "Error generating JS client", e );
         }
     }
@@ -172,9 +207,9 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             }
             File[] children = fileToZip.listFiles();
             for( File childFile : children ){
-                if( fileName!=null ){
+                if( fileName != null ){
                     zipFile( childFile, fileName + "/" + childFile.getName(), zipOut );
-                }else{
+                } else {
                     zipFile( childFile, childFile.getName(), zipOut );
                 }
             }

@@ -19,11 +19,7 @@ public class JsonPackageGenerator {
             write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
             write.line( "\"version\": \"" + version + "\"," );
             write.line( "\"dependencies\": {" );
-            write.line("\"@flexio-oss/assert\": \"0.0.0\",");
-            write.line("\"@flexio-oss/js-type-helpers\": \"0.0.0\",");
-            write.line("\"@flexio-oss/js-generator-helpers\": \"0.0.0\",");
-            write.line("\"@flexio-oss/flex-types\": \"0.0.0\",");
-            write.line("\"@flexio-oss/global-import-registry\": \"0.0.0\"" );
+            write.line( "\"@flexio-corp/js-api-client-parent\": \"0.0.0\"" );
             write.unindent();
             write.line( "}," );
             write.line( "\"main\": \"" + rootPackage + "/package.js\"" );
