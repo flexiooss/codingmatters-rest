@@ -48,15 +48,19 @@ public class BaseOkHttpRequester implements Requester {
     }
 
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().post(RequestBody.create(MediaType.parse(contentType), body)).build();
+        Request request = this.prepareRequestBuilder().post(this.prepareBody(contentType, body)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
         }
     }
 
+    public RequestBody prepareBody(String contentType, byte[] body) {
+        return RequestBody.create(MediaType.parse(contentType), body != null ? body : new byte[0]);
+    }
+
     @Override
     public ResponseDelegate put(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().put(RequestBody.create(MediaType.parse(contentType), body)).build();
+        Request request = this.prepareRequestBuilder().put(this.prepareBody(contentType, body)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
         }
@@ -64,7 +68,7 @@ public class BaseOkHttpRequester implements Requester {
 
     @Override
     public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().patch(RequestBody.create(MediaType.parse(contentType), body)).build();
+        Request request = this.prepareRequestBuilder().patch(this.prepareBody(contentType, body)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
         }
@@ -80,7 +84,7 @@ public class BaseOkHttpRequester implements Requester {
 
     @Override
     public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().delete(RequestBody.create(MediaType.parse(contentType), body)).build();
+        Request request = this.prepareRequestBuilder().delete(this.prepareBody(contentType, body)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
         }
