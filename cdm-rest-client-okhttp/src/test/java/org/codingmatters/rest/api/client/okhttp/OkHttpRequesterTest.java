@@ -41,6 +41,24 @@ public class OkHttpRequesterTest {
     }
 
     @Test
+    public void postWithNullBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.post("text/plain", null).code(), is(200));
+    }
+
+    @Test
+    public void postWithEmptyBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.post("text/plain", new byte[0]).code(), is(200));
+    }
+
+    @Test
     public void put() throws Exception {
         this.undertow
                 .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PUT"))
