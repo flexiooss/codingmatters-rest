@@ -125,7 +125,7 @@
                     <systemPropertyVariables>
                         <project.build.directory>${project.build.directory}</project.build.directory>
                     </systemPropertyVariables>
-                    <skipTests>false</skipTests>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
         </plugins>
