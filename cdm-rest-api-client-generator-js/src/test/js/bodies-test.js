@@ -3,6 +3,7 @@ import "../org/generated/package"
 import {FakeHttpRequester} from "./utils/FakeHttpRequester";
 import { globalFlexioImport } from '@flexio-oss/global-import-registry'
 import { FlexDate, FlexDateTime, FlexTime} from '@flexio-oss/flex-types';
+import "@flexio-oss/flex-types"
 
 const assert = require('assert')
 
@@ -36,7 +37,7 @@ class BodiesTest extends TestCase {
         let littleObj2 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
-        let list = new globalFlexioImport.org.generated.api.typearrayshortpostrequest.TypeArrayShortPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
+        let list = new globalFlexioImport.org.generated.api.types.LittleObjectList( littleObj1.build(), littleObj2.build() );
         request.payload( list );
 
         client.typeArrayShort().typeArrayShortPost( request.build(),(response)=>{
@@ -56,7 +57,7 @@ class BodiesTest extends TestCase {
         let littleObj2 = new globalFlexioImport.org.generated.api.types.LittleObjectBuilder();
         littleObj2.name( "Jungle Patrol" );
 
-        let list = new globalFlexioImport.org.generated.api.typearraypostrequest.TypeArrayPostRequestPayloadList( littleObj1.build(), littleObj2.build() );
+        let list = new globalFlexioImport.org.generated.api.types.LittleObjectList( littleObj1.build(), littleObj2.build() );
         request.payload( list );
 
         client.typeArray().typeArrayPost( request.build(),(response)=>{
@@ -93,7 +94,7 @@ class BodiesTest extends TestCase {
         let obj2 = {};
         obj2['1250'] = 1919;
 
-        request.payload( new globalFlexioImport.org.generated.api.objectarrayshortpostrequest.ObjectArrayShortPostRequestPayloadList( obj1, obj2 ) );
+        request.payload( new globalFlexioImport.io.flexio.flex_types.arrays.ObjectArray( obj1, obj2 ) );
 
         client.objectArrayShort().objectArrayShortPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );
@@ -113,7 +114,7 @@ class BodiesTest extends TestCase {
         let obj2 = {};
         obj2['1250'] = 1919;
 
-        request.payload( new globalFlexioImport.org.generated.api.objectarraypostrequest.ObjectArrayPostRequestPayloadList( obj1, obj2 ) );
+        request.payload( new globalFlexioImport.io.flexio.flex_types.arrays.ObjectArray( obj1, obj2 ) );
 
         client.objectArray().objectArrayPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );

@@ -13,12 +13,6 @@
     "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git"
   },
   "dependencies": {
-    "@flexio-oss/assert": "0.0.0",
-    "@flexio-oss/flex-types": "0.0.0",
-    "@flexio-oss/js-generator-helpers": "0.0.0",
-    "@flexio-oss/js-type-helpers": "0.0.0",
-    "@flexio-oss/global-import-registry": "0.0.0",
-    "flexio-jshelpers": "https://github.com/flexiooss/flexio-jshelpers.git"
-
+    "@flexio-corp/js-api-client-parent": "0.3.0"
   }
 }

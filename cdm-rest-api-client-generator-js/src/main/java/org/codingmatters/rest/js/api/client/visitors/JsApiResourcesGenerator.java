@@ -53,7 +53,7 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
     @Override
     public void process( ParsedRoute parsedRoute ) throws ProcessingException {
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + parsedRoute.displayName() + ".js" ) ) {
-            packageBuilder.addList( clientPackage, parsedRoute.displayName() );
+            packageBuilder.addEnum( clientPackage, parsedRoute.displayName(), false );
             this.write = write;
             this.importsTypes = new HashSet<>();
             collectAllImports( parsedRoute );

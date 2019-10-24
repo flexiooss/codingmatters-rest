@@ -1,13 +1,7 @@
 package org.codingmatters.rest.js.api.client.visitors;
 
 import org.codingmatters.rest.parser.model.ParsedRaml;
-import org.codingmatters.rest.parser.model.ParsedRequest;
-import org.codingmatters.rest.parser.model.ParsedResponse;
 import org.codingmatters.rest.parser.model.ParsedRoute;
-import org.codingmatters.rest.parser.model.typed.TypedBody;
-import org.codingmatters.rest.parser.model.typed.TypedHeader;
-import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
-import org.codingmatters.rest.parser.model.typed.TypedUriParams;
 import org.codingmatters.rest.parser.processing.ParsedRamlProcessor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
@@ -37,7 +31,7 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
         String className = NamingUtility.className( parsedRaml.apiName(), "Client" );
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + className + ".js" ) ) {
             this.write = write;
-            packageBuilder.addList( clientPackage, className );
+            packageBuilder.addEnum( clientPackage, className, false );
             write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
             write.line( "class " + className + "{" );
             write.line( "/**" );
