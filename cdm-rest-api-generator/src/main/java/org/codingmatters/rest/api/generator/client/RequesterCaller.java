@@ -6,6 +6,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.generator.client.caller.CallerParameters;
+import org.codingmatters.rest.api.generator.client.response.ResponseHeaderParser;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.raml.v2.api.model.v10.bodies.Response;
@@ -149,19 +150,7 @@ public class RequesterCaller {
     }
 
     private void parseHeaders(MethodSpec.Builder caller, Response response) {
-        for (TypeDeclaration headerType : response.headers()) {
-            if(headerType instanceof ArrayTypeDeclaration) {
-                caller.addStatement("responseBuilder.$L(response.header($S))",
-                        this.naming.property(headerType.name()),
-                        headerType.name());
-            } else {
-                caller.beginControlFlow("if(response.header($S) != null)", headerType.name())
-                        .addStatement("responseBuilder.$L(response.header($S)[0])",
-                                this.naming.property(headerType.name()),
-                                headerType.name())
-                        .endControlFlow();
-            }
-        }
+        new ResponseHeaderParser(this.naming, response.headers()).addStatements(caller);
     }
 
     private void parseBody(MethodSpec.Builder caller, Response response) {
