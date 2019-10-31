@@ -58,26 +58,6 @@ public class CallerParam extends Parameter {
         }
     }
 
-    private Class javaType() {
-        if(this.isOfType("string")) {
-            return String.class;
-        } else if(this.isOfType("integer")) {
-            return Long.class;
-        } else if(this.isOfType("number")) {
-            return Double.class;
-        } else if(this.isOfType("datetime-only")) {
-            return LocalDateTime.class;
-        } else if(this.isOfType("date-only")) {
-            return LocalDate.class;
-        } else if(this.isOfType("time-only")) {
-            return LocalTime.class;
-        } else if(this.isOfType("boolean")) {
-            return Boolean.class;
-        } else {
-            return Object.class;
-        }
-    }
-
 
     protected void addTranstypeToStringStatement(MethodSpec.Builder method, String from, String to) {
         if(this.isOfType("string")) {

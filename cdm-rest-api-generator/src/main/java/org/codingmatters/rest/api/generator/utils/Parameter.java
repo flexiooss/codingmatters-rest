@@ -5,6 +5,9 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 import org.codingmatters.value.objects.generation.Naming;
@@ -25,7 +28,9 @@ public class Parameter {
     };
 
     public enum ParameterSource {
-        HEADERS("headers", "header"), QUERY("queryParameters", "parameter"), URI("uriParameters", null);
+        HEADERS("headers", "header"),
+        QUERY("queryParameters", "parameter"),
+        URI("uriParameters", null);
 
         public final String delegateMethod;
         public final String requesterMethod;
@@ -55,11 +60,11 @@ public class Parameter {
 
 
 
-    protected boolean isSupportedType() {
+    public boolean isSupportedType() {
         return SUPPPORTED_RAML_TYPES.contains(this.ramlType().toLowerCase());
     }
 
-    protected String ramlType() {
+    public String ramlType() {
         String t;
         if(this.isArray()) {
             t = ((ArrayTypeDeclaration)typeDeclaration).items().type().toLowerCase();
@@ -73,11 +78,40 @@ public class Parameter {
         return this.naming.property(typeDeclaration.name());
     }
 
-    protected boolean isOfType(String ramlTypeName) {
+    public boolean isOfType(String ramlTypeName) {
         return this.ramlType().equalsIgnoreCase(ramlTypeName);
     }
 
-    protected boolean isArray() {
+    public boolean isArray() {
         return this.typeDeclaration.type().equalsIgnoreCase("array");
+    }
+
+
+
+    public Class javaType() {
+        if(this.isOfType("string")) {
+            return String.class;
+        } else if(this.isOfType("integer")) {
+            return Long.class;
+        } else if(this.isOfType("number")) {
+            return Double.class;
+        } else if(this.isOfType("datetime-only")) {
+            return LocalDateTime.class;
+        } else if(this.isOfType("date-only")) {
+            return LocalDate.class;
+        } else if(this.isOfType("time-only")) {
+            return LocalTime.class;
+        } else if(this.isOfType("boolean")) {
+            return Boolean.class;
+        } else {
+            return Object.class;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "typeDeclaration=" + typeDeclaration +
+                '}';
     }
 }
