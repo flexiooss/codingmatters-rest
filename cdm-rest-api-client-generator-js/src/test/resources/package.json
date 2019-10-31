@@ -13,6 +13,6 @@
     "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git"
   },
   "dependencies": {
-    "@flexio-corp/js-api-client-parent": "0.3.0"
+    "@flexio-corp/js-api-client-parent": "0.4.0"
   }
 }

@@ -32,31 +32,31 @@ class PayloadAndParameterTest extends TestCase {
 
         request.stringParam( "myStringParam" );
         request.stringArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestStringArrayParamList( "tata", "yoyo" )
+            new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "tata", "yoyo" )
         );
         request.intParam( 7 );
         request.intArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestIntArrayParamList( 1, 2 )
+            new globalFlexioImport.io.flexio.flex_types.arrays.LongArray( 1, 2 )
         );
         request.floatParam( 7.1 );
         request.floatArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestFloatArrayParamList( 1.3, 22.2 )
+            new globalFlexioImport.io.flexio.flex_types.arrays.FloatArray( 1.3, 22.2 )
         );
         request.dateParam( new FlexDate( "1992-10-17" ) );
         request.dateArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.DateArray( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
         );
         request.datetimeParam( new FlexDateTime( "1992-10-17T14:12:07" ) );
         request.datetimeArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.DateTimeArray( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
         );
         request.timeParam( new FlexTime( "14:12:07" ) );
         request.timeArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.TimeArray( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
         );
         request.boolParam( true );
         request.boolArrayParam(
-            new globalFlexioImport.org.generated.api.headerparamsgetrequest.HeaderParamsGetRequestBoolArrayParamList( true, true, false )
+            new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false )
         );
 
         client.headerParams().headerParamsGet( request.build(), (response)=>{
@@ -112,36 +112,36 @@ class PayloadAndParameterTest extends TestCase {
         let requester = new FakeHttpRequester();
         let client = new globalFlexioImport.org.generated.client.SimpleResourcesAPIClient( requester, "http://gateway" );
         let request = new globalFlexioImport.org.generated.api.ParamsArrayGetRequestBuilder();
-        let uriParams = new globalFlexioImport.org.generated.api.paramsarray.ParamsArrayUriParamsList( "p1", "p2" );
+        let uriParams = new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "p1", "p2" );
         request.uriParams( uriParams );
 
         request.stringParam( "myStringParam" );
         request.stringArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestStringArrayParamList( "tata", "yoyo" )
+            new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "tata", "yoyo" )
         );
         request.intParam( 7 );
         request.intArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestIntArrayParamList( 1, 2 )
+            new globalFlexioImport.io.flexio.flex_types.arrays.LongArray( 1, 2 )
         );
         request.floatParam( 7.1 );
         request.floatArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestFloatArrayParamList( 1.3, 22.2 )
+            new globalFlexioImport.io.flexio.flex_types.arrays.FloatArray( 1.3, 22.2 )
         );
         request.dateParam( new FlexDate( "1992-10-17" ) );
         request.dateArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDateArrayParamList( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.DateArray( new FlexDate( "1992-10-02" ), new FlexDate( "1992-10-17" ) )
         );
         request.datetimeParam( new FlexDateTime( "1992-10-17T14:12:07" ) );
         request.datetimeArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestDatetimeArrayParamList( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.DateTimeArray( new FlexDateTime( "1992-10-17T14:12:07" ), new FlexDateTime( "1992-10-02T13:00:00" ) )
         );
         request.timeParam( new FlexTime( "14:12:07" ) );
         request.timeArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestTimeArrayParamList( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
+            new globalFlexioImport.io.flexio.flex_types.arrays.TimeArray( new FlexTime( "14:12:07" ), new FlexTime( "13:00:00" ) )
         );
         request.boolParam( true );
         request.boolArrayParam(
-            new globalFlexioImport.org.generated.api.paramsarraygetrequest.ParamsArrayGetRequestBoolArrayParamList( true, true, false )
+            new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false )
         );
 
         client.headerParams().paramsArray().paramsArrayGet( request.build(), (response)=>{
