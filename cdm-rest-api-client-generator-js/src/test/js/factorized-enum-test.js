@@ -14,8 +14,8 @@ class FactorizedEnumTest extends TestCase {
         let myEnum2 =  globalFlexioImport.org.generated.api.types.MyEnum.DC;
         let myClass =  new globalFlexioImport.org.generated.api.types.MyClassBuilder();
         myClass.toto( myEnum1 );
-        myClass.totoList( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListList( myEnum1, myEnum2 )  );
-        myClass.totoListShort( new globalFlexioImport.org.generated.api.types.myclass.MyClassTotoListShortList( myEnum1, myEnum2 ) );
+        myClass.totoList( new globalFlexioImport.org.generated.api.types.MyEnumList( myEnum1, myEnum2 )  );
+        myClass.totoListShort( new globalFlexioImport.org.generated.api.types.MyEnumList( myEnum1, myEnum2 ) );
 
         let json = '{"toto":"AC","totoList":["AC","DC"],"totoListShort":["AC","DC"]}';
         assert.equal( JSON.stringify( myClass.build() ), json );

@@ -85,6 +85,7 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         System.out.println( "Trying to convert version from maven to package with flexio-flow" );
         processBuilder.command( "flexio-flow", "convert", "--version", version, "--from", "maven", "--to", "package" );
         try{
+            processBuilder.start().waitFor( 30, TimeUnit.SECONDS );
             this.jsVersion = getOutput( processBuilder );
             System.out.println( "Flexio-flow returned js version: " + jsVersion );
         } catch( Exception e ) {

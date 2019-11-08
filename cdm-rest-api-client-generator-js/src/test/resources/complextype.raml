@@ -1,0 +1,18 @@
+#%RAML 1.0
+title: Factorized enums API
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+types:
+
+  MyNested:
+    type: object
+    properties:
+      prop-a:
+        type: object
+        properties:
+          prop-b:
+            type: object
+            properties:
+              prop-c: string

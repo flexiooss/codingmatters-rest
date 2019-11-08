@@ -3,6 +3,7 @@ package org.codingmatters.rest.js.api.client.visitors;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.generator.visitor.JsValueListDeserializationProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializationProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -93,12 +94,11 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
             String var = generateVarName();
-            String listClassName = NamingUtility.classFullName( list.packageName() + "." + list.name() );
             if( deserializeFunction.equals( "fromJson" ) && isObjectList( list ) ){
                 currentVariable = "JSON.parse(" + currentVariable + ")";
                 deserializeFunction = "fromObject";
             }
-            write.string( "new " + listClassName + "(..." + currentVariable + ".map(" + var + " => " );
+            new JsValueListDeserializationProcessor( write, currentVariable, var, typesPackage ).process( list );
             currentVariable = var;
             list.type().process( this );
             write.string( "))" );
@@ -171,7 +171,7 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
             String className = NamingUtility.className( externalEnum.enumReference() );
-            write.string( className + ".enumValueOf(" + className + ")" );
+            write.string( className + ".enumValueOf(" + currentVariable + ")" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }

@@ -23,6 +23,7 @@ import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ParsingUtils {
 
@@ -126,15 +127,17 @@ public class ParsingUtils {
             }
             String name = NamingUtility.className( typeDeclarationName, propName, "List" );
             ValueObjectType type = parseListType( typeDeclarationName, (ArrayTypeDeclaration) property );
-            String namespace = NamingUtility.namespace( typeDeclarationName );
+            String namespace = context.subList( 0, context.size()- 1 )
+                    .stream().map( NamingUtility::namespace ).collect( Collectors.joining( "." ) );
             return new ValueObjectTypeList( name, type, typesPackage + "." + namespace );
         } else if( isEnum( property ) ){
             if( isTypeEnum( property ).isPresent() ){
                 return new YamlEnumExternalEnum( typesPackage + "." + NamingUtility.className( isTypeEnum( property ).get() ));
             }
+            String namespace = context.subList( 0, context.size() - 1 ).stream().map( NamingUtility::namespace ).collect( Collectors.joining( "." ) );
             return new YamlEnumInSpecEnum(
                     NamingUtility.className( context.toArray( new String[0] ) ),
-                    NamingUtility.namespace( typeDeclarationName ),
+                    namespace,
                     ((StringTypeDeclaration) property).enumValues()
             );
         } else if( isAlreadyDefined( property ).isPresent() ){
@@ -149,7 +152,8 @@ public class ParsingUtils {
         } else if( isSinglePrimitiveType( property ).isPresent() ){
             return new ValueObjectTypePrimitiveType( isSinglePrimitiveType( property ).get().toYaml().name() );
         } else if( isNested( property ) ){
-            return new ObjectTypeNested( parseNested( typeDeclarationName, (ObjectTypeDeclaration) property ), NamingUtility.namespace( typeDeclarationName ) );
+            String namespace = context.subList( 0, context.size() - 1 ).stream().map( NamingUtility::namespace ).collect( Collectors.joining( "." ) );
+            return new ObjectTypeNested( parseNested( typeDeclarationName, (ObjectTypeDeclaration) property ), namespace );
         }
         throw new ProcessingException( "Cannot parse this declaration" );
     }
@@ -187,41 +191,57 @@ public class ParsingUtils {
         String displayName = NamingUtility.getJoinedName( resource.displayName().value() );
         ParsedRoute route = new ParsedRoute( resource.resourcePath(), displayName );
         if( resource.uriParameters() != null ){
+            context.push( displayName );
             route.uriParameters().addAll( collectParentUriParam(resource) );
+            context.pop();
         }
         for( Method request : resource.methods() ){
+            context.push( displayName + request.method() + "request" );
             ParsedRequest parsedRequest;
             Optional<TypedBody> requestBody = Optional.empty();
             String method = NamingUtility.firstLetterUpperCase( request.method().toLowerCase() );
             RequestMethod httpMethod = RequestMethod.valueOf( request.method().toUpperCase() );
             String requestClassName = NamingUtility.requestName( displayName, method );
             if( hasBody( request ) ){
+                context.push( "body" );
                 requestBody = Optional.of( new TypedBody( parseType(
                         requestClassName,
                         request.body().get( 0 )
                 ) ) );
+                context.pop();
             }
             parsedRequest = new ParsedRequest( httpMethod, requestBody );
             for( TypeDeclaration header : request.headers() ){
+                context.push( "header" );
                 parsedRequest.headers().add( new TypedHeader( header.name(), parseType( requestClassName, header ) ) );
+                context().pop();
             }
             for( TypeDeclaration queryParam : request.queryParameters() ){
+                context.push( "queryParam" );
                 parsedRequest.queryParameters().add( new TypedQueryParam( queryParam.name(), parseType( requestClassName, queryParam ) ) );
+                context().pop();
             }
+            context.pop();
             for( Response response : request.responses() ){
+                context.push( displayName + request.method() + "status" + response.code().value() + "response" );
                 Optional<TypedBody> responseBody = Optional.empty();
                 String responseClassName = NamingUtility.responseName( displayName, method, "Status", response.code().value() );
                 if( hasBody( response ) ){
+                    context.push( "body" );
                     responseBody = Optional.of( new TypedBody( parseType(
                             responseClassName,
                             response.body().get( 0 )
                     ) ) );
+                    context.pop();
                 }
                 ParsedResponse parsedResponse = new ParsedResponse( Integer.valueOf( response.code().value() ), responseBody );
                 for( TypeDeclaration typeDeclaration : response.headers() ){
+                    context.push( "header" );
                     parsedResponse.headers().add( new TypedHeader( typeDeclaration.name(), parseType( responseClassName, typeDeclaration ) ) );
+                    context.pop();
                 }
                 parsedRequest.responses().add( parsedResponse );
+                context().pop();
             }
             route.requests().add( parsedRequest );
         }

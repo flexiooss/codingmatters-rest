@@ -80,7 +80,7 @@ public class JSClientGenerator {
                 .process( new ParsedYAMLSpec( parsedRaml.types() ) );
 
         for( String subPackage : ramlApiPreProcessor.processedValueObjects().keySet() ){
-            new JsValueObjectGenerator( rootDirectory, subPackage, apiPackage, packageBuilder )
+            new JsValueObjectGenerator( rootDirectory, subPackage, apiPackage, packageBuilder, false )
                     .process( new ParsedYAMLSpec( ramlApiPreProcessor.processedValueObjects().get( subPackage ) ) );
         }
 
