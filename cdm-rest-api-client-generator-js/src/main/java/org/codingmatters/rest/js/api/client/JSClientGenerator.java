@@ -7,7 +7,7 @@ import org.codingmatters.rest.parser.RamlParser;
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.GenerationException;
-import org.codingmatters.value.objects.js.generator.packages.PackageConfiguration;
+import org.codingmatters.value.objects.js.generator.packages.JsonPackageGenerator;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesGenerator;
 import org.codingmatters.value.objects.js.generator.visitor.JsValueObjectGenerator;
