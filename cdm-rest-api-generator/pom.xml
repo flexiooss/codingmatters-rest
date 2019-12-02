@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.14.0-SNAPSHOT</version>
+        <version>1.15.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -38,10 +38,6 @@
         <dependency>
             <groupId>org.raml</groupId>
             <artifactId>raml-parser-2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <dependency>
