@@ -16,7 +16,6 @@ public class CountedReferenceTemporaryFile implements AutoCloseable {
         File file = new File(tmpDir(), UUID.randomUUID().toString());
         file.getParentFile().mkdirs();
         file.createNewFile();
-        file.deleteOnExit();
         ReferenceCounter referenceCounter = new ReferenceCounter(file);
         referenceCounter.increment();
         return new CountedReferenceTemporaryFile(file, referenceCounter);
