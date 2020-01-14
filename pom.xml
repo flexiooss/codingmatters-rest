@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>1.11.0-SNAPSHOT</version>
+        <version>1.11.0</version>
     </parent>
 
     <groupId>org.codingmatters.rest</groupId>
@@ -108,14 +108,14 @@
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>codingmatters-value-objects</artifactId>
-                <version>1.17.0-SNAPSHOT</version>
+                <version>1.17.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>1.13.0-SNAPSHOT</version>
+                <version>1.13.0</version>
             </dependency>
 
             <!--BOM-->
@@ -204,7 +204,7 @@
                 <plugin>
                     <groupId>org.codingmatters.value.objects</groupId>
                     <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                    <version>1.17.0-SNAPSHOT</version>
+                    <version>1.17.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
