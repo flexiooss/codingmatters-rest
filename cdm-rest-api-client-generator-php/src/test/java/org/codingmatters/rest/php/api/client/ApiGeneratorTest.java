@@ -174,7 +174,7 @@ public class ApiGeneratorTest {
 
         ValueSpec requestSpec = spec.valueSpecs().get( 0 );
 
-        assertThat( requestSpec.propertySpecs().size(), is( 15 ) );
+        assertThat( requestSpec.propertySpecs().size(), is( 17 ) );
 
         assertThat( requestSpec.propertySpec( "stringParam" ).typeSpec().typeRef(), is( "string" ) );
         assertThat( requestSpec.propertySpec( "stringParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
@@ -225,6 +225,16 @@ public class ApiGeneratorTest {
         assertThat( requestSpec.propertySpec( "datetimeArrayParam" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( requestSpec.propertySpec( "datetimeArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( requestSpec.propertySpec( "datetimeArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "datetime" ) );
+
+        assertThat( requestSpec.propertySpec( "tzdatetimeParam" ).typeSpec().typeRef(), is( "tz-datetime" ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeParam" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+
+        assertThat( requestSpec.propertySpec( "tzdatetimeArrayParam" ).typeSpec().typeRef(), is( "org.generated.tzdatetimearrayparam.TzdatetimeArrayParamHeaderParamsGetRequestList" ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeArrayParam" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeArrayParam" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+        assertThat( requestSpec.propertySpec( "tzdatetimeArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "tz-datetime" ) );
 
         assertThat( requestSpec.propertySpec( "timeParam" ).typeSpec().typeRef(), is( "time" ) );
         assertThat( requestSpec.propertySpec( "timeParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );

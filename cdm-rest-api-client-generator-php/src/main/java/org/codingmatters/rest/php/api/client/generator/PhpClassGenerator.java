@@ -345,8 +345,10 @@ public class PhpClassGenerator extends AbstractGenerator {
             return "\\io\\flexio\\utils\\FlexDate::newDate( " + variableName + " )";
         } else if( type.equals( "time-only" ) ) {
             return "\\io\\flexio\\utils\\FlexDate::newTime( " + variableName + " )";
-        } else if( type.equals( "datetime" ) ) {
+        } else if( type.equals( "datetime-only" ) ){
             return "\\io\\flexio\\utils\\FlexDate::newDateTime( " + variableName + " )";
+        } else if( type.equals( "datetime" ) ){
+            return "\\io\\flexio\\utils\\FlexDate::newTzDateTime( " + variableName + " )";
         } else {
             return variableName;
         }
@@ -356,7 +358,7 @@ public class PhpClassGenerator extends AbstractGenerator {
         if( typeDeclaration.type().equals( "boolean" ) ) {
             return variableName + " ? 'true' : 'false'";
         }
-        if( typeDeclaration.type().equals( "date-only" ) || typeDeclaration.type().equals( "time-only" ) || typeDeclaration.type().equals( "datetime" ) ) {
+        if( typeDeclaration.type().equals( "date-only" ) || typeDeclaration.type().equals( "time-only" ) || typeDeclaration.type().equals( "datetime" ) || typeDeclaration.type().equals( "datetime-only" ) ) {
             return variableName + "->jsonSerialize()";
         }
         return variableName;

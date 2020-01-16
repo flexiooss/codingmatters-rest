@@ -241,8 +241,9 @@ public class ApiGeneratorPhp {
                                                                     .typeKind( TypeKind.JAVA_TYPE ) ) ) )
                     ).build();
         } else {
+            String name = this.naming.property( typeDeclaration.name() );
             return PropertySpec.property()
-                    .name( this.naming.property( typeDeclaration.name() ) )
+                    .name( name )
                     .type( PropertyTypeSpec.type()
                             .cardinality( PropertyCardinality.SINGLE )
                             .typeRef( ApiTypesPhpGenerator.typeMapping.get( typeDeclaration.type() ) )

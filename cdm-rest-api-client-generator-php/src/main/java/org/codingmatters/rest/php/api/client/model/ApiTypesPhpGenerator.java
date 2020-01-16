@@ -28,7 +28,7 @@ public class ApiTypesPhpGenerator {
         typeMapping.put( "string", "string" );
         typeMapping.put( "boolean", "bool" );
         typeMapping.put( "number", "int" );
-        typeMapping.put( "datetime", "datetime" );
+        typeMapping.put( "datetime", "tz-datetime" );
         typeMapping.put( "datetime-only", "datetime" );
         typeMapping.put( "time-only", "time" );
         typeMapping.put( "date-only", "date" );
