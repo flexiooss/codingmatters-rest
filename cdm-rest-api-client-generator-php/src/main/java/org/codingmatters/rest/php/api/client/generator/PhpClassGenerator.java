@@ -345,9 +345,9 @@ public class PhpClassGenerator extends AbstractGenerator {
             return "\\io\\flexio\\utils\\FlexDate::newDate( " + variableName + " )";
         } else if( type.equals( "time-only" ) ) {
             return "\\io\\flexio\\utils\\FlexDate::newTime( " + variableName + " )";
-        } else if( type.equals( "datetime" ) ){
+        } else if( type.equals( "datetime-only" ) ){
             return "\\io\\flexio\\utils\\FlexDate::newDateTime( " + variableName + " )";
-        } else if( type.equals( "tz-datetime" ) ){
+        } else if( type.equals( "datetime" ) ){
             return "\\io\\flexio\\utils\\FlexDate::newTzDateTime( " + variableName + " )";
         } else {
             return variableName;
