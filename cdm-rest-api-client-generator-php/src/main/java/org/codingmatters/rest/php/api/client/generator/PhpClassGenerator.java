@@ -304,12 +304,24 @@ public class PhpClassGenerator extends AbstractGenerator {
                     for( TypeDeclaration typeDeclaration : response.headers() ) {
                         if( typeDeclaration instanceof ArrayTypeDeclaration ) {
                             writer.write( "$list = new \\" + rootPackage + "\\" + httpMethodDescriptor.getResponseType().toLowerCase() + "\\status" + response.code().value() + "\\" + naming.type( "status", response.code().value(), typeDeclaration.name(), "list" ) + "();" );
+                            newLine( writer, 3 );
                             writer.write( "foreach( $responseDelegate -> header( strtolower( '" + typeDeclaration.name() + "' )) as $item ){" );
+                            newLine( writer, 4 );
                             writer.write( "$list[] = " + readSingleValueFromArray( "$item", ((ArrayTypeDeclaration) typeDeclaration).items().type() ) + ";" );
+                            newLine( writer, 3 );
                             writer.write( "}" );
+                            newLine( writer, 3 );
                             writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( $list );" );
                         } else {
-                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$responseDelegate -> header( strtolower('" + typeDeclaration.name() + "' ))[0]", typeDeclaration.type() ) + " );" );
+                            writer.write( "$header = $responseDelegate -> header( strtolower('" + typeDeclaration.name() + "' ));" );
+                            newLine( writer, 3 );
+                            writer.write( "$header = reset($header);" );
+                            newLine( writer, 3 );
+                            writer.write( "if( $header ){" );
+                            newLine( writer, 4 );
+                            writer.write( "$status -> with" + naming.type( typeDeclaration.name() ) + "( " + readSingleValueFromArray( "$header", typeDeclaration.type() ) + " );" );
+                            newLine( writer, 3 );
+                            writer.write( "}" );
                         }
                         newLine( writer, 3 );
                     }
