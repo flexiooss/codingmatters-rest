@@ -196,7 +196,7 @@ public class ApiGeneratorTest {
         assertThat( requestSpec.propertySpec( "intArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( requestSpec.propertySpec( "intArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
 
-        assertThat( requestSpec.propertySpec( "floatParam" ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( requestSpec.propertySpec( "floatParam" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( requestSpec.propertySpec( "floatParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( requestSpec.propertySpec( "floatParam" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
@@ -204,7 +204,7 @@ public class ApiGeneratorTest {
         assertThat( requestSpec.propertySpec( "floatArrayParam" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( requestSpec.propertySpec( "floatArrayParam" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( requestSpec.propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
-        assertThat( requestSpec.propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( requestSpec.propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
 
         assertThat( requestSpec.propertySpec( "dateParam" ).typeSpec().typeRef(), is( "date" ) );
         assertThat( requestSpec.propertySpec( "dateParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
@@ -280,7 +280,7 @@ public class ApiGeneratorTest {
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "intArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "intArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
 
-        assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatParam" ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatParam" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatParam" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
 
@@ -288,7 +288,7 @@ public class ApiGeneratorTest {
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatArrayParam" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatArrayParam" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
-        assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "floatArrayParam" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
 
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "dateParam" ).typeSpec().typeRef(), is( "date" ) );
         assertThat( responseSpec.propertySpec( "status200" ).typeSpec().embeddedValueSpec().propertySpec( "dateParam" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
