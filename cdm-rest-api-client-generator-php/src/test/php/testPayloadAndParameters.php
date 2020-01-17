@@ -186,7 +186,7 @@ class PayloadTest extends TestCase {
                  -> withStrHeader( "reqHeaderValue" )
                  -> withStrArray( $strArray )
                  -> withIntHeader( 7 )
-                 -> withFloatHeader( 8 )
+                 -> withFloatHeader( 8.1 )
                  -> withDateHeader( \io\flexio\utils\FlexDate::newDate( '2011-08-01' ) )
                  -> withTimeHeader( \io\flexio\utils\FlexDate::newTime( '10:07:04' ) )
                  -> withDatetimeHeader( \io\flexio\utils\FlexDate::newDateTime( '2011-08-01T10:07:04' ) )
@@ -200,7 +200,7 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $request-> strArray()[1], "coucou2" );
         $this-> assertSame( $request-> strHeader(), "reqHeaderValue" );
         $this-> assertSame( $request-> intHeader(), 7 );
-        $this-> assertSame( $request-> floatHeader(), 8 );
+        $this-> assertSame( $request-> floatHeader(), 8.1 );
         $this-> assertSame( $request-> dateHeader()->jsonSerialize(), "2011-08-01" );
         $this-> assertSame( $request-> timeHeader()->jsonSerialize(), "10:07:04Z" );
         $this-> assertSame( $request-> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04" );
@@ -210,7 +210,7 @@ class PayloadTest extends TestCase {
         $requester-> parameter( "str-header", "coucou" );
         $requester-> arrayParameter( "str-array", array( "coucou1", "coucou2" ) );
         $requester-> parameter( "int-header", "7" );
-        $requester-> parameter( "float-header", "8" );
+        $requester-> parameter( "float-header", "8.1" );
         $requester-> parameter( "date-header", "2011-08-01" );
         $requester-> arrayParameter( "date-array", array( "2011-08-01", "2011-08-02", "2011-08-03" ) );
         $requester-> parameter( "time-header", "10:07:04" );
@@ -224,7 +224,7 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $requester->lastMethod(), 'get' );
         $this-> assertSame( $requester->lastHeaders()['str-header'][0], "reqHeaderValue" );
         $this-> assertSame( $requester->lastHeaders()['int-header'][0], '7' );
-        $this-> assertSame( $requester->lastHeaders()['float-header'][0], '8' );
+        $this-> assertSame( $requester->lastHeaders()['float-header'][0], '8.1' );
         $this-> assertSame( $requester->lastHeaders()['date-header'][0], '2011-08-01' );
         $this-> assertSame( $requester->lastHeaders()['time-header'][0], '10:07:04Z' );
         $this-> assertSame( $requester->lastHeaders()['datetime-header'][0], '2011-08-01T10:07:04' );
@@ -237,7 +237,7 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $response -> status200() -> strArray()[0], "coucou1" );
         $this-> assertSame( $response -> status200() -> strArray()[1], "coucou2" );
         $this-> assertSame( $response -> status200() -> intHeader(), 7 );
-        $this-> assertSame( $response -> status200() -> floatHeader(), 8 );
+        $this-> assertSame( $response -> status200() -> floatHeader(), 8.1 );
         $this-> assertSame( $response -> status200() -> dateHeader()->jsonSerialize(), "2011-08-01" );
         $this-> assertSame( $response -> status200() -> dateArray()[0]->jsonSerialize(), "2011-08-01" );
         $this-> assertSame( $response -> status200() -> dateArray()[1]->jsonSerialize(), "2011-08-02" );
