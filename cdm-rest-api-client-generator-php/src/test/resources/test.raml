@@ -9,7 +9,14 @@ types:
     type: object
     properties:
       name: string
-
+  NestedObject:
+    type: object
+    properties:
+      prop-a: string
+      prop-b:
+        type: object
+        properties:
+          prop-c: string
 /type:
   displayName: Type
   post:
