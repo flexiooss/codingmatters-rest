@@ -1,10 +1,13 @@
 package org.codingmatters.rest.php.api.client;
 
 import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
+import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
+
+import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,20 +83,22 @@ public class ApiTypesGeneratorTest {
         RamlModelResult ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
 
         Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
+//        new SpecPhpGenerator( spec, "org.generated.types", new File( "./mytarget" ), false ).generate();
+
 
         assertThat( spec.valueSpecs().size(), is( 1 ) );
 
         ValueSpec valueSpec = spec.valueSpecs().get( 0 );
         assertThat( valueSpec.propertySpecs().size(), is( 1 ) );
 
-        assertThat( valueSpec.propertySpec( "nested" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
-        assertThat( valueSpec.propertySpec( "nested" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        AnonymousValueSpec nested = valueSpec.propertySpec( "nested" ).typeSpec().embeddedValueSpec();
+        assertThat( valueSpec.propertySpec( "my-nested" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
+        assertThat( valueSpec.propertySpec( "my-nested" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        AnonymousValueSpec nested = valueSpec.propertySpec( "my-nested" ).typeSpec().embeddedValueSpec();
         assertThat( nested.propertySpecs().size(), is( 3 ) );
 
-        assertThat( nested.propertySpec( "stringProp" ).typeSpec().typeRef(), is( "string" ) );
-        assertThat( nested.propertySpec( "stringProp" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
-        assertThat( nested.propertySpec( "stringProp" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( nested.propertySpec( "string-prop" ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( nested.propertySpec( "string-prop" ).typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+        assertThat( nested.propertySpec( "string-prop" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
 
         assertThat( nested.propertySpec( "enumProp" ).typeSpec().typeRef(), is( "org.generated.nestedtype.NestedTypeEnumProp" ) );
         assertThat( nested.propertySpec( "enumProp" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );

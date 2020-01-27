@@ -98,6 +98,19 @@ class PayloadTest extends TestCase {
         $this -> assertSame( $response -> status200() -> payload()[0]["foo"], "bar" );
     }
 
+    public function testNestedType(){
+        $propB = new \org\generated\api\types\nestedobject\PropB();
+        $propB -> withPropC("yoyo");
+
+        $payload = new \org\generated\api\types\NestedObject();
+        $payload -> withPropA( "toto" );
+        $payload -> withPropB( $propB );
+
+        $writer = new \org\generated\api\types\json\NestedObjectWriter();
+        $json = $writer->write($payload);
+        $this -> assertSame( $json, '{"prop-a":"toto","prop-b":{"prop-c":"yoyo"}}' );
+    }
+
     public function testTypePayload(){
         $requester = new FakeHttpRequester();
         $client = new \org\generated\api\TypeImpl( $requester, 'http://gateway' );
