@@ -227,14 +227,14 @@ public class ApiTypesPhpGenerator {
             PropertySpec.Builder prop;
             if( objectProp.type().equals( "object" ) ) {
                 prop = PropertySpec.property()
-                        .name( this.naming.property( objectProp.name() ) )
+                        .name( objectProp.name() )
                         .type( PropertyTypeSpec.type()
                                 .cardinality( PropertyCardinality.SINGLE )
                                 .typeKind( TypeKind.EMBEDDED )
                                 .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) objectProp ) ) );
             } else {
                 prop = PropertySpec.property()
-                        .name( this.naming.property( objectProp.name() ) )
+                        .name( objectProp.name() )
                         .type( this.typeSpecFromDeclaration( typeDeclaration, objectProp ) );
             }
             embedded.addProperty( prop );

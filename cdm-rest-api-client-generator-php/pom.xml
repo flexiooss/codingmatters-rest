@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.19.0</version>
+        <version>1.19.1</version>
         <relativePath>../</relativePath>
     </parent>
 
