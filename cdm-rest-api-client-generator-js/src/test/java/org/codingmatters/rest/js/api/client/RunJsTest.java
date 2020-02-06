@@ -1,6 +1,7 @@
 package org.codingmatters.rest.js.api.client;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -48,6 +49,7 @@ public class RunJsTest {
         }
     }
 
+    @Ignore // hbshed not runnable by ci runner
     @Test
     public void runTests() throws Exception {
         String[] ramlLocation = {

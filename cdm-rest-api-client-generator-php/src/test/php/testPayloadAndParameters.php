@@ -215,9 +215,9 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $request-> intHeader(), 7 );
         $this-> assertSame( $request-> floatHeader(), 8.1 );
         $this-> assertSame( $request-> dateHeader()->jsonSerialize(), "2011-08-01" );
-        $this-> assertSame( $request-> timeHeader()->jsonSerialize(), "10:07:04Z" );
-        $this-> assertSame( $request-> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04" );
-        $this-> assertSame( $request-> tzdatetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04Z" );
+        $this-> assertSame( $request-> timeHeader()->jsonSerialize(), "10:07:04.000000Z" );
+        $this-> assertSame( $request-> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04.000000" );
+        $this-> assertSame( $request-> tzdatetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04.000000Z" );
         $this-> assertSame( $request-> boolHeader(), true );
 
         $requester-> parameter( "str-header", "coucou" );
@@ -239,9 +239,9 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $requester->lastHeaders()['int-header'][0], '7' );
         $this-> assertSame( $requester->lastHeaders()['float-header'][0], '8.1' );
         $this-> assertSame( $requester->lastHeaders()['date-header'][0], '2011-08-01' );
-        $this-> assertSame( $requester->lastHeaders()['time-header'][0], '10:07:04Z' );
-        $this-> assertSame( $requester->lastHeaders()['datetime-header'][0], '2011-08-01T10:07:04' );
-        $this-> assertSame( $requester->lastHeaders()['tzdatetime-header'][0], '2011-08-01T10:07:04Z' );
+        $this-> assertSame( $requester->lastHeaders()['time-header'][0], '10:07:04.000000Z' );
+        $this-> assertSame( $requester->lastHeaders()['datetime-header'][0], '2011-08-01T10:07:04.000000' );
+        $this-> assertSame( $requester->lastHeaders()['tzdatetime-header'][0], '2011-08-01T10:07:04.000000Z' );
         $this-> assertSame( $requester->lastHeaders()['bool-header'][0], 'true' );
 
         $this-> assertSame( $requester -> lastParameters()['foo'][0], "valFoo" );
@@ -255,9 +255,9 @@ class PayloadTest extends TestCase {
         $this-> assertSame( $response -> status200() -> dateArray()[0]->jsonSerialize(), "2011-08-01" );
         $this-> assertSame( $response -> status200() -> dateArray()[1]->jsonSerialize(), "2011-08-02" );
         $this-> assertSame( $response -> status200() -> dateArray()[2]->jsonSerialize(), "2011-08-03" );
-        $this-> assertSame( $response -> status200() -> timeHeader()->jsonSerialize(), "10:07:04Z" );
-        $this-> assertSame( $response -> status200() -> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04" );
-        $this-> assertSame( $response -> status200() -> tzdatetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04Z" );
+        $this-> assertSame( $response -> status200() -> timeHeader()->jsonSerialize(), "10:07:04.000000Z" );
+        $this-> assertSame( $response -> status200() -> datetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04.000000" );
+        $this-> assertSame( $response -> status200() -> tzdatetimeHeader()->jsonSerialize(), "2011-08-01T10:07:04.000000Z" );
         $this-> assertSame( $response -> status200() -> boolHeader(), false );
         $this-> assertSame( $response -> status200() -> boolArray()[0], true );
         $this-> assertSame( $response -> status200() -> boolArray()[1], false );
@@ -273,7 +273,7 @@ class PayloadTest extends TestCase {
         $request -> withDatetime( \io\flexio\utils\FlexDate::newDateTime( '2011-08-01T10:07:04' ) );
 
         $response = $client -> uriArray() -> uriArrayGet( $request );
-        $this-> assertSame( $requester->getPath(), 'http://gateway/params/p1/params/array/p2/false/2011-08-01/10:07:04Z/2011-08-01T10:07:04' );
+        $this-> assertSame( $requester->getPath(), 'http://gateway/params/p1/params/array/p2/false/2011-08-01/10:07:04.000000Z/2011-08-01T10:07:04.000000' );
 
         $request = new \org\generated\api\InheritedParamGetRequest();
         $request->withParams( "toto" );

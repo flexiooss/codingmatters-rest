@@ -146,9 +146,9 @@ public class TypedParamUnStringifier implements ParsedYamlProcessor {
                     break;
                 case OBJECT:
                     if( dataUnstringified() ){
-                        write.string( currentVariable );
+                        write.string( NamingUtility.classFullName( "io.flexio.flex_types.ObjectValueBuilder" ) + ".fromObject(" + currentVariable + ").build()" );
                     } else {
-                        write.string( "JSON.parse(" + currentVariable + ")" );
+                        write.string( "JSON.parse(" + NamingUtility.classFullName( "io.flexio.flex_types.ObjectValueBuilder" ) + ".fromObject(" + currentVariable + ").build()" + ")" );
                     }
                     break;
                 case BOOL:
