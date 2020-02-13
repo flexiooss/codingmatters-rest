@@ -72,14 +72,15 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.ObjectPostRequestBuilder();
-        let obj1 = {};
-        obj1['High'] = 'Klassified'
-        obj1['1250'] = 1919
+        const obj1 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+          .stringValue('High', 'Klassified')
+          .numberValue('1250', 1919)
+          .build()
         request.payload( obj1 );
 
         client.object().objectPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '{"1250":1919,"High":"Klassified"}' );
-            assert.equal( response.status200().payload()["Romare"], "The Blues" );
+            assert.equal( response.status200().payload().stringValue("Romare"), "The Blues" );
         } );
     }
 
@@ -89,17 +90,19 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.ObjectArrayShortPostRequestBuilder();
-        let obj1 = {};
-        obj1['High'] = 'Klassified';
-        let obj2 = {};
-        obj2['1250'] = 1919;
+        const obj1 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+          .stringValue('High', 'Klassified')
+          .build()
+        const obj2 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+          .numberValue('1250', 1919)
+          .build()
 
         request.payload( new globalFlexioImport.io.flexio.flex_types.arrays.ObjectArray( obj1, obj2 ) );
 
         client.objectArrayShort().objectArrayShortPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );
-            assert.equal( response.status200().payload()[0]["Romare"], "The Blues" );
-            assert.equal( response.status200().payload()[1]["Eprom"], "9 To Ya Dome" );
+            assert.equal( response.status200().payload()[0].stringValue("Romare"), "The Blues" );
+            assert.equal( response.status200().payload()[1].stringValue("Eprom"), "9 To Ya Dome" );
         });
     }
 
@@ -109,17 +112,20 @@ class BodiesTest extends TestCase {
         let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient( requester, "http://gateway" );
 
         let request = new globalFlexioImport.org.generated.api.ObjectArrayPostRequestBuilder();
-        let obj1 = {};
-        obj1['High'] = 'Klassified';
-        let obj2 = {};
-        obj2['1250'] = 1919;
+        const obj1 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+          .stringValue('High', 'Klassified')
+          .build()
+        const obj2 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+          .numberValue('1250', 1919)
+          .build()
+
 
         request.payload( new globalFlexioImport.io.flexio.flex_types.arrays.ObjectArray( obj1, obj2 ) );
 
         client.objectArray().objectArrayPost( request.build(),(response)=>{
             assert.equal( requester.lastBody(), '[{"High":"Klassified"},{"1250":1919}]' );
-            assert.equal( response.status200().payload()[0]["Romare"], "The Blues" );
-            assert.equal( response.status200().payload()[1]["Eprom"], "9 To Ya Dome" );
+            assert.equal( response.status200().payload()[0].stringValue("Romare"), "The Blues" );
+            assert.equal( response.status200().payload()[1].stringValue("Eprom"), "9 To Ya Dome" );
         } );
     }
 
