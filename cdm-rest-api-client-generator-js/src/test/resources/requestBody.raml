@@ -63,8 +63,12 @@ types:
 /file:
   displayName: file
   post:
+    headers:
+      ContentType: string
     body:
       type: file
     responses:
       200:
+        headers:
+          ContentType: string
         body: file
