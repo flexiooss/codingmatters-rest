@@ -3,8 +3,12 @@ import "../org/generated/package"
 import {FakeHttpRequester} from "./utils/FakeHttpRequester";
 import { globalFlexioImport } from '@flexio-oss/global-import-registry'
 import { FlexDate, FlexDateTime, FlexTime } from '@flexio-oss/flex-types';
+import {Blob, FileReader} from "./utils/Blob";
 
 const assert = require('assert')
+
+global.Blob = Blob;
+global.FileReader = FileReader;
 
 
 class FactorizedEnumTest extends TestCase {
