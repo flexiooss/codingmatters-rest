@@ -54,9 +54,6 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
             }
             if( parsedRequest.body().isPresent() ){
                 ValueObjectProperty body = parsePropertyFromTypedParam( parsedRequest.body().get() );
-                if( body.type() instanceof ValueObjectTypePrimitiveType && ((ValueObjectTypePrimitiveType) body.type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES ){
-                    requestValueObject.properties().add( new ValueObjectProperty( "contentType", new ValueObjectTypePrimitiveType( "string" ) ) );
-                }
                 requestValueObject.properties().add( body );
             }
             ParsedValueObject responseValueObject = new ParsedValueObject( NamingUtility.responseName( parsedRoute.displayName(), parsedRequest.httpMethod().name() ), apiPackage );
@@ -68,9 +65,6 @@ public class RamlApiPreProcessor implements ParsedRamlProcessor {
                 }
                 if( parsedResponse.body().isPresent() ){
                     ValueObjectProperty body = parsePropertyFromTypedParam( parsedResponse.body().get() );
-                    if( body.type() instanceof ValueObjectTypePrimitiveType && ((ValueObjectTypePrimitiveType) body.type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES ){
-                        statusValueObject.properties().add( new ValueObjectProperty( "contentType", new ValueObjectTypePrimitiveType( "string" ) ) );
-                    }
                     statusValueObject.properties().add( body );
                 }
                 String statusPackage = apiPackage + "." + NamingUtility.className( parsedRoute.displayName() + parsedRequest.httpMethod().name() + "response" ).toLowerCase();

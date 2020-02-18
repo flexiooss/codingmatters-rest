@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.21.0</version>
+        <version>1.22.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -125,10 +125,9 @@
                     <systemPropertyVariables>
                         <project.build.directory>${project.build.directory}</project.build.directory>
                     </systemPropertyVariables>
-                    <skipTests>true</skipTests>
+<!--                    <skipTests>true</skipTests>-->
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

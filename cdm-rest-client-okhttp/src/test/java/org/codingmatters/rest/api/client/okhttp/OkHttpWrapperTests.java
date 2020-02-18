@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.client.okhttp;
 import okhttp3.Request;
 import org.codingmatters.rest.api.client.okhttp.exception.ConnectionTimeoutException;
 import org.codingmatters.rest.undertow.support.UndertowResource;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -12,6 +13,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.oneOf;
 
 public class OkHttpWrapperTests {
 
@@ -48,7 +50,7 @@ public class OkHttpWrapperTests {
         );
 
         this.exception.expect(SocketTimeoutException.class);
-        this.exception.expectMessage(is("timeout"));
+        this.exception.expectMessage(is(Matchers.oneOf("Read timed out", "timeout")));
         client.execute(new Request.Builder().url(this.server.baseUrl()).build());
     }
 }

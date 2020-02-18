@@ -11,6 +11,7 @@ import org.codingmatters.rest.parser.model.typed.TypedQueryParam;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeList;
 import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType;
 
@@ -48,27 +49,30 @@ public class JsResourceWriter {
     public void sendRequest( JsFileWriter write, ParsedRequest parsedRequest, String requestVar, String methodName ) throws IOException {
         String httpMethod = parsedRequest.httpMethod().name().toLowerCase();
         if( parsedRequest.body().isPresent() ){
-            if( payloadIsFile( parsedRequest ) ){
+            boolean payloadIsBinary = payloadIsFile( parsedRequest.body().get().type() ) || payloadIsString( parsedRequest );
+            if( payloadIsBinary ){
                 write.line( "let contentType = " + requestVar + ".contentType()" );
             } else {
                 write.line( "let contentType = 'application/json'" );
             }
-            if( payloadIsFile( parsedRequest ) || payloadIsString( parsedRequest ) ){
+            if( payloadIsBinary ){
                 write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
                 write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
                 write.line( "callbackUser(clientResponse)" );
-                write.line( " }, contentType, " + requestVar + ".payload())" );
+                write.unindent();
+                write.line( "}, contentType, " + requestVar + ".payload())" );
             } else {
                 write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
                 write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
                 write.line( "callbackUser(clientResponse)" );
-                write.line( " }, contentType, JSON.stringify(" + requestVar + ".payload()))" );
+                write.unindent();
+                write.line( "}, contentType, new Blob([JSON.stringify(" + requestVar + ".payload())], {type: contentType}))" );
             }
         } else {
             write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
             write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
             write.line( "callbackUser(clientResponse)" );
-            write.line( " })" );
+            write.line( "})" );
         }
     }
 
@@ -77,9 +81,9 @@ public class JsResourceWriter {
                 && (((ValueObjectTypePrimitiveType) parsedRequest.body().get().type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING);
     }
 
-    private boolean payloadIsFile( ParsedRequest parsedRequest ) {
-        return (parsedRequest.body().get().type() instanceof ValueObjectTypePrimitiveType)
-                && (((ValueObjectTypePrimitiveType) parsedRequest.body().get().type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES);
+    private boolean payloadIsFile( ValueObjectType type ) {
+        return (type instanceof ValueObjectTypePrimitiveType)
+                && (((ValueObjectTypePrimitiveType) type).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES);
     }
 
     public void generateGetters( ParsedRoute parsedRoute, JsFileWriter write ) throws IOException {
@@ -119,16 +123,20 @@ public class JsResourceWriter {
                 }
                 if( parsedResponse.body().isPresent() ){
                     TypedParamUnStringifier bodyProcessor = new TypedParamUnStringifier( write, typesPackage );
+                    TypedBody body = parsedResponse.body().get();
+                    if( payloadIsFile( body.type() )){
+                        bodyProcessor.currentVariable( "responseDelegate.payload()" );
+                    } else {
+                        write.writeLine( "let blobReader = new FileReader()" );
+                        write.writeLine( "blobReader.readAsText( responseDelegate.payload() )" );
+                        write.writeLine( "let payload = blobReader.result" );
+                        bodyProcessor.currentVariable( "payload" );
+                    }
                     write.indent();
                     write.string( "status.payload(" );
-                    bodyProcessor.currentVariable( "responseDelegate.payload()" );
-                    TypedBody body = parsedResponse.body().get();
                     body.type().process( bodyProcessor );
                     write.string( ")" );
                     write.newLine();
-                    if( body.type() instanceof ValueObjectTypePrimitiveType && ((ValueObjectTypePrimitiveType) body.type()).type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BYTES ){
-                        write.line( "status.contentType(responseDelegate.header('Content-Type'))" );
-                    }
                 }
                 write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
                 write.line( "}" );
