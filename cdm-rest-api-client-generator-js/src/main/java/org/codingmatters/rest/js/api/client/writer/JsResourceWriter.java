@@ -57,21 +57,18 @@ public class JsResourceWriter {
             }
             if( payloadIsBinary ){
                 write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
-                write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
-                write.line( "callbackUser(clientResponse)" );
+                write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
                 write.unindent();
                 write.line( "}, contentType, " + requestVar + ".payload())" );
             } else {
                 write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
-                write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
-                write.line( "callbackUser(clientResponse)" );
+                write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
                 write.unindent();
                 write.line( "}, contentType, new Blob([JSON.stringify(" + requestVar + ".payload())], {type: contentType}))" );
             }
         } else {
             write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
-            write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate)" );
-            write.line( "callbackUser(clientResponse)" );
+            write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
             write.line( "})" );
         }
     }
@@ -125,23 +122,27 @@ public class JsResourceWriter {
                     TypedParamUnStringifier bodyProcessor = new TypedParamUnStringifier( write, typesPackage );
                     TypedBody body = parsedResponse.body().get();
                     if( payloadIsFile( body.type() )){
-                        bodyProcessor.currentVariable( "responseDelegate.payload()" );
+                        write.writeLine( "status.payload( responseDelegate.payload() )" );
+                        write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
+                        write.line( "callbackUser( " + responseVar + ".build() )" );
                     } else {
                         write.writeLine( "let blobReader = new FileReader()" );
-                        write.writeLine( "blobReader.readAsText( responseDelegate.payload() )" );
+                        write.line( "blobReader.onloadend = () => {" );
                         write.writeLine( "let payload = blobReader.result" );
                         bodyProcessor.currentVariable( "payload" );
+                        write.indent();
+                        write.string( "status.payload(" );
+                        body.type().process( bodyProcessor );
+                        write.string( ")" );
+                        write.newLine();
+                        write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
+                        write.line( "callbackUser( " + responseVar + ".build() )" );
+                        write.line( "}" );
+                        write.writeLine( "blobReader.readAsText( responseDelegate.payload() )" );
                     }
-                    write.indent();
-                    write.string( "status.payload(" );
-                    body.type().process( bodyProcessor );
-                    write.string( ")" );
-                    write.newLine();
                 }
-                write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
                 write.line( "}" );
             }
-            write.line( "return " + responseVar + ".build();" );
         } catch( IOException e ){
             throw new ProcessingException( "Error parsing response" );
         }
