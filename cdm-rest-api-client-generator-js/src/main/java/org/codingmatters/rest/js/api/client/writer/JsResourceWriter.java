@@ -140,6 +140,9 @@ public class JsResourceWriter {
                         write.line( "}" );
                         write.writeLine( "blobReader.readAsText( responseDelegate.payload() )" );
                     }
+                } else {
+                    write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
+                    write.line( "callbackUser( " + responseVar + ".build() )" );
                 }
                 write.line( "}" );
             }
