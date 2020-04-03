@@ -21,9 +21,8 @@ class FileReader{
 
     readAsText( blob ){
         this.result = blob.content();
+        this.onloadend();
     }
-
-
 }
 
 export {Blob, FileReader};
