@@ -43,7 +43,7 @@ types:
                 type: object
                 properties:
                     stringProp: string
-                    nested:
+                    nested-prop:
                         type: object
                         properties:
                             stringProp: string
@@ -53,6 +53,14 @@ types:
                               type: array
                               items:
                                 enum: [A, B, C]
+                            deeply-nested:
+                              type: object
+                              properties:
+                                d-n-s: string
+                                enven-more-deeply-nester:
+                                  type: object
+                                  properties:
+                                    e-m-d-n-s: string
             nestedArray:
                 type: array
                 items:
