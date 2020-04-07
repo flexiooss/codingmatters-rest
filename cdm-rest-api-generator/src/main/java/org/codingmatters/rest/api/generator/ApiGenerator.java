@@ -17,6 +17,8 @@ import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
 import javax.lang.model.element.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * Created by nelt on 5/2/17.
@@ -196,6 +198,7 @@ public class ApiGenerator {
     private void addPropertyFromTypeDeclaration(ValueSpec.Builder result, TypeDeclaration typeDeclaration) throws RamlSpecException {
         result.addProperty(PropertySpec.property()
                 .name(this.naming.property(typeDeclaration.name()))
+                .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", typeDeclaration.name()))))
                 .type(this.typeSpecFromDeclaration(typeDeclaration))
                 .build());
     }

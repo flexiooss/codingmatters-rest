@@ -81,7 +81,7 @@ public class TestRequestDeleguate implements RequestDelegate {
         this.requestPath = requestPath;
         this.contentType = contentType;
         this.payload = payload;
-        this.queryParamsCache = queryParamsCache;
+        this.queryParamsCache = RequestDelegate.createHeaderMap(queryParamsCache);
         this.headersCache = headersCache;
     }
 

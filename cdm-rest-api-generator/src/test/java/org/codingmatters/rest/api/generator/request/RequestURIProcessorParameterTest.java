@@ -8,9 +8,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/5/17.
@@ -37,6 +40,7 @@ public class RequestURIProcessorParameterTest {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("param"),
                 is(PropertySpec.property().name("param")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "param"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -51,6 +55,7 @@ public class RequestURIProcessorParameterTest {
         assertThat(
                 spec.valueSpec("InheritedUriParamGetRequest").propertySpec("param"),
                 is(PropertySpec.property().name("param")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "param"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)

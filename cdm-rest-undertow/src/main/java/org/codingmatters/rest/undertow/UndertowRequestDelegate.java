@@ -110,7 +110,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     @Override
     public synchronized Map<String, List<String>> queryParameters() {
         if(this.queryParamsCache == null) {
-            this.queryParamsCache = new HashMap<>();
+            this.queryParamsCache = RequestDelegate.createHeaderMap();
             for (String name : this.exchange.getQueryParameters().keySet()) {
                 if (this.exchange.getQueryParameters().get(name) != null) {
                     this.queryParamsCache.put(name, new ArrayList<>(this.exchange.getQueryParameters().get(name)));
