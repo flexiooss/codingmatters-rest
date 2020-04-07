@@ -1,5 +1,7 @@
 package org.codingmatters.rest.api;
 
+import org.codingmatters.rest.api.internal.HeaderMap;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -23,5 +25,14 @@ public interface RequestDelegate extends AutoCloseable {
 
     enum Method {
         GET, POST, PUT, PATCH, DELETE, HEAD, UNIMPLEMENTED;
+    }
+
+    static Map<String,List<String>> createHeaderMap() {
+        return new HeaderMap();
+    }
+    static Map<String, List<String>> createHeaderMap(Map<String, List<String>> from) {
+        Map<String, List<String>> result = createHeaderMap();
+        result.putAll(from);
+        return result;
     }
 }

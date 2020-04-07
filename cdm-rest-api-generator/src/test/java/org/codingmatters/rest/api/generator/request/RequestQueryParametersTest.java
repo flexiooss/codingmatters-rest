@@ -8,9 +8,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/2/17.
@@ -37,6 +40,7 @@ public class RequestQueryParametersTest {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
                 is(PropertySpec.property().name("stringParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "stringParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -47,6 +51,7 @@ public class RequestQueryParametersTest {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("intParam"),
                 is(PropertySpec.property().name("intParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "intParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -61,6 +66,7 @@ public class RequestQueryParametersTest {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
                 is(PropertySpec.property().name("stringArrayParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "stringArrayParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -71,6 +77,7 @@ public class RequestQueryParametersTest {
         assertThat(
                 spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
                 is(PropertySpec.property().name("intArrayParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "intArrayParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
                                 .typeKind(TypeKind.JAVA_TYPE)

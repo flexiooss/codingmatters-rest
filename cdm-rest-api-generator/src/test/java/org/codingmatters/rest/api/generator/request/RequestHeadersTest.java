@@ -8,8 +8,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/2/17.
@@ -28,7 +31,7 @@ public class RequestHeadersTest {
 
     @Test
     public void propertyCount() throws Exception {
-        assertThat(this.spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(4));
+        assertThat(this.spec.valueSpec("RootResourceGetRequest").propertySpecs(), hasSize(5));
     }
 
     @Test
@@ -41,6 +44,7 @@ public class RequestHeadersTest {
         assertThat(
                 this.spec.valueSpec("RootResourceGetRequest").propertySpec("stringParam"),
                 is(PropertySpec.property().name("stringParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "stringParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -51,6 +55,7 @@ public class RequestHeadersTest {
         assertThat(
                 this.spec.valueSpec("RootResourceGetRequest").propertySpec("intParam"),
                 is(PropertySpec.property().name("intParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "intParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.SINGLE)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -65,6 +70,7 @@ public class RequestHeadersTest {
         assertThat(
                 this.spec.valueSpec("RootResourceGetRequest").propertySpec("stringArrayParam"),
                 is(PropertySpec.property().name("stringArrayParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "stringArrayParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
                                 .typeKind(TypeKind.JAVA_TYPE)
@@ -75,10 +81,27 @@ public class RequestHeadersTest {
         assertThat(
                 this.spec.valueSpec("RootResourceGetRequest").propertySpec("intArrayParam"),
                 is(PropertySpec.property().name("intArrayParam")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "intArrayParam"))))
                         .type(PropertyTypeSpec.type()
                                 .cardinality(PropertyCardinality.LIST)
                                 .typeKind(TypeKind.JAVA_TYPE)
                                 .typeRef(Long.class.getName())
+                        )
+                        .build())
+        );
+    }
+
+    @Test
+    public void headerWithDashes() throws Exception {
+        //header-with-dashes
+        assertThat(
+                this.spec.valueSpec("RootResourceGetRequest").propertySpec("headerWithDashes"),
+                is(PropertySpec.property().name("headerWithDashes")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "header-with-dashes"))))
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
                         )
                         .build())
         );
