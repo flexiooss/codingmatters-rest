@@ -32,7 +32,7 @@ public class JsApiRootClientGenerator implements ParsedRamlProcessor {
         try( JsFileWriter write = new JsFileWriter( rootDirectory + "/" + clientPackage.replace( ".", "/" ) + "/" + className + ".js" ) ) {
             this.write = write;
             packageBuilder.addEnum( clientPackage, className, false );
-            write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
+            write.line( "import { globalFlexioImport } from '@flexio-oss/js-commons-bundle/global-import-registry'" );
             write.line( "class " + className + "{" );
             write.line( "/**" );
             write.line( "* @returns string" );
