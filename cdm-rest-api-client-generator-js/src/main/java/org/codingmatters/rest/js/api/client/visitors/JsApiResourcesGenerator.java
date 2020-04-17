@@ -57,9 +57,9 @@ public class JsApiResourcesGenerator implements ParsedRamlProcessor {
             this.write = write;
             this.importsTypes = new HashSet<>();
             collectAllImports( parsedRoute );
-            write.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
+            write.line( "import { globalFlexioImport } from '@flexio-oss/js-commons-bundle/global-import-registry'" );
             if(! importsTypes.isEmpty()){
-                write.line( "import { " + String.join( ", ", importsTypes ) + " } from '@flexio-oss/flex-types'" );
+                write.line( "import { " + String.join( ", ", importsTypes ) + " } from '@flexio-oss/js-commons-bundle/flex-types'" );
             }
             write.line( "class " + parsedRoute.displayName() + " {" );
             jsResourceWriter.generateConstructor( parsedRoute, write );

@@ -1,5 +1,6 @@
 {
   "name": "rest-tests",
+  "version": "1.0.0",
   "hotballoon-shed": {
     "build": {
       "builder": "webpack4"
@@ -10,9 +11,7 @@
     }
   },
   "devDependencies": {
-    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git"
-  },
-  "dependencies": {
-    "@flexio-corp/js-api-client-parent": "0.8.0-dev"
+    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git",
+    "@flexio-oss/js-commons-bundle": "1.0.0-dev"
   }
 }
