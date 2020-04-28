@@ -123,7 +123,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     @Override
     public synchronized Map<String, List<String>> headers() {
         if(this.headersCache == null) {
-            this.headersCache = new HashMap<>();
+            this.headersCache = RequestDelegate.createHeaderMap();
             for (HeaderValues headerValues : this.exchange.getRequestHeaders()) {
                 String headerName = headerValues.getHeaderName().toString();
                 List<String> collect = new ArrayList<>( headerValues );
