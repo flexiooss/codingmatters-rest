@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/7/17.
@@ -167,6 +167,21 @@ public class UndertowRequestDelegateTest extends AbstractUndertowTest {
 
         this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto*", "utf-8''val%C3%A9" ).get().build()).execute();
         assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "valé" ) );
+    }
+
+    @Test
+    public void headersAreCaseInsensitive() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+        this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto", "val1" ).get().build()).execute();
+        assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "val1" ) );
+        assertThat( req.get().headers().get( "TOTO" ).get( 0 ), is( "val1" ) );
+
+        this.client.newCall(this.requestBuilder("/request/path").addHeader( "TOTO", "val1" ).get().build()).execute();
+        assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "val1" ) );
+        assertThat( req.get().headers().get( "TOTO" ).get( 0 ), is( "val1" ) );
     }
 
     @Test
