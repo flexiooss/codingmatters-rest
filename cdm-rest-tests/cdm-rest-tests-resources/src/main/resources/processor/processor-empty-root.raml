@@ -10,3 +10,8 @@ mediaType: application/json
   /child:
     displayName: Child
     get:
+  /{param}:
+    displayName: ChildWithUriParam
+    uriParameters:
+      param: string
+    get:
