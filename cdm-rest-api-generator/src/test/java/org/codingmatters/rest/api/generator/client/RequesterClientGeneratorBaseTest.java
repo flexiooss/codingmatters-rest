@@ -20,7 +20,7 @@ import static org.codingmatters.rest.api.generator.client.support.ClientGenerato
 import static org.codingmatters.tests.reflect.ReflectMatchers.aConstructor;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RequesterClientGeneratorBaseTest {
 

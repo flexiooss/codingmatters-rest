@@ -114,6 +114,7 @@ public class ProcessorClass {
         if(resource.methods().isEmpty()) return;
 
         String resourcePath = resource.resourcePath();
+        resourcePath = resourcePath.replaceAll("//", "/");
         while(resourcePath.endsWith("/")) {
             resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
         }
