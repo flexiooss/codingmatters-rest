@@ -18,7 +18,7 @@ public class ProcessorEmptyRootTest extends AbstractProcessorHttpRequestTest {
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
 //                .printFileTree(true)
                 .setUpWithResource("processor/processor-empty-root.raml");
-//        this.fileHelper.printFile(this.dir.getRoot(), "org/generated/server/TestAPIProcessor.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
         this.compiled = helper.compiled();
         this.classes = this.compiled.classLoader();
     }
@@ -60,7 +60,7 @@ public class ProcessorEmptyRootTest extends AbstractProcessorHttpRequestTest {
     }
 
     @Test
-    public void whenGettingChild__whenGettingWithTrailingSlash__then200_andHandlerHit() throws Exception {
+    public void givenGettingChild__whenGettingWithTrailingSlash__then200_andHandlerHit() throws Exception {
         AtomicLong hit = new AtomicLong(0);
         this.setupProcessorWithHandler(
                 "childGetHandler",
@@ -76,7 +76,7 @@ public class ProcessorEmptyRootTest extends AbstractProcessorHttpRequestTest {
     }
 
     @Test
-    public void whenGettingChild__whenGettingWithoutTrailingSlash__then200_andHandlerHit() throws Exception {
+    public void givenGettingChild__whenGettingWithoutTrailingSlash__then200_andHandlerHit() throws Exception {
         AtomicLong hit = new AtomicLong(0);
         this.setupProcessorWithHandler(
                 "childGetHandler",
@@ -86,6 +86,22 @@ public class ProcessorEmptyRootTest extends AbstractProcessorHttpRequestTest {
                 });
 
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/child").get().build()).execute();
+
+        assertThat(response.code(), is(200));
+        assertThat(hit.get(), is(1L));
+    }
+
+    @Test
+    public void whenGettingChildWithUriParam__then200_andHandlerHit() throws Exception {
+        AtomicLong hit = new AtomicLong(0);
+        this.setupProcessorWithHandler(
+                "childWithUriParamGetHandler",
+                o -> {
+                    hit.incrementAndGet();
+                    return null;
+                });
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/value").get().build()).execute();
 
         assertThat(response.code(), is(200));
         assertThat(hit.get(), is(1L));

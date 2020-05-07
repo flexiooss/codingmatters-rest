@@ -231,7 +231,7 @@ public class ProcessorClass {
     private void addRequestUriParametersProcessing(Method resourceMethod, MethodSpec.Builder method) {
         method.addStatement(
                 "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
-                Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath()
+                Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath().replaceAll("//", "/")
             );
         for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
             ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
