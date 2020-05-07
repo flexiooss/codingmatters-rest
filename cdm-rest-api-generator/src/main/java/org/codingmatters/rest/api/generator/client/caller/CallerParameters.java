@@ -24,7 +24,7 @@ public class CallerParameters {
             new CallerParam(this.naming, param).addStatement(caller, Parameter.ParameterSource.HEADERS);
         }
 
-        caller.addStatement("String path = $S", this.method.resource().resourcePath());
+        caller.addStatement("String path = $S", this.method.resource().resourcePath().replaceAll("//", "/"));
         for (TypeDeclaration param : Resolver.resolvedUriParameters(this.method.resource())) {
             new CallerParam(this.naming, param).addStatement(caller, Parameter.ParameterSource.URI);
         }

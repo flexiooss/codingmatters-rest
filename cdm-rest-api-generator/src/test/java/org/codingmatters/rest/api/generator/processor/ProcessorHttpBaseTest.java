@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/25/17.
