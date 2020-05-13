@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -68,7 +69,7 @@ public class RamlFileCollector implements AutoCloseable {
         if(new File(resource).exists()) {
             log.debug("{} resource found as file. Will copy to {}.", resource, toPath);
             File file = new File(resource);
-            try(InputStream in = new FileInputStream(file)) {
+            try (InputStream in = new FileInputStream(file)) {
                 return this.copyToTempDir(in, file.getName(), toPath);
             }
         } else {
@@ -87,12 +88,19 @@ public class RamlFileCollector implements AutoCloseable {
                     return this.copyToTempDir(in, file.getName(), toPath);
                 }
             } else {
-                throw new IOException("resource not found " + resource);
+                try {
+                    URL url = new URL(resource);
+                    /* include is a valid url, we leave it as is */
+                    return null;
+                } catch (MalformedURLException e) {
+                    throw new IOException("resource not found " + resource, e);
+                }
             }
         }
     }
 
     private void collectIncludes(String lookupPath, File file, String toPath) throws IOException {
+        if(file == null) return;
         log.debug("collecting includes from {}", file);
         try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
             for(String line = reader.readLine() ; line != null ; line = reader.readLine()) {
@@ -106,7 +114,9 @@ public class RamlFileCollector implements AutoCloseable {
                     String nestedIncludeLookupPath = this.buildPath(lookupPath, this.pathPart(include));
 
                     File included = this.gather(includeResource, includeDestinationPath);
-                    this.collectIncludes(nestedIncludeLookupPath, included, includeDestinationPath);
+                    if(include != null) {
+                        this.collectIncludes(nestedIncludeLookupPath, included, includeDestinationPath);
+                    }
                 }
             }
         }
