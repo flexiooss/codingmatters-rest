@@ -4,7 +4,7 @@ import org.codingmatters.rest.api.RequestDelegate;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestRequestDeleguateTest {
 
@@ -30,7 +30,5 @@ public class TestRequestDeleguateTest {
                         .absolutePath("/yop/yop/taga/da"),
                 is("https://localhost/yop/yop/taga/da")
         );
-
-
     }
 }
