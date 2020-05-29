@@ -66,7 +66,7 @@ public class RunJsTest {
 
         System.out.println( "Running 'hbshed test' in " + dir );
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "hbshed", "test", "-V" );
+        processBuilder.command( "hbshed", "test", "-V", "-C" );
         Process process = processBuilder.start();
 
         process.waitFor( 120, TimeUnit.SECONDS );

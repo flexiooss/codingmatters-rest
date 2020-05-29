@@ -130,12 +130,17 @@ public class JsResourceWriter {
                         write.writeLine( "let blobReader = new FileReader()" );
                         write.line( "blobReader.onloadend = () => {" );
                         write.writeLine( "let payload = blobReader.result" );
+                        write.line( "if( !isPayloadNull( payload )){" );
                         bodyProcessor.currentVariable( "payload" );
                         write.indent();
                         write.string( "status.payload(" );
                         body.type().process( bodyProcessor );
                         write.string( ")" );
                         write.newLine();
+                        write.unindent();
+                        write.line( "} else {" );
+                        write.line( "status.payload(null)" );
+                        write.line( "}" );
                         write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
                         write.line( "callbackUser( " + responseVar + ".build() )" );
                         write.line( "}" );
