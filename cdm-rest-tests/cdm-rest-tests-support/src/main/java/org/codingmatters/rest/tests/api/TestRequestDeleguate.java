@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 public class TestRequestDeleguate implements RequestDelegate {
 
+
+
     static public Builder request(Method method, String url) {
         return new Builder(method, url);
     }
@@ -66,6 +68,8 @@ public class TestRequestDeleguate implements RequestDelegate {
     }
 
     private final Method method;
+    private final String scheme;
+    private final String host;
     private final String requestPath;
     private final String contentType;
     private final ByteArrayInputStream payload;
@@ -74,11 +78,28 @@ public class TestRequestDeleguate implements RequestDelegate {
     private final Map<String, List<String>> headersCache;
 
     public TestRequestDeleguate(
-            Method method, String requestPath, String contentType, ByteArrayInputStream payload,
+            Method method, String url, String contentType, ByteArrayInputStream payload,
             Map<String, List<String>> queryParamsCache,
             Map<String, List<String>> headersCache) {
         this.method = method;
-        this.requestPath = requestPath;
+
+        if(url.indexOf("://") != -1) {
+            this.scheme = url.substring(0, url.indexOf("://"));
+            String remaining = url.substring(this.scheme.length() + "://".length());
+            if(remaining.indexOf('/') != -1) {
+                this.host = remaining.substring(0, remaining.indexOf('/'));
+                this.requestPath = remaining.substring(this.host.length());
+            } else {
+                this.host = remaining;
+                this.requestPath = "";
+            }
+        } else {
+            this.scheme = "http";
+            this.host = "localhost";
+            this.requestPath = url;
+        }
+
+
         this.contentType = contentType;
         this.payload = payload;
         this.queryParamsCache = RequestDelegate.createHeaderMap(queryParamsCache);
@@ -134,15 +155,15 @@ public class TestRequestDeleguate implements RequestDelegate {
             relative = relative.substring(1);
         }
 
-        String scheme = this.requestPath.split("://")[0];
-        String host = this.requestPath.split("://")[1];
-        if(host.indexOf('/') != -1) {
-            host = host.substring(0, host.indexOf('/'));
-        }
+//        String scheme = this.requestPath.split("://")[0];
+//        String host = this.requestPath.split("://")[1];
+//        if(host.indexOf('/') != -1) {
+//            host = host.substring(0, host.indexOf('/'));
+//        }
 
         return String.format("%s://%s/%s",
-                scheme,
-                host,
+                this.scheme,
+                this.host,
                 relative
         );
     }

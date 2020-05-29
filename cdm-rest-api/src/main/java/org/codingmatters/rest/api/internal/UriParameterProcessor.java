@@ -49,7 +49,7 @@ public class UriParameterProcessor {
     }
 
     private void gatherParameters() {
-        Matcher pathMatcher = this.requestDelegate.pathMatcher(this.regex.toString());
+        Matcher pathMatcher = this.requestDelegate.pathMatcher(".*" + this.regex.toString());
         if(pathMatcher.matches()) {
             for(int i = 1 ; i <= pathMatcher.groupCount() ; i++) {
                 this.parameters.get(this.names.get(i - 1)).add(pathMatcher.group(i));
