@@ -73,16 +73,35 @@ class BodiesTest extends TestCase {
     requester.nextBody(new Blob('{"Romare":"The Blues"}'))
     let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient(requester, 'http://gateway')
 
-    let request = new globalFlexioImport.org.generated.api.ObjectPostRequestBuilder()
+    let request = new globalFlexioImport.org.generated.api.SingleObjectPostRequestBuilder()
     const obj1 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
       .stringValue('High', 'Klassified')
       .numberValue('1250', 1919)
       .build()
     request.payload(obj1)
 
-    client.object().objectPost(request.build(), (response) => {
+    client.singleObject().singleObjectPost(request.build(), (response) => {
       assert.equal(requester.lastBody().content(), '{"1250":1919,"High":"Klassified"}')
       assert.equal(response.status200().payload().stringValue('Romare'), 'The Blues')
+    })
+  }
+
+
+  testNullPayload() {
+    let requester = new FakeHttpRequester()
+    requester.nextBody(new Blob(null))
+    let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient(requester, 'http://gateway')
+
+    let request = new globalFlexioImport.org.generated.api.SingleObjectPostRequestBuilder()
+    const obj1 = globalFlexioImport.io.flexio.flex_types.ObjectValue.builder()
+      .stringValue('High', 'Klassified')
+      .numberValue('1250', 1919)
+      .build()
+    request.payload(obj1)
+
+    client.singleObject().singleObjectPost(request.build(), (response) => {
+      assert.equal(requester.lastBody().content(), '{"1250":1919,"High":"Klassified"}')
+      assert.equal(response.status200().payload(), null)
     })
   }
 

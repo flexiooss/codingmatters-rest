@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 4/27/17.
@@ -92,6 +92,17 @@ public class RequestDelegateUriParameterTest {
 
         assertThat(parameters.size(), is(1));
         assertThat(parameters.get("param"), contains("param-value1", "param-value2"));
+    }
+
+    @Test
+    public void withPrefix() throws Exception {
+        RequestDelegate deleguate = this.withPath("/pre/fix/start/param-value/end");
+        Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param}/end");
+
+        System.out.println(parameters);
+
+        assertThat(parameters.size(), is(1));
+        assertThat(parameters.get("param"), contains("param-value"));
     }
 
     private RequestDelegate withPath(String path) {
