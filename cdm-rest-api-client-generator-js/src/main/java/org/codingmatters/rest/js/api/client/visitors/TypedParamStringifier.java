@@ -100,7 +100,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
-            write.string( varName + ".name" );
+            write.string( varName + ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error stringifying enum type", e );
         }
@@ -109,7 +109,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
         try {
-            write.string( varName + ".name" );
+            write.string( varName + ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error stringifying enum type", e );
         }
@@ -123,7 +123,7 @@ public class TypedParamStringifier implements ParsedYamlProcessor {
     @Override
     public void process( ParsedEnum parsedEnum ) throws ProcessingException {
         try {
-            write.string( varName + ".name" );
+            write.string( varName + ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error stringifying enum type", e );
         }
