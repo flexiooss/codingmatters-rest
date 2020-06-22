@@ -56,21 +56,21 @@ public class JsResourceWriter {
                 write.line( "let contentType = 'application/json'" );
             }
             if( payloadIsBinary ){
-                write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
+                write.line( "let responseDelegate = this._requester." + httpMethod + "(responseDelegate => {" );
                 write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
                 write.unindent();
                 write.line( "}, contentType, " + requestVar + ".payload())" );
             } else {
-                write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
+                write.line( "let responseDelegate = this._requester." + httpMethod + "(responseDelegate => {" );
                 write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
                 write.unindent();
                 write.line( "}, contentType, new Blob([JSON.stringify(" + requestVar + ".payload())], {type: contentType}))" );
             }
         } else {
-            write.line( "let responseDelegate = this._requester." + httpMethod + "((responseDelegate) => {" );
+            write.line( "let responseDelegate = this._requester." + httpMethod + "(responseDelegate => {" );
             write.line( "let clientResponse = this." + methodName + "Parse(responseDelegate, callbackUser)" );
-            write.line( "}" );
-            write.line( ")" );
+            write.unindent();
+            write.line( "})" );
         }
     }
 
@@ -125,12 +125,12 @@ public class JsResourceWriter {
                     if( payloadIsFile( body.type() )){
                         write.writeLine( "status.payload( responseDelegate.payload() )" );
                         write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
-                        write.line( "callbackUser( " + responseVar + ".build() )" );
+                        write.line( "callbackUser(" + responseVar + ".build())" );
                     } else {
                         write.writeLine( "let blobReader = new FileReader()" );
                         write.line( "blobReader.onloadend = () => {" );
                         write.writeLine( "let payload = blobReader.result" );
-                        write.line( "if( !isPayloadNull( payload )){" );
+                        write.line( "if (!isPayloadNull(payload)) {" );
                         bodyProcessor.currentVariable( "payload" );
                         write.indent();
                         write.string( "status.payload(" );
@@ -142,13 +142,13 @@ public class JsResourceWriter {
                         write.line( "status.payload(null)" );
                         write.line( "}" );
                         write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
-                        write.line( "callbackUser( " + responseVar + ".build() )" );
+                        write.line( "callbackUser(" + responseVar + ".build())" );
                         write.line( "}" );
-                        write.writeLine( "blobReader.readAsText( responseDelegate.payload() )" );
+                        write.writeLine( "blobReader.readAsText(responseDelegate.payload())" );
                     }
                 } else {
                     write.line( responseVar + ".status" + parsedResponse.code() + "(status.build())" );
-                    write.line( "callbackUser( " + responseVar + ".build() )" );
+                    write.line( "callbackUser(" + responseVar + ".build())" );
                 }
                 write.line( "}" );
             }

@@ -45,6 +45,8 @@ mediaType: application/json
       boolArrayParam:
         type: array
         items: boolean
+      for-action:
+        enum: [CREATE, UPDATE, REPLACE, READ]
     responses:
       200:
         headers:
@@ -90,7 +92,7 @@ mediaType: application/json
         type: array
         items: string
     get:
-      queryParameters: 
+      queryParameters:
         string-param:
           type: string
         stringArrayParam:
