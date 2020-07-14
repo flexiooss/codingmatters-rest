@@ -109,7 +109,7 @@ public class RamlFileCollector implements AutoCloseable {
                     String include = line.substring(start + INCLUDE_TOKEN.length()).trim();
                     log.info("found include {}", include);
 
-                    String includeResource = this.buildPath(lookupPath, include);
+                    String includeResource = this.isIncludeAnHttpUrl(include) ? include : this.buildPath(lookupPath, include);
                     String includeDestinationPath = this.buildPath(toPath, this.pathPart(include));
                     String nestedIncludeLookupPath = this.buildPath(lookupPath, this.pathPart(include));
 
@@ -120,6 +120,10 @@ public class RamlFileCollector implements AutoCloseable {
                 }
             }
         }
+    }
+
+    private boolean isIncludeAnHttpUrl(String include) {
+        return include.startsWith("http://") || include.startsWith("https://");
     }
 
     private File fromClassLoader(String resource) throws IOException {
