@@ -380,6 +380,36 @@ public class TypesTest {
                         .hints(new HashSet<String>(){{add("property:raw(prop)");}})
                         .build())
         );
+
+        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper"));
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
+    }
+
+    @Test
+    public void typeWithDeeplyNestedAlreadyDefinedProperty() {
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                .typeRef("org.codingmatters.AnAlreadyDefinedValueObject")
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
     }
 
     @Test
