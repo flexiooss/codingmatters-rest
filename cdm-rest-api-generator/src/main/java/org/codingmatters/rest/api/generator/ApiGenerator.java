@@ -1,14 +1,12 @@
 package org.codingmatters.rest.api.generator;
 
-import com.squareup.javapoet.FieldSpec;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
+import org.codingmatters.rest.api.generator.utils.BodyTypeResolver;
 import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
-import org.codingmatters.rest.api.types.File;
 import org.codingmatters.value.objects.spec.*;
-import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -16,7 +14,6 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
-import javax.lang.model.element.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -83,58 +80,7 @@ public class ApiGenerator {
     }
 
     private PropertyTypeSpec.Builder payloadType(TypeDeclaration typeDeclaration) throws RamlSpecException {
-        if(RamlType.isRamlType(typeDeclaration)) {
-            return this.typeSpecFromDeclaration(typeDeclaration);
-        } else {
-            if (typeDeclaration instanceof ArrayTypeDeclaration) {
-                if(this.isAlreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items())) {
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.LIST)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(this.alreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items()));
-                } else if(this.naming.isArbitraryObjectArray(typeDeclaration)) {
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.LIST)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(this.naming.arbitraryObjectImpl(typeDeclaration));
-                } else {
-                    String typeRef;
-                    if (((ArrayTypeDeclaration) typeDeclaration).items().name().equals("file")) {
-                        typeRef = File.class.getName();
-                    } else {
-                        String typeName = ((ArrayTypeDeclaration) typeDeclaration).items().type().equals("object") ? ((ArrayTypeDeclaration) typeDeclaration).items().name() : ((ArrayTypeDeclaration) typeDeclaration).items().type();
-                        typeRef = this.typesPackage + "." + typeName;
-                    }
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.LIST)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(typeRef);
-                }
-            } else {
-                if(this.isAlreadyDefined(typeDeclaration)) {
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(this.alreadyDefined(typeDeclaration));
-                } else if(this.naming.isArbitraryObject(typeDeclaration)) {
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(this.naming.arbitraryObjectImpl(typeDeclaration));
-                } else {
-                    String typeRef;
-                    if (typeDeclaration.type().equals("file")) {
-                        typeRef = File.class.getName();
-                    } else {
-                        typeRef = this.typesPackage + "." + typeDeclaration.type();
-                    }
-                    return PropertyTypeSpec.type()
-                            .cardinality(PropertyCardinality.SINGLE)
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
-                            .typeRef(typeRef);
-                }
-            }
-        }
+        return new BodyTypeResolver(typeDeclaration, this.typesPackage).resolve();
     }
 
     private String alreadyDefined(TypeDeclaration typeDeclaration) {
@@ -216,4 +162,5 @@ public class ApiGenerator {
         }
         return typeSpec;
     }
+
 }

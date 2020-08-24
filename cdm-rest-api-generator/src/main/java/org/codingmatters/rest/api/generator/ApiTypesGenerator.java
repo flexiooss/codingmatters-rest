@@ -28,12 +28,14 @@ public class ApiTypesGenerator {
     public Spec generate(RamlModelResult ramlModel) throws RamlSpecException {
         Spec.Builder result = Spec.spec();
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
+            String name = typeDeclaration.name();
             if(typeDeclaration.type().equals("object")) {
                 if(!this.naming.isAlreadyDefined(typeDeclaration)) {
                     ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
                     this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
 
                     for (TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties()) {
+                        String pname = declaration.name();
                         PropertySpec.Builder prop = PropertySpec.property()
                                 .name(this.naming.property(declaration.name()))
                                 .hints(this.rawNameHint(declaration))
@@ -128,23 +130,10 @@ public class ApiTypesGenerator {
     private AnonymousValueSpec.Builder nestedType(ObjectTypeDeclaration declaration) throws RamlSpecException {
         AnonymousValueSpec.Builder embedded = AnonymousValueSpec.anonymousValueSpec();
         for (TypeDeclaration objectProp : declaration.properties()) {
-            PropertySpec.Builder prop;
-            if(objectProp.type().equals("object")) {
-                prop = PropertySpec.property()
-                        .name(this.naming.property(objectProp.name()))
-                        .hints(this.rawNameHint(objectProp))
-                        .type(PropertyTypeSpec.type()
-                                .cardinality(PropertyCardinality.SINGLE)
-                                .typeKind(TypeKind.EMBEDDED)
-                                .embeddedValueSpec(this.nestedType((ObjectTypeDeclaration) objectProp))
-                        );
-            } else {
-                prop = PropertySpec.property()
-                        .name(this.naming.property(objectProp.name()))
-                        .hints(this.rawNameHint(objectProp))
-                        .type(this.typeSpecFromDeclaration(objectProp)
-                        );
-            }
+            PropertySpec.Builder prop = PropertySpec.property()
+                    .name(this.naming.property(objectProp.name()))
+                    .hints(this.rawNameHint(objectProp))
+                    .type(this.typeSpecFromDeclaration(objectProp));
             this.annotationProcessor.appendValueObjectHints(prop, objectProp.annotations());
             embedded.addProperty(prop);
         }
