@@ -94,17 +94,6 @@ public class RequestDelegateUriParameterTest {
         assertThat(parameters.get("param"), contains("param-value1", "param-value2"));
     }
 
-    @Test
-    public void withPrefix() throws Exception {
-        RequestDelegate deleguate = this.withPath("/pre/fix/start/param-value/end");
-        Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param}/end");
-
-        System.out.println(parameters);
-
-        assertThat(parameters.size(), is(1));
-        assertThat(parameters.get("param"), contains("param-value"));
-    }
-
     private RequestDelegate withPath(String path) {
         return new TestRequestDelegate(path);
     }
