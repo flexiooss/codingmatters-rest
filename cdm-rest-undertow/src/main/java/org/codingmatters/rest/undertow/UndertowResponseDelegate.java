@@ -53,7 +53,7 @@ public class UndertowResponseDelegate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate addHeaderIfNot(String name, String... value) {
-        if(! this.exchange.getResponseHeaders().contains(name)) {
+        if(this.exchange.getResponseHeaders().get(name) == null || this.exchange.getResponseHeaders().get(name).isEmpty()) {
             return this.addHeader(name, value);
         }
         return this;

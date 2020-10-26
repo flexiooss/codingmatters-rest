@@ -111,6 +111,14 @@ public class TestRequester implements Requester {
     }
 
     @Override
+    public Requester headerIfNot(String name, String[] value) {
+        if(this.headers.get(name) == null || this.headers.get(name).length == 0) {
+            return this.header(name, value);
+        }
+        return this;
+    }
+
+    @Override
     public Requester header(String name, Iterable<String> value) {
         if(value != null) {
             LinkedList<String> params = new LinkedList<>();
