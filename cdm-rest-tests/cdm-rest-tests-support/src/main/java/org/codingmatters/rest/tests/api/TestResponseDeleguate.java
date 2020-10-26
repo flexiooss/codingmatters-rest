@@ -35,6 +35,14 @@ public class TestResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
+    public ResponseDelegate addHeaderIfNot(String name, String... value) {
+        if(! this.headers.containsKey(name)) {
+            return this.addHeader(name, value);
+        }
+        return this;
+    }
+
+    @Override
     public ResponseDelegate payload(String payload, String charset) {
         this.charset = charset;
         try {
