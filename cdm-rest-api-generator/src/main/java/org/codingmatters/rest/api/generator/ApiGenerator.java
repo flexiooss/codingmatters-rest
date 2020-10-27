@@ -113,6 +113,7 @@ public class ApiGenerator {
 
         for (Response response : method.responses()) {
             AnonymousValueSpec.Builder responseSpec = AnonymousValueSpec.anonymousValueSpec();
+            this.annotationProcessor.appendConformsToAnnotations(responseSpec, response.annotations());
             for (TypeDeclaration typeDeclaration : response.headers()) {
                 responseSpec.addProperty(PropertySpec.property()
                         .name(this.naming.property(typeDeclaration.name()))

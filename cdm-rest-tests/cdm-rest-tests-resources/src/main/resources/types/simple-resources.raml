@@ -113,6 +113,24 @@ annotationTypes:
             200:
                body: AlreadyDefinedType[]
 
+/conforming-request:
+    displayName: ConformingRequest
+    get:
+        (conforms-to): ["java.io.Serializable"]
+        body: SimpleType
+        responses:
+           200:
+              body: SimpleType
+
+/conforming-response:
+    displayName: ConformingResponse
+    get:
+        body: SimpleType
+        responses:
+           200:
+              body: SimpleType
+              (conforms-to): ["java.io.Serializable"]
+
 
 types:
     SimpleType:
