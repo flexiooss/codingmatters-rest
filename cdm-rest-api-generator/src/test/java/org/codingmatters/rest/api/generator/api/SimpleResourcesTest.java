@@ -9,11 +9,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created by nelt on 5/1/17.
@@ -278,6 +278,20 @@ public class SimpleResourcesTest {
                                 .cardinality(PropertyCardinality.LIST)
                         )
                         .build())
+        );
+    }
+
+    @Test
+    public void conformingRequest() throws Exception {
+        assertThat(spec.valueSpec("ConformingRequestGetRequest").protocols(), contains(Serializable.class.getName()));
+    }
+
+    @Test
+    public void conformingResponse() throws Exception {
+        System.out.println(spec.valueSpec("ConformingResponseGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().protocols());
+        assertThat(
+                spec.valueSpec("ConformingResponseGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().protocols(),
+                contains(Serializable.class.getName())
         );
     }
 }

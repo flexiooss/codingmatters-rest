@@ -151,6 +151,13 @@ public class BaseOkHttpRequester implements Requester {
         }
     }
 
+    @Override
+    public Requester headerIfNot(String name, String[] value) {
+        if(this.headers.get(name) == null || this.headers.get(name).length == 0) {
+            return this.header(name, value);
+        }
+        return this;
+    }
 
 
     private Request.Builder prepareRequestBuilder() throws UnsupportedEncodingException, IOException {

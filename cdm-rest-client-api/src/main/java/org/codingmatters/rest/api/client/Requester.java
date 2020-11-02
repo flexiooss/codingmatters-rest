@@ -17,8 +17,9 @@ public interface Requester {
     Requester parameter(String name, Iterable<String> value);
 
     Requester header(String name, String value);
-    Requester header(String name, String[] value);
     Requester header(String name, Iterable<String> value);
+    Requester header(String name, String[] value);
+    Requester headerIfNot(String name, String[] value);
 
     Requester path(String path);
 
