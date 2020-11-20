@@ -24,7 +24,7 @@ public class RunPhpTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "composer", "install" );
         Process process = processBuilder.start();
-        assertTrue( "composer install took too much time", process.waitFor( 3, TimeUnit.MINUTES ) );
+        assertTrue( "composer install took too much time", process.waitFor( 6, TimeUnit.MINUTES ) );
         if( process.exitValue() != 0 ) {
             printError( process.getInputStream() );
             printError( process.getErrorStream() );
