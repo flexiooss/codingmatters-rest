@@ -40,6 +40,14 @@ public class SimpleResourcesTest {
     }
 
     @Test
+    public void resourceWithAInName() {
+        String request = "ANamedResourceGetRequest";
+        String response = "ANamedResourceGetResponse";
+        assertThat(request, spec.valueSpec(request), is(notNullValue()));
+        assertThat(response, spec.valueSpec(response), is(notNullValue()));
+    }
+
+    @Test
     public void middleResource() throws Exception {
         assertThat(spec.valueSpec("MiddleResourceGetRequest"), is(notNullValue()));
         assertThat(spec.valueSpec("MiddleResourceGetResponse"), is(notNullValue()));
