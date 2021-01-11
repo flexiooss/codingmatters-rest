@@ -104,7 +104,7 @@
     </dependencies>
 
     <properties>
-        <codingmatters-value-objects-version>1.46.0</codingmatters-value-objects-version>
+        <codingmatters-value-objects-version>1.47.0-SNAPSHOT</codingmatters-value-objects-version>
     </properties>
 
     <dependencyManagement>
