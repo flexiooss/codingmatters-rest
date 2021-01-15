@@ -1,18 +1,31 @@
 package org.codingmatters.rest.php.api.client;
 
 import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
-import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
-import java.io.File;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ApiTypesGeneratorTest {
+
+    @Test
+    public void testNestedObjectListPropertyTypeRef() throws Exception {
+        RamlModelResult ramlModel;
+
+        String ramlLocation = Thread.currentThread().getContextClassLoader().getResource( "test.raml" ).getPath();
+        ramlModel = new RamlModelBuilder().buildApi( ramlLocation );
+
+        Spec spec = new ApiTypesPhpGenerator( "org.generated" ).generate( ramlModel );
+
+        ValueSpec nested = spec.valueSpecs().get( 1 );
+        PropertyTypeSpec propB = nested.propertySpec( "prop-b" ).typeSpec();
+        PropertySpec propE = propB.embeddedValueSpec().propertySpec( "prop-d" ).typeSpec().embeddedValueSpec().propertySpec( "prop-e" );
+        System.out.println( nested.name() );
+        assertThat( propE.typeSpec().typeRef(), is( "org.generated.nestedobject.propb.propd.PropDPropEList" ) );
+    }
 
     @Test
     public void testSimplePropertiesType() throws Exception {
@@ -66,13 +79,13 @@ public class ApiTypesGeneratorTest {
         assertThat( valueSpec.propertySpec( "enumProp" ).typeSpec().typeRef(), is( "org.generated.simplepropertytype.SimplePropertyTypeEnumProp" ) );
         assertThat( valueSpec.propertySpec( "enumProp" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
         assertThat( valueSpec.propertySpec( "enumProp" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        assertThat( valueSpec.propertySpec( "enumProp" ).typeSpec().enumValues(), is( new String[]{ "A", "B", "C" } ) );
+        assertThat( valueSpec.propertySpec( "enumProp" ).typeSpec().enumValues(), is( new String[]{"A", "B", "C"} ) );
 
         assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().typeRef(), is( "org.generated.simplepropertytype.SimplePropertyTypeEnumArrayPropList" ) );
         assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(), is( new String[]{ "D", "E", "F" } ) );
+        assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(), is( new String[]{"D", "E", "F"} ) );
         assertThat( valueSpec.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "org.generated.simplepropertytype.SimplePropertyTypeEnumArrayProp" ) );
     }
 
@@ -103,13 +116,13 @@ public class ApiTypesGeneratorTest {
         assertThat( nested.propertySpec( "enumProp" ).typeSpec().typeRef(), is( "org.generated.nestedtype.NestedTypeEnumProp" ) );
         assertThat( nested.propertySpec( "enumProp" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
         assertThat( nested.propertySpec( "enumProp" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        assertThat( nested.propertySpec( "enumProp" ).typeSpec().enumValues(), is( new String[]{ "A", "B", "C" } ) );
+        assertThat( nested.propertySpec( "enumProp" ).typeSpec().enumValues(), is( new String[]{"A", "B", "C"} ) );
 
         assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().typeRef(), is( "org.generated.nestedtype.NestedTypeEnumArrayPropList" ) );
         assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().typeKind(), is( TypeKind.EMBEDDED ) );
         assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(), is( new String[]{ "D", "E", "F" } ) );
+        assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(), is( new String[]{"D", "E", "F"} ) );
         assertThat( nested.propertySpec( "enumArrayProp" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "org.generated.nestedtype.NestedTypeEnumArrayProp" ) );
     }
 

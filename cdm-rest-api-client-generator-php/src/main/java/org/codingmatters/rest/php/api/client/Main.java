@@ -14,7 +14,7 @@ public class Main {
     public static void main( String[] args ) {
         try {
             String targetDir = System.getProperty( "generationTargetDir"
-                    //, "/home/nico/workspace/codingmatters-rest/cdm-rest-api-client-generator-php/target/php-test"
+//                    , "/home/nico/workspaces/codingmatters/codingmatters-rest/cdm-rest-api-client-generator-php/target/php-test"
             );
             if( targetDir == null ) {
                 System.out.println( "Property \'generationTargetDir\' not found" );

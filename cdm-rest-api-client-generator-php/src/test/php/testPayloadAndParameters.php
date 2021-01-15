@@ -99,8 +99,18 @@ class PayloadTest extends TestCase {
     }
 
     public function testNestedType(){
+        $little = new \org\generated\api\types\LittleObject();
+        $little -> withName( "toto" );
+
+        $propE = new \org\generated\api\types\nestedobject\propb\propd\PropDPropEList();
+        $propE->add( $little );
+
+        $propD = new \org\generated\api\types\nestedobject\propb\PropD();
+        $propD -> withPropE( $propE );
+
         $propB = new \org\generated\api\types\nestedobject\PropB();
         $propB -> withPropC("yoyo");
+        $propB -> withPropD( $propD );
 
         $payload = new \org\generated\api\types\NestedObject();
         $payload -> withPropA( "toto" );
@@ -108,7 +118,13 @@ class PayloadTest extends TestCase {
 
         $writer = new \org\generated\api\types\json\NestedObjectWriter();
         $json = $writer->write($payload);
-        $this -> assertSame( $json, '{"prop-a":"toto","prop-b":{"prop-c":"yoyo"}}' );
+        $this -> assertSame( $json, '{"prop-a":"toto","prop-b":{"prop-c":"yoyo","prop-d":{"prop-e":[{"name":"toto"}]}}}' );
+
+        $reader = new \org\generated\api\types\json\NestedObjectReader();
+        $nestedObject = $reader->read( $json );
+
+        $this-> assertSame( $nestedObject->propB()->propD()->propE()[0]->name(), 'toto' );
+
     }
 
     public function testTypePayload(){

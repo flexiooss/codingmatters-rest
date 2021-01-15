@@ -13,6 +13,8 @@ import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Collectors;
 
 import static org.codingmatters.rest.api.generator.type.RamlType.isRamlType;
 
@@ -40,14 +42,14 @@ public class ApiTypesPhpGenerator {
 
     public Spec generate( RamlModelResult model ) throws RamlSpecException {
         Spec.Builder spec = Spec.spec();
-        for( TypeDeclaration typeDeclaration : model.getApiV10().types() ) {
-            if( typeDeclaration.type().equals( "object" ) ) {
-                if( !this.naming.isAlreadyDefined( typeDeclaration ) ) {
+        for( TypeDeclaration typeDeclaration : model.getApiV10().types() ){
+            if( typeDeclaration.type().equals( "object" ) ){
+                if( !this.naming.isAlreadyDefined( typeDeclaration ) ){
                     ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name( this.naming.type( typeDeclaration.name() ) );
-                    for( TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties() ) {
+                    for( TypeDeclaration declaration : ((ObjectTypeDeclaration) typeDeclaration).properties() ){
                         PropertySpec.Builder prop = PropertySpec.property()
                                 .name( declaration.name() )
-                                .type( this.typeSpecFromDeclaration( typeDeclaration, declaration ) );
+                                .type( this.typeSpecFromDeclaration( typeDeclaration, declaration, new Stack<>() ) );
                         // TODO hints ? conforms to ?
                         valueSpec.addProperty( prop );
                     }
@@ -58,12 +60,12 @@ public class ApiTypesPhpGenerator {
         return spec.build();
     }
 
-    private PropertyTypeSpec.Builder typeSpecFromDeclaration( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
-        if( declaration instanceof ArrayTypeDeclaration ) {
+    private PropertyTypeSpec.Builder typeSpecFromDeclaration( TypeDeclaration typeDeclaration, TypeDeclaration declaration, Stack<String> packageContext ) throws RamlSpecException {
+        if( declaration instanceof ArrayTypeDeclaration ){
             String type;
             ArrayTypeDeclaration arrayTypeDeclaration = (ArrayTypeDeclaration) declaration;
             String alreadyDefinedType;
-            if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
+            if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = arrayTypeDeclaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
                 if( alreadyDefinedType == null ){
@@ -73,7 +75,7 @@ public class ApiTypesPhpGenerator {
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
             }
-            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ) { /** IS OBJECT VALUE */
+            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ){ /** IS OBJECT VALUE */
                 String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
                 return PropertyTypeSpec.type()
                         .cardinality( PropertyCardinality.LIST )
@@ -85,26 +87,32 @@ public class ApiTypesPhpGenerator {
                                         .build()
                         ).build() );
             } else {
-                return this.simplePropertyArray( typeDeclaration, ((ArrayTypeDeclaration) declaration) );
+                return this.simplePropertyArray( typeDeclaration, ((ArrayTypeDeclaration) declaration), packageContext );
             }
-        } else if( this.naming.isArbitraryObject( declaration ) ) {
+        } else if( this.naming.isArbitraryObject( declaration ) ){
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
                     .typeRef( "\\ArrayObject" );
-        } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ) {
+        } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ){
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.EMBEDDED )
-                    .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration ) );
+                    .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) declaration, packageContext ) );
         } else {
             return this.simpleProperty( typeDeclaration, declaration );
         }
     }
 
-    private PropertyTypeSpec.Builder simplePropertyArray( TypeDeclaration typeDeclaration, ArrayTypeDeclaration declaration ) {
-        String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
-        if( this.isEnum( declaration.items() ) ) {
+    private PropertyTypeSpec.Builder simplePropertyArray( TypeDeclaration typeDeclaration, ArrayTypeDeclaration declaration, Stack<String> packageContext ) {
+        String typeRef;
+        if( packageContext.empty() ){
+            typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
+        } else {
+            typeRef = typesPackage + "." + packageContext.stream().map( item -> naming.type( item ).toLowerCase() ).collect( Collectors.joining( "." ) ) + "." + naming.type( typeDeclaration.name().toLowerCase() ).toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
+        }
+
+        if( this.isEnum( declaration.items() ) ){
             String[] values = ((StringTypeDeclaration) declaration.items()).enumValues().toArray( new String[0] );
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.LIST )
@@ -121,9 +129,9 @@ public class ApiTypesPhpGenerator {
                                     .build() )
                             .build() );
             /** RAML PRIMITIVE TYPE */
-        } else if( RamlType.isRamlType( declaration.items() ) ) {
+        } else if( RamlType.isRamlType( declaration.items() ) ){
             String type;
-            if( "array".equals( declaration.type() ) ) {
+            if( "array".equals( declaration.type() ) ){
                 type = declaration.items().type().replace( "[]", "" );
             } else {
                 type = declaration.type().replace( "[]", "" );
@@ -140,7 +148,7 @@ public class ApiTypesPhpGenerator {
         } else {
             String type;
             String alreadyDefinedType;
-            if( "array".equals( declaration.type() ) ) { /* case type: array items: XXX */
+            if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = declaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
                 if( alreadyDefinedType == null ){
@@ -150,7 +158,7 @@ public class ApiTypesPhpGenerator {
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( declaration.items() );
             }
-            if( alreadyDefinedType != null ) {
+            if( alreadyDefinedType != null ){
                 return PropertyTypeSpec.type()
                         .cardinality( PropertyCardinality.LIST )
                         .typeKind( TypeKind.EMBEDDED )
@@ -176,7 +184,7 @@ public class ApiTypesPhpGenerator {
     }
 
     private PropertyTypeSpec.Builder simpleProperty( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
-        if( this.isEnum( declaration ) ) {
+        if( this.isEnum( declaration ) ){
             String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
             String type = naming.type( typeDeclaration.name(), declaration.name() );
             String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + type;
@@ -185,7 +193,7 @@ public class ApiTypesPhpGenerator {
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.ENUM )
                     .enumValues( values );
-        } else if( isRamlType( declaration ) ) {
+        } else if( isRamlType( declaration ) ){
             // if( date )
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
@@ -193,7 +201,7 @@ public class ApiTypesPhpGenerator {
                     .typeRef( typeMapping.get( declaration.type() ) );
         } else {
             String type = isAlreadyDefined( declaration );
-            if( type != null ) {
+            if( type != null ){
                 return PropertyTypeSpec.type()
                         .cardinality( PropertyCardinality.SINGLE )
                         .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
@@ -207,35 +215,37 @@ public class ApiTypesPhpGenerator {
     }
 
     private String isAlreadyDefined( TypeDeclaration declaration ) {
-        for( AnnotationRef annotationRef : declaration.annotations() ) {
-            if( "already-defined".equals( annotationRef.annotation().name() ) ) {
+        for( AnnotationRef annotationRef : declaration.annotations() ){
+            if( "already-defined".equals( annotationRef.annotation().name() ) ){
                 return annotationRef.structuredValue().value().toString();
             }
         }
-        for( TypeDeclaration typeDeclaration : declaration.parentTypes() ) {
+        for( TypeDeclaration typeDeclaration : declaration.parentTypes() ){
             String type = isAlreadyDefined( typeDeclaration );
-            if( type != null ) {
+            if( type != null ){
                 return type;
             }
         }
         return null;
     }
 
-    private AnonymousValueSpec.Builder nestedType( TypeDeclaration typeDeclaration, ObjectTypeDeclaration declaration ) throws RamlSpecException {
+    private AnonymousValueSpec.Builder nestedType( TypeDeclaration typeDeclaration, ObjectTypeDeclaration declaration, Stack<String> packageContext ) throws RamlSpecException {
         AnonymousValueSpec.Builder embedded = AnonymousValueSpec.anonymousValueSpec();
-        for( TypeDeclaration objectProp : declaration.properties() ) {
+        for( TypeDeclaration objectProp : declaration.properties() ){
             PropertySpec.Builder prop;
-            if( objectProp.type().equals( "object" ) ) {
+            if( objectProp.type().equals( "object" ) ){
+                packageContext.add( typeDeclaration.name() );
+                packageContext.add( declaration.name() );
                 prop = PropertySpec.property()
                         .name( objectProp.name() )
                         .type( PropertyTypeSpec.type()
                                 .cardinality( PropertyCardinality.SINGLE )
                                 .typeKind( TypeKind.EMBEDDED )
-                                .embeddedValueSpec( this.nestedType( typeDeclaration, (ObjectTypeDeclaration) objectProp ) ) );
+                                .embeddedValueSpec( this.nestedType( objectProp, (ObjectTypeDeclaration) objectProp, packageContext ) ) );
             } else {
                 prop = PropertySpec.property()
                         .name( objectProp.name() )
-                        .type( this.typeSpecFromDeclaration( typeDeclaration, objectProp ) );
+                        .type( this.typeSpecFromDeclaration( typeDeclaration, objectProp, packageContext ) );
             }
             embedded.addProperty( prop );
         }
