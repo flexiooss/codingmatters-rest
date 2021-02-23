@@ -20,7 +20,7 @@ public class ByteContent implements Content {
 
     @Override
     public InputStream asStream() throws IOException {
-        return new ByteArrayInputStream(this.content);
+        return this.content != null ? new ByteArrayInputStream(this.content) : new ByteArrayInputStream(new byte[0]);
     }
 
     @Override

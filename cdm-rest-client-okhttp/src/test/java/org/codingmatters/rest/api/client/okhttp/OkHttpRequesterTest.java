@@ -1,13 +1,14 @@
 package org.codingmatters.rest.api.client.okhttp;
 
 import org.codingmatters.rest.api.client.Requester;
+import org.codingmatters.rest.io.Content;
 import org.codingmatters.rest.undertow.support.BehaviouralUndertowResource;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class OkHttpRequesterTest {
 
@@ -41,21 +42,147 @@ public class OkHttpRequesterTest {
     }
 
     @Test
-    public void postWithNullBody() throws Exception {
+    public void postWithNullBytesBody() throws Exception {
         this.undertow
                 .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
                 .then(exchange -> exchange.setStatusCode(200));
 
-        assertThat(this.requester.post("text/plain", null).code(), is(200));
+        assertThat(this.requester.post("text/plain", (byte[]) null).code(), is(200));
     }
 
     @Test
-    public void postWithEmptyBody() throws Exception {
+    public void putWithNullBytesBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PUT"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.put("text/plain", (byte[]) null).code(), is(200));
+    }
+
+    @Test
+    public void patchWithNullBytesBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PATCH"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.patch("text/plain", (byte[]) null).code(), is(200));
+    }
+
+    @Test
+    public void deleteWithNullBytesBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("DELETE"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.delete("text/plain", (byte[]) null).code(), is(200));
+    }
+
+    @Test
+    public void postWithNullContentBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.post("text/plain", (Content) null).code(), is(200));
+    }
+
+    @Test
+    public void putWithNullContentBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PUT"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.put("text/plain", (Content) null).code(), is(200));
+    }
+
+    @Test
+    public void patchWithNullContentBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PATCH"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.patch("text/plain", (Content) null).code(), is(200));
+    }
+
+    @Test
+    public void deleteWithNullContentBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("DELETE"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.delete("text/plain", (Content) null).code(), is(200));
+    }
+
+    @Test
+    public void postWithEmptyByteBody() throws Exception {
         this.undertow
                 .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
                 .then(exchange -> exchange.setStatusCode(200));
 
         assertThat(this.requester.post("text/plain", new byte[0]).code(), is(200));
+    }
+
+    @Test
+    public void putWithEmptyByteBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PUT"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.put("text/plain", new byte[0]).code(), is(200));
+    }
+
+    @Test
+    public void patchWithEmptyByteBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PATCH"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.patch("text/plain", new byte[0]).code(), is(200));
+    }
+
+    @Test
+    public void deleteWithEmptyByteBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("DELETE"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.delete("text/plain", new byte[0]).code(), is(200));
+    }
+
+    @Test
+    public void postWithEmptyContntBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("POST"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.post("text/plain", Content.from((byte[]) null)).code(), is(200));
+    }
+
+    @Test
+    public void putWithEmptyContntBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PUT"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.put("text/plain", Content.from((byte[]) null)).code(), is(200));
+    }
+
+    @Test
+    public void patchWithEmptyContntBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("PATCH"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.patch("text/plain", Content.from((byte[]) null)).code(), is(200));
+    }
+
+    @Test
+    public void deleteWithEmptyContntBody() throws Exception {
+        this.undertow
+                .when(exchange -> exchange.getRequestMethod().toString().equalsIgnoreCase("DELETE"))
+                .then(exchange -> exchange.setStatusCode(200));
+
+        assertThat(this.requester.delete("text/plain", Content.from((byte[]) null)).code(), is(200));
     }
 
     @Test

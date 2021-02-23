@@ -9,6 +9,7 @@ import org.codingmatters.rest.api.generator.client.caller.CallerParameters;
 import org.codingmatters.rest.api.generator.client.response.ResponseHeaderParser;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
+import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -105,9 +106,13 @@ public class RequesterCaller {
         } else {
             TypeDeclaration body = this.method.body().get(0);
 
-            caller.addStatement("byte[] requestBody = new byte[0]");
+//            caller.addStatement("byte[] requestBody = new byte[0]");
+            caller.addStatement("$T requestBody = null", Content.class);
+//            caller.beginControlFlow("if(request.payload() != null)");
             caller.beginControlFlow("if(request.payload() != null)");
-            caller.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
+
+
+//            caller.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
 
             SupportedMediaType mediaType;
             try {
@@ -120,8 +125,8 @@ public class RequesterCaller {
             ClientRequestBodyWriterStatement writerStatement = mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming);
             writerStatement.append(caller);
 
-            caller.addStatement("requestBody = out.toByteArray()");
-            caller.endControlFlow();
+//            caller.addStatement("requestBody = out.toByteArray()");
+//            caller.endControlFlow();
             caller.endControlFlow();
 
             writerStatement.appendContentTypeVariableCreate(caller);

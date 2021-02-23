@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.generator.client;
 
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.methods.Method;
 
 public class TextClientRequestBodyWriterStatement implements ClientRequestBodyWriterStatement {
@@ -16,7 +17,8 @@ public class TextClientRequestBodyWriterStatement implements ClientRequestBodyWr
 
     @Override
     public void append(MethodSpec.Builder caller) {
-        caller.addStatement("out.write(request.payload().getBytes())");
+//        caller.addStatement("out.write(request.payload().getBytes())");
+        caller.addStatement("requestBody = $T.from(request.payload())", Content.class);
     }
 
     @Override

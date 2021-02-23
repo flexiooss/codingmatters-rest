@@ -4,11 +4,16 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
+import org.codingmatters.rest.io.Content;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -48,29 +53,63 @@ public class BaseOkHttpRequester implements Requester {
     }
 
     public ResponseDelegate post(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().post(this.prepareBody(contentType, body)).build();
+        return this.post(contentType, Content.from(body));
+    }
+
+    @Override
+    public ResponseDelegate post(String contentType, Content body) throws IOException {
+        if(body == null) {
+            body = Content.from(new byte[0]);
+        }
+        File temporaryFile = body.asTemporaryFile();
+        Request request = this.prepareRequestBuilder().post(this.prepareBody(contentType, temporaryFile)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
+        } finally {
+            temporaryFile.delete();
         }
     }
 
-    public RequestBody prepareBody(String contentType, byte[] body) {
-        return RequestBody.create(MediaType.parse(contentType), body != null ? body : new byte[0]);
+    public RequestBody prepareBody(String contentType, File body) {
+        return RequestBody.create(body, MediaType.parse(contentType));
+        //return RequestBody.create(MediaType.parse(contentType), body != null ? body : new byte[0]);
     }
 
     @Override
     public ResponseDelegate put(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().put(this.prepareBody(contentType, body)).build();
+        return this.put(contentType, Content.from(body));
+    }
+
+    @Override
+    public ResponseDelegate put(String contentType, Content body) throws IOException {
+        if(body == null) {
+            body = Content.from(new byte[0]);
+        }
+        File temporaryFile = body.asTemporaryFile();
+        Request request = this.prepareRequestBuilder().put(this.prepareBody(contentType, temporaryFile)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
+        } finally {
+            temporaryFile.delete();
         }
     }
 
     @Override
     public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().patch(this.prepareBody(contentType, body)).build();
+        return this.patch(contentType, Content.from(body));
+    }
+
+    @Override
+    public ResponseDelegate patch(String contentType, Content body) throws IOException {
+        if(body == null) {
+            body = Content.from(new byte[0]);
+        }
+        File temporaryFile = body.asTemporaryFile();
+        Request request = this.prepareRequestBuilder().patch(this.prepareBody(contentType, temporaryFile)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
+        } finally {
+            temporaryFile.delete();
         }
     }
 
@@ -84,9 +123,20 @@ public class BaseOkHttpRequester implements Requester {
 
     @Override
     public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
-        Request request = this.prepareRequestBuilder().delete(this.prepareBody(contentType, body)).build();
+        return this.delete(contentType, Content.from(body));
+    }
+
+    @Override
+    public ResponseDelegate delete(String contentType, Content body) throws IOException {
+        if(body == null) {
+            body = Content.from(new byte[0]);
+        }
+        File temporaryFile = body.asTemporaryFile();
+        Request request = this.prepareRequestBuilder().delete(this.prepareBody(contentType, temporaryFile)).build();
         try (Response response = this.client.execute(request)) {
             return new OkHttpResponseDelegate(response);
+        } finally {
+            temporaryFile.delete();
         }
     }
 
