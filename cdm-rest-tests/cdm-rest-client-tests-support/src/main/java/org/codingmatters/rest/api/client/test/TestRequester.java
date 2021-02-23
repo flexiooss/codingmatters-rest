@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.client.test;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
+import org.codingmatters.rest.io.Content;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -45,13 +46,28 @@ public class TestRequester implements Requester {
     }
 
     @Override
+    public ResponseDelegate post(String contentType, Content body) throws IOException {
+        return this.post(contentType, body != null ? body.asBytes() : new byte[0]);
+    }
+
+    @Override
     public ResponseDelegate put(String contentType, byte[] body) throws IOException {
         return this.nextResponse(PUT, contentType, body);
     }
 
     @Override
+    public ResponseDelegate put(String contentType, Content body) throws IOException {
+        return this.put(contentType, body != null ? body.asBytes() : new byte[0]);
+    }
+
+    @Override
     public ResponseDelegate patch(String contentType, byte[] body) throws IOException {
         return this.nextResponse(PATCH, contentType, body);
+    }
+
+    @Override
+    public ResponseDelegate patch(String contentType, Content body) throws IOException {
+        return this.patch(contentType, body != null ? body.asBytes() : new byte[0]);
     }
 
     @Override
@@ -62,6 +78,11 @@ public class TestRequester implements Requester {
     @Override
     public ResponseDelegate delete(String contentType, byte[] body) throws IOException {
         return this.nextResponse(DELETE, contentType, body);
+    }
+
+    @Override
+    public ResponseDelegate delete(String contentType, Content body) throws IOException {
+        return this.delete(contentType, body != null ? body.asBytes() : new byte[0]);
     }
 
     private ResponseDelegate nextResponse(TestRequesterFactory.Method method, String requestContentType, byte [] requestBody) throws IOException {

@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
+import org.codingmatters.rest.io.Content;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.json.ObjectValueWriter;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
+
+import java.io.ByteArrayOutputStream;
 
 public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWriterStatement {
     private final Method method;
@@ -24,7 +27,8 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
     @Override
     public void append(MethodSpec.Builder caller) {
         TypeDeclaration body = this.method.body().get(0);
-        caller.beginControlFlow("try($T generator = this.jsonFactory.createGenerator(out))", JsonGenerator.class);
+        caller.beginControlFlow("try($T out = new $T() ; $T generator = this.jsonFactory.createGenerator(out))",
+                ByteArrayOutputStream.class, ByteArrayOutputStream.class, JsonGenerator.class);
 
 
         if(body instanceof ArrayTypeDeclaration || body.type().endsWith("[]")) {
@@ -71,6 +75,8 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
             );
         }
 
+        caller.addStatement("generator.close()");
+        caller.addStatement("requestBody = $T.from(out.toByteArray())", Content.class);
         caller.endControlFlow();
     }
 

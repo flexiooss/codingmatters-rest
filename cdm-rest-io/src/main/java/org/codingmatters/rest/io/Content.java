@@ -7,10 +7,7 @@ import org.codingmatters.rest.io.content.FileContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public interface Content {
     Logger log = LoggerFactory.getLogger(Content.class);
@@ -42,6 +39,19 @@ public interface Content {
         return new String(this.asBytes());
     }
     InputStream asStream() throws IOException;
+
+    default File asTemporaryFile() throws IOException {
+        File tempDir = new File(System.getProperty(Content.class.getName() + ".temporary.path", System.getProperty("java.io.tmpdir")));
+        tempDir.mkdirs();
+        File temp = File.createTempFile("content", ".bin", tempDir);
+        try(InputStream in = this.asStream() ; OutputStream out = new FileOutputStream(temp)) {
+            byte[] buffer = new byte[1024];
+            for (int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
+                out.write(buffer, 0, read);
+            }
+        }
+        return temp;
+    }
 
     int length();
 

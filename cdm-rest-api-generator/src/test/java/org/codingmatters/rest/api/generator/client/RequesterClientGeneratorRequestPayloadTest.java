@@ -14,7 +14,7 @@ import org.junit.rules.TemporaryFolder;
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RequesterClientGeneratorRequestPayloadTest {
     public TemporaryFolder dir = new TemporaryFolder();
@@ -29,6 +29,9 @@ public class RequesterClientGeneratorRequestPayloadTest {
 
     @Test
     public void payload() throws Exception {
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "PayloadClient.java");
+
         UrlProvider baseUrl = () -> "https://path.to/me";
         TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
         JsonFactory jsonFactory = new JsonFactory();
