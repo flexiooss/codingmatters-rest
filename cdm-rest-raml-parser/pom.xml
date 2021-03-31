@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.54.0</version>
+        <version>1.55.0</version>
     </parent>
 
     <artifactId>cdm-rest-raml-parser</artifactId>
