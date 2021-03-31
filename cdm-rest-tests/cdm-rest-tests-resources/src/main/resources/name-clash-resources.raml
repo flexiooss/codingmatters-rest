@@ -1,0 +1,11 @@
+#%RAML 1.0
+title: SimpleResourceTree API
+version: v1
+baseUri: https://api.codingmatters.org/resources-without-method
+mediaType: application/json
+
+/root:
+  displayName: root
+  /content:
+    displayName: content
+    get:
