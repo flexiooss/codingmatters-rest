@@ -17,7 +17,6 @@ public class TextClientRequestBodyWriterStatement implements ClientRequestBodyWr
 
     @Override
     public void append(MethodSpec.Builder caller) {
-//        caller.addStatement("out.write(request.payload().getBytes())");
         caller.addStatement("requestBody = $T.from(request.payload())", Content.class);
     }
 
