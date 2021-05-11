@@ -10,6 +10,7 @@ import org.codingmatters.rest.undertow.internal.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
     }
 
     @Override
-    public InputStream payload() {
+    public InputStream payload() throws IOException {
         synchronized (this.body) {
             if(this.body.get() == null) {
                 if(! this.exchange.isBlocking()) {

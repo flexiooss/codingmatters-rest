@@ -3,11 +3,12 @@ package org.codingmatters.rest.undertow.internal;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public interface RequestBody extends AutoCloseable {
 
-    static RequestBody from(HttpServerExchange exchange) {
+    static RequestBody from(HttpServerExchange exchange) throws IOException {
         if(isSmall(exchange.getRequestHeaders().get("content-length"))) {
             return ByteArrayRequestBody.from(exchange);
         } else {

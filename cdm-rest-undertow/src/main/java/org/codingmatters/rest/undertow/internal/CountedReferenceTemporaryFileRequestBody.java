@@ -12,15 +12,11 @@ import java.io.*;
 public class CountedReferenceTemporaryFileRequestBody implements RequestBody {
     static private final Logger log = LoggerFactory.getLogger(UndertowRequestDelegate.class);
 
-    static public RequestBody from(HttpServerExchange exchange) {
+    static public RequestBody from(HttpServerExchange exchange) throws IOException {
         CountedReferenceTemporaryFile temp = null;
-        try {
-            temp = CountedReferenceTemporaryFile.create();
-            try(OutputStream out = temp.outputStream()) {
-                ContentHelper.copyStream(exchange.getInputStream(), out);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("failed creating temporary file, cannot proceed in this condition", e);
+        temp = CountedReferenceTemporaryFile.create();
+        try(OutputStream out = temp.outputStream()) {
+            ContentHelper.copyStream(exchange.getInputStream(), out);
         }
         return new CountedReferenceTemporaryFileRequestBody(temp);
     }
