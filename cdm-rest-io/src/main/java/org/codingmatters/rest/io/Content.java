@@ -24,14 +24,10 @@ public interface Content {
         return new FileContent(file);
     }
 
-    static Content from(InputStream in) {
-        try {
-            CountedReferenceTemporaryFile temp = CountedReferenceTemporaryFile.create();
-            int length = ContentHelper.toFile(in, temp.get());
-            return new CountedReferenceTemporaryFileContent(temp, length);
-        } catch (IOException e) {
-            throw new RuntimeException("failed creating temporary file for content, cannot recover from that", e);
-        }
+    static Content from(InputStream in) throws IOException {
+        CountedReferenceTemporaryFile temp = CountedReferenceTemporaryFile.create();
+        int length = ContentHelper.toFile(in, temp.get());
+        return new CountedReferenceTemporaryFileContent(temp, length);
     }
 
     byte [] asBytes() throws IOException;
