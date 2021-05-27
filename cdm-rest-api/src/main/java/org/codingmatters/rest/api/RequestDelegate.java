@@ -2,6 +2,7 @@ package org.codingmatters.rest.api;
 
 import org.codingmatters.rest.api.internal.HeaderMap;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface RequestDelegate extends AutoCloseable {
     String path();
     Matcher pathMatcher(String regex);
     Method method();
-    InputStream payload();
+    InputStream payload() throws IOException;
     String contentType();
 
     Map<String,List<String>> uriParameters(String pathExpression);
