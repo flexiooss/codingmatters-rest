@@ -70,7 +70,7 @@ public class OkHttpClientWrapper implements HttpClientWrapper {
         try {
             return this.delegate.newCall(request).execute();
         } catch (SocketTimeoutException e) {
-            if(e.getMessage().equalsIgnoreCase("connect timed out")) {
+            if(e.getMessage() != null && e.getMessage().equalsIgnoreCase("connect timed out")) {
                 throw new ConnectionTimeoutException("connection timed out", e);
             } else {
                 throw e;
