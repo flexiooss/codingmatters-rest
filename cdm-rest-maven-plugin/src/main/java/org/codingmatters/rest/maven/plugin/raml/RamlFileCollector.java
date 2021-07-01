@@ -1,5 +1,6 @@
 package org.codingmatters.rest.maven.plugin.raml;
 
+import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,9 +8,15 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
 public class RamlFileCollector implements AutoCloseable {
@@ -65,7 +72,7 @@ public class RamlFileCollector implements AutoCloseable {
     }
 
     private File gather(String resource, String toPath) throws IOException {
-        log.debug("looking up {} for path {}", resource, toPath);
+        log.info("looking up {} for path {}", resource, toPath);
         if(new File(resource).exists()) {
             log.debug("{} resource found as file. Will copy to {}.", resource, toPath);
             File file = new File(resource);
@@ -90,13 +97,112 @@ public class RamlFileCollector implements AutoCloseable {
             } else {
                 try {
                     URL url = new URL(resource);
+                    if(System.getProperty("use.raml.cache", "true").equals("true")) {
+                        if (url.getProtocol().equals("http") || url.getProtocol().equals("https")) {
+                            File file = this.downloadToFile(url);
+                            try (InputStream in = new FileInputStream(file)) {
+                                return this.copyToTempDir(in, file.getName(), toPath);
+                            }
+                        }
+                    }
                     /* include is a valid url, we leave it as is */
                     return null;
-                } catch (MalformedURLException e) {
+                } catch (MalformedURLException | URISyntaxException | InterruptedException e) {
+                    log.error("error reading url resource : " + resource, e);
                     throw new IOException("resource not found " + resource, e);
                 }
             }
         }
+    }
+
+    static private File ramlHttpCache = new File(System.getProperty("java.io.tmpdir") + "/" + RamlFileCollector.class.getName() + "-http--cache");
+    static {
+        ramlHttpCache.mkdirs();
+    }
+    static private long cacheTtl = 1000 * 60 * 20; //Long.parseLong(System.getProperty("raml.cache.ttl", "" + (1000 * 60 * 2)));
+    static private HttpClient httpClient = HttpClient.newHttpClient();
+
+    private File downloadToFile(URL url) throws URISyntaxException, IOException, InterruptedException {
+        String key = url.toString().replaceAll("[:/]", "_");
+        File cache = new File(ramlHttpCache, key);
+        cache.mkdirs();
+        File etag = new File(cache, "etag");
+        File contents = new File(cache, "contents");
+        File contentsTemp = new File(cache, "contents.temp");
+
+        if(contents.exists() && this.shouldUseCache(url, contents)) {
+            return contents;
+        }
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                .uri(url.toURI());
+        if(etag.exists()) {
+            try {
+                requestBuilder.header("If-None-Match", this.fileContents(etag));
+            } catch (IOException e) {
+                log.warn("[raml cache] unreadable etag : " + etag.getAbsolutePath() + " not using conditional query");
+            }
+        }
+
+        HttpRequest request = requestBuilder
+                .GET()
+                .build();
+        HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(contentsTemp.toPath()));
+        try {
+            if(response.statusCode() != 304) {
+                Optional<String> responseEtag = response.headers().firstValue("etag");
+                if (responseEtag.isPresent()) {
+                    this.writeFileContent(etag, responseEtag.get());
+                }
+                if(contents.exists()) {
+                    contents.delete();
+                }
+                contentsTemp.renameTo(contents);
+                log.info("[raml cache] downloaded : {}", url);
+            } else {
+                log.info("[raml cache] not modified since downloaded : {}", url);
+                contents.setLastModified(System.currentTimeMillis());
+            }
+        } finally {
+            if(contentsTemp.exists()) {
+                contentsTemp.delete();
+            }
+        }
+        return contents;
+    }
+
+    private boolean shouldUseCache(URL url, File contents) {
+        if(url.toString().startsWith("https://raw.githubusercontent.com")) {
+            if(! url.toString().contains("-SNAPSHOT")) {
+                log.info("[raml cache] using cache for released version {}", url);
+                return true;
+            }
+        }
+        long lifetime = System.currentTimeMillis() - contents.lastModified();
+        if(lifetime < cacheTtl) {
+            log.info("[raml cache] using cache as ttl not expired for {}", url);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void writeFileContent(File etag, String content) throws IOException {
+        try(FileWriter writer = new FileWriter(etag)) {
+            writer.write(content);
+            writer.flush();
+        }
+    }
+
+    private String fileContents(File etag) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try(FileReader reader = new FileReader(etag)) {
+            char[] buffer = new char[1024];
+            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
+                result.append(buffer, 0, read);
+            }
+        }
+        return result.toString();
     }
 
     private void collectIncludes(String lookupPath, File file, String toPath) throws IOException {
@@ -104,18 +210,20 @@ public class RamlFileCollector implements AutoCloseable {
         log.debug("collecting includes from {}", file);
         try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
             for(String line = reader.readLine() ; line != null ; line = reader.readLine()) {
-                int start = line.indexOf(INCLUDE_TOKEN);
-                if(start != -1) {
-                    String include = line.substring(start + INCLUDE_TOKEN.length()).trim();
-                    log.info("found include {}", include);
+                if(! line.trim().startsWith("#")) {
+                    int start = line.indexOf(INCLUDE_TOKEN);
+                    if (start != -1) {
+                        String include = line.substring(start + INCLUDE_TOKEN.length()).trim();
+                        log.info("found include {} in {}", include, line);
 
-                    String includeResource = this.isIncludeAnHttpUrl(include) ? include : this.buildPath(lookupPath, include);
-                    String includeDestinationPath = this.buildPath(toPath, this.pathPart(include));
-                    String nestedIncludeLookupPath = this.buildPath(lookupPath, this.pathPart(include));
+                        String includeResource = this.isIncludeAnHttpUrl(include) ? include : this.buildPath(lookupPath, include);
+                        String includeDestinationPath = this.buildPath(toPath, this.pathPart(include));
+                        String nestedIncludeLookupPath = this.buildPath(lookupPath, this.pathPart(include));
 
-                    File included = this.gather(includeResource, includeDestinationPath);
-                    if(include != null) {
-                        this.collectIncludes(nestedIncludeLookupPath, included, includeDestinationPath);
+                        File included = this.gather(includeResource, includeDestinationPath);
+                        if (include != null) {
+                            this.collectIncludes(nestedIncludeLookupPath, included, includeDestinationPath);
+                        }
                     }
                 }
             }
