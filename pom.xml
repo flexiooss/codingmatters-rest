@@ -12,7 +12,7 @@
 
     <groupId>org.codingmatters.rest</groupId>
     <artifactId>codingmatters-rest</artifactId>
-    <version>1.66.0-SNAPSHOT</version>
+    <version>1.67.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Codingmatter's HTTP</name>
@@ -104,7 +104,7 @@
     </dependencies>
 
     <properties>
-        <codingmatters-value-objects-version>1.61.0-SNAPSHOT</codingmatters-value-objects-version>
+        <codingmatters-value-objects-version>1.61.0</codingmatters-value-objects-version>
     </properties>
 
     <dependencyManagement>
@@ -126,77 +126,77 @@
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-io</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api-generator</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-undertow</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-client-okhttp</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-client-api</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-tests-resources</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-tests-support</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-client-tests-support</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-proxy-api</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api-doc</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api-client-generator-php</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api-client-generator-js</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-maven-plugin</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-raml-parser</artifactId>
-                <version>1.66.0-SNAPSHOT</version>
+                <version>1.67.0-SNAPSHOT</version>
             </dependency>
             <!--//BOM-->
         </dependencies>
