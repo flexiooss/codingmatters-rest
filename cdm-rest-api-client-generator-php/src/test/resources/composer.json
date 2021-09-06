@@ -1,5 +1,5 @@
 {
-    "name":"phpGeneration/unitTests",
+    "name":"phpgeneration/unittests",
     "require": {
         "phpunit/phpunit": "^6.4",
         "flexio/utils": "master@dev"
