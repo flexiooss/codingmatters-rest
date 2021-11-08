@@ -68,3 +68,16 @@ types:
     responses:
       200:
         body: file
+
+/file-with-content-type:
+  displayName: file with content type
+  post:
+    headers:
+      Content-Type: string
+    body:
+      type: file
+    responses:
+      200:
+        headers:
+          Content-Type: string
+        body: file
