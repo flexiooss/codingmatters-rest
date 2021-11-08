@@ -3,8 +3,8 @@ package org.codingmatters.rest.php.api.client.model;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
-import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.php.generator.TypeTokenPhp;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
@@ -72,10 +72,12 @@ public class ApiGeneratorPhp {
                     .name( "payload" )
                     .type( type ) );
             if( type.build().typeRef().equals( "string" ) ) {
-                result.addProperty( PropertySpec.property()
-                        .name( "contentType" )
-                        .type( PropertyTypeSpec.type().typeRef( "string" ).typeKind( TypeKind.JAVA_TYPE ).cardinality( PropertyCardinality.SINGLE ) )
-                        .build() );
+                if (result.build().propertySpec("contentType") == null) {
+                    result.addProperty(PropertySpec.property()
+                            .name("contentType")
+                            .type(PropertyTypeSpec.type().typeRef("string").typeKind(TypeKind.JAVA_TYPE).cardinality(PropertyCardinality.SINGLE))
+                            .build());
+                }
             }
         }
         List<TypeDeclaration> typeDeclarations = Resolver.resolvedUriParameters( resource );
@@ -200,11 +202,13 @@ public class ApiGeneratorPhp {
                         .name( "payload" )
                         .type( type )
                 );
-                if( type.build().typeRef().equals( "string" ) ) {
-                    responseSpec.addProperty( PropertySpec.property()
-                            .name( "contentType" )
-                            .type( PropertyTypeSpec.type().typeRef( "string" ).typeKind( TypeKind.JAVA_TYPE ).cardinality( PropertyCardinality.SINGLE ) )
-                            .build() );
+                if (type.build().typeRef().equals("string")) {
+                    if (responseSpec.build().propertySpec("contentType") == null) {
+                        responseSpec.addProperty(PropertySpec.property()
+                                .name("contentType")
+                                .type(PropertyTypeSpec.type().typeRef("string").typeKind(TypeKind.JAVA_TYPE).cardinality(PropertyCardinality.SINGLE))
+                                .build());
+                    }
                 }
             }
             PropertySpec.Builder responseProp = PropertySpec.property()
