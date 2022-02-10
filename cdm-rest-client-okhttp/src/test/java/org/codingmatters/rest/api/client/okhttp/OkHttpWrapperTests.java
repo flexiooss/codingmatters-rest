@@ -50,7 +50,7 @@ public class OkHttpWrapperTests {
         );
 
         this.exception.expect(SocketTimeoutException.class);
-        this.exception.expectMessage(is(Matchers.oneOf("Read timed out", "timeout")));
+        this.exception.expectMessage(is(oneOf("Read timed out", "timeout")));
         client.execute(new Request.Builder().url(this.server.baseUrl()).build());
     }
 }
