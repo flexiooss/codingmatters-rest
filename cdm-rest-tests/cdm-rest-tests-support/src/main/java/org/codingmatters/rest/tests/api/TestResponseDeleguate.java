@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,7 +32,18 @@ public class TestResponseDeleguate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate addHeader(String name, String ... value) {
-        this.headers.put(name, value);
+        if(value == null) return this;
+
+        List<String> values = new LinkedList<>();
+        if(this.headers.get(name) != null) {
+            for (String v : this.headers.get(name)) {
+                values.add(v);
+            }
+        }
+        for (String v : value) {
+            values.add(v);
+        }
+        this.headers.put(name, values.toArray(new String[0]));
         return this;
     }
 
