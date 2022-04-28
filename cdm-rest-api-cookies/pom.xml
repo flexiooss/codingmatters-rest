@@ -8,20 +8,20 @@
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
         <version>1.74.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
     </parent>
 
-    <artifactId>cdm-rest-api</artifactId>
+    <artifactId>cdm-rest-api-cookies</artifactId>
     <name>${project.groupId}${project.artifactId}</name>
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codingmatters.rest</groupId>
-            <artifactId>cdm-rest-io</artifactId>
+            <artifactId>cdm-rest-tests-support</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -30,26 +30,16 @@
             <plugin>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codingmatters.rest</groupId>
-                        <artifactId>cdm-rest-io</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
-
                 <executions>
                     <execution>
-                        <id>file-value-objects</id>
+                        <id>cookies-value-objects</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
-                            <goal>json</goal>
                         </goals>
                         <configuration>
-                            <destination-package>org.codingmatters.rest.api.types</destination-package>
-                            <input-spec>src/main/resources/file.yaml</input-spec>
+                            <destination-package>org.codingmatters.rest.api.cookies</destination-package>
+                            <input-spec>src/main/resources/cookies.yaml</input-spec>
                         </configuration>
                     </execution>
                 </executions>
@@ -74,5 +64,4 @@
             </plugin>
         </plugins>
     </build>
-    
 </project>

@@ -73,6 +73,7 @@
     <modules>
         <module>cdm-rest-io</module>
         <module>cdm-rest-api</module>
+        <module>cdm-rest-api-cookies</module>
         <module>cdm-rest-client-api</module>
         <module>cdm-rest-proxy-api</module>
         <module>cdm-rest-undertow</module>
@@ -136,6 +137,11 @@
             <dependency>
                 <groupId>org.codingmatters.rest</groupId>
                 <artifactId>cdm-rest-api</artifactId>
+                <version>1.74.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest</groupId>
+                <artifactId>cdm-rest-api-cookies</artifactId>
                 <version>1.74.0-SNAPSHOT</version>
             </dependency>
             <dependency>
