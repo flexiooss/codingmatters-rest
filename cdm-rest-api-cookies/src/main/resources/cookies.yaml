@@ -1,0 +1,10 @@
+---
+CookieAttributes:
+  expires: date-time
+  maxAge: long
+  domain: string
+  path: string
+  secure: bool
+  httpOnly: bool
+  sameSite:
+    $enum: None, Lax, Strict
