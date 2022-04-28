@@ -1,7 +1,6 @@
 package org.codingmatters.rest.api.cookies;
 
 import org.codingmatters.rest.tests.api.TestResponseDeleguate;
-import org.hamcrest.MatcherAssert;
 import org.junit.Ignore;
 import org.junit.Test;
 
