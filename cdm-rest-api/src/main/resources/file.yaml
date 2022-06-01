@@ -1,5 +1,6 @@
 file:
   contentType: string
+  name: string
   content:
     $type: org.codingmatters.rest.io.Content
     $hints:
