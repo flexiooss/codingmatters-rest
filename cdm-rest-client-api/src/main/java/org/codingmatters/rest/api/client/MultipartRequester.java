@@ -13,6 +13,6 @@ public interface MultipartRequester{
     public MultipartRequester formDataPart(String contentType, File file, String name) throws IOException;
 
     public ResponseDelegate post() throws IOException;
-    public ResponseDelegate put();
-    public ResponseDelegate patch();
+    public ResponseDelegate put() throws IOException;
+    public ResponseDelegate patch() throws IOException;
 }

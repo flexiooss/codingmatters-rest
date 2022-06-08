@@ -9,7 +9,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 public class BaseOkHttpRequesterMultipartTest {
 
     AtomicReference<String> content = new AtomicReference<>();
+    AtomicReference<String> method = new AtomicReference<>();
     AtomicReference<String> contentDisposition = new AtomicReference<>();
     AtomicReference<String> requestContentType = new AtomicReference<>();
     AtomicReference<String> partContentType = new AtomicReference<>();
@@ -28,7 +28,7 @@ public class BaseOkHttpRequesterMultipartTest {
 
 
     @Test
-    public void givenAddTwoFormParts_whenPost_thenGet2() throws IOException {
+    public void givenAddTwoFormParts_whenPost_thenGet2Parts() throws IOException {
         final HttpClientWrapper client = new HttpClientWrapper() {
             @Override
             public Response execute(Request request) throws IOException {
@@ -90,6 +90,64 @@ public class BaseOkHttpRequesterMultipartTest {
                 .post();
         assertThat(requestContentType.get().startsWith("multipart/form-data; boundary="), is(true));
         assertThat(contentDisposition.get().startsWith("form-data; name=\"name 1\""), is(true));
+    }
+
+
+    @Test
+    public void givenFormPart_whenPost_thenClientPost() throws IOException {
+        final HttpClientWrapper client = new HttpClientWrapper() {
+            @Override
+            public Response execute(Request request) throws IOException {
+                MultipartBody body = (MultipartBody) request.body();
+                partCount.set(body.parts().size());
+                method.set(request.method());
+                return createFakeResponse();
+            }
+        };
+        new BaseOkHttpRequester(client, ()->"https://eddeee")
+                .multipart(MultipartBody.FORM)
+                .formDataPart("ct1", Content.from("content 1"), "name 1")
+                .formDataPart("ct2", Content.from("content 2"), "name 2")
+                .post();
+        assertThat(method.get(), is("POST"));
+    }
+
+    @Test
+    public void givenFormPart_whenPatch_thenClientPatch() throws IOException {
+        final HttpClientWrapper client = new HttpClientWrapper() {
+            @Override
+            public Response execute(Request request) throws IOException {
+                MultipartBody body = (MultipartBody) request.body();
+                partCount.set(body.parts().size());
+                method.set(request.method());
+                return createFakeResponse();
+            }
+        };
+        new BaseOkHttpRequester(client, ()->"https://eddeee")
+                .multipart(MultipartBody.FORM)
+                .formDataPart("ct1", Content.from("content 1"), "name 1")
+                .formDataPart("ct2", Content.from("content 2"), "name 2")
+                .patch();
+        assertThat(method.get(), is("PATCH"));
+    }
+
+    @Test
+    public void givenFormPart_whenPut_thenClientPut() throws IOException {
+        final HttpClientWrapper client = new HttpClientWrapper() {
+            @Override
+            public Response execute(Request request) throws IOException {
+                MultipartBody body = (MultipartBody) request.body();
+                partCount.set(body.parts().size());
+                method.set(request.method());
+                return createFakeResponse();
+            }
+        };
+        new BaseOkHttpRequester(client, ()->"https://eddeee")
+                .multipart(MultipartBody.FORM)
+                .formDataPart("ct1", Content.from("content 1"), "name 1")
+                .formDataPart("ct2", Content.from("content 2"), "name 2")
+                .put();
+        assertThat(method.get(), is("PUT"));
     }
 
     private Response createFakeResponse() {

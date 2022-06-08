@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.client.okhttp;
 
+import jdk.jfr.ContentType;
 import okhttp3.*;
 import org.codingmatters.rest.api.client.MultipartRequester;
 import org.codingmatters.rest.api.client.Requester;
@@ -260,7 +261,8 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
 
     @Override
     public MultipartRequester formDataPart(String contentType, byte[] body, String name) {
-        return null;
+        this.multipartBuilder.addFormDataPart(name, new String(body));
+        return this;
     }
 
     @Override
@@ -278,24 +280,34 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
         return this;
     }
 
-
     @Override
     public ResponseDelegate post() throws IOException {
+        final MultipartBody body = this.multipartBuilder.build();
         final Request.Builder post = this.prepareRequestBuilder()
-                .post(multipartBuilder.build());
+                .post(body);
         try (Response response = this.client.execute(post.build())) {
             return new OkHttpResponseDelegate(response);
         }
     }
 
     @Override
-    public ResponseDelegate put() {
-        return null;
+    public ResponseDelegate put() throws IOException {
+        final MultipartBody body = this.multipartBuilder.build();
+        final Request.Builder put = this.prepareRequestBuilder()
+                .put(body);
+        try (Response response = this.client.execute(put.build())) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
     @Override
-    public ResponseDelegate patch() {
-        return null;
+    public ResponseDelegate patch() throws IOException {
+        final MultipartBody body = this.multipartBuilder.build();
+        final Request.Builder patch = this.prepareRequestBuilder()
+                .patch(body);
+        try (Response response = this.client.execute(patch.build())) {
+            return new OkHttpResponseDelegate(response);
+        }
     }
 
 
