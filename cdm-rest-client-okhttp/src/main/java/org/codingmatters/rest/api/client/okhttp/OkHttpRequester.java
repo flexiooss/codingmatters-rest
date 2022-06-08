@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.client.okhttp;
 
+import org.codingmatters.rest.api.client.MultipartRequester;
 import org.codingmatters.rest.api.client.UrlProvider;
 
 public class OkHttpRequester extends BaseOkHttpRequester {

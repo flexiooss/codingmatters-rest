@@ -1,17 +1,12 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okio.BufferedSink;
+import okhttp3.*;
+import org.codingmatters.rest.api.client.MultipartRequester;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.io.Content;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +16,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class BaseOkHttpRequester implements Requester {
+public class BaseOkHttpRequester implements Requester, MultipartRequester {
 
     private final HttpClientWrapper client;
     private final UrlProvider urlProvider;
@@ -30,10 +25,18 @@ public class BaseOkHttpRequester implements Requester {
     private final TreeMap<String, String[]> parameters = new TreeMap<>();
     private final TreeMap<String, String[]> headers = new TreeMap<>();
 
+    private final MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
+
 
     public BaseOkHttpRequester(HttpClientWrapper client, UrlProvider urlProvider) {
         this.client = client;
         this.urlProvider = urlProvider;
+    }
+
+    @Override
+    public MultipartRequester multipart(MediaType type) throws IOException {
+        this.multipartBuilder.setType(type);
+        return this;
     }
 
     @Override
@@ -251,5 +254,49 @@ public class BaseOkHttpRequester implements Requester {
     private String encode(String str) throws UnsupportedEncodingException {
         return URLEncoder.encode(str, "UTF-8");
     }
+
+
+
+
+    @Override
+    public MultipartRequester formDataPart(String contentType, byte[] body, String name) {
+        return null;
+    }
+
+    @Override
+    public MultipartRequester formDataPart(String contentType, Content body, String name) throws IOException {
+        if (body == null) {
+            body = Content.from(new byte[0]);
+        }
+        this.multipartBuilder.addFormDataPart(name, body.asString());
+        return this;
+    }
+
+    @Override
+    public MultipartRequester formDataPart(String contentType, File file, String name) throws IOException {
+        this.multipartBuilder.addFormDataPart(name, file.getName(), RequestBody.create(file, MediaType.parse(contentType)));
+        return this;
+    }
+
+
+    @Override
+    public ResponseDelegate post() throws IOException {
+        final Request.Builder post = this.prepareRequestBuilder()
+                .post(multipartBuilder.build());
+        try (Response response = this.client.execute(post.build())) {
+            return new OkHttpResponseDelegate(response);
+        }
+    }
+
+    @Override
+    public ResponseDelegate put() {
+        return null;
+    }
+
+    @Override
+    public ResponseDelegate patch() {
+        return null;
+    }
+
 
 }
