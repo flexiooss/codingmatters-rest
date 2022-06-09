@@ -99,7 +99,6 @@ public class BaseOkHttpRequesterMultipartTest {
             @Override
             public Response execute(Request request) throws IOException {
                 MultipartBody body = (MultipartBody) request.body();
-                partCount.set(body.parts().size());
                 method.set(request.method());
                 return createFakeResponse();
             }
@@ -118,7 +117,6 @@ public class BaseOkHttpRequesterMultipartTest {
             @Override
             public Response execute(Request request) throws IOException {
                 MultipartBody body = (MultipartBody) request.body();
-                partCount.set(body.parts().size());
                 method.set(request.method());
                 return createFakeResponse();
             }
@@ -137,7 +135,6 @@ public class BaseOkHttpRequesterMultipartTest {
             @Override
             public Response execute(Request request) throws IOException {
                 MultipartBody body = (MultipartBody) request.body();
-                partCount.set(body.parts().size());
                 method.set(request.method());
                 return createFakeResponse();
             }
