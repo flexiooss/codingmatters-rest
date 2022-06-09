@@ -41,7 +41,7 @@ public class BaseOkHttpRequesterMultipartTest {
                 .multipart(MultipartBody.FORM)
                 .formDataPart("ct1", Content.from("content 1"), "name 1")
                 .formDataPart("ct2", Content.from("content 2"), "name 2")
-                .post();
+                .postMultiPart();
         assertThat(partCount.get(), is(2));
     }
 
@@ -63,7 +63,7 @@ public class BaseOkHttpRequesterMultipartTest {
         new BaseOkHttpRequester(client, () -> "http://my_test_url")
                 .multipart(MultipartBody.FORM)
                 .formDataPart("text/plain", file, "name 1")
-                .post();
+                .postMultiPart();
         assertThat(requestContentType.get().startsWith("multipart/form-data; boundary="), is(true));
         assertThat(partContentType.get(), is("text/plain"));
         assertThat(contentDisposition.get().startsWith("form-data; name=\"name 1\"; filename=\"junit"), is(true));
@@ -87,7 +87,7 @@ public class BaseOkHttpRequesterMultipartTest {
         new BaseOkHttpRequester(client, () -> "http://my_test_url")
                 .multipart(MultipartBody.FORM)
                 .formDataPart(null, Content.from("Hello World of Multipart"), "name 1")
-                .post();
+                .postMultiPart();
         assertThat(requestContentType.get().startsWith("multipart/form-data; boundary="), is(true));
         assertThat(contentDisposition.get().startsWith("form-data; name=\"name 1\""), is(true));
     }
@@ -107,7 +107,7 @@ public class BaseOkHttpRequesterMultipartTest {
                 .multipart(MultipartBody.FORM)
                 .formDataPart("ct1", Content.from("content 1"), "name 1")
                 .formDataPart("ct2", Content.from("content 2"), "name 2")
-                .post();
+                .postMultiPart();
         assertThat(method.get(), is("POST"));
     }
 
@@ -125,7 +125,7 @@ public class BaseOkHttpRequesterMultipartTest {
                 .multipart(MultipartBody.FORM)
                 .formDataPart("ct1", Content.from("content 1"), "name 1")
                 .formDataPart("ct2", Content.from("content 2"), "name 2")
-                .patch();
+                .patchMultiPart();
         assertThat(method.get(), is("PATCH"));
     }
 
@@ -143,7 +143,7 @@ public class BaseOkHttpRequesterMultipartTest {
                 .multipart(MultipartBody.FORM)
                 .formDataPart("ct1", Content.from("content 1"), "name 1")
                 .formDataPart("ct2", Content.from("content 2"), "name 2")
-                .put();
+                .putMultiPart();
         assertThat(method.get(), is("PUT"));
     }
 

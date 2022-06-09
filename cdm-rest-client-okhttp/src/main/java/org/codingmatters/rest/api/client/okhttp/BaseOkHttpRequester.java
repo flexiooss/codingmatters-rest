@@ -281,7 +281,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
     }
 
     @Override
-    public ResponseDelegate post() throws IOException {
+    public ResponseDelegate postMultiPart() throws IOException {
         final MultipartBody body = this.multipartBuilder.build();
         final Request.Builder post = this.prepareRequestBuilder()
                 .post(body);
@@ -291,7 +291,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
     }
 
     @Override
-    public ResponseDelegate put() throws IOException {
+    public ResponseDelegate putMultiPart() throws IOException {
         final MultipartBody body = this.multipartBuilder.build();
         final Request.Builder put = this.prepareRequestBuilder()
                 .put(body);
@@ -301,7 +301,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
     }
 
     @Override
-    public ResponseDelegate patch() throws IOException {
+    public ResponseDelegate patchMultiPart() throws IOException {
         final MultipartBody body = this.multipartBuilder.build();
         final Request.Builder patch = this.prepareRequestBuilder()
                 .patch(body);
