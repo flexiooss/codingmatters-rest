@@ -11,6 +11,7 @@ public interface ResponseDelegate extends AutoCloseable {
 
     String [] header(String name);
     String [] headerNames();
+    String [] rawHeaderNames();
     String contentType();
 
     @Override
