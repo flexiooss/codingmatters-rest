@@ -1,6 +1,5 @@
 package org.codingmatters.rest.api.client.okhttp;
 
-import jdk.jfr.ContentType;
 import okhttp3.*;
 import org.codingmatters.rest.api.client.MultipartRequester;
 import org.codingmatters.rest.api.client.Requester;
