@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OkHttpResponseDelegate implements ResponseDelegate {
@@ -81,6 +82,21 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
 
     @Override
     public String[] headerNames() {
+        return this.headers.keySet()
+                .stream()
+                .map(name -> {
+                    if (name.endsWith("*")) {
+                        return name.substring(0, name.length() - 1);
+                    }
+                    return name;
+                })
+                .distinct()
+                .collect(Collectors.toList())
+                .toArray(new String[0]);
+    }
+
+    @Override
+    public String[] rawHeaderNames() {
         return this.headers.keySet().toArray(new String[this.headers.size()]);
     }
 
