@@ -10,6 +10,8 @@ annotationTypes:
       type: string[]
    conforms-to:
       type: string[]
+   builder-conforms-to:
+      type: string[]
    already-defined:
       type: string
    object-impl:
@@ -96,6 +98,7 @@ types:
 
     TypeWithProtocol:
         (conforms-to): [java.io.Serializable]
+        (builder-conforms-to): [java.io.Serializable]
         type: object
 
     TypeWithObjectProperty:
