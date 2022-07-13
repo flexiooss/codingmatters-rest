@@ -307,6 +307,7 @@ public class TypesTest {
                 this.spec.valueSpec("TypeWithProtocol"),
                 is(ValueSpec.valueSpec().name("TypeWithProtocol")
                         .addConformsTo(Serializable.class.getName())
+                        .addBuilderConformsTo(Serializable.class.getName())
                         .build()
                 )
         );
