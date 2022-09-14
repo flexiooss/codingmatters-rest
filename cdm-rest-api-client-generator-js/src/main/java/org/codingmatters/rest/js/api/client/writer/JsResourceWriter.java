@@ -101,8 +101,13 @@ public class JsResourceWriter {
     public void parseResponse( ParsedRequest parsedRequest, JsFileWriter write, String responseVar ) throws ProcessingException {
         try {
             write.line( "let status" );
+            int loopResponse = 0;
+            String ifWord = "if";
             for( ParsedResponse parsedResponse : parsedRequest.responses() ){
-                write.line( "if (responseDelegate.code() === " + parsedResponse.code() + ") {" );
+                if( loopResponse > 0 ){
+                    ifWord = "else if";
+                }
+                write.line( ifWord + " (responseDelegate.code() === " + parsedResponse.code() + ") {" );
                 String statusBuilder = NamingUtility.builderFullName(
                         apiPackage + "." + responseVar.toLowerCase() + "." + NamingUtility.statusClassName( parsedResponse.code() )
                 );
@@ -151,7 +156,11 @@ public class JsResourceWriter {
                     write.line( "callbackUser(" + responseVar + ".build())" );
                 }
                 write.line( "}" );
+                loopResponse++;
             }
+            write.line("else {");
+            write.line( "callbackUser(" + responseVar + ".build())" );
+            write.line("}");
         } catch( IOException e ){
             throw new ProcessingException( "Error parsing response" );
         }
