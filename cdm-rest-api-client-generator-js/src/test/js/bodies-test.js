@@ -1,4 +1,4 @@
-import {TestCase} from 'code-altimeter-js'
+import {TestCase} from '@flexio-oss/code-altimeter-js'
 import '../org/generated/package'
 import {Blob, FileReader} from './utils/Blob'
 import {FakeHttpRequester} from './utils/FakeHttpRequester'

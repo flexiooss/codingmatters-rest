@@ -49,7 +49,7 @@ public class RunJsTest {
         }
     }
 
-    @Ignore // hbshed not runnable by ci runner
+//    @Ignore // hbshed not runnable by ci runner
     @Test
     public void runTests() throws Exception {
         String[] ramlLocation = {
@@ -66,7 +66,7 @@ public class RunJsTest {
 
         System.out.println( "Running 'hbshed test' in " + dir );
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "hbshed", "test", "-V", "-C" );
+        processBuilder.command( "hbshed", "test", "-V", "-C", "--source-map", "--strict" );
         Process process = processBuilder.start();
 
         process.waitFor( 120, TimeUnit.SECONDS );
