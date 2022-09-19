@@ -22,8 +22,8 @@ public class CachingRuleBuilder {
         return cachingWrapper;
     }
 
-    public HttpClientWrapper configure(HttpClientWrapper wrapper) {
-        return this.configure(new CachingHttpClientWrapper(wrapper));
+    public HttpClientWrapper configure(HttpClientWrapper wrapper, CachingHttpClientWrapperCleaner cleaner) {
+        return cleaner.register(this.configure(new CachingHttpClientWrapper(wrapper)));
     }
 
     static public class RulesForKey {

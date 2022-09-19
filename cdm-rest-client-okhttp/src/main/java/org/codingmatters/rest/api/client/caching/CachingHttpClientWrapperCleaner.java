@@ -20,8 +20,9 @@ public class CachingHttpClientWrapperCleaner {
         this.ttl = ttl;
     }
 
-    public void register(CachingHttpClientWrapper cachingWrapper) {
+    public CachingHttpClientWrapper register(CachingHttpClientWrapper cachingWrapper) {
         this.registered.add(cachingWrapper);
+        return cachingWrapper;
     }
 
     private void cleanup() {
