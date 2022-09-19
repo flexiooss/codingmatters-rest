@@ -23,7 +23,11 @@ public class CachingRuleBuilder {
     }
 
     public HttpClientWrapper configure(HttpClientWrapper wrapper, CachingHttpClientWrapperCleaner cleaner) {
-        return cleaner.register(this.configure(new CachingHttpClientWrapper(wrapper)));
+        CachingHttpClientWrapper result = this.configure(new CachingHttpClientWrapper(wrapper));
+        if(cleaner != null) {
+            cleaner.register(result);
+        }
+        return result;
     }
 
     static public class RulesForKey {
