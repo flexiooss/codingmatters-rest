@@ -1,5 +1,7 @@
 package org.codingmatters.rest.api.client.caching;
 
+import org.codingmatters.rest.api.client.okhttp.HttpClientWrapper;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +20,10 @@ public class CachingRuleBuilder {
             rulesForKey.configure(cachingWrapper);
         }
         return cachingWrapper;
+    }
+
+    public HttpClientWrapper configure(HttpClientWrapper wrapper) {
+        return this.configure(new CachingHttpClientWrapper(wrapper));
     }
 
     static public class RulesForKey {

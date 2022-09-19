@@ -139,10 +139,9 @@ public class CachingHttpClientWrapperTest {
 
     @Test
     public void givenConfiguredWithBuilder_andGetOnCachedUrl__whenTwoRequestsWithTwoDifferentRequestIds__thenServerCalledTwice_andTwoDifferentResponses() throws Exception {
-        CachingHttpClientWrapper caching = new CachingHttpClientWrapper(this.httpClientWrapper);
-        new CachingRuleBuilder()
+        HttpClientWrapper caching = new CachingRuleBuilder()
                 .key(CacheKey.REQUEST_ID_AND_PATH).rule(UrlMatches.regex("/cached")).done()
-                .configure(caching);
+                .configure(this.httpClientWrapper);
 
         Response response = caching.execute(new Request.Builder().url(this.undertow.baseUrl() + "/cached")
                 .header("X-Request-ID", "12")
@@ -159,10 +158,9 @@ public class CachingHttpClientWrapperTest {
 
     @Test
     public void givenConfiguredWithBuilder_andGetOnCachedUrl__whenTwoRequestWithSameRequestIds__thenServerCalledOnce_andSameResponse() throws Exception {
-        CachingHttpClientWrapper caching = new CachingHttpClientWrapper(this.httpClientWrapper);
-        new CachingRuleBuilder()
+        HttpClientWrapper caching = new CachingRuleBuilder()
                 .key(CacheKey.REQUEST_ID_AND_PATH).rule(UrlMatches.regex("/cached")).done()
-                .configure(caching);
+                .configure(this.httpClientWrapper);
 
         Response response = caching.execute(new Request.Builder().url(this.undertow.baseUrl() + "/cached")
                 .header("X-Request-ID", "12")
