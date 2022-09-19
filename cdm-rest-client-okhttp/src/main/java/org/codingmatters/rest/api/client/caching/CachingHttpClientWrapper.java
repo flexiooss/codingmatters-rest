@@ -29,13 +29,14 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
             return this.delegate.execute(request);
         } else {
             String cacheKey = cacheable.get().key(request);
-            if (this.cache.containsKey(cacheKey)) {
-                return this.cache.get(cacheKey).response;
+            TimestampedResponse cached = this.cache.get(cacheKey);
+            if (cached != null) {
+                return cached.response.build();
             }
 
             Response response = this.delegate.execute(request);
             if (cacheKey != null) {
-                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), response));
+                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), response.newBuilder()));
             }
             return response;
         }
@@ -70,9 +71,9 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
     static private class TimestampedResponse {
         public final long timestamp;
-        public final Response response;
+        public final Response.Builder response;
 
-        public TimestampedResponse(long timestamp, Response response) {
+        public TimestampedResponse(long timestamp, Response.Builder response) {
             this.timestamp = timestamp;
             this.response = response;
         }
