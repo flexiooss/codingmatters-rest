@@ -1,11 +1,14 @@
 package org.codingmatters.rest.api.client.caching;
 
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.okhttp.HttpClientWrapper;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class CachingHttpClientWrapper implements HttpClientWrapper {
     private final HttpClientWrapper delegate;
@@ -31,12 +34,15 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
             String cacheKey = cacheable.get().key(request);
             TimestampedResponse cached = this.cache.get(cacheKey);
             if (cached != null) {
-                return cached.response.build();
+                return cached.responseSupplier.get();
             }
 
             Response response = this.delegate.execute(request);
             if (cacheKey != null) {
-                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), response.newBuilder()));
+                byte[] bodyBytes = response.body().bytes();
+                MediaType contentType = response.body().contentType();
+                Response.Builder builder = response.newBuilder();
+                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), () -> builder.body(ResponseBody.create(bodyBytes, contentType)).build()));
             }
             return response;
         }
@@ -71,11 +77,11 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
     static private class TimestampedResponse {
         public final long timestamp;
-        public final Response.Builder response;
+        public final Supplier<Response> responseSupplier;
 
-        public TimestampedResponse(long timestamp, Response.Builder response) {
+        public TimestampedResponse(long timestamp, Supplier<Response> responseSupplier) {
             this.timestamp = timestamp;
-            this.response = response;
+            this.responseSupplier = responseSupplier;
         }
     }
 
