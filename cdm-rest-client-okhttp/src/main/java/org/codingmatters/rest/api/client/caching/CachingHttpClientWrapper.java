@@ -35,27 +35,19 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
             return this.delegate.execute(request);
         } else {
             String cacheKey = cacheable.get().key(request);
+            if(cacheKey == null) return this.delegate.execute(request);
+
             TimestampedResponse cached = this.cache.get(cacheKey);
             if (cached != null) {
-                log.info("[CACHE] already cached : {}", request.url().url());
+                log.info("[CACHE] already cached [{}] : {}", cacheKey, request.url().url());
                 return cached.reviver.revived();
             }
 
-            if (cacheKey != null) {
-                Response response = this.delegate.execute(request);
-                ResponseReviver reviver = new ResponseReviver(response);
-                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), reviver));
-                return reviver.revived();
-//                byte[] bodyBytes = response.body().bytes();
-//                MediaType contentType = response.body().contentType();
-//                Response.Builder builder = response.newBuilder();
-//                Supplier<Response> responseSupplier = () -> builder.body(ResponseBody.create(bodyBytes, contentType)).build();
-//                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), responseSupplier));
-//                log.info("[CACHE] added to cache : {}", request.url().url());
-//                return responseSupplier.get();
-            } else {
-                return this.delegate.execute(request);
-            }
+            Response response = this.delegate.execute(request);
+            ResponseReviver reviver = new ResponseReviver(response);
+            this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), reviver));
+            log.info("[CACHE] added to cache [{}] : {}", cacheKey, request.url().url());
+            return reviver.revived();
         }
     }
 
