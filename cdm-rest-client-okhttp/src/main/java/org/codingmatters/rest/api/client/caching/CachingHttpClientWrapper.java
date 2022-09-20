@@ -1,16 +1,18 @@
 package org.codingmatters.rest.api.client.caching;
 
-import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
+import org.codingmatters.rest.api.client.caching.utils.ResponseReviver;
 import org.codingmatters.rest.api.client.okhttp.HttpClientWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Supplier;
 
 public class CachingHttpClientWrapper implements HttpClientWrapper {
+    static private final Logger log = LoggerFactory.getLogger(CachingHttpClientWrapper.class);
+
     private final HttpClientWrapper delegate;
 
     private final List<RuleSpec> rules = new LinkedList<>();
@@ -29,22 +31,31 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
     public Response execute(Request request) throws IOException {
         Optional<CacheKey> cacheable = this.isCacheable(request);
         if (cacheable.isEmpty()) {
+            log.info("[CACHE] not cached : {}", request.url().url());
             return this.delegate.execute(request);
         } else {
             String cacheKey = cacheable.get().key(request);
             TimestampedResponse cached = this.cache.get(cacheKey);
             if (cached != null) {
-                return cached.responseSupplier.get();
+                log.info("[CACHE] already cached : {}", request.url().url());
+                return cached.reviver.revived();
             }
 
-            Response response = this.delegate.execute(request);
             if (cacheKey != null) {
-                byte[] bodyBytes = response.body().bytes();
-                MediaType contentType = response.body().contentType();
-                Response.Builder builder = response.newBuilder();
-                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), () -> builder.body(ResponseBody.create(bodyBytes, contentType)).build()));
+                Response response = this.delegate.execute(request);
+                ResponseReviver reviver = new ResponseReviver(response);
+                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), reviver));
+                return reviver.revived();
+//                byte[] bodyBytes = response.body().bytes();
+//                MediaType contentType = response.body().contentType();
+//                Response.Builder builder = response.newBuilder();
+//                Supplier<Response> responseSupplier = () -> builder.body(ResponseBody.create(bodyBytes, contentType)).build();
+//                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), responseSupplier));
+//                log.info("[CACHE] added to cache : {}", request.url().url());
+//                return responseSupplier.get();
+            } else {
+                return this.delegate.execute(request);
             }
-            return response;
         }
     }
 
@@ -77,11 +88,11 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
     static private class TimestampedResponse {
         public final long timestamp;
-        public final Supplier<Response> responseSupplier;
+        public final ResponseReviver reviver;
 
-        public TimestampedResponse(long timestamp, Supplier<Response> responseSupplier) {
+        public TimestampedResponse(long timestamp, ResponseReviver reviver) {
             this.timestamp = timestamp;
-            this.responseSupplier = responseSupplier;
+            this.reviver = reviver;
         }
     }
 
