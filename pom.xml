@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>1.33.0</version>
+        <version>1.34.0</version>
     </parent>
 
     <groupId>org.codingmatters.rest</groupId>
@@ -110,7 +110,7 @@
     </dependencies>
 
     <properties>
-        <codingmatters-value-objects-version>1.79.0</codingmatters-value-objects-version>
+        <codingmatters-value-objects-version>1.80.0</codingmatters-value-objects-version>
     </properties>
 
     <dependencyManagement>
@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>1.39.0</version>
+                <version>1.40.0</version>
             </dependency>
 
             <!--BOM-->
