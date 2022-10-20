@@ -55,6 +55,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
         for (String key : this.cache.keySet()) {
             if(System.currentTimeMillis() - this.cache.get(key).timestamp > ttl) {
                 this.cache.remove(key);
+                log.debug("removed from cache : {}", key);
             }
         }
     }
