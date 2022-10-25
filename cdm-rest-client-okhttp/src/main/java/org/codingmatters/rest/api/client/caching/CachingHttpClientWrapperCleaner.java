@@ -1,5 +1,8 @@
 package org.codingmatters.rest.api.client.caching;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +11,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class CachingHttpClientWrapperCleaner {
+    static private final Logger log = LoggerFactory.getLogger(CachingHttpClientWrapperCleaner.class);
     private final ScheduledExecutorService scheduler;
     private final List<CachingHttpClientWrapper> registered = Collections.synchronizedList(new LinkedList<>());
     private final long delay;
@@ -26,10 +30,14 @@ public class CachingHttpClientWrapperCleaner {
     }
 
     private void cleanup() {
-        synchronized (this.registered) {
-            for (CachingHttpClientWrapper cachingWrapper : this.registered) {
-                cachingWrapper.cleanup(this.ttl);
+        try {
+            synchronized (this.registered) {
+                for (CachingHttpClientWrapper cachingWrapper : this.registered) {
+                    cachingWrapper.cleanup(this.ttl);
+                }
             }
+        } catch (Exception e) {
+            log.error("error cleaning wrapped client cache", e);
         }
     }
 

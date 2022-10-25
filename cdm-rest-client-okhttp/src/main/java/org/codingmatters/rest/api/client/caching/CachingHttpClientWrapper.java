@@ -31,7 +31,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
     public Response execute(Request request) throws IOException {
         Optional<CacheKey> cacheable = this.isCacheable(request);
         if (cacheable.isEmpty()) {
-            log.info("[CACHE] not cached : {}", request.url().url());
+            log.debug("[CACHE] not cached : {}", request.url().url());
             return this.delegate.execute(request);
         } else {
             String cacheKey = cacheable.get().key(request);
@@ -39,7 +39,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
             TimestampedResponse cached = this.cache.get(cacheKey);
             if (cached != null) {
-                log.info("[CACHE] already cached [{}] : {}", cacheKey, request.url().url());
+                log.debug("[CACHE] already cached [{}] : {}", cacheKey, request.url().url());
                 return cached.reviver.revived();
             }
 
@@ -52,11 +52,19 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
     }
 
     public void cleanup(long ttl) {
+        LinkedList<String> toBeRemoved = new LinkedList<>();
         for (String key : this.cache.keySet()) {
             if(System.currentTimeMillis() - this.cache.get(key).timestamp > ttl) {
-                this.cache.remove(key);
+//                this.cache.remove(key);
+//                log.info("[CACHE] will remove from cache : {}", key);
+                toBeRemoved.add(key);
             }
         }
+        for (String key : toBeRemoved) {
+            this.cache.remove(key);
+            log.info("[CACHE] removed from cache : {}", key);
+        }
+
     }
 
     private Optional<CacheKey> isCacheable(Request request) {

@@ -20,6 +20,22 @@ public class CacheKeyTest {
     }
 
     @Test
+    public void whenHeaderKey__thenCaseInsensitive() throws Exception {
+        assertThat(
+                HeaderKey.name("X-Request-ID").key(new Request.Builder().header("X-Request-ID", "plip").get().url("https://some.where/over/the/rain.bow").build()),
+                is("plip")
+        );
+        assertThat(
+                HeaderKey.name("X-Request-ID").key(new Request.Builder().header("x-request-id", "plip").get().url("https://some.where/over/the/rain.bow").build()),
+                is("plip")
+        );
+        assertThat(
+                HeaderKey.name("X-Request-ID").key(new Request.Builder().header("X-REQUEST-ID", "plip").get().url("https://some.where/over/the/rain.bow").build()),
+                is("plip")
+        );
+    }
+
+    @Test
     public void given__whenUrlPathKey__thenPath() throws Exception {
         assertThat(
                 UrlPathKey.path().key(new Request.Builder().header("plop", "plip").get().url("https://some.where/over/the/rain.bow").build()),
