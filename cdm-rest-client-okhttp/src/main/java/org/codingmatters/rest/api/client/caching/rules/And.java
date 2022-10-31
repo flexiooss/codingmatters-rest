@@ -1,6 +1,7 @@
 package org.codingmatters.rest.api.client.caching.rules;
 
 import okhttp3.Request;
+import okhttp3.Response;
 import org.codingmatters.rest.api.client.caching.CachingRule;
 
 public class And implements CachingRule {
@@ -18,6 +19,14 @@ public class And implements CachingRule {
     public boolean matches(Request request) {
         for (CachingRule rule : this.rules) {
             if(!rule.matches(request)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean matches(Response response) {
+        for (CachingRule rule : this.rules) {
+            if(!rule.matches(response)) return false;
         }
         return true;
     }

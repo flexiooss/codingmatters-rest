@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.client.caching;
 
+import com.sun.source.doctree.SeeTree;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.codingmatters.rest.api.client.caching.utils.ResponseReviver;
@@ -29,12 +30,12 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
     @Override
     public Response execute(Request request) throws IOException {
-        Optional<CacheKey> cacheable = this.isCacheable(request);
-        if (cacheable.isEmpty()) {
+        Optional<RuleSpec> rule = this.rule(request);
+        if (rule.isEmpty()) {
             log.debug("[CACHE] not cached : {}", request.url().url());
             return this.delegate.execute(request);
         } else {
-            String cacheKey = cacheable.get().key(request);
+            String cacheKey = rule.get().cacheKey.key(request);
             if(cacheKey == null) return this.delegate.execute(request);
 
             TimestampedResponse cached = this.cache.get(cacheKey);
@@ -44,10 +45,14 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
             }
 
             Response response = this.delegate.execute(request);
-            ResponseReviver reviver = new ResponseReviver(response);
-            this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), reviver));
-            log.info("[CACHE] added to cache [{}] : {}", cacheKey, request.url().url());
-            return reviver.revived();
+            if(rule.get().rule.matches(response)) {
+                ResponseReviver reviver = new ResponseReviver(response);
+                this.cache.put(cacheKey, new TimestampedResponse(System.currentTimeMillis(), reviver));
+                log.debug("[CACHE] added to cache [{}] : {}", cacheKey, request.url().url());
+                return reviver.revived();
+            } else {
+                return response;
+            }
         }
     }
 
@@ -55,8 +60,6 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
         LinkedList<String> toBeRemoved = new LinkedList<>();
         for (String key : this.cache.keySet()) {
             if(System.currentTimeMillis() - this.cache.get(key).timestamp > ttl) {
-//                this.cache.remove(key);
-//                log.info("[CACHE] will remove from cache : {}", key);
                 toBeRemoved.add(key);
             }
         }
@@ -67,10 +70,10 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 
     }
 
-    private Optional<CacheKey> isCacheable(Request request) {
+    private Optional<RuleSpec> rule(Request request) {
         for (RuleSpec rule : this.rules) {
-            if(rule.rule.matches(request)) {
-                return Optional.of(rule.cacheKey);
+            if (rule.rule.matches(request)) {
+                return Optional.of(rule);
             }
         }
         return Optional.empty();
