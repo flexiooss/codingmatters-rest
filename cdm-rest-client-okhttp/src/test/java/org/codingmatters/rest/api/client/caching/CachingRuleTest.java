@@ -90,7 +90,7 @@ public class CachingRuleTest {
 
     @Test
     public void whenAll__thenMatchesOnlyIfAllMatch() throws Exception {
-        assertTrue(And.all(request -> true, request -> true, request -> true).matches(new Request.Builder().get().url("https://some.where/over/the/rain.bow").build()));
-        assertFalse(And.all(request -> true, request -> false, request -> true).matches(new Request.Builder().get().url("https://some.where/over/the/rain.bow").build()));
+        assertTrue(And.all(CachingRule.ACCEPT, CachingRule.ACCEPT, CachingRule.ACCEPT).matches(new Request.Builder().get().url("https://some.where/over/the/rain.bow").build()));
+        assertFalse(And.all(CachingRule.ACCEPT, CachingRule.DENY, CachingRule.ACCEPT).matches(new Request.Builder().get().url("https://some.where/over/the/rain.bow").build()));
     }
 }

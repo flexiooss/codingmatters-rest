@@ -18,7 +18,7 @@ public class ResponseReviver {
         this.builder = response.newBuilder();
     }
 
-    public Response revived() {
+    public synchronized Response revived() {
         return this.builder.body(ResponseBody.create(bodyBytes, contentType)).build();
     }
 
