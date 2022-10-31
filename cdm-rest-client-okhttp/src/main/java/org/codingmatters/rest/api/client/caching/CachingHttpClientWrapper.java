@@ -51,6 +51,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
                 log.debug("[CACHE] added to cache [{}] : {}", cacheKey, request.url().url());
                 return reviver.revived();
             } else {
+                log.debug("[CACHE] response doesnt match, won't cache [{}] : {}", cacheKey, request.url().url());
                 return response;
             }
         }
@@ -65,7 +66,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
         }
         for (String key : toBeRemoved) {
             this.cache.remove(key);
-            log.info("[CACHE] removed from cache : {}", key);
+            log.debug("[CACHE] removed from cache : {}", key);
         }
 
     }
