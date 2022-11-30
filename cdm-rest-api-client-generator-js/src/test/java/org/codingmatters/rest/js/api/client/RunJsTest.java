@@ -49,7 +49,7 @@ public class RunJsTest {
         }
     }
 
-    @Ignore // hbshed not runnable by ci runner
+//    @Ignore // hbshed not runnable by ci runner
     @Test
     public void runTests() throws Exception {
         String[] ramlLocation = {

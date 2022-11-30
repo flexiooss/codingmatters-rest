@@ -63,6 +63,10 @@ class FakeHttpRequester {
         this._path = path;
     }
 
+    nextCode( code ){
+        this._nextCode = code;
+    }
+
     nextBody( body ){
         this._nextBody = body;
     }
