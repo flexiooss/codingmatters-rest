@@ -169,6 +169,21 @@ class BodiesTest extends TestCase {
     })
   }
 
+  testUnspecifiedStatusCode(){
+    let requester = new FakeHttpRequester()
+    requester.nextCode( 547 );
+    let client = new globalFlexioImport.org.generated.client.RequestBodiesAPIClient(requester, 'http://gateway')
+    let request = new globalFlexioImport.org.generated.api.FilePostRequestBuilder()
+    request.payload(new Blob('this is binary data'))
+    request.contentType('Toto')
+
+    client.file().filePost(request.build(), (response) => {
+      assert.equal(response.status200(), null)
+      assert.equal(requester._lastContentType, 'Toto')
+      assert.equal(requester.lastBody().content(), 'this is binary data')
+    })
+  }
+
 }
 
 runTest(BodiesTest)
