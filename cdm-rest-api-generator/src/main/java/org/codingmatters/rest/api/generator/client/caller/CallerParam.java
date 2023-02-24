@@ -62,23 +62,25 @@ public class CallerParam extends Parameter {
     protected void addTranstypeToStringStatement(MethodSpec.Builder method, String from, String to) {
         if(this.isOfType("string")) {
             method.addStatement("$T $L = $L", String.class, to, from);
-        } else if(this.isOfType("integer") ||
-                this.isOfType("number") ||
-                this.isOfType("boolean")
-                ) {
+//        } else if(this.isOfType("integer") ||
+//                this.isOfType("number") ||
+//                this.isOfType("boolean")
+//                ) {
+        } else {
             method.addStatement("$T $L = $L != null ? $L.toString() : null", String.class, to, from, from);
-        } else if(this.isOfType("datetime-only")) {
-            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATETIMEONLY.formatter) : null",
-                    String.class, to, from, from, Requester.class
-            );
-        } else if(this.isOfType("date-only")) {
-            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATEONLY.formatter) : null",
-                    String.class, to, from, from, Requester.class
-            );
-        } else if(this.isOfType("time-only")) {
-            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.TIMEONLY.formatter) : null",
-                    String.class, to, from, from, Requester.class
-            );
         }
+//        } else if(this.isOfType("datetime-only")) {
+//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATETIMEONLY.formatter) : null",
+//                    String.class, to, from, from, Requester.class
+//            );
+//        } else if(this.isOfType("date-only")) {
+//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATEONLY.formatter) : null",
+//                    String.class, to, from, from, Requester.class
+//            );
+//        } else if(this.isOfType("time-only")) {
+//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.TIMEONLY.formatter) : null",
+//                    String.class, to, from, from, Requester.class
+//            );
+//        }
     }
 }

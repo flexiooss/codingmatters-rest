@@ -1,7 +1,10 @@
 package org.codingmatters.rest.api;
 
 import java.io.IOException;
+import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 
 /**
  * Created by nelt on 4/27/17.
@@ -26,8 +29,14 @@ public interface Processor {
 
     enum Formatters {
         DATEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        TIMEONLY(DateTimeFormatter.ofPattern("HH:mm:ss[.SSS]['Z']")),
-        DATETIMEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]['Z']"))
+        TIMEONLY(new DateTimeFormatterBuilder().parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_TIME).optionalStart().appendLiteral("Z")
+                .toFormatter()
+        ),
+        DATETIMEONLY(new DateTimeFormatterBuilder().parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).optionalStart().appendLiteral("Z")
+            .toFormatter()
+        )
         ;
 
         public final DateTimeFormatter formatter;
