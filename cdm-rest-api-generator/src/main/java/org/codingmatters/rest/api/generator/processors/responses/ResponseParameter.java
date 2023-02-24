@@ -22,7 +22,7 @@ public class ResponseParameter extends Parameter {
     }
 
     public void appendStatements(Response response, MethodSpec.Builder method) {
-        String property = this.name();
+        String property = this.property();
         method.beginControlFlow(
                 "if(response.status$L().$L() != null)",
                 response.code().value(),
@@ -40,13 +40,13 @@ public class ResponseParameter extends Parameter {
             method.endControlFlow();
         } else {
             method.addStatement("$T $L = response.status$L().$L()",
-                    this.javaType(), this.name() + "RawValue", response.code().value(), property
+                    this.javaType(), this.property() + "RawValue", response.code().value(), property
             );
-            this.addToStringStatement(method, this.name() + "StringValue", this.name() + "RawValue");
+            this.addToStringStatement(method, this.property() + "StringValue", this.property() + "RawValue");
             method.addStatement(
                     "responseDelegate.addHeader($S, this.substituted(requestDelegate, $L))",
                     this.name(),
-                    this.name() + "StringValue"
+                    this.property() + "StringValue"
             );
         }
         method.endControlFlow();

@@ -338,8 +338,20 @@ public class ApiPumlGeneratorTest {
                 this.fileHelper.fileContent("TestAPI-sequence.puml", this.dir.getRoot()),
                 is(this.lines(
                         "@startuml", 
-                                "participant \"Test API\" as api", 
-                                "", 
+                                "participant \"Test API\" as api" +
+                                "\n",
+                                "== headers with special chars ==\n" +
+                                "|||\n" +
+                                "group '[[#HeadersWithSpecialChars-get-method headers with special chars GET]]'\n" +
+                                "--> api: <b>GET</b> /headers-with-specials \n" +
+                                "activate api\n" +
+                                "<- api: 200:  \\n" +
+                                "\\t[\\t<b>string-param</b>=string\\n" +
+                                "\\t\\t<b>array-param</b>=string[]\\n" +
+                                "\\t\\t]\n" +
+                                "deactivate api\n" +
+                                "end\n" +
+                                "",
                                 "== Headers ==", 
                                 "|||",
                                 "group '[[#Headers-get-method Headers GET]]'",
