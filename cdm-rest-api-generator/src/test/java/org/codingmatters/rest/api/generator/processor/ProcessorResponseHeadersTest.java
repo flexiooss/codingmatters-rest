@@ -24,7 +24,28 @@ public class ProcessorResponseHeadersTest extends AbstractProcessorHttpRequestTe
         ProcessorGeneratorTestHelper helper = new ProcessorGeneratorTestHelper(this.dir, this.fileHelper)
                 .setUpWithResource("processor/processor-response.raml");
         this.compiled = helper.compiled();
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
         this.classes = this.compiled.classLoader();
+    }
+
+    @Test
+    public void headersWithSpecialChars() throws Exception {
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
+        this.setupProcessorWithHandler(
+                "headersWithSpecialCharsGetHandler",
+                req -> this.createFilledResponse(
+                        "org.generated.api.headerswithspecialcharsgetresponse.Status200",
+                        "org.generated.api.HeadersWithSpecialCharsGetResponse$Builder",
+                        "stringParam", "val", "arrayParam", new String[] {"val1", "val2"})
+        );
+
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/headers-with-specials")
+                .get()
+                .build()).execute();
+
+        assertThat(response.code(), is(200));
+        assertThat(response.headers("string-param"), contains("val"));
+        assertThat(response.headers("array-param"), contains("val1", "val2"));
     }
 
     @Test
@@ -155,14 +176,20 @@ public class ProcessorResponseHeadersTest extends AbstractProcessorHttpRequestTe
     }
 
     private Object createFilledHeadersGetResponse(String singleProp, Object single, String arrayProp, Object[] array) {
+        return this.createFilledResponse(
+                "org.generated.api.headersgetresponse.Status200",
+                "org.generated.api.HeadersGetResponse$Builder",
+                singleProp, single, arrayProp, array);
+    }
+    private Object createFilledResponse(String resonseStatusClass, String resonseBuilderClass, String singleProp, Object single, String arrayProp, Object[] array) {
         Object response = null;
         try {
-            Object status200Builder = this.compiled.getClass("org.generated.api.headersgetresponse.Status200$Builder").newInstance();
+            Object status200Builder = this.compiled.getClass(resonseStatusClass + "$Builder").newInstance();
             this.compiled.on(status200Builder).invoke(singleProp, single.getClass()).with(single);
             this.compiled.on(status200Builder).invoke(arrayProp, array.getClass()).with(new Object[] {array});
             Object status200 = this.compiled.on(status200Builder).invoke("build");
-            Object builder = this.compiled.getClass("org.generated.api.HeadersGetResponse$Builder").newInstance();
-            this.compiled.on(builder).invoke("status200", this.compiled.getClass("org.generated.api.headersgetresponse.Status200")).with(status200);
+            Object builder = this.compiled.getClass(resonseBuilderClass).newInstance();
+            this.compiled.on(builder).invoke("status200", this.compiled.getClass(resonseStatusClass)).with(status200);
             response = this.compiled.on(builder).invoke("build");
         } catch (Exception e) {
             e.printStackTrace();
