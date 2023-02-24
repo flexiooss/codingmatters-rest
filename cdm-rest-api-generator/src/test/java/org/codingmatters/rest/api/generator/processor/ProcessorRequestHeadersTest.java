@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/30/17.
@@ -79,6 +79,51 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void datetimeParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("datetimeParam", "2018-12-25T23:59:59.123")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("datetimeParam").get(),
+                is(LocalDateTime.parse("2018-12-25T23:59:59.123"))
+        );
+    }
+
+    @Test
+    public void datetimeParameterMicro() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("datetimeParam", "2018-12-25T23:59:59.123456")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("datetimeParam").get(),
+                is(LocalDateTime.parse("2018-12-25T23:59:59.123456"))
+        );
+    }
+
+    @Test
+    public void datetimeParameterNano() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("datetimeParam", "2018-12-25T23:59:59.123456789")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("datetimeParam").get(),
+                is(LocalDateTime.parse("2018-12-25T23:59:59.123456789"))
+        );
+    }
+
+    @Test
+    public void datetimeParameterZulu() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
                 .header("datetimeParam", "2018-12-25T23:59:59.123Z")
                 .get()
                 .build()).execute();
@@ -109,6 +154,21 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
     @Test
     public void timeParameter() throws Exception {
         Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("timeParam", "23:59:59.123")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("timeParam").get(),
+                is(LocalTime.parse("23:59:59.123"))
+        );
+    }
+
+    @Test
+    public void timeParameterZulu() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
                 .header("timeParam", "23:59:59.123Z")
                 .get()
                 .build()).execute();
@@ -118,6 +178,36 @@ public class ProcessorRequestHeadersTest extends AbstractProcessorHttpRequestTes
         assertThat(
                 this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("timeParam").get(),
                 is(LocalTime.parse("23:59:59.123"))
+        );
+    }
+
+    @Test
+    public void timeParameterMicro() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("timeParam", "23:59:59.123456")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("timeParam").get(),
+                is(LocalTime.parse("23:59:59.123456"))
+        );
+    }
+
+    @Test
+    public void timeParameterNano() throws Exception {
+        Response response = this.client.newCall(new Request.Builder().url(this.undertow.baseUrl() + "/api/header-params")
+                .header("timeParam", "23:59:59.123456789")
+                .get()
+                .build()).execute();
+        Object request = requestHolder.get();
+        assertThat(response.code(), is(200));
+        assertThat(request, is(notNullValue()));
+        assertThat(
+                this.classes.wrap(request).as("org.generated.api.HeaderParamsGetRequest").call("timeParam").get(),
+                is(LocalTime.parse("23:59:59.123456789"))
         );
     }
 

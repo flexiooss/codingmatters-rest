@@ -1,7 +1,9 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.squareup.javapoet.MethodSpec;
+import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
+import org.codingmatters.rest.api.generator.processors.responses.ResponseParameter;
 import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
@@ -9,6 +11,10 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ProcessorResponse {
     static private final Logger log = LoggerFactory.getLogger(ProcessorResponse.class);
@@ -58,33 +64,9 @@ public class ProcessorResponse {
     private void addResponseHeadersProcessingStatements(Response response, MethodSpec.Builder method) {
         for (TypeDeclaration typeDeclaration : response.headers()) {
             this.needsSubstitutedMethod = true;
-            String property = this.naming.property(typeDeclaration.name());
-            method.beginControlFlow(
-                    "if(response.status$L().$L() != null)",
-                    response.code().value(),
-                    property
-            );
-            if(typeDeclaration.type().equalsIgnoreCase("string")) {
-                method.addStatement(
-                        "responseDelegate.addHeader($S, this.substituted(requestDelegate, response.status$L().$L()))",
-                        typeDeclaration.name(),
-                        response.code().value(),
-                        property
-                );
-            } else if(typeDeclaration.type().equalsIgnoreCase("array")
-                    && ((ArrayTypeDeclaration)typeDeclaration).items().type().equalsIgnoreCase("string")) {
-                method.beginControlFlow(
-                        "for($T element: response.status$L().$L())",
-                        String.class,
-                        response.code().value(),
-                        property
-                );
-                method.addStatement("responseDelegate.addHeader($S, this.substituted(requestDelegate, element))", typeDeclaration.name());
-                method.endControlFlow();
-            } else {
-                log.warn("not yet implemented : {} response header type", typeDeclaration);
-            }
-            method.endControlFlow();
+
+            ResponseParameter parameter = new ResponseParameter(this.naming, typeDeclaration);
+            parameter.appendStatements(response, method);
         }
     }
 

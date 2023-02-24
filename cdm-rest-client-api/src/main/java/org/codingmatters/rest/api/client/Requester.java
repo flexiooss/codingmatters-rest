@@ -5,6 +5,7 @@ import org.codingmatters.rest.io.Content;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 public interface Requester {
     default MultipartRequester multipart(MediaType form) throws IOException {
@@ -83,8 +84,15 @@ public interface Requester {
 
     enum Formatters {
         DATEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        TIMEONLY(DateTimeFormatter.ofPattern("HH:mm:ss[.SSS]['Z']")),
-        DATETIMEONLY(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]['Z']"));
+        TIMEONLY(new DateTimeFormatterBuilder().parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_TIME).optionalStart().appendLiteral("Z")
+                .toFormatter()
+        ),
+        DATETIMEONLY(new DateTimeFormatterBuilder().parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).optionalStart().appendLiteral("Z")
+            .toFormatter()
+        )
+        ;
 
         public final DateTimeFormatter formatter;
 
