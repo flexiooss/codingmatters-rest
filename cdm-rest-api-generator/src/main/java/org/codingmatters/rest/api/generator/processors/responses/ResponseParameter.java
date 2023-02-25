@@ -30,23 +30,23 @@ public class ResponseParameter extends Parameter {
         );
         if(this.isArray()) {
             method.beginControlFlow(
-                    "for($T element: response.status$L().$L())",
+                    "for($T ___element: response.status$L().$L())",
                     this.javaType(),
                     response.code().value(),
                     property
             );
-            this.addToStringStatement(method, "value", "element");
-            method.addStatement("responseDelegate.addHeader($S, this.substituted(requestDelegate, value))", this.name());
+            this.addToStringStatement(method, "___value", "___element");
+            method.addStatement("responseDelegate.addHeader($S, this.substituted(requestDelegate, ___value))", this.name());
             method.endControlFlow();
         } else {
             method.addStatement("$T $L = response.status$L().$L()",
-                    this.javaType(), this.property() + "RawValue", response.code().value(), property
+                    this.javaType(), this.property() + "___RawValue", response.code().value(), property
             );
-            this.addToStringStatement(method, this.property() + "StringValue", this.property() + "RawValue");
+            this.addToStringStatement(method, this.property() + "___StringValue", this.property() + "___RawValue");
             method.addStatement(
                     "responseDelegate.addHeader($S, this.substituted(requestDelegate, $L))",
                     this.name(),
-                    this.property() + "StringValue"
+                    this.property() + "___StringValue"
             );
         }
         method.endControlFlow();
