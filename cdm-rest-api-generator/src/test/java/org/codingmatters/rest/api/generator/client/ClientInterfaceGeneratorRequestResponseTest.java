@@ -7,6 +7,7 @@ import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
+import org.codingmatters.value.objects.json.ValueWriter;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 import org.junit.Before;
@@ -42,7 +43,7 @@ public class ClientInterfaceGeneratorRequestResponseTest {
                 .build();
         new SpecCodeGenerator(anAlreadyDefinedValueObject,
                 "org.codingmatters", this.dir.getRoot()).generate();
-        new JsonFrameworkGenerator(anAlreadyDefinedValueObject, "org.codingmatters", this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(anAlreadyDefinedValueObject, "org.codingmatters", this.dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
 
         new ClientInterfaceGenerator(CLIENT_PACK, API_PACK, this.dir.getRoot()).generate(raml);

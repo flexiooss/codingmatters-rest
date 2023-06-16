@@ -7,6 +7,7 @@ import org.codingmatters.rest.api.generator.processor.ProcessorGeneratorTestHelp
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
+import org.codingmatters.value.objects.json.ValueWriter;
 import org.codingmatters.value.objects.spec.Spec;
 import org.raml.v2.api.RamlModelResult;
 
@@ -23,7 +24,7 @@ public class ClientGeneratorHelper {
     public static void generateBase(RamlModelResult raml, File toDir) throws RamlSpecException, IOException {
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, TYPES_PACK, toDir).generate();
-        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, toDir).generate();
+        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, toDir, ValueWriter.NullStrategy.OMIT).generate();
 
         Spec apiSpec = new ApiGenerator(TYPES_PACK).generate(raml);
         new SpecCodeGenerator(apiSpec, API_PACK, toDir).generate();

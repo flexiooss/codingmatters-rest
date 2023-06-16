@@ -12,6 +12,7 @@ import org.codingmatters.rest.api.generator.api.ApiDescriptor;
 import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
+import org.codingmatters.value.objects.json.ValueWriter;
 import org.codingmatters.value.objects.spec.Spec;
 import org.raml.v2.api.RamlModelResult;
 
@@ -29,6 +30,9 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
 
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
     private File outputDirectory;
+
+    @Parameter(defaultValue = "false", alias = "keep-null-properties")
+    private String keepNullProperties;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -84,7 +88,12 @@ public class GenerateAPITypesMojo extends AbstractGenerateAPIMojo {
     private void generateCodeFromSpec(Spec spec, String packageName) throws MojoExecutionException {
         try {
             new SpecCodeGenerator(spec, packageName, this.outputDirectory).generate();
-            new JsonFrameworkGenerator(spec, packageName, this.outputDirectory).generate();
+            new JsonFrameworkGenerator(
+                    spec,
+                    packageName,
+                    this.outputDirectory,
+                    "true".equals(this.keepNullProperties) ? ValueWriter.NullStrategy.KEEP : ValueWriter.NullStrategy.OMIT
+            ).generate();
         } catch (IOException e) {
             throw new MojoExecutionException("error generating code from spec", e);
         }

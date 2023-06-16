@@ -8,6 +8,7 @@ import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
+import org.codingmatters.value.objects.json.ValueWriter;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 import org.junit.rules.TemporaryFolder;
@@ -52,12 +53,12 @@ public class ProcessorGeneratorTestHelper {
                 .build();
         new SpecCodeGenerator(anAlreadyDefinedValueObject,
                 "org.codingmatters", this.dir.getRoot()).generate();
-        new JsonFrameworkGenerator(anAlreadyDefinedValueObject, "org.codingmatters", this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(anAlreadyDefinedValueObject, "org.codingmatters", this.dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource(ramlRessource));
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
-        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         Spec apiSpec = new ApiGenerator(ProcessorGeneratorTestHelper.TYPES_PACK).generate(raml);
         new SpecCodeGenerator(apiSpec, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate();
