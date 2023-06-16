@@ -1,0 +1,25 @@
+#%RAML 1.0
+title: external enum spec
+version: v1
+baseUri: https://api.codingmatters.org/simple-resources
+mediaType: application/json
+
+annotationTypes:
+  already-defined-enum:
+    type: string
+
+types:
+  TypeWithAlreadyDefinedEnumProperty:
+    type: object
+    properties:
+      prop:
+        (already-defined-enum): java.time.DayOfWeek
+#      props:
+#        type: array
+#        items:
+#          (already-defined-enum): java.time.DayOfWeek
+#      deeper:
+#        type: object
+#        properties:
+#          prop:
+#            (already-defined-enum): java.time.DayOfWeek

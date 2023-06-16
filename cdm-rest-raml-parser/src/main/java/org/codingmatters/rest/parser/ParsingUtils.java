@@ -44,10 +44,10 @@ public class ParsingUtils {
         return property instanceof ArrayTypeDeclaration;
     }
 
-    public Optional<String> isAlreadyDefined( TypeDeclaration typeDeclaration ) {
+    public Optional<String> isAnnotated( TypeDeclaration typeDeclaration, String ramlAnnotation ) {
         if( typeDeclaration.annotations() != null ){
             for( AnnotationRef annotation : typeDeclaration.annotations() ){
-                if( annotation.name().equalsIgnoreCase( "(already-defined)" ) ){
+                if( annotation.name().equalsIgnoreCase( ramlAnnotation ) ){
                     return Optional.of( annotation.structuredValue().value().toString() );
                 }
             }
@@ -56,7 +56,7 @@ public class ParsingUtils {
         if( inSpecValueObjectType.isPresent() ){ // check only once in parent ( produce infinite loop with recursion )
             if( allTypes.get( inSpecValueObjectType.get() ).annotations() != null ){
                 for( AnnotationRef annotation : allTypes.get( inSpecValueObjectType.get() ).annotations() ){
-                    if( annotation.name().equalsIgnoreCase( "(already-defined)" ) ){
+                    if( annotation.name().equalsIgnoreCase( ramlAnnotation ) ){
                         return Optional.of( annotation.structuredValue().value().toString() );
                     }
                 }
@@ -140,8 +140,10 @@ public class ParsingUtils {
                     namespace,
                     ((StringTypeDeclaration) property).enumValues()
             );
-        } else if( isAlreadyDefined( property ).isPresent() ){
-            return new ObjectTypeExternalValue( isAlreadyDefined( property ).get() );
+        } else if( isAnnotated( property, "(already-defined)" ).isPresent() ){
+            return new ObjectTypeExternalValue( isAnnotated( property, "(already-defined)" ).get() );
+        } else if( isAnnotated( property, "(already-defined-enum)" ).isPresent() ){
+            return new YamlEnumExternalEnum( isAnnotated( property, "(already-defined-enum)" ).get() );
         } else if( isInSpecValueObject( property ).isPresent() ){
             String propertyType = getPropertyType( property );
             Optional<ParsedValueObject> valueObject = valueObjects.stream().filter( vo->vo.name().equals( propertyType ) ).findFirst();

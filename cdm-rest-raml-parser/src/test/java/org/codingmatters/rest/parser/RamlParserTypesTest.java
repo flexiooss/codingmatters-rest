@@ -2,6 +2,7 @@ package org.codingmatters.rest.parser;
 
 import org.codingmatters.rest.parser.model.ParsedRaml;
 import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
+import org.codingmatters.value.objects.js.parser.model.ParsedType;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
@@ -244,6 +245,15 @@ public class RamlParserTypesTest {
         assertThat( ((YamlEnumExternalEnum) ((ValueObjectTypeList) myClass.properties().get( 1 ).type()).type()).enumReference(), is( myEnumReference ) );
 
         assertThat( ((YamlEnumExternalEnum) ((ValueObjectTypeList) myClass.properties().get( 2 ).type()).type()).enumReference(), is( myEnumReference ) );
+    }
+
+    @Test
+    public void testExternalEnum() throws Exception{
+        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "external_enum.raml" ) );
+        ParsedValueObject externalEnum = (ParsedValueObject) raml.types().get(0);
+        ValueObjectProperty enumProp = externalEnum.properties().get(0);
+        YamlEnumExternalEnum type = (YamlEnumExternalEnum) enumProp.type();
+        assertThat(type.enumReference(), is("java.time.DayOfWeek"));
     }
 
     //    @Test
