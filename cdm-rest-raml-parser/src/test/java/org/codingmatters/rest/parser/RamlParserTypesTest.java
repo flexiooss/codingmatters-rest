@@ -248,12 +248,24 @@ public class RamlParserTypesTest {
     }
 
     @Test
-    public void testExternalEnum() throws Exception{
-        ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "external_enum.raml" ) );
+    public void testExternalEnum() throws Exception {
+        ParsedRaml raml = new RamlParser(typesPackage, apiPackage).parseFile(getRaml("external_enum.raml"));
         ParsedValueObject externalEnum = (ParsedValueObject) raml.types().get(0);
+
         ValueObjectProperty enumProp = externalEnum.properties().get(0);
         YamlEnumExternalEnum type = (YamlEnumExternalEnum) enumProp.type();
         assertThat(type.enumReference(), is("java.time.DayOfWeek"));
+
+        ValueObjectProperty enumArrayProp = externalEnum.properties().get(1);
+        ValueObjectTypeList array = (ValueObjectTypeList) enumArrayProp.type();
+        YamlEnumExternalEnum arrayType = (YamlEnumExternalEnum) array.type();
+        assertThat(arrayType.enumReference(), is("java.time.DayOfWeek"));
+
+        ValueObjectProperty deeper = externalEnum.properties().get(2);
+        ObjectTypeNested deeperType = (ObjectTypeNested) deeper.type();
+        ValueObjectProperty deeperProp = deeperType.nestValueObject().properties().get(0);
+        YamlEnumExternalEnum deeperPropType = (YamlEnumExternalEnum) deeperProp.type();
+        assertThat(deeperPropType.enumReference(), is("java.time.DayOfWeek"));
     }
 
     //    @Test
