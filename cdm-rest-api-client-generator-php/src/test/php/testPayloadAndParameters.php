@@ -207,7 +207,7 @@ class PayloadTest extends TestCase {
         $fakeEnumS = \org\utils\FakeEnum::__SINGLE();
         $typeWithAlreadyDefinedEnumProperty->withProp($fakeEnumM);
 
-        $list = new \org\generated\api\types\typewithalreadydefinedenumproperty\TypeWithAlreadyDefinedEnumPropertyPropsList();
+        $list = new \org\utils\FakeEnumList();
         $list->add($fakeEnumS);
         $list->add($fakeEnumM);
         $typeWithAlreadyDefinedEnumProperty->withProps($list);
