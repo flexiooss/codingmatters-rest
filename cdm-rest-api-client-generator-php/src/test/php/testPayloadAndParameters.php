@@ -201,6 +201,25 @@ class PayloadTest extends TestCase {
         $this -> assertSame( $response -> status200() -> payload()[1]->name(), "titi2" );
     }
 
+    public function testExternalEnum() {
+        $typeWithAlreadyDefinedEnumProperty = new \org\generated\api\types\TypeWithAlreadyDefinedEnumProperty();
+        $fakeEnumM = \org\utils\FakeEnum::__MULTIPLE();
+        $fakeEnumS = \org\utils\FakeEnum::__SINGLE();
+        $typeWithAlreadyDefinedEnumProperty->withProp($fakeEnumM);
+
+        $list = new \org\generated\api\types\typewithalreadydefinedenumproperty\TypeWithAlreadyDefinedEnumPropertyPropsList();
+        $list->add($fakeEnumS);
+        $list->add($fakeEnumM);
+        $typeWithAlreadyDefinedEnumProperty->withProps($list);
+        $this -> assertSame( json_encode($typeWithAlreadyDefinedEnumProperty), "{\"prop\":\"MULTIPLE\",\"props\":[\"SINGLE\",\"MULTIPLE\"]}" );
+
+        $reader = new \org\generated\api\types\json\TypeWithAlreadyDefinedEnumPropertyReader();
+        $read = $reader->read("{\"prop\":\"MULTIPLE\",\"props\":[\"SINGLE\",\"MULTIPLE\"]}");
+        $this -> assertSame( $read->prop()->value(), "MULTIPLE" );
+        $this -> assertSame( $read->props()[0]->value(), "SINGLE" );
+        $this -> assertSame( $read->props()[1]->value(), "MULTIPLE" );
+    }
+
     public function testUriParametersHeadersAndQueryParams() {
         $requester = new FakeHttpRequester();
         $client = new \org\generated\api\ParametersImpl( $requester, 'http://gateway' );

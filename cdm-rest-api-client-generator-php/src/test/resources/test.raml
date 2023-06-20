@@ -4,6 +4,11 @@ version: v1
 baseUri: https://api.codingmatters.org/simple-resources
 mediaType: application/json
 
+
+annotationTypes:
+  already-defined-enum:
+    type: string
+
 types:
   LittleObject:
     type: object
@@ -23,6 +28,15 @@ types:
               prop-e:
                 type: array
                 items: LittleObject
+  TypeWithAlreadyDefinedEnumProperty:
+    type: object
+    properties:
+      prop:
+        (already-defined-enum): org.utils.FakeEnum
+      props:
+        type: array
+        items:
+          (already-defined-enum): org.utils.FakeEnum
 /type:
   displayName: Type
   post:

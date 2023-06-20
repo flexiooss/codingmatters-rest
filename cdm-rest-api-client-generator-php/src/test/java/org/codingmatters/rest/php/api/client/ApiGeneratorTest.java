@@ -9,6 +9,8 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
+import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -354,7 +356,6 @@ public class ApiGeneratorTest {
         assertThat(requestSpec.propertySpec("uriParams").typeSpec().typeKind(), is(TypeKind.EMBEDDED));
         assertThat(requestSpec.propertySpec("uriParams").typeSpec().embeddedValueSpec().propertySpecs().get(0).typeSpec().typeKind(), is(TypeKind.JAVA_TYPE));
         assertThat(requestSpec.propertySpec("uriParams").typeSpec().embeddedValueSpec().propertySpecs().get(0).typeSpec().typeRef(), is("string"));
-
     }
 
     private ValueSpec getValueSpec(Spec spec, String name) {
