@@ -48,10 +48,10 @@ public class RunPhpTest {
         processBuilder.command( "./vendor/bin/phpunit", "test/testPayloadAndParameters.php" );
         Process process = processBuilder.start();
         process.waitFor( 10, TimeUnit.SECONDS );
-//        if( process.exitValue() != 0 ) {
+        if( process.exitValue() != 0 ) {
             printError( process.getInputStream() );
             printError( process.getErrorStream() );
-//        }
+        }
         assertThat( process.exitValue(), is( 0 ) );
     }
 
