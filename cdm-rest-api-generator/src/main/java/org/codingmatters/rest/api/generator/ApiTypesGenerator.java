@@ -30,7 +30,7 @@ public class ApiTypesGenerator {
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
             String name = typeDeclaration.name();
             if(typeDeclaration.type().equals("object")) {
-                if(!this.naming.isAlreadyDefined(typeDeclaration)) {
+                if(!(this.naming.isAlreadyDefined(typeDeclaration) || this.naming.isAlreadyDefinedEnum(typeDeclaration))) {
                     ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
                     this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
 
@@ -63,6 +63,11 @@ public class ApiTypesGenerator {
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                             .typeRef(this.naming.alreadyDefined(((ArrayTypeDeclaration) declaration).items()));
+                } else if (this.naming.isAlreadyDefinedEnum(((ArrayTypeDeclaration) declaration).items())) {
+                    return PropertyTypeSpec.type()
+                            .cardinality(PropertyCardinality.LIST)
+                            .typeKind(TypeKind.ENUM)
+                            .typeRef(this.naming.alreadyDefinedEnum(((ArrayTypeDeclaration) declaration).items()));
                 } else if (this.naming.isArbitraryObject(((ArrayTypeDeclaration) declaration).items())) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
@@ -87,6 +92,11 @@ public class ApiTypesGenerator {
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                     .typeRef(this.naming.alreadyDefined(declaration));
+        } else if(this.naming.isAlreadyDefinedEnum(declaration)) {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.ENUM)
+                    .typeRef(this.naming.alreadyDefinedEnum(declaration));
         } else if(this.naming.isArbitraryObject(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)

@@ -43,6 +43,8 @@ public class RunPhpTest {
 
     @Test
     public void testPayloadAndParameters() throws InterruptedException, IOException {
+        System.out.println("\n\nRUNNING PHP TEST :: \n\n");
+
         processBuilder.command( "./vendor/bin/phpunit", "test/testPayloadAndParameters.php" );
         Process process = processBuilder.start();
         process.waitFor( 10, TimeUnit.SECONDS );

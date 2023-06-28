@@ -398,6 +398,37 @@ public class TypesTest {
     }
 
     @Test
+    public void typeWithAlreadyDefinedEnumProperty() {
+        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty"));
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("prop"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.ENUM)
+                                .typeRef("java.time.DayOfWeek")
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
+
+        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("deeper"));
+        assertThat(
+                this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),
+                is(PropertySpec.property()
+                        .name("prop")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.ENUM)
+                                .typeRef("java.time.DayOfWeek")
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(prop)");}})
+                        .build())
+        );
+    }
+
+    @Test
     public void typeWithDeeplyNestedAlreadyDefinedProperty() {
         assertThat(
                 this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),

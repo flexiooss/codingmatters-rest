@@ -59,7 +59,7 @@ public class RamlParser {
         for( TypeDeclaration typeDeclaration : api.types() ){
             if( typeDeclaration.type().equals( "object" ) ){
                 parsingUtils.context().push( typeDeclaration.name() );
-                if( !parsingUtils.isAlreadyDefined( typeDeclaration ).isPresent() ){
+                if (!parsingUtils.isAnnotated(typeDeclaration, "(already-defined)").isPresent()) {
                     ParsedValueObject valueObject = new ParsedValueObject( typeDeclaration.name(), typesPackage );
                     for( TypeDeclaration property : ((ObjectTypeDeclaration) typeDeclaration).properties() ){
                         parsingUtils.context().push( property.name() );

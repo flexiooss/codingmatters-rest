@@ -7,6 +7,7 @@ import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.json.JsonFrameworkGenerator;
+import org.codingmatters.value.objects.json.ValueWriter;
 import org.codingmatters.value.objects.spec.Spec;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,7 @@ public class ClientHandlerImplementationTest {
 
         Spec typesSpec = new ApiTypesGenerator().generate(raml);
         new SpecCodeGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
-        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot()).generate();
+        new JsonFrameworkGenerator(typesSpec, ProcessorGeneratorTestHelper.TYPES_PACK, this.dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         Spec apiSpec = new ApiGenerator(ProcessorGeneratorTestHelper.TYPES_PACK).generate(raml);
         new SpecCodeGenerator(apiSpec, ProcessorGeneratorTestHelper.API_PACK, this.dir.getRoot()).generate();

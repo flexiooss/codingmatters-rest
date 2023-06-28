@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static org.codingmatters.rest.api.generator.type.RamlType.BOOLEAN;
 import static org.codingmatters.rest.api.generator.type.RamlType.isRamlType;
 
 public class ApiTypesPhpGenerator {
@@ -65,17 +66,23 @@ public class ApiTypesPhpGenerator {
             String type;
             ArrayTypeDeclaration arrayTypeDeclaration = (ArrayTypeDeclaration) declaration;
             String alreadyDefinedType;
+            String alreadyDefinedEnumType;
             if( "array".equals( declaration.type() ) ){ /* case type: array items: XXX */
                 type = arrayTypeDeclaration.items().type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
                 if( alreadyDefinedType == null ){
                     alreadyDefinedType = isAlreadyDefined( declaration );
                 }
+                alreadyDefinedEnumType = isAlreadyDefinedEnum(arrayTypeDeclaration.items());
+                if (alreadyDefinedEnumType == null) {
+                    alreadyDefinedEnumType = isAlreadyDefinedEnum(declaration);
+                }
             } else { /* case XXX[] */
                 type = declaration.type().replace( "[]", "" );
                 alreadyDefinedType = isAlreadyDefined( arrayTypeDeclaration.items() );
+                alreadyDefinedEnumType = isAlreadyDefinedEnum( arrayTypeDeclaration.items() );
             }
-            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null ){ /** IS OBJECT VALUE */
+            if( type.equals( "object" ) && (((ObjectTypeDeclaration) ((ArrayTypeDeclaration) declaration).items()).properties().isEmpty()) && alreadyDefinedType == null && alreadyDefinedEnumType == null ){ /** IS OBJECT VALUE */
                 String typeRef = typesPackage + "." + typeDeclaration.name().toLowerCase() + "." + naming.type( typeDeclaration.name(), declaration.name(), "list" );
                 return PropertyTypeSpec.type()
                         .cardinality( PropertyCardinality.LIST )
@@ -94,6 +101,11 @@ public class ApiTypesPhpGenerator {
                     .cardinality( PropertyCardinality.SINGLE )
                     .typeKind( TypeKind.JAVA_TYPE )
                     .typeRef( "\\ArrayObject" );
+        } else if (isAlreadyDefinedEnum(declaration) != null) {
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.SINGLE)
+                    .typeKind(TypeKind.ENUM)
+                    .typeRef(isAlreadyDefinedEnum(declaration));
         } else if( declaration.type().equals( "object" ) && isAlreadyDefined( declaration ) == null ){
             return PropertyTypeSpec.type()
                     .cardinality( PropertyCardinality.SINGLE )
@@ -129,6 +141,13 @@ public class ApiTypesPhpGenerator {
                                     .build() )
                             .build() );
             /** RAML PRIMITIVE TYPE */
+        } else if( this.isExternalEnum( declaration.items() ) ){
+            String enumTypeRef = isAlreadyDefinedEnum(declaration.items());
+            String enumListTypeRef = enumTypeRef  + "List";
+            return PropertyTypeSpec.type()
+                    .cardinality(PropertyCardinality.LIST)
+                    .typeKind(TypeKind.ENUM)
+                    .typeRef(enumListTypeRef);
         } else if( RamlType.isRamlType( declaration.items() ) ){
             String type;
             if( "array".equals( declaration.type() ) ){
@@ -183,6 +202,10 @@ public class ApiTypesPhpGenerator {
         }
     }
 
+    private boolean isExternalEnum(TypeDeclaration items) {
+        return isAlreadyDefinedEnum(items) != null;
+    }
+
     private PropertyTypeSpec.Builder simpleProperty( TypeDeclaration typeDeclaration, TypeDeclaration declaration ) throws RamlSpecException {
         if( this.isEnum( declaration ) ){
             String[] values = ((StringTypeDeclaration) declaration).enumValues().toArray( new String[0] );
@@ -212,6 +235,17 @@ public class ApiTypesPhpGenerator {
                     .typeKind( TypeKind.IN_SPEC_VALUE_OBJECT )
                     .typeRef( declaration.type() );
         }
+    }
+
+    private String isAlreadyDefinedEnum(TypeDeclaration declaration) {
+        if (declaration.annotations() != null) {
+            for (AnnotationRef annotationRef : declaration.annotations()) {
+                if ("already-defined-enum".equals(annotationRef.annotation().name())) {
+                    return annotationRef.structuredValue().value().toString();
+                }
+            }
+        }
+        return null;
     }
 
     private String isAlreadyDefined( TypeDeclaration declaration ) {
