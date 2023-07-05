@@ -136,7 +136,7 @@ public class ParsingUtils {
             }
             String namespace = context.subList( 0, context.size() - 1 ).stream().map( NamingUtility::namespace ).collect( Collectors.joining( "." ) );
             return new YamlEnumInSpecEnum(
-                    NamingUtility.className( context.toArray( new String[0] ) ),
+                    NamingUtility.className(property.name()),
                     namespace,
                     ((StringTypeDeclaration) property).enumValues()
             );
