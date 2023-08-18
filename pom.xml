@@ -85,6 +85,7 @@
         <module>cdm-rest-maven-plugin</module>
         <module>cdm-rest-tests</module>
         <module>cdm-rest-raml-parser</module>
+        <module>cdm-rest-netty</module>
     </modules>
 
     <dependencies>
