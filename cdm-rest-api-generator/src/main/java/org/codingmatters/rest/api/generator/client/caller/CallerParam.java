@@ -8,6 +8,9 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -62,25 +65,14 @@ public class CallerParam extends Parameter {
     protected void addTranstypeToStringStatement(MethodSpec.Builder method, String from, String to) {
         if(this.isOfType("string")) {
             method.addStatement("$T $L = $L", String.class, to, from);
-//        } else if(this.isOfType("integer") ||
-//                this.isOfType("number") ||
-//                this.isOfType("boolean")
-//                ) {
         } else {
             method.addStatement("$T $L = $L != null ? $L.toString() : null", String.class, to, from, from);
         }
-//        } else if(this.isOfType("datetime-only")) {
-//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATETIMEONLY.formatter) : null",
-//                    String.class, to, from, from, Requester.class
-//            );
-//        } else if(this.isOfType("date-only")) {
-//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.DATEONLY.formatter) : null",
-//                    String.class, to, from, from, Requester.class
-//            );
-//        } else if(this.isOfType("time-only")) {
-//            method.addStatement("$T $L = $L != null ? $L.format($T.Formatters.TIMEONLY.formatter) : null",
-//                    String.class, to, from, from, Requester.class
-//            );
-//        }
+        method
+                .beginControlFlow("try")
+                .addStatement("$L = $L != null ? $T.encode($L, $S) : null", to, to, URLEncoder.class, to, "utf-8")
+                .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
+                .addStatement("throw new $T($S + $L, e)", IOException.class, "failed encoding uri parameter : ", to)
+                .endControlFlow();
     }
 }
