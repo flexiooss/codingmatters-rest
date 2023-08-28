@@ -8,11 +8,15 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ProcessorParameter extends Parameter {
     static private final Logger log = LoggerFactory.getLogger(ProcessorParameter.class);
@@ -69,15 +73,27 @@ public class ProcessorParameter extends Parameter {
                 break;
             case URI:
                 method
+                        .addStatement("$T $L = null", String.class, this.property() + "RawValue")
+                        .beginControlFlow("try")
                         .addStatement(
-                                "$T $L = uriParameters.get($S) != null " +
+                                "$L = uriParameters.get($S) != null " +
                                         "&& ! uriParameters.get($S).isEmpty() ? " +
-                                        "uriParameters.get($S).get(0) : null",
-                                String.class, this.property() + "RawValue",
+                                        "$T.decode(uriParameters.get($S).get(0), $S) : null",
+                                this.property() + "RawValue",
                                 this.name(),
                                 this.name(),
+                                URLDecoder.class,
+                                this.name(),
+                                "utf-8"
+                        )
+                        .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
+                        .addStatement("throw new $T($S + uriParameters.get($S), e)",
+                                IOException.class,
+                                "error decoding uri parameter : ",
                                 this.name()
-                        );
+                        )
+                        .endControlFlow()
+                ;
                 break;
         }
     }
