@@ -15,7 +15,7 @@ import static org.codingmatters.rest.api.generator.client.support.ClientGenerato
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RequesterClientGeneratorRequestUriParametersTest {
     public TemporaryFolder dir = new TemporaryFolder();
@@ -122,5 +122,35 @@ public class RequesterClientGeneratorRequestUriParametersTest {
         assertThat(requesterFactory.calls(), hasSize(1));
         assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
         assertThat(requesterFactory.calls().get(0).path(), is("/uri-param/v1/another-one/v2"));
+    }
+
+
+    @Test
+    public void uriParamsAreEncoded() throws Exception {
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
+        JsonFactory jsonFactory = new JsonFactory();
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
+                .newInstance(requesterFactory, jsonFactory, baseUrl);
+
+        Object resource = this.testSetup.compiled().on(client).invoke("uriParams");
+
+        Object requestBuilder = this.testSetup.compiled()
+                .onClass(API_PACK + ".UriParamsGetRequest")
+                .invoke("builder");
+
+        this.testSetup.compiled().on(requestBuilder).invoke("param", String.class).with("é&/à");
+
+        Object request = this.testSetup.compiled().on(requestBuilder).invoke("build");
+
+        this.testSetup.compiled().on(resource)
+                .invoke("get", this.testSetup.compiled().getClass(API_PACK + ".UriParamsGetRequest"))
+                .with(request);
+
+        assertThat(requesterFactory.calls().get(0).path(), is("/uri-param/%C3%A9%26%2F%C3%A0"));
     }
 }
