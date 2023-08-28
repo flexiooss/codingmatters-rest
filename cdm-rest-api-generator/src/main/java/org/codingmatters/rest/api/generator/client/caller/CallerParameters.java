@@ -18,15 +18,15 @@ public class CallerParameters {
 
     public void addStatement(MethodSpec.Builder caller) {
         for (TypeDeclaration param : this.method.queryParameters()) {
-            new CallerParam(this.naming, param).addStatement(caller, Parameter.ParameterSource.QUERY);
+            new CallerParam(this.naming, param, CallerParam.Encoding.NONE).addStatement(caller, Parameter.ParameterSource.QUERY);
         }
         for (TypeDeclaration param : this.method.headers()) {
-            new CallerParam(this.naming, param).addStatement(caller, Parameter.ParameterSource.HEADERS);
+            new CallerParam(this.naming, param, CallerParam.Encoding.NONE).addStatement(caller, Parameter.ParameterSource.HEADERS);
         }
 
         caller.addStatement("String path = $S", this.method.resource().resourcePath().replaceAll("//", "/"));
         for (TypeDeclaration param : Resolver.resolvedUriParameters(this.method.resource())) {
-            new CallerParam(this.naming, param).addStatement(caller, Parameter.ParameterSource.URI);
+            new CallerParam(this.naming, param, CallerParam.Encoding.URL).addStatement(caller, Parameter.ParameterSource.URI);
         }
         caller.addStatement("requester.path(path)");
     }
