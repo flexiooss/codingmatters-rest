@@ -21,8 +21,16 @@ public class CallerParam extends Parameter {
 
     static private final Logger log = LoggerFactory.getLogger(CallerParam.class);
 
-    public CallerParam(ResourceNaming naming, TypeDeclaration param) {
+    public enum Encoding {
+        NONE,
+        URL
+    }
+
+    private final Encoding encoding;
+
+    public CallerParam(ResourceNaming naming, TypeDeclaration param, Encoding encoding) {
         super(naming, param);
+        this.encoding = encoding;
     }
 
     public void addStatement(MethodSpec.Builder method, ParameterSource source) {
@@ -68,11 +76,13 @@ public class CallerParam extends Parameter {
         } else {
             method.addStatement("$T $L = $L != null ? $L.toString() : null", String.class, to, from, from);
         }
-        method
-                .beginControlFlow("try")
-                .addStatement("$L = $L != null ? $T.encode($L, $S) : null", to, to, URLEncoder.class, to, "utf-8")
-                .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
-                .addStatement("throw new $T($S + $L, e)", IOException.class, "failed encoding uri parameter : ", to)
-                .endControlFlow();
+        if(this.encoding.equals(Encoding.URL)) {
+            method
+                    .beginControlFlow("try")
+                    .addStatement("$L = $L != null ? $T.encode($L, $S) : null", to, to, URLEncoder.class, to, "utf-8")
+                    .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
+                    .addStatement("throw new $T($S + $L, e)", IOException.class, "failed encoding uri parameter : ", to)
+                    .endControlFlow();
+        }
     }
 }
