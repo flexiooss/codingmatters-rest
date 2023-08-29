@@ -1,9 +1,8 @@
-package org.codingmatters.rest.undertow;
+package org.codingmatters.rest.server.acceptance;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
@@ -11,13 +10,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-@RunWith(Parameterized.class)
-public class ExceptionsFromProcessorTest extends AbstractUndertowTest {
+public abstract class ExceptionsFromProcessorAcceptanceTest extends BaseAcceptanceTest {
     @FunctionalInterface
-    interface RaisingException {
+    public interface RaisingException {
         void raise() throws IOException;
     }
 
@@ -34,12 +32,13 @@ public class ExceptionsFromProcessorTest extends AbstractUndertowTest {
     private final String message;
     private final RaisingException raisingException;
 
-    public ExceptionsFromProcessorTest(String message, RaisingException raisingException) {
+    private OkHttpClient client = new OkHttpClient();
+
+    public ExceptionsFromProcessorAcceptanceTest(String message, RaisingException raisingException) {
         this.message = message;
         this.raisingException = raisingException;
     }
 
-    private OkHttpClient client = new OkHttpClient();
 
     @Test
     public void whenFirstRequestRaisesException__then500_andSecondRequestIsHandled() throws Exception {
@@ -60,5 +59,4 @@ public class ExceptionsFromProcessorTest extends AbstractUndertowTest {
         assertThat(this.message + " - second response code", response.code(), is(201));
         assertThat(this.message + " - second response body", response.body().string(), is("up and running"));
     }
-
 }
