@@ -2,6 +2,9 @@ package org.codingmatters.rest.undertow;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import org.codingmatters.rest.server.acceptance.ResponseDelegateAcceptanceTest;
+import org.codingmatters.rest.undertow.support.UndertowResource;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,41 +13,12 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 5/7/17.
  */
-public class UndertowResponseDelegateTest extends AbstractUndertowTest {
-
-    private OkHttpClient client = new OkHttpClient();
-
-    @Test
-    public void contenType() throws Exception {
-        this.withProcessor((requestDeleguate, responseDeleguate) -> {responseDeleguate.contenType("yip/yop");});
-
-        MediaType contentType = this.client.newCall(this.requestBuilder().get().build()).execute().body().contentType();
-        assertThat(contentType.type(), is("yip"));
-        assertThat(contentType.subtype(), is("yop"));
+public class UndertowResponseDelegateTest extends ResponseDelegateAcceptanceTest {
+    @Rule
+    public UndertowResource undertow = new UndertowResource(new CdmHttpUndertowHandler(this::process));
+    @Override
+    public String baseUrl() {
+        return this.undertow.baseUrl();
     }
 
-    @Test
-    public void status() throws Exception {
-        this.withProcessor((requestDeleguate, responseDeleguate) -> {responseDeleguate.status(201);});
-
-        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().code(), is(201));
-    }
-
-    @Test
-    public void addHeader() throws Exception {
-        this.withProcessor((requestDeleguate, responseDeleguate) -> {responseDeleguate
-                .addHeader("yip", "yop")
-                .addHeader( "encode", "kéké" );
-        });
-
-        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().header("yip"), is("yop"));
-        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().header("encode*"), is("utf-8''k%C3%A9k%C3%A9"));
-    }
-
-    @Test
-    public void payload() throws Exception {
-        this.withProcessor((requestDeleguate, responseDeleguate) -> {responseDeleguate.payload("yop yop", "utf-8");});
-
-        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().body().string(), is("yop yop"));
-    }
 }
