@@ -1,4 +1,4 @@
-package org.codingmatters.rest.undertow;
+package org.codingmatters.rest.undertow.acceptance;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;

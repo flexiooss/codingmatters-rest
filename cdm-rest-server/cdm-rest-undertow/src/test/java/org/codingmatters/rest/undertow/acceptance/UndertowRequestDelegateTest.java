@@ -1,6 +1,7 @@
-package org.codingmatters.rest.undertow;
+package org.codingmatters.rest.undertow.acceptance;
 
 import org.codingmatters.rest.server.acceptance.RequestDelegateAcceptanceTest;
+import org.codingmatters.rest.undertow.CdmHttpUndertowHandler;
 import org.codingmatters.rest.undertow.support.UndertowResource;
 import org.junit.Rule;
 

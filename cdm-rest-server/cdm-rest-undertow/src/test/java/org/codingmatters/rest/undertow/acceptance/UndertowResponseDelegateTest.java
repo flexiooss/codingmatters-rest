@@ -1,8 +1,9 @@
-package org.codingmatters.rest.undertow;
+package org.codingmatters.rest.undertow.acceptance;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import org.codingmatters.rest.server.acceptance.ResponseDelegateAcceptanceTest;
+import org.codingmatters.rest.undertow.CdmHttpUndertowHandler;
 import org.codingmatters.rest.undertow.support.UndertowResource;
 import org.junit.Rule;
 import org.junit.Test;
