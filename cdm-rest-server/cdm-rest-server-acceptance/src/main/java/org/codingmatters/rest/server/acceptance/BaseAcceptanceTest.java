@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 public abstract class BaseAcceptanceTest {
+
     public abstract String baseUrl();
 
     private Processor testProcessor;
@@ -24,7 +25,6 @@ public abstract class BaseAcceptanceTest {
     protected void process(RequestDelegate requestDelegate, ResponseDelegate responseDelegate) throws IOException {
         this.testProcessor.process(requestDelegate, responseDelegate);
     }
-
 
     protected Request.Builder requestBuilder() {
         return this.requestBuilder("");
