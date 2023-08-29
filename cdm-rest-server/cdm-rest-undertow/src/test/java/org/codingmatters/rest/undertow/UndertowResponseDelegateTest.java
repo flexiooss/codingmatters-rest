@@ -20,5 +20,4 @@ public class UndertowResponseDelegateTest extends ResponseDelegateAcceptanceTest
     public String baseUrl() {
         return this.undertow.baseUrl();
     }
-
 }
