@@ -23,7 +23,6 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
     private boolean completelyRead = false;
     private DynamicByteBuffer body;
 
-
     protected abstract HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body);
 
     @Override
@@ -86,7 +85,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
         try {
             return this.processResponse(this.request, this.body);
         } catch (Throwable t) {
-            log.error("[GRAVE] exception thrown by business code, should be catched.");
+            log.error("[GRAVE] exception thrown by business code, should be catched.", t);
             FullHttpResponse errorResponse = new DefaultFullHttpResponse(HTTP_1_1, OK);
             errorResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
             errorResponse.content().writeBytes("Unexpected error handling request.".getBytes(StandardCharsets.UTF_8));

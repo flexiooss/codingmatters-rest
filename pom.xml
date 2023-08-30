@@ -210,7 +210,7 @@
                 <version>1.103.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>org.codingmatters.rest</groupId>
+                <groupId>org.codingmatters.rest.server</groupId>
                 <artifactId>cdm-rest-server-acceptance</artifactId>
                 <version>1.103.0-SNAPSHOT</version>
             </dependency>
@@ -220,8 +220,13 @@
                 <version>1.103.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>org.codingmatters.rest</groupId>
-                <artifactId>cdm-rest-netty</artifactId>
+                <groupId>org.codingmatters.rest.server.netty</groupId>
+                <artifactId>cdm-rest-netty-utils</artifactId>
+                <version>1.103.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.rest.server.netty</groupId>
+                <artifactId>cdm-rest-netty-server</artifactId>
                 <version>1.103.0-SNAPSHOT</version>
             </dependency>
             <!--//BOM-->

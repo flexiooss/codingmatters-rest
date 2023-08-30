@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.rest.undertow</groupId>
+        <groupId>org.codingmatters.rest.server.netty</groupId>
         <artifactId>cdm-rest-netty</artifactId>
         <version>1.103.0-SNAPSHOT</version>
     </parent>
@@ -25,6 +25,15 @@
         <dependency>
             <groupId>org.codingmatters.rest</groupId>
             <artifactId>cdm-rest-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-server</artifactId>
         </dependency>
     </dependencies>
     

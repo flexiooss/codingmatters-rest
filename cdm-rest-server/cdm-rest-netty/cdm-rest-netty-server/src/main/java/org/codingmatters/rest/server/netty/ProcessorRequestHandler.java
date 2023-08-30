@@ -1,9 +1,12 @@
-package org.codingmatters.rest.netty.utils;
+package org.codingmatters.rest.server.netty;
 
+import io.netty.handler.codec.http.HttpUtil;
 import org.codingmatters.rest.api.Processor;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
+import org.codingmatters.rest.netty.utils.DynamicByteBuffer;
+import org.codingmatters.rest.netty.utils.HttpRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,15 +16,24 @@ public class ProcessorRequestHandler extends HttpRequestHandler {
     static private final Logger log = LoggerFactory.getLogger(ProcessorRequestHandler.class);
 
     private final Processor processor;
+    private final String host;
+    private final int port;
 
-    public ProcessorRequestHandler(Processor processor) {
+    public ProcessorRequestHandler(Processor processor, String host, int port) {
         this.processor = processor;
+        this.host = host;
+        this.port = port;
     }
 
     @Override
     protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
-        NettyHttpRequestDeleguate requestDelegate = new NettyHttpRequestDeleguate(request, body);
-        NettyHttpResponseDeleguate responseDeleguate = new NettyHttpResponseDeleguate();
+        NettyHttpRequestDeleguate requestDelegate;
+        try {
+            requestDelegate = new NettyHttpRequestDeleguate(this.host, this.port, request, body);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        NettyHttpResponseDeleguate responseDeleguate = new NettyHttpResponseDeleguate(HttpUtil.isKeepAlive(request));
 
         try {
             this.processor.process(requestDelegate, responseDeleguate);

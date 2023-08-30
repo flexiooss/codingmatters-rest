@@ -1,10 +1,11 @@
-package org.codingmatters.rest.netty.utils;
+package org.codingmatters.rest.server.netty;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
+import org.codingmatters.rest.netty.utils.DynamicByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class NettyHttpRequestDeleguate implements RequestDelegate {
@@ -29,12 +29,12 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
     private Map<String, List<String>> queryParamsCache = null;
     private Map<String, List<String>> headersCache = null;
 
-    public NettyHttpRequestDeleguate(HttpRequest request, DynamicByteBuffer body) {
+    public NettyHttpRequestDeleguate(String host, int port, HttpRequest request, DynamicByteBuffer body) throws IOException {
         this.request = request;
         try {
-            this.url = new URL(request.uri());
+            this.url = new URL(request.protocolVersion().protocolName(), host, port, request.uri());
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new IOException("failed creating request deleguate", e);
         }
         this.body = body;
     }
@@ -84,6 +84,8 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
                         key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
                         if (pair.length() > idx + 1) {
                             value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                        } else {
+                            value = "";
                         }
                     } catch (UnsupportedEncodingException e) {
                         log.error("error reading query parameter : " + pair, e);
@@ -128,7 +130,7 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
             relative = relative.substring(1);
         }
 
-        return String.format("%s://%s/%s:%s",
+        return String.format("%s://%s:%s/%s",
                 this.url.getProtocol(),
                 this.url.getHost(), this.url.getPort(),
                 relative

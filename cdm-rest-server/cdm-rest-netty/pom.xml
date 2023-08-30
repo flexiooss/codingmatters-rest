@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.rest</groupId>
+        <groupId>org.codingmatters.rest.server</groupId>
         <artifactId>cdm-rest-server</artifactId>
         <version>1.103.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.codingmatters.rest.undertow</groupId>
+    <groupId>org.codingmatters.rest.server.netty</groupId>
     <artifactId>cdm-rest-netty</artifactId>
     <name>${project.groupId}${project.artifactId}</name>
     <packaging>pom</packaging>
@@ -27,6 +27,9 @@
 
     <modules>
         <module>cdm-rest-netty-explore</module>
+
+        <module>cdm-rest-netty-utils</module>
+        <module>cdm-rest-netty-server</module>
     </modules>
 
     

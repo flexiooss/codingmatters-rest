@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codingmatters.rest</groupId>
+        <groupId>org.codingmatters.rest.server</groupId>
         <artifactId>cdm-rest-server</artifactId>
         <version>1.103.0-SNAPSHOT</version>
     </parent>
