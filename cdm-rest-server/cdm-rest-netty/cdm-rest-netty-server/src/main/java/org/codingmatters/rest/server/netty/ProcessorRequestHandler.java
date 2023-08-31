@@ -33,15 +33,31 @@ public class ProcessorRequestHandler extends HttpRequestHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        NettyHttpResponseDeleguate responseDeleguate = new NettyHttpResponseDeleguate(HttpUtil.isKeepAlive(request));
 
+        NettyHttpResponseDeleguate responseDeleguate = new NettyHttpResponseDeleguate(HttpUtil.isKeepAlive(request));
         try {
             this.processor.process(requestDelegate, responseDeleguate);
         } catch (IOException e) {
             log.error("exception thrown from processor (" + this.processor.getClass().getName() + ")", e);
+            responseDeleguate
+                    .status(500)
+            ;
+            return responseDeleguate.response();
         } catch(Throwable e) {
             log.error("[GRAVE] unexpected exception thrown from processor (" + this.processor.getClass().getName() + ")", e);
+            responseDeleguate
+                    .status(500)
+            ;
+            return responseDeleguate.response();
         }
-        return responseDeleguate.response();
+        try {
+            return responseDeleguate.response();
+        } finally {
+            try {
+                responseDeleguate.close();
+            } catch (Exception e) {
+                log.error("[GRAVE] potential resource leak, failed closing NettyHttpResponseDeleguate", e);
+            }
+        }
     }
 }

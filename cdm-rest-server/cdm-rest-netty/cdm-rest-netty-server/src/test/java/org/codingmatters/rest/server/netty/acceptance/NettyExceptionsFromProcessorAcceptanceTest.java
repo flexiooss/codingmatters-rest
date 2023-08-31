@@ -1,14 +1,21 @@
 package org.codingmatters.rest.server.netty.acceptance;
 
 import org.codingmatters.rest.netty.utils.HttpServer;
-import org.codingmatters.rest.server.acceptance.RequestDelegateAcceptanceTest;
+import org.codingmatters.rest.server.acceptance.ExceptionsFromProcessorAcceptanceTest;
 import org.codingmatters.rest.server.netty.ProcessorRequestHandler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-public class NettyRequestDelegateAcceptanceTest extends RequestDelegateAcceptanceTest {
+@RunWith(Parameterized.class)
+public class NettyExceptionsFromProcessorAcceptanceTest extends ExceptionsFromProcessorAcceptanceTest {
 
     private HttpServer httpServer;
+
+    public NettyExceptionsFromProcessorAcceptanceTest(String message, RaisingException raisingException) {
+        super(message, raisingException);
+    }
 
     @Before
     public void setUp() throws Exception {

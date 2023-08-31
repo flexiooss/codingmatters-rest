@@ -27,7 +27,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("finished handling channel");
+        log.debug("finished handling channel");
         ctx.flush();
     }
 
@@ -87,6 +87,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
         } catch (Throwable t) {
             log.error("[GRAVE] exception thrown by business code, should be catched.", t);
             FullHttpResponse errorResponse = new DefaultFullHttpResponse(HTTP_1_1, OK);
+            errorResponse.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
             errorResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
             errorResponse.content().writeBytes("Unexpected error handling request.".getBytes(StandardCharsets.UTF_8));
             return errorResponse;
