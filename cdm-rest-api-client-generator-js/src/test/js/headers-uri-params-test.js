@@ -32,9 +32,7 @@ class PayloadAndParameterTest extends TestCase {
     let client = new globalFlexioImport.org.generated.client.SimpleResourcesAPIClient(requester, 'http://gateway')
     let request = new globalFlexioImport.org.generated.api.HeaderParamsGetRequestBuilder()
 
-    request.uriParams('myUriParam')
-//    TODO encode uri param
-//    request.uriParams('é/à')
+    request.uriParams('myUriParamé/à')
 
     request.stringParam('myStringParam')
     request.stringArrayParam(
@@ -110,9 +108,7 @@ class PayloadAndParameterTest extends TestCase {
       assert.deepStrictEqual(requester._headers['boolArrayParam'][1], 'true')
       assert.deepStrictEqual(requester._headers['boolArrayParam'][2], 'false')
 
-      assert.deepStrictEqual(requester._path, 'http://gateway/header-params/myUriParam')
-//    TODO encode uri param
-//      assert.deepStrictEqual(requester._path, 'http://gateway/header-params/%C3%A9%2F%C3%A0')
+      assert.deepStrictEqual(requester._path, 'http://gateway/header-params/myUriParam%C3%A9%2F%C3%A0')
     })
   }
 
