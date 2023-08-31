@@ -8,28 +8,20 @@ import org.junit.Before;
 
 public class NettyRequestDelegateAcceptanceTest extends RequestDelegateAcceptanceTest {
 
-    private HttpServer httpServer;
+    private NettyTestServer testServer = new NettyTestServer();
 
     @Before
     public void setUp() throws Exception {
-        this.httpServer = HttpServer.testServer((host, port) -> new ProcessorRequestHandler(
-                (requestDelegate, responseDelegate) -> {
-                    process(requestDelegate, responseDelegate);
-                },
-                host,
-                port
-        ));
-        this.httpServer.start();
+        this.testServer.setUp(this::process);
     }
 
     @After
     public void tearDown() throws Exception {
-        this.httpServer.shutdown();
-        this.httpServer.awaitTermination();
+        this.testServer.tearDown();
     }
 
     @Override
     public String baseUrl() {
-        return "http://" + this.httpServer.host() + ":" + this.httpServer.port();
+        return this.testServer.baseUrl();
     }
 }
