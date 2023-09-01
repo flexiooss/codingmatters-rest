@@ -3,6 +3,7 @@ package org.codingmatters.rest.api.client.caching;
 import okhttp3.Request;
 import org.codingmatters.rest.api.client.caching.key.CompoundKey;
 import org.codingmatters.rest.api.client.caching.key.HeaderKey;
+import org.codingmatters.rest.api.client.caching.key.QueryKey;
 import org.codingmatters.rest.api.client.caching.key.UrlPathKey;
 import org.junit.Test;
 
@@ -48,6 +49,14 @@ public class CacheKeyTest {
         assertThat(
                 CompoundKey.with("&", request -> "1", request -> "2", request -> "3").key(new Request.Builder().header("plop", "plip").get().url("https://some.where/over/the/rain.bow").build()),
                 is("1&2&3")
+        );
+    }
+
+    @Test
+    public void given__whenQueryKey__thenQuery() throws Exception {
+        assertThat(
+                QueryKey.query().key(new Request.Builder().header("plop", "plip").get().url("https://some.where/over/the/rain.bow?p1=v1&p2=v2").build()),
+                is("p1=v1&p2=v2")
         );
     }
 }
