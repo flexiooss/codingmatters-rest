@@ -97,7 +97,7 @@ public class TypedParamUriReplacer implements ParsedYamlProcessor {
                     write.string( varName + "->toJSON()" );
                     break;
                 default:
-                    write.string( varName );
+                    write.string("encodeURIComponent(" + varName + ")");
                     break;
             }
             write.string( " );" );
