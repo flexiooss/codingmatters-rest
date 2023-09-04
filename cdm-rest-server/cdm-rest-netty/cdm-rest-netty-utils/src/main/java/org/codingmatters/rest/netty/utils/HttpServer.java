@@ -31,6 +31,10 @@ public class HttpServer {
         }
     }
 
+    static public HttpServer server(String host, int port, HandlerSupplier handlerSupplier, int bossCount, int workerCount) {
+        return new HttpServer(host, port, handlerSupplier, new NioEventLoopGroup(bossCount), new NioEventLoopGroup(workerCount));
+    }
+
     @FunctionalInterface
     public interface HandlerSupplier {
         HttpRequestHandler get(String host, int port);
