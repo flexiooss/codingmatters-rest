@@ -72,7 +72,7 @@ public class HttpServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        log.info("initChannel");
+                        log.trace("initChannel");
                         ch.pipeline()
                                 .addLast(new HttpServerCodec())
                                 .addLast(handlerSupplier.get(host, port))
