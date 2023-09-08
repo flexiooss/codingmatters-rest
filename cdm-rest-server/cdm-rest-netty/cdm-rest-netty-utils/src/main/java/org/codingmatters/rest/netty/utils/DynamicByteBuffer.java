@@ -37,10 +37,10 @@ public class DynamicByteBuffer {
 
         if(this.currentMode.equals(Mode.IN_MEMORY)) {
             if (this.smallBuffer.maxWritableBytes() >= appendedSize) {
-                log.debug("accumulating {} bytes in mem", appendedSize);
+                log.trace("accumulating {} bytes in mem", appendedSize);
                 this.smallBuffer.writeBytes(src);
             } else {
-                log.debug("switching to file");
+                log.trace("switching to file");
                 this.temporaryFile = File.createTempFile("request-body", ".bin", new File(System.getProperty("java.io.tmpdir")));
                 this.temporaryFile.createNewFile();
                 this.temporaryFile.deleteOnExit();
@@ -50,12 +50,12 @@ public class DynamicByteBuffer {
             }
         }
         if(this.currentMode.equals(Mode.TO_FILE)) {
-            log.debug("accumulating {} bytes to file", appendedSize);
+            log.trace("accumulating {} bytes to file", appendedSize);
             this.temporaryOut.write(ByteBufUtil.getBytes(src));
         }
 
         this.size += appendedSize;
-        log.debug("size is now {} bytes", this.size);
+        log.trace("size is now {} bytes", this.size);
     }
 
     public long size() {

@@ -73,31 +73,33 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
         if(this.queryParamsCache == null) {
             this.queryParamsCache = RequestDelegate.createHeaderMap();
 
-            final String[] pairs = this.url.getQuery().split("&");
-            for (String pair : pairs) {
-                String key;
-                String value = null;
+            if(this.url.getQuery() != null) {
+                String[] pairs = this.url.getQuery().split("&");
+                for (String pair : pairs) {
+                    String key;
+                    String value = null;
 
-                int idx = pair.indexOf("=");
-                if(idx > 0) {
-                    try {
-                        key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-                        if (pair.length() > idx + 1) {
-                            value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
-                        } else {
-                            value = "";
+                    int idx = pair.indexOf("=");
+                    if (idx > 0) {
+                        try {
+                            key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                            if (pair.length() > idx + 1) {
+                                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                            } else {
+                                value = "";
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            log.error("error reading query parameter : " + pair, e);
+                            break;
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        log.error("error reading query parameter : " + pair, e);
-                        break;
+                    } else {
+                        key = pair;
                     }
-                } else {
-                    key = pair;
+                    if (!this.queryParamsCache.containsKey(key)) {
+                        this.queryParamsCache.put(key, new ArrayList<>());
+                    }
+                    this.queryParamsCache.get(key).add(value);
                 }
-                if(! this.queryParamsCache.containsKey(key)) {
-                    this.queryParamsCache.put(key, new ArrayList<>());
-                }
-                this.queryParamsCache.get(key).add(value);
             }
         }
         return this.queryParamsCache;
@@ -107,15 +109,17 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
     public Map<String, List<String>> headers() {
         if(this.headersCache == null) {
             this.headersCache = RequestDelegate.createHeaderMap();
-            for (String headerName : this.request.headers().names()) {
-                List<String> headerValues = this.request.headers().getAll(headerName);
-                List<String> collect = new ArrayList<>( headerValues );
-                if( headerName.endsWith( "*" )){
-                    headerName = headerName.substring( 0, headerName.length()-1 );
-                    collect = headerValues.stream().map( HeaderEncodingHandler::decodeHeader ).collect( Collectors.toList() );
+            if(this.request.headers() != null) {
+                for (String headerName : this.request.headers().names()) {
+                    List<String> headerValues = this.request.headers().getAll(headerName);
+                    List<String> collect = new ArrayList<>(headerValues);
+                    if (headerName.endsWith("*")) {
+                        headerName = headerName.substring(0, headerName.length() - 1);
+                        collect = headerValues.stream().map(HeaderEncodingHandler::decodeHeader).collect(Collectors.toList());
+                    }
+                    this.headersCache.putIfAbsent(headerName, new ArrayList<>());
+                    this.headersCache.get(headerName).addAll(collect);
                 }
-                this.headersCache.putIfAbsent( headerName, new ArrayList<>() );
-                this.headersCache.get( headerName ).addAll( collect );
             }
         }
         return this.headersCache;

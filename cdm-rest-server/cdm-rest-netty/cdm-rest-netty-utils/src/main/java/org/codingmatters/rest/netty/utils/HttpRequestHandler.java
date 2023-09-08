@@ -27,34 +27,34 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.debug("finished handling channel");
+        log.trace("finished handling channel");
         ctx.flush();
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
-            log.debug("here's the http request");
+            log.trace("here's the http request");
             this.request = (HttpRequest) msg;
         } else if (msg instanceof HttpContent) {
             HttpContent content = (HttpContent) msg;
             if (this.body == null) {
-                log.debug("here's the first slice : {}", msg);
+                log.trace("here's the first slice : {}", msg);
                 this.body = new DynamicByteBuffer(1000);
             } else {
-                log.debug("here's another slice : {}", msg);
+                log.trace("here's another slice : {}", msg);
             }
             this.body.accumulate(((HttpContent) msg).content());
             if (content instanceof LastHttpContent) {
-                log.debug("content was last slice");
+                log.trace("content was last slice");
                 this.completelyRead = true;
             }
         } else {
-            log.debug("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
+            log.trace("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
         }
 
         if (this.completelyRead) {
-            log.debug("done reading the http request completely, responding");
+            log.trace("done reading the http request completely, responding");
 
             HttpResponse response = this.buildResponse();
 
@@ -105,7 +105,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("error cauth while handling http request", cause);
+        log.error("error caught while handling http request", cause);
         ctx.close();
     }
 }
