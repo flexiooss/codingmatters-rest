@@ -26,14 +26,16 @@
             <artifactId>cdm-rest-api</artifactId>
         </dependency>
 
+
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
+<!--            <scope>test</scope>-->
         </dependency>
     </dependencies>
 </project>
