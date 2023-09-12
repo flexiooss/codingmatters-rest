@@ -15,10 +15,6 @@
     <name>${project.groupId}${project.artifactId}</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.codingmatters.rest.server</groupId>
-            <artifactId>cdm-rest-server-acceptance</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.codingmatters.rest</groupId>
@@ -32,6 +28,10 @@
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest</groupId>
+            <artifactId>cdm-rest-tests-support</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -39,8 +39,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codingmatters.rest</groupId>
-            <artifactId>cdm-rest-tests-support</artifactId>
+            <groupId>org.codingmatters.rest.server</groupId>
+            <artifactId>cdm-rest-server-acceptance</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
