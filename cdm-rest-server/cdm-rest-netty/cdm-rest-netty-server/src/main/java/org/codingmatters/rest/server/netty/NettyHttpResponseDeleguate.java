@@ -33,7 +33,9 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate contenType(String contenType) {
-        this.response.headers().set(HttpHeaderNames.CONTENT_TYPE, contenType);
+        if(contenType != null) {
+            this.response.headers().set(HttpHeaderNames.CONTENT_TYPE, contenType);
+        }
         return this;
     }
 

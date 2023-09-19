@@ -42,6 +42,16 @@
             <artifactId>cdm-rest-undertow</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
 </project>
