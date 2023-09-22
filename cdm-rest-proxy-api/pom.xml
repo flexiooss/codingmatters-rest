@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.105.0</version>
+        <version>1.106.0</version>
     </parent>
 
     <artifactId>cdm-rest-proxy-api</artifactId>
@@ -40,6 +40,16 @@
         <dependency>
             <groupId>org.codingmatters.rest</groupId>
             <artifactId>cdm-rest-undertow</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.rest.server.netty</groupId>
+            <artifactId>cdm-rest-netty-utils</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

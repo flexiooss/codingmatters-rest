@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>cdm-rest-tests</artifactId>
-        <version>1.105.0</version>
+        <version>1.106.0</version>
     </parent>
 
     <artifactId>cdm-rest-tests-support</artifactId>
@@ -26,14 +26,16 @@
             <artifactId>cdm-rest-api</artifactId>
         </dependency>
 
+
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
+<!--            <scope>test</scope>-->
         </dependency>
     </dependencies>
 </project>
