@@ -230,7 +230,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
                 }
                 url += this.encode(queryParameterEntry.getKey());
                 url += "=";
-                url += queryParameterEntry.getValue() != null ? this.encode(queryParameterValue) : "null";
+                url += queryParameterValue != null ? this.encode(queryParameterValue) : "null";
             }
         }
 
@@ -252,6 +252,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
     }
 
     private String encode(String str) throws UnsupportedEncodingException {
+        if(str == null) return "null";
         return URLEncoder.encode(str, "UTF-8");
     }
 
