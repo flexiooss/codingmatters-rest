@@ -5,6 +5,7 @@ import org.codingmatters.rest.proxy.api.utils.MapOfListAction;
 import org.codingmatters.rest.proxy.api.utils.MapOfListModification;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class ProxyResponse {
@@ -49,7 +50,9 @@ public class ProxyResponse {
                 response.addHeader(header, values);
             }
 
-            response.payload(this.originalResponse.bodyStream());
+            try (InputStream inputStream = this.originalResponse.bodyStream()) {
+                response.payload(inputStream);
+            }
             if (this.modifiedBody != null) {
                 response.payload(this.modifiedBody.orElse(null));
             }
