@@ -28,32 +28,19 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         log.trace("finished handling channel");
-        ctx.flush();
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof HttpRequest) {
-            log.trace("here's the http request");
-            this.request = (HttpRequest) msg;
-        } else if (msg instanceof HttpContent) {
-            HttpContent content = (HttpContent) msg;
-            if (this.body == null) {
-                log.trace("here's the first slice : {}", msg);
-                this.body = new DynamicByteBuffer(1000);
+        if(this.request == null) {
+            log.error("[GRAVE] no request could be read.");
+            ctx.write(this.errorResponse());
+        } else if(this.request.decoderResult().isFailure()) {
+            if(this.request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
+                ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
+            } else if(this.request.decoderResult().cause() instanceof TooLongHttpLineException) {
+                ctx.write(this.response(HttpResponseStatus.REQUEST_URI_TOO_LONG, "URI Too Long"));
             } else {
-                log.trace("here's another slice : {}", msg);
+                log.error("[GRAVE] exception thrown while decoding request.", this.request.decoderResult().cause());
+                ctx.write(this.errorResponse());
             }
-            this.body.accumulate(((HttpContent) msg).content());
-            if (content instanceof LastHttpContent) {
-                log.trace("content was last slice");
-                this.completelyRead = true;
-            }
-        } else {
-            log.trace("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
-        }
-
-        if (this.completelyRead) {
+        } else if (this.completelyRead) {
             log.trace("done reading the http request completely, responding");
 
             HttpResponse response = this.buildResponse();
@@ -76,22 +63,58 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
             if (!HttpUtil.isKeepAlive(request)) {
                 ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
             }
+        }
 
-            this.cleanup();
+        this.cleanup();
+        ctx.flush();
+        log.trace("finished handling channel : ctx flushed");
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (msg instanceof HttpRequest) {
+            log.trace("here's the http request : {}", msg.getClass().getName());
+            this.request = (HttpRequest) msg;
+        } else if (msg instanceof HttpContent) {
+            HttpContent content = (HttpContent) msg;
+            if (this.body == null) {
+                log.trace("here's the first slice : {}", msg);
+                this.body = new DynamicByteBuffer(1000);
+            } else {
+                log.trace("here's another slice : {}", msg);
+            }
+            this.body.accumulate(((HttpContent) msg).content());
+            if (content instanceof LastHttpContent) {
+                log.trace("content was last slice");
+                this.completelyRead = true;
+            }
+        } else {
+            log.trace("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
         }
     }
 
     private HttpResponse buildResponse() {
         try {
+            log.trace("building response");
             return this.processResponse(this.request, this.body);
         } catch (Throwable t) {
-            log.error("[GRAVE] exception thrown by business code, should be catched.", t);
-            FullHttpResponse errorResponse = new DefaultFullHttpResponse(HTTP_1_1, OK);
-            errorResponse.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-            errorResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-            errorResponse.content().writeBytes("Unexpected error handling request.".getBytes(StandardCharsets.UTF_8));
-            return errorResponse;
+            log.error("[GRAVE] exception thrown by business code, should be caught.", t);
+            return this.errorResponse();
         }
+    }
+
+    private FullHttpResponse response(HttpResponseStatus status, String message) {
+        FullHttpResponse errorResponse = new DefaultFullHttpResponse(HTTP_1_1, status);
+        errorResponse.setStatus(status);
+        errorResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+        errorResponse.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
+        errorResponse.content().writeBytes(bytes);
+        return errorResponse;
+    }
+
+    private FullHttpResponse errorResponse() {
+        return this.response(HttpResponseStatus.INTERNAL_SERVER_ERROR, "Unexpected error handling request");
     }
 
     private void cleanup() {

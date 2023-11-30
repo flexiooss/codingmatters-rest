@@ -129,8 +129,8 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
             }
         }
         if(this.keepAlive) {
-            response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+            this.response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, this.response.content().readableBytes());
         }
-        return response;
+        return this.response;
     }
 }
