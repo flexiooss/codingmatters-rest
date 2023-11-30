@@ -26,8 +26,6 @@
     </dependencyManagement>
 
     <modules>
-        <module>cdm-rest-netty-explore</module>
-
         <module>cdm-rest-netty-utils</module>
         <module>cdm-rest-netty-server</module>
     </modules>

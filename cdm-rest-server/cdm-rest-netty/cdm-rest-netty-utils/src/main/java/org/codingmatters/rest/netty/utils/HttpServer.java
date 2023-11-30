@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectDecoder;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -74,7 +75,11 @@ public class HttpServer {
                     public void initChannel(SocketChannel ch) throws Exception {
                         log.trace("initChannel");
                         ch.pipeline()
-                                .addLast(new HttpServerCodec())
+                                .addLast(new HttpServerCodec(
+                                        2 * HttpObjectDecoder.DEFAULT_MAX_INITIAL_LINE_LENGTH,
+                                        2 * HttpObjectDecoder.DEFAULT_MAX_HEADER_SIZE,
+                                        HttpObjectDecoder.DEFAULT_MAX_CHUNK_SIZE
+                                ))
                                 .addLast(handlerSupplier.get(host, port))
                         ;
                     }
