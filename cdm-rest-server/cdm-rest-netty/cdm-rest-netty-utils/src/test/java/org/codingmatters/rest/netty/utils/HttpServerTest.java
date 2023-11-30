@@ -6,6 +6,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class HttpServerTest {
         int port = freePortSocket.getLocalPort();
         freePortSocket.close();
         this.url = "http://localhost:" + port;
-        this.server = HttpServer.server("0.0.0.0", port, this::handler, 0, 0);
+        this.server = HttpServer.server(NettyHttpConfig.builder().host("0.0.0.0").port(port).build(), this::handler);
         this.server.start();
     }
 

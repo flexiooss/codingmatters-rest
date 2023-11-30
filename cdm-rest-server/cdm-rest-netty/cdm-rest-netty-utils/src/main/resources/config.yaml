@@ -1,0 +1,15 @@
+---
+
+NettyHttpConfig:
+  host: string
+  port: int
+  bossCount: int
+  workerCount: int
+  maxInitialLineLength: int
+  maxHeaderSize: int
+  maxChunkSize: int
+  initialBufferSize: int
+
+  validateHeaders: bool
+  allowDuplicateContentLengths: bool
+  allowPartialChunks: bool

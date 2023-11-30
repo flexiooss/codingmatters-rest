@@ -8,10 +8,12 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectDecoder;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +28,14 @@ public class HttpServer {
             ServerSocket freePortSocket = new ServerSocket(0);
             int port = freePortSocket.getLocalPort();
             freePortSocket.close();
-            return new HttpServer("localhost", port, handlerSupplier, new NioEventLoopGroup(), new NioEventLoopGroup());
+            return new HttpServer(NettyHttpConfig.builder().host("localhost").port(port).build(), handlerSupplier);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    static public HttpServer server(String host, int port, HandlerSupplier handlerSupplier, int bossCount, int workerCount) {
-        return new HttpServer(host, port, handlerSupplier, new NioEventLoopGroup(bossCount), new NioEventLoopGroup(workerCount));
+    static public HttpServer server(NettyHttpConfig config, HandlerSupplier handlerSupplier) {
+        return new HttpServer(config, handlerSupplier);
     }
 
     @FunctionalInterface
@@ -41,8 +43,18 @@ public class HttpServer {
         HttpRequestHandler get(String host, int port);
     }
 
-    private final String host;
-    private final int port;
+    static private NettyHttpConfig DEFAULT = NettyHttpConfig.builder()
+            .host("0.0.0.0").port(8888)
+            .bossCount(0).workerCount(0)
+            .maxInitialLineLength(2 * HttpObjectDecoder.DEFAULT_MAX_INITIAL_LINE_LENGTH)
+            .maxHeaderSize(2 * HttpObjectDecoder.DEFAULT_MAX_HEADER_SIZE)
+            .maxChunkSize(HttpObjectDecoder.DEFAULT_MAX_CHUNK_SIZE)
+            .initialBufferSize(HttpObjectDecoder.DEFAULT_INITIAL_BUFFER_SIZE)
+            .validateHeaders(HttpObjectDecoder.DEFAULT_VALIDATE_HEADERS)
+            .allowPartialChunks(HttpObjectDecoder.DEFAULT_ALLOW_PARTIAL_CHUNKS)
+            .allowDuplicateContentLengths(HttpObjectDecoder.DEFAULT_ALLOW_DUPLICATE_CONTENT_LENGTHS)
+            .build();
+
     private final HandlerSupplier handlerSupplier;
 
     private final EventLoopGroup bossGroup;
@@ -50,19 +62,35 @@ public class HttpServer {
 
     private ChannelFuture runningChannel;
 
-    private HttpServer(String host, int port, HandlerSupplier handlerSupplier, EventLoopGroup bossGroup, EventLoopGroup workerGroup) {
-        this.host = host;
-        this.port = port;
+    private final NettyHttpConfig config;
+
+    private HttpServer(NettyHttpConfig config, HandlerSupplier handlerSupplier) {
+        this.config = config == null ? DEFAULT :
+                NettyHttpConfig.builder()
+                        .host(config.opt().host().orElse(DEFAULT.host()))
+                        .port(config.opt().port().orElse(DEFAULT.port()))
+                        .bossCount(config.opt().bossCount().orElse(DEFAULT.bossCount()))
+                        .workerCount(config.opt().workerCount().orElse(DEFAULT.workerCount()))
+                        .maxInitialLineLength(config.opt().maxInitialLineLength().orElse(DEFAULT.maxInitialLineLength()))
+                        .maxHeaderSize(config.opt().maxHeaderSize().orElse(DEFAULT.maxHeaderSize()))
+                        .maxChunkSize(config.opt().maxChunkSize().orElse(DEFAULT.maxChunkSize()))
+                        .initialBufferSize(config.opt().initialBufferSize().orElse(DEFAULT.initialBufferSize()))
+                        .validateHeaders(config.opt().validateHeaders().orElse(DEFAULT.validateHeaders()))
+                        .allowPartialChunks(config.opt().allowPartialChunks().orElse(DEFAULT.allowPartialChunks()))
+                        .allowDuplicateContentLengths(config.opt().allowDuplicateContentLengths().orElse(DEFAULT.allowDuplicateContentLengths()))
+                        .host(config.opt().host().orElse(DEFAULT.host()))
+                        .build();
         this.handlerSupplier = handlerSupplier;
-        this.bossGroup = bossGroup;
-        this.workerGroup = workerGroup;
+        this.bossGroup = new NioEventLoopGroup(this.config.bossCount());
+        this.workerGroup = new NioEventLoopGroup(this.config.workerCount());
+
     }
 
     public String host() {
-        return this.host;
+        return this.config.host();
     }
     public int port() {
-        return port;
+        return config.port();
     }
 
     public void start() throws Exception {
@@ -76,11 +104,15 @@ public class HttpServer {
                         log.trace("initChannel");
                         ch.pipeline()
                                 .addLast(new HttpServerCodec(
-                                        2 * HttpObjectDecoder.DEFAULT_MAX_INITIAL_LINE_LENGTH,
-                                        2 * HttpObjectDecoder.DEFAULT_MAX_HEADER_SIZE,
-                                        HttpObjectDecoder.DEFAULT_MAX_CHUNK_SIZE
+                                        config.maxInitialLineLength(),
+                                        config.maxHeaderSize(),
+                                        config.maxChunkSize(),
+                                        config.validateHeaders(),
+                                        config.initialBufferSize(),
+                                        config.allowDuplicateContentLengths(),
+                                        config.allowPartialChunks()
                                 ))
-                                .addLast(handlerSupplier.get(host, port))
+                                .addLast(handlerSupplier.get(config.host(), config.port()))
                         ;
                     }
                 })
@@ -89,7 +121,7 @@ public class HttpServer {
                 ;
         // Bind and start to accept incoming connections.
         log.info("starting...");
-        this.runningChannel = b.bind(port).sync(); // (7)
+        this.runningChannel = b.bind(config.port()).sync(); // (7)
         log.info("started.");
     }
 
