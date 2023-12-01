@@ -32,42 +32,49 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
             log.error("[GRAVE] no request could be read.");
             ctx.write(this.errorResponse());
         } else if(this.request.decoderResult().isFailure()) {
-            if(this.request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
-                ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
-            } else if(this.request.decoderResult().cause() instanceof TooLongHttpLineException) {
-                ctx.write(this.response(HttpResponseStatus.REQUEST_URI_TOO_LONG, "URI Too Long"));
-            } else {
-                log.error("[GRAVE] exception thrown while decoding request.", this.request.decoderResult().cause());
-                ctx.write(this.errorResponse());
-            }
+            this.docderError(ctx);
         } else if (this.completelyRead) {
-            log.trace("done reading the http request completely, responding");
-
-            HttpResponse response = this.buildResponse();
-
-            if(HttpUtil.isKeepAlive(request)) {
-                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            }
-
-            String cookieString = request.headers().get(HttpHeaderNames.COOKIE);
-            if (cookieString != null) {
-                Set<io.netty.handler.codec.http.cookie.Cookie> cookies = ServerCookieDecoder.STRICT.decode(cookieString);
-                if (!cookies.isEmpty()) {
-                    for (io.netty.handler.codec.http.cookie.Cookie cookie: cookies) {
-                        response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookie));
-                    }
-                }
-            }
-
-            ctx.write(response);
-            if (!HttpUtil.isKeepAlive(request)) {
-                ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-            }
+            this.nominalResponse(ctx);
         }
-
         this.cleanup();
         ctx.flush();
         log.trace("finished handling channel : ctx flushed");
+    }
+
+    private void nominalResponse(ChannelHandlerContext ctx) {
+        log.trace("done reading the http request completely, responding");
+
+        HttpResponse response = this.buildResponse();
+
+        if(HttpUtil.isKeepAlive(request)) {
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        }
+
+        String cookieString = request.headers().get(HttpHeaderNames.COOKIE);
+        if (cookieString != null) {
+            Set<io.netty.handler.codec.http.cookie.Cookie> cookies = ServerCookieDecoder.STRICT.decode(cookieString);
+            if (!cookies.isEmpty()) {
+                for (io.netty.handler.codec.http.cookie.Cookie cookie: cookies) {
+                    response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookie));
+                }
+            }
+        }
+
+        ctx.write(response);
+        if (!HttpUtil.isKeepAlive(request)) {
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    private void docderError(ChannelHandlerContext ctx) {
+        if(this.request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
+            ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
+        } else if(this.request.decoderResult().cause() instanceof TooLongHttpLineException) {
+            ctx.write(this.response(HttpResponseStatus.REQUEST_URI_TOO_LONG, "URI Too Long"));
+        } else {
+            log.error("[GRAVE] exception thrown while decoding request.", this.request.decoderResult().cause());
+            ctx.write(this.errorResponse());
+        }
     }
 
     @Override
