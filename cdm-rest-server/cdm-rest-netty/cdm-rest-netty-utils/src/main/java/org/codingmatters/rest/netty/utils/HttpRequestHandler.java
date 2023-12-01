@@ -89,7 +89,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
                 this.completelyRead = true;
             }
         } else {
-            log.trace("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
+            log.error("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
         }
     }
 
