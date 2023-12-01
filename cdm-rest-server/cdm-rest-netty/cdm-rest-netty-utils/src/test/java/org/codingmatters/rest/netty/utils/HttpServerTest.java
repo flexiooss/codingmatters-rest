@@ -1,6 +1,5 @@
 package org.codingmatters.rest.netty.utils;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -11,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Reader;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;

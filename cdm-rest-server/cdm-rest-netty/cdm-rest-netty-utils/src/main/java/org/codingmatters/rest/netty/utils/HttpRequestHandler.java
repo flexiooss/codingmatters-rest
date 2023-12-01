@@ -19,7 +19,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
     static private final Logger log = LoggerFactory.getLogger(HttpRequestHandler.class);
 
     private HttpRequest request;
-    private boolean completelyRead = false;
+//    private boolean completelyRead = false;
     private DynamicByteBuffer body;
 
     protected abstract HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body);
@@ -32,11 +32,14 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
             ctx.write(this.errorResponse());
         } else if(this.request.decoderResult().isFailure()) {
             this.decoderError(ctx);
-        } else if (this.completelyRead) {
+//        } else if (this.completelyRead) {
+//        } else if (this.request.decoderResult().isFinished()) {
+//            this.nominalResponse(ctx);
+        } else {
             this.nominalResponse(ctx);
         }
-        this.cleanup();
         ctx.flush();
+        this.cleanup();
         log.trace("finished handling channel : ctx flushed");
     }
 
@@ -90,10 +93,10 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
                 log.trace("here's another slice : {}", msg);
             }
             this.body.accumulate(((HttpContent) msg).content());
-            if (content instanceof LastHttpContent) {
-                log.trace("content was last slice");
-                this.completelyRead = true;
-            }
+//            if (content instanceof LastHttpContent) {
+//                log.trace("content was last slice");
+//                this.completelyRead = true;
+//            }
         } else {
             log.error("[GRAVE] unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
         }
@@ -125,7 +128,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
 
     private void cleanup() {
         this.request = null;
-        this.completelyRead = false;
+//        this.completelyRead = false;
         if (this.body != null) {
             this.body.release();
             this.body = null;
