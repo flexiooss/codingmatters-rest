@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
@@ -32,7 +31,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
             log.error("[GRAVE] no request could be read.");
             ctx.write(this.errorResponse());
         } else if(this.request.decoderResult().isFailure()) {
-            this.docderError(ctx);
+            this.decoderError(ctx);
         } else if (this.completelyRead) {
             this.nominalResponse(ctx);
         }
@@ -66,7 +65,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
         }
     }
 
-    private void docderError(ChannelHandlerContext ctx) {
+    private void decoderError(ChannelHandlerContext ctx) {
         if(this.request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
             ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
         } else if(this.request.decoderResult().cause() instanceof TooLongHttpLineException) {
@@ -96,7 +95,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
                 this.completelyRead = true;
             }
         } else {
-            log.error("unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
+            log.error("[GRAVE] unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
         }
     }
 
