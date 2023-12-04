@@ -59,7 +59,11 @@ public class DynamicByteBuffer {
     }
 
     public long size() {
-        return this.size;
+        if(this.temporaryFile != null && this.temporaryFile.exists()) {
+            return this.temporaryFile.length();
+        } else {
+            return this.size;
+        }
     }
 
     public void release() {
@@ -83,4 +87,11 @@ public class DynamicByteBuffer {
         }
     }
 
+    @Override
+    public String toString() {
+        return "DynamicByteBuffer{" +
+                "currentMode=" + currentMode +
+                ", size=" + size() +
+                '}';
+    }
 }
