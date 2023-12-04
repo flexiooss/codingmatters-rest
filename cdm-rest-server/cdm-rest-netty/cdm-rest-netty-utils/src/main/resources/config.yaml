@@ -9,6 +9,7 @@ NettyHttpConfig:
   maxHeaderSize: int
   maxChunkSize: int
   initialBufferSize: int
+  maxPayloadSize: int
 
   validateHeaders: bool
   allowDuplicateContentLengths: bool

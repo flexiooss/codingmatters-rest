@@ -15,38 +15,40 @@ import java.util.Set;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
+public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     static private final Logger log = LoggerFactory.getLogger(HttpRequestHandler.class);
-
-    private HttpRequest request;
-//    private boolean completelyRead = false;
-    private DynamicByteBuffer body;
 
     protected abstract HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body);
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.trace("finished handling channel");
-        if(this.request == null) {
-            log.error("[GRAVE] no request could be read.");
-            ctx.write(this.errorResponse());
-        } else if(this.request.decoderResult().isFailure()) {
-            this.decoderError(ctx);
-//        } else if (this.completelyRead) {
-//        } else if (this.request.decoderResult().isFinished()) {
-//            this.nominalResponse(ctx);
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+        log.debug("starting handling request...");
+        if(request.decoderResult().isFailure()) {
+            this.decoderError(ctx, request);
         } else {
-            this.nominalResponse(ctx);
+            this.nominalResponse(ctx, request);
         }
         ctx.flush();
-        this.cleanup();
-        log.trace("finished handling channel : ctx flushed");
+        log.debug("finished handling request");
     }
 
-    private void nominalResponse(ChannelHandlerContext ctx) {
+
+
+    private void decoderError(ChannelHandlerContext ctx, FullHttpRequest request) {
+        if(request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
+            ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
+        } else if(request.decoderResult().cause() instanceof TooLongHttpLineException) {
+            ctx.write(this.response(HttpResponseStatus.REQUEST_URI_TOO_LONG, "URI Too Long"));
+        } else {
+            log.error("[GRAVE] exception thrown while decoding request.", request.decoderResult().cause());
+            ctx.write(this.errorResponse());
+        }
+    }
+
+    private void nominalResponse(ChannelHandlerContext ctx, FullHttpRequest request) {
         log.trace("done reading the http request completely, responding");
 
-        HttpResponse response = this.buildResponse();
+        HttpResponse response = this.buildResponse(ctx, request);
 
         if(HttpUtil.isKeepAlive(request)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
@@ -68,48 +70,22 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
         }
     }
 
-    private void decoderError(ChannelHandlerContext ctx) {
-        if(this.request.decoderResult().cause() instanceof TooLongHttpHeaderException) {
-            ctx.write(this.response(HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE, "Request Header Fields Too Large"));
-        } else if(this.request.decoderResult().cause() instanceof TooLongHttpLineException) {
-            ctx.write(this.response(HttpResponseStatus.REQUEST_URI_TOO_LONG, "URI Too Long"));
-        } else {
-            log.error("[GRAVE] exception thrown while decoding request.", this.request.decoderResult().cause());
-            ctx.write(this.errorResponse());
-        }
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof HttpRequest) {
-            log.trace("here's the http request : {}", msg.getClass().getName());
-            this.request = (HttpRequest) msg;
-        } else if (msg instanceof HttpContent) {
-            HttpContent content = (HttpContent) msg;
-            if (this.body == null) {
-                log.trace("here's the first slice : {}", msg);
-                this.body = new DynamicByteBuffer(1000);
-            } else {
-                log.trace("here's another slice : {}", msg);
-            }
-            this.body.accumulate(((HttpContent) msg).content());
-//            if (content instanceof LastHttpContent) {
-//                log.trace("content was last slice");
-//                this.completelyRead = true;
-//            }
-        } else {
-            log.error("[GRAVE] unexpected message type, ignoring : {} - {}", msg != null ? msg.getClass() : "null", msg);
-        }
-    }
-
-    private HttpResponse buildResponse() {
+    private HttpResponse buildResponse(ChannelHandlerContext ctx, FullHttpRequest request) {
+        DynamicByteBuffer body = new DynamicByteBuffer(30 * 1024);
         try {
             log.trace("building response");
-            return this.processResponse(this.request, this.body);
+            body.accumulate(request.content());
+            return this.processResponse(request, body);
         } catch (Throwable t) {
             log.error("[GRAVE] exception thrown by business code, should be caught.", t);
             return this.errorResponse();
+        } finally {
+            body.release();
         }
+    }
+
+    private FullHttpResponse errorResponse() {
+        return this.response(HttpResponseStatus.INTERNAL_SERVER_ERROR, "Unexpected error handling request");
     }
 
     private FullHttpResponse response(HttpResponseStatus status, String message) {
@@ -120,24 +96,5 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Obj
         errorResponse.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
         errorResponse.content().writeBytes(bytes);
         return errorResponse;
-    }
-
-    private FullHttpResponse errorResponse() {
-        return this.response(HttpResponseStatus.INTERNAL_SERVER_ERROR, "Unexpected error handling request");
-    }
-
-    private void cleanup() {
-        this.request = null;
-//        this.completelyRead = false;
-        if (this.body != null) {
-            this.body.release();
-            this.body = null;
-        }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("error caught while handling http request", cause);
-        ctx.close();
     }
 }

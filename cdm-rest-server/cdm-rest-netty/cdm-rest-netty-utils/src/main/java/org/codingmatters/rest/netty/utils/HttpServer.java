@@ -9,10 +9,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpObjectDecoder;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ public class HttpServer {
             .maxHeaderSize(2 * HttpObjectDecoder.DEFAULT_MAX_HEADER_SIZE)
             .maxChunkSize(HttpObjectDecoder.DEFAULT_MAX_CHUNK_SIZE)
             .initialBufferSize(HttpObjectDecoder.DEFAULT_INITIAL_BUFFER_SIZE)
+            .maxPayloadSize(100 * 1024 * 1024)
             .validateHeaders(HttpObjectDecoder.DEFAULT_VALIDATE_HEADERS)
             .allowPartialChunks(HttpObjectDecoder.DEFAULT_ALLOW_PARTIAL_CHUNKS)
             .allowDuplicateContentLengths(HttpObjectDecoder.DEFAULT_ALLOW_DUPLICATE_CONTENT_LENGTHS)
@@ -75,6 +78,7 @@ public class HttpServer {
                         .maxHeaderSize(config.opt().maxHeaderSize().orElse(DEFAULT.maxHeaderSize()))
                         .maxChunkSize(config.opt().maxChunkSize().orElse(DEFAULT.maxChunkSize()))
                         .initialBufferSize(config.opt().initialBufferSize().orElse(DEFAULT.initialBufferSize()))
+                        .maxPayloadSize(config.opt().maxPayloadSize().orElse(DEFAULT.maxPayloadSize()))
                         .validateHeaders(config.opt().validateHeaders().orElse(DEFAULT.validateHeaders()))
                         .allowPartialChunks(config.opt().allowPartialChunks().orElse(DEFAULT.allowPartialChunks()))
                         .allowDuplicateContentLengths(config.opt().allowDuplicateContentLengths().orElse(DEFAULT.allowDuplicateContentLengths()))
@@ -94,14 +98,13 @@ public class HttpServer {
     }
 
     public void start() throws Exception {
-        ServerBootstrap b = new ServerBootstrap() // (2)
+        ServerBootstrap b = new ServerBootstrap()
                 .group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class) // (3)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
+                .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.DEBUG))
+                .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        log.trace("initChannel");
                         ch.pipeline()
                                 .addLast(new HttpServerCodec(
                                         config.maxInitialLineLength(),
@@ -112,16 +115,18 @@ public class HttpServer {
                                         config.allowDuplicateContentLengths(),
                                         config.allowPartialChunks()
                                 ))
+                                .addLast(new HttpObjectAggregator(config.maxPayloadSize()))
+                                .addLast(new ChunkedWriteHandler())
                                 .addLast(handlerSupplier.get(config.host(), config.port()))
                         ;
                     }
                 })
-                .option(ChannelOption.SO_BACKLOG, 128)          // (5)
-                .childOption(ChannelOption.SO_KEEPALIVE, true) // (6)
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
                 ;
-        // Bind and start to accept incoming connections.
+
         log.info("starting...");
-        this.runningChannel = b.bind(config.port()).sync(); // (7)
+        this.runningChannel = b.bind(config.port()).sync();
         log.info("started.");
     }
 
