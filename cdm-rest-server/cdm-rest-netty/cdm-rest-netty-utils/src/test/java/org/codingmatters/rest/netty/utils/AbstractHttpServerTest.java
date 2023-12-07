@@ -2,7 +2,6 @@ package org.codingmatters.rest.netty.utils;
 
 import io.netty.handler.codec.http.*;
 import okhttp3.*;
-import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,7 +11,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.*;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -20,26 +18,34 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class HttpServerTest {
+public abstract class AbstractHttpServerTest {
 
     public static final String LINE = "12345678901234567890123456789012345678901234567890";
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
-    private OkHttpClient client = new OkHttpClient(new OkHttpClient.Builder().readTimeout(60L, TimeUnit.SECONDS));
-    private HttpServer server;
-    private String url;
+    protected OkHttpClient client;
+    private AbstratHttpServer server;
+    protected String url;
+
+    abstract protected OkHttpClient createClient();
+    abstract protected AbstratHttpServer createServer(int port);
 
     @Before
     public void setUp() throws Exception {
+        this.client = this.createClient();
+
         ServerSocket freePortSocket = new ServerSocket(0);
         int port = freePortSocket.getLocalPort();
         freePortSocket.close();
         this.url = "http://localhost:" + port;
-        this.server = HttpServer.server(NettyHttpConfig.builder().host("0.0.0.0").port(port).build(), this::handler);
+
+        this.server = this.createServer(port);
         this.server.start();
     }
+
+
 
     private final AtomicReference<HttpRequestHandler> handler = new AtomicReference<>(
         new HttpRequestHandler() {
@@ -52,12 +58,13 @@ public class HttpServerTest {
                 response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
                 response.content().writeBytes(bytes);
                 response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+                System.out.println("RESPONSE :: OK");
                 return response;
             }
         }
     );
 
-    private HttpRequestHandler handler(String host, int port) {
+    protected HttpRequestHandler handler(String host, int port) {
         return this.handler.get();
     }
 
@@ -67,16 +74,46 @@ public class HttpServerTest {
         this.server.awaitTermination();
     }
 
-    @Test
-    public void whenNominal__theOK() throws Exception {
-        Call call = this.client.newCall(new Request.Builder()
-                .url(this.url + "/path/to/here")
-                .build());
-        Response response = call.execute();
 
+    protected void assertNominalResponse(Response response) throws IOException {
         assertThat(response.code(), is(200));
         assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
         assertThat(response.body().string(), is("Test response : OK."));
+    }
+
+    protected void asserHeaderTooLargeResponse(Response response) throws IOException {
+        assertThat(response.code(), is(431));
+        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
+        assertThat(response.body().string(), is("Request Header Fields Too Large"));
+    }
+
+    protected void assertURITooLongResponse(Response response) throws IOException {
+        assertThat(response.code(), is(414));
+        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
+        assertThat(response.body().string(), is("URI Too Long"));
+    }
+
+
+    @Test
+    public void whenNominalGet__thenOK() throws Exception {
+        Call call = this.client.newCall(new Request.Builder()
+                .url(this.url + "/path/to/here")
+                        .get()
+                .build());
+        Response response = call.execute();
+
+        this.assertNominalResponse(response);
+    }
+
+    @Test
+    public void whenNominalPost__thenOK() throws Exception {
+        Call call = this.client.newCall(new Request.Builder()
+                .url(this.url + "/path/to/here")
+                        .post(RequestBody.create("zoubidou", MediaType.get("text/plain")))
+                .build());
+        Response response = call.execute();
+
+        this.assertNominalResponse(response);
     }
 
     @Test
@@ -90,9 +127,7 @@ public class HttpServerTest {
         }
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(200));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("Test response : OK."));
+        this.assertNominalResponse(response);
 
     }
 
@@ -107,9 +142,7 @@ public class HttpServerTest {
         }
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(200));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("Test response : OK."));
+        this.assertNominalResponse(response);
 
     }
 
@@ -122,9 +155,7 @@ public class HttpServerTest {
         }
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(431));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("Request Header Fields Too Large"));
+        this.asserHeaderTooLargeResponse(response);
     }
 
     @Test
@@ -137,9 +168,7 @@ public class HttpServerTest {
                 .url(url);
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(200));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("Test response : OK."));
+        this.assertNominalResponse(response);
     }
 
     @Test
@@ -152,9 +181,7 @@ public class HttpServerTest {
                 .url(url);
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(200));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("Test response : OK."));
+        this.assertNominalResponse(response);
     }
 
     @Test
@@ -167,9 +194,7 @@ public class HttpServerTest {
                 .url(url).get();
         Response response = this.client.newCall(request.build()).execute();
 
-        assertThat(response.code(), is(414));
-        assertThat(response.header("content-type"), is("text/plain; charset=UTF-8"));
-        assertThat(response.body().string(), is("URI Too Long"));
+        this.assertURITooLongResponse(response);
     }
 
     @Test
@@ -206,7 +231,7 @@ public class HttpServerTest {
         Request.Builder request = new Request.Builder()
                 .url(this.url + "/path/to/here").post(RequestBody.create(upload, MediaType.parse("text/plain")));
         Response response = this.client.newCall(request.build()).execute();
-        assertThat(response.code(), is(200));
+        this.assertNominalResponse(response);
     }
 
     @Test
