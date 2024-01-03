@@ -1,8 +1,6 @@
 package org.codingmatters.rest.server.netty.acceptance;
 
-import org.codingmatters.rest.netty.utils.HttpServer;
 import org.codingmatters.rest.server.acceptance.RequestDelegateAcceptanceTest;
-import org.codingmatters.rest.server.netty.ProcessorRequestHandler;
 import org.junit.After;
 import org.junit.Before;
 

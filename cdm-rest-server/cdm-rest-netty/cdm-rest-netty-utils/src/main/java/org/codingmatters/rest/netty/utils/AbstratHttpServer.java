@@ -8,42 +8,17 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpObjectDecoder;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+public abstract class AbstratHttpServer {
+    static private final Logger log = LoggerFactory.getLogger(AbstratHttpServer.class);
 
-public class HttpServer {
-    static private final Logger log = LoggerFactory.getLogger(HttpServer.class);
-
-    static public HttpServer testServer(HandlerSupplier handlerSupplier) {
-        try {
-            ServerSocket freePortSocket = new ServerSocket(0);
-            int port = freePortSocket.getLocalPort();
-            freePortSocket.close();
-            return new HttpServer(NettyHttpConfig.builder().host("localhost").port(port).build(), handlerSupplier);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static public HttpServer server(NettyHttpConfig config, HandlerSupplier handlerSupplier) {
-        return new HttpServer(config, handlerSupplier);
-    }
-
-    @FunctionalInterface
-    public interface HandlerSupplier {
-        HttpRequestHandler get(String host, int port);
-    }
+    abstract protected void initChannel(SocketChannel ch) throws Exception;
 
     static private NettyHttpConfig DEFAULT = NettyHttpConfig.builder()
             .host("0.0.0.0").port(8888)
@@ -58,6 +33,10 @@ public class HttpServer {
             .allowDuplicateContentLengths(HttpObjectDecoder.DEFAULT_ALLOW_DUPLICATE_CONTENT_LENGTHS)
             .build();
 
+    @FunctionalInterface
+    public interface HandlerSupplier {
+        HttpRequestHandler get(String host, int port);
+    }
     private final HandlerSupplier handlerSupplier;
 
     private final EventLoopGroup bossGroup;
@@ -67,7 +46,7 @@ public class HttpServer {
 
     private final NettyHttpConfig config;
 
-    private HttpServer(NettyHttpConfig config, HandlerSupplier handlerSupplier) {
+    public AbstratHttpServer(NettyHttpConfig config, HandlerSupplier handlerSupplier) {
         this.config = config == null ? DEFAULT :
                 NettyHttpConfig.builder()
                         .host(config.opt().host().orElse(DEFAULT.host()))
@@ -90,6 +69,15 @@ public class HttpServer {
 
     }
 
+    public NettyHttpConfig config() {
+        return config;
+    }
+
+
+    public HandlerSupplier handlerSupplier() {
+        return handlerSupplier;
+    }
+
     public String host() {
         return this.config.host();
     }
@@ -105,20 +93,7 @@ public class HttpServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline()
-                                .addLast(new HttpServerCodec(
-                                        config.maxInitialLineLength(),
-                                        config.maxHeaderSize(),
-                                        config.maxChunkSize(),
-                                        config.validateHeaders(),
-                                        config.initialBufferSize(),
-                                        config.allowDuplicateContentLengths(),
-                                        config.allowPartialChunks()
-                                ))
-                                .addLast(new HttpObjectAggregator(config.maxPayloadSize()))
-                                .addLast(new ChunkedWriteHandler())
-                                .addLast(handlerSupplier.get(config.host(), config.port()))
-                        ;
+                        AbstratHttpServer.this.initChannel(ch);
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
@@ -142,4 +117,5 @@ public class HttpServer {
         runningChannel.channel().closeFuture().sync();
         log.info("closed.");
     }
+
 }
