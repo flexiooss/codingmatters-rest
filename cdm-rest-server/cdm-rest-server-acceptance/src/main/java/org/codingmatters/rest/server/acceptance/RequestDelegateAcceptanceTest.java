@@ -3,6 +3,8 @@ package org.codingmatters.rest.server.acceptance;
 import okhttp3.OkHttpClient;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class RequestDelegateAcceptanceTest extends BaseAcceptanceTest {
+
+    static private final Logger log = LoggerFactory.getLogger(RequestDelegateAcceptanceTest.class);
 
     private OkHttpClient client = new OkHttpClient();
 
@@ -217,5 +221,56 @@ public abstract class RequestDelegateAcceptanceTest extends BaseAcceptanceTest {
         assertThat(params.size(), is(2));
         assertThat(params.get("a").get(0), is("request"));
         assertThat(params.get("b").get(0), is("path"));
+    }
+
+    @Test
+    public void givenNoUriParams__whenUriWithEncodedCharacters__thenCharactersAreLeftEncoded() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request%2Fpath").get().build()).execute();
+        assertThat(req.get().path(), is("/request%2Fpath"));
+
+        log.info("request path : {}", req.get().path());
+    }
+
+    @Test
+    public void givenUriParams__whenUriWithEncodedCharacters__thenCharactersAreLeftEncoded() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/to%2Fpath").get().build()).execute();
+        assertThat(req.get().path(), is("/request/to%2Fpath"));
+
+        Map<String, List<String>> params = req.get().uriParameters("/request/{b}");
+        assertThat(params.size(), is(1));
+        assertThat(params.get("b").get(0), is("to%2Fpath"));
+
+
+        log.info("request path : {}", req.get().path());
+        log.info("request param : {}", params.get("b").get(0));
+    }
+
+    @Test
+    public void givenUriParams__whenUriWithEncodedPLUS__thenCharactersAreLeftEncoded() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/to%2Bpath").get().build()).execute();
+        assertThat(req.get().path(), is("/request/to%2Bpath"));
+
+        Map<String, List<String>> params = req.get().uriParameters("/request/{b}");
+        assertThat(params.size(), is(1));
+        assertThat(params.get("b").get(0), is("to%2Bpath"));
+
+
+        log.info("request path : {}", req.get().path());
+        log.info("request param : {}", params.get("b").get(0));
     }
 }

@@ -28,6 +28,7 @@
     <modules>
         <module>cdm-rest-netty-utils</module>
         <module>cdm-rest-netty-server</module>
+        <module>cdm-rest-netty-explore</module>
     </modules>
 
     

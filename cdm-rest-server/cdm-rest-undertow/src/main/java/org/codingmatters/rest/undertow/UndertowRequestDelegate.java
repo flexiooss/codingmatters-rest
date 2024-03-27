@@ -40,7 +40,7 @@ public class UndertowRequestDelegate implements RequestDelegate {
 
     @Override
     public String path() {
-        return this.exchange.getRequestPath();
+        return this.exchange.getRequestURI();
     }
 
     @Override

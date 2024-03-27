@@ -30,7 +30,7 @@ public class RequesterClientGeneratorRequestPayloadTest {
     @Test
     public void payload() throws Exception {
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "PayloadClient.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "StringPayloadClient.java");
 
         UrlProvider baseUrl = () -> "https://path.to/me";
         TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);

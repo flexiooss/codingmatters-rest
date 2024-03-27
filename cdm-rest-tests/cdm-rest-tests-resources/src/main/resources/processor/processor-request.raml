@@ -12,6 +12,12 @@ mediaType: application/json
   displayName: FilePayload
   post:
     body: file
+/string-payload:
+  displayName: StringPayload
+  post:
+    body:
+      text/plain:
+        type: string
 /arbitrary-object-payload:
   displayName: ArbitraryObjectPayload
   post:
