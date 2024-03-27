@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest.server</groupId>
         <artifactId>cdm-rest-server</artifactId>
-        <version>1.113.0</version>
+        <version>1.114.0</version>
     </parent>
 
     <groupId>org.codingmatters.rest.server.netty</groupId>
@@ -28,6 +28,7 @@
     <modules>
         <module>cdm-rest-netty-utils</module>
         <module>cdm-rest-netty-server</module>
+        <module>cdm-rest-netty-explore</module>
     </modules>
 
     

@@ -242,6 +242,14 @@ public class ApiPumlGeneratorTest {
                         "deactivate api" ,
                         "end" ,
                         "" ,
+                        "== StringPayload ==" ,
+                        "|||",
+                        "group '[[#StringPayload-post-method StringPayload POST]]'",
+                        "--> api: <b>POST</b> /string-payload \\n"+
+                        "\\t<b>string</b>\n" +
+                        "activate api\n" +
+                        "deactivate api\n" +
+                        "end\n",
                         "== ArbitraryObjectPayload ==" ,
                         "|||" ,
                         "group '[[#ArbitraryObjectPayload-post-method ArbitraryObjectPayload POST]]'" ,

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest.server.netty</groupId>
         <artifactId>cdm-rest-netty</artifactId>
-        <version>1.113.0</version>
+        <version>1.114.0</version>
     </parent>
 
     <artifactId>cdm-rest-netty-utils</artifactId>

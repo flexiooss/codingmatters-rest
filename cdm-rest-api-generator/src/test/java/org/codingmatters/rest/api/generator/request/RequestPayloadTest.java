@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.raml.v2.api.RamlModelBuilder;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 5/3/17.
@@ -118,6 +118,23 @@ public class RequestPayloadTest {
                                 .type(PropertyTypeSpec.type()
                                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                                         .typeRef(ObjectValue.class.getName())
+                                )
+                        )
+                        .build())
+        );
+    }
+
+
+    @Test
+    public void stringPayload() throws Exception {
+        assertThat(
+                this.spec.valueSpec("StringPayloadPostRequest"),
+                is(ValueSpec.valueSpec().name("StringPayloadPostRequest")
+                        .addProperty(PropertySpec.property()
+                                .name("payload")
+                                .type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeRef(String.class.getName())
                                 )
                         )
                         .build())
