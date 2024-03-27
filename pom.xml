@@ -44,14 +44,22 @@
         <repository>
             <id>codingmatters-snapshots</id>
             <url>https://mvn.ci.flexio.io/codingmatters-snapshots/</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>codingmatters-releases</id>
             <url>https://mvn.ci.flexio.io/codingmatters-releases/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -59,14 +67,22 @@
         <pluginRepository>
             <id>codingmatters-snapshots</id>
             <url>https://mvn.ci.flexio.io/codingmatters-snapshots/</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </pluginRepository>
         <pluginRepository>
             <id>codingmatters-releases</id>
             <url>https://mvn.ci.flexio.io/codingmatters-releases/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
 
@@ -110,7 +126,7 @@
     </dependencies>
 
     <properties>
-        <codingmatters-value-objects-version>1.94.0-SNAPSHOT</codingmatters-value-objects-version>
+        <codingmatters-value-objects-version>1.95.0</codingmatters-value-objects-version>
     </properties>
 
     <dependencyManagement>
