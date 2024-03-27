@@ -231,11 +231,6 @@
                 <version>1.114.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>org.codingmatters.rest</groupId>
-                <artifactId>cdm-rest-undertow</artifactId>
-                <version>1.114.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
                 <groupId>org.codingmatters.rest.server.netty</groupId>
                 <artifactId>cdm-rest-netty-utils</artifactId>
                 <version>1.114.0-SNAPSHOT</version>
