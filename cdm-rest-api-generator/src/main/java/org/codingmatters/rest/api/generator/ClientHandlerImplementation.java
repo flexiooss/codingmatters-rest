@@ -1,6 +1,9 @@
 package org.codingmatters.rest.api.generator;
 
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.generator.client.ClientNamingHelper;
 import org.codingmatters.rest.api.generator.client.ResourceNaming;
 import org.raml.v2.api.RamlModelResult;
@@ -12,9 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
@@ -53,7 +53,6 @@ public class ClientHandlerImplementation {
                 ;
 
         this.addFieldsAndConstructor(model, clientClass);
-        clientClass.addMethod(this.addCallUtilMethod());
         clientClass.addMethods(this.resourceMethods(model.getApiV10().resources(), clientInterface));
 
         clientClass.addTypes(this.resourceTypes(model.getApiV10().resources(), clientInterface));
@@ -65,33 +64,20 @@ public class ClientHandlerImplementation {
     private void addFieldsAndConstructor(RamlModelResult model, TypeSpec.Builder clientClass) {
         ClassName handlersType = ClassName.get(this.apiPackage, this.naming.type(model.getApiV10().title().value(), "Handlers"));
         clientClass.addField(handlersType, "handlers", Modifier.FINAL, Modifier.PRIVATE);
-        clientClass.addField(ExecutorService.class, "executor", Modifier.FINAL, Modifier.PRIVATE);
+
+        clientClass.addMethod(MethodSpec.constructorBuilder()
+                .addAnnotation(Deprecated.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(handlersType, "handlers")
+                .addParameter(Object.class, "executor")
+                .addStatement("this.handlers = handlers")
+                .build());
 
         clientClass.addMethod(MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(handlersType, "handlers")
-                .addParameter(ExecutorService.class, "executor")
                 .addStatement("this.handlers = handlers")
-                .addStatement("this.executor = executor")
                 .build());
-    }
-
-    private MethodSpec addCallUtilMethod() {
-        return MethodSpec.methodBuilder("call")
-                .addModifiers(Modifier.PRIVATE)
-                .addTypeVariable(TypeVariableName.get("T"))
-                .returns(TypeVariableName.get("T"))
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Callable.class), TypeVariableName.get("T")), "callable")
-                .addParameter(String.class, "action")
-                .addException(IOException.class)
-                .beginControlFlow("try")
-                    .addStatement("return this.executor.submit(callable).get()")
-                .nextControlFlow("catch($T | $T e)", InterruptedException.class, ExecutionException.class)
-                    .addStatement("throw new $T($S + action, e)", IOException.class, "error invoking ")
-                .endControlFlow()
-                .build()
-                ;
-
     }
 
     private Iterable<MethodSpec> resourceMethods(List<Resource> resources, ClassName parentInterface) {
@@ -140,10 +126,7 @@ public class ClientHandlerImplementation {
                 .addParameter(requestTypeName, "request")
                 .returns(responseTypeName)
                 .addException(IOException.class)
-                .addStatement("return call(() -> handlers.$L().apply(request), $S)",
-                        this.naming.property(method.resource().displayName().value(), method.method(), "Handler"),
-                        method.resource().displayName().value() + " " + method.method()
-                        )
+                .addStatement("return handlers.$L().apply(request)", this.naming.property(method.resource().displayName().value(), method.method(), "Handler"))
                 .build());
 
         results.add(MethodSpec.methodBuilder(this.naming.property(method.method()))
@@ -151,15 +134,9 @@ public class ClientHandlerImplementation {
                 .addParameter(ParameterizedTypeName.get(ClassName.get(Consumer.class), requestTypeName.nestedClass("Builder")), "request")
                 .returns(responseTypeName)
                 .addException(IOException.class)
-                .addStatement("return call(() -> {\n" +
-                        "\t$T.Builder builder = $T.builder();\n" +
-                        "\trequest.accept(builder);\n" +
-                        "\treturn handlers.$L().apply(builder.build());\n" +
-                        "}, $S)",
-                        requestTypeName, requestTypeName,
-                        this.naming.property(method.resource().displayName().value(), method.method(), "Handler"),
-                        method.resource().displayName().value() + " " + method.method()
-                )
+                .addStatement("$T.Builder builder = $T.builder()", requestTypeName, requestTypeName)
+                .addStatement("request.accept(builder)")
+                .addStatement("return handlers.$L().apply(builder.build())", this.naming.property(method.resource().displayName().value(), method.method(), "Handler"))
                 .build());
 
         return results;

@@ -26,7 +26,7 @@ import java.util.function.Function;
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ClientHandlerImplementationTest {
 
@@ -102,34 +102,12 @@ public class ClientHandlerImplementationTest {
         assertThat(
                 this.classes.get(CLIENT_PACK + ".SimpleResourceTreeAPIHandlersClient").get(),
                 is(aPublic().class_()
-                        .with(aPublic().constructor().withParameters(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get(), ExecutorService.class))
+                        .with(aPublic().constructor().withParameters(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get(), Object.class))
+                        .with(aPublic().constructor().withParameters(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get()))
                         .with(aPrivate().field()
                                 .final_()
                                 .named("handlers")
                                 .withType(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get())
-                        )
-                        .with(aPrivate().field()
-                                .final_()
-                                .named("executor")
-                                .withType(ExecutorService.class)
-                        )
-                )
-        );
-    }
-
-    @Test
-    public void callUtilMethod() throws Exception {
-        assertThat(
-                this.classes.get(CLIENT_PACK + ".SimpleResourceTreeAPIHandlersClient").get(),
-                is(aPublic().class_().with(aPrivate().method()
-                        .withVariable(variableType().named("T"))
-                        .returning(variableType().named("T"))
-                        .named("call")
-                        .withParameters(
-                                genericType().baseClass(Callable.class).withParameters(typeParameter().named("T")),
-                                nonGenericType().baseClass(String.class)
-                        )
-                        .throwing(IOException.class)
                         )
                 )
         );
@@ -176,7 +154,7 @@ public class ClientHandlerImplementationTest {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         return this.classes.get(CLIENT_PACK + ".SimpleResourceTreeAPIHandlersClient")
-                .newInstance(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get(), ExecutorService.class)
+                .newInstance(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get(), Object.class)
                 .with(handlers.get(), executor);
     }
 }
