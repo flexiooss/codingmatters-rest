@@ -109,32 +109,9 @@ public class ClientHandlerImplementationTest {
                                 .named("handlers")
                                 .withType(this.classes.get(API_PACK + ".SimpleResourceTreeAPIHandlers").get())
                         )
-//                        .with(aPrivate().field()
-//                                .final_()
-//                                .named("executor")
-//                                .withType(ExecutorService.class)
-//                        )
                 )
         );
     }
-
-//    @Test
-//    public void callUtilMethod() throws Exception {
-//        assertThat(
-//                this.classes.get(CLIENT_PACK + ".SimpleResourceTreeAPIHandlersClient").get(),
-//                is(aPublic().class_().with(aPrivate().method()
-//                        .withVariable(variableType().named("T"))
-//                        .returning(variableType().named("T"))
-//                        .named("call")
-//                        .withParameters(
-//                                genericType().baseClass(Callable.class).withParameters(typeParameter().named("T")),
-//                                nonGenericType().baseClass(String.class)
-//                        )
-//                        .throwing(IOException.class)
-//                        )
-//                )
-//        );
-//    }
 
     @Test
     public void callWithRequest() throws Exception {
