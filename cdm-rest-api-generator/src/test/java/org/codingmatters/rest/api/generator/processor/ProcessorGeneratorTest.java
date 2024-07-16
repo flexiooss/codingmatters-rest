@@ -58,6 +58,7 @@ public class ProcessorGeneratorTest {
 
     @Test
     public void privateFields() throws Exception {
+        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIProcessor.java");
         assertThat(
                 this.compiled.getClass("org.generated.server.TestAPIProcessor"),
                 is(
@@ -71,7 +72,6 @@ public class ProcessorGeneratorTest {
 
     @Test
     public void instantiate() throws Exception {
-        this.fileHelper.printFile(this.dir.getRoot(), "TestAPIHandlers.java");
 
         Function rootGetHandler = o -> {
             try {
