@@ -190,13 +190,21 @@ public class ProcessorClass {
             this.addRequestHeadersProcessing(resourceMethod, method);
         }
         method
+                .beginControlFlow("if(this.handlers.$L() != null)", this.resourceMethodHandlerMethod(resourceMethod))
                 .addStatement(
                         "$T response = this.handlers.$L().apply(requestBuilder.build())",
                         this.resourceMethodResponseClass(resourceMethod),
                         this.resourceMethodHandlerMethod(resourceMethod)
                 );
-
         this.addResponseProcessingStatements(resourceMethod, method);
+        method
+                .nextControlFlow("else")
+                .addStatement("responseDelegate.status(405)")
+                .addStatement("responseDelegate.contenType($S)", "application/json")
+                .addStatement("responseDelegate.payload($S, $S)", "{\"code\":\"GONE\",\"description\":\"not implemented\"}", "utf-8")
+                .endControlFlow()
+        ;
+
 
     }
 
