@@ -35,9 +35,8 @@ public class CallerParam extends Parameter {
 
     public void addStatement(MethodSpec.Builder method, ParameterSource source) {
         if (this.isSupportedType()) {
-            method.beginControlFlow("if(request.$L() != null)", this.property());
-
             if(source != ParameterSource.URI) {
+                method.beginControlFlow("if(request.$L() != null)", this.property());
                 if (this.isArray()) {
                     method.addStatement("$T<$T> $L = new $T<>()", List.class, String.class, this.property(), LinkedList.class);
 
@@ -50,7 +49,9 @@ public class CallerParam extends Parameter {
                     this.addTranstypeToStringStatement(method, this.property() + "Raw", this.property());
                 }
                 method.addStatement("requester.$L($S, $L)", source.requesterMethod, this.name(), this.property());
+                method.endControlFlow();
             } else {
+                method.beginControlFlow("if(request.$L() != null)", this.property());
                 if(this.isArray()) {
                     method.beginControlFlow("for($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
                     this.addTranstypeToStringStatement(method, this.property() + "RawElement", this.property() + "Element");
@@ -61,9 +62,13 @@ public class CallerParam extends Parameter {
                     this.addTranstypeToStringStatement(method, this.property() + "Raw", this.property());
                     method.addStatement("path = path.replaceFirst($S, $L)", "\\{" + this.name() + "\\}", this.property());
                 }
+                method.nextControlFlow("else")
+                        .addStatement("$T.out.println($S)", System.class, "je suis là")
+                        .addStatement("throw new $T($S)", Requester.MissingUriParameterException.class, "missing mandatory uri parameter : " + this.property())
+                        ;
+                method.endControlFlow();
             }
 
-            method.endControlFlow();
         } else {
             log.error("not yet implemented parameter : name={} type={}", this.name(), this.type());
         }

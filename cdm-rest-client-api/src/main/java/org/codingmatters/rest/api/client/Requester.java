@@ -100,4 +100,14 @@ public interface Requester {
             this.formatter = formatter;
         }
     }
+
+    class MissingUriParameterException extends IOException {
+        public MissingUriParameterException(String message) {
+            super(message);
+        }
+
+        public MissingUriParameterException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }
