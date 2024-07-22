@@ -106,13 +106,8 @@ public class RequesterCaller {
         } else {
             TypeDeclaration body = this.method.body().get(0);
 
-//            caller.addStatement("byte[] requestBody = new byte[0]");
             caller.addStatement("$T requestBody = null", Content.class);
-//            caller.beginControlFlow("if(request.payload() != null)");
             caller.beginControlFlow("if(request.payload() != null)");
-
-
-//            caller.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
 
             SupportedMediaType mediaType;
             try {
@@ -124,9 +119,6 @@ public class RequesterCaller {
 
             ClientRequestBodyWriterStatement writerStatement = mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming);
             writerStatement.append(caller);
-
-//            caller.addStatement("requestBody = out.toByteArray()");
-//            caller.endControlFlow();
             caller.endControlFlow();
 
             writerStatement.appendContentTypeVariableCreate(caller);
