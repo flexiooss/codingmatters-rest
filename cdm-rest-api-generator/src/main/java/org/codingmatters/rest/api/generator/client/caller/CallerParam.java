@@ -63,7 +63,6 @@ public class CallerParam extends Parameter {
                     method.addStatement("path = path.replaceFirst($S, $L)", "\\{" + this.name() + "\\}", this.property());
                 }
                 method.nextControlFlow("else")
-                        .addStatement("$T.out.println($S)", System.class, "je suis là")
                         .addStatement("throw new $T($S)", Requester.MissingUriParameterException.class, "missing mandatory uri parameter : " + this.property())
                         ;
                 method.endControlFlow();
