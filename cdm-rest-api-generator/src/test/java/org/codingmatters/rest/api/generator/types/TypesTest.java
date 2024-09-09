@@ -306,8 +306,9 @@ public class TypesTest {
         assertThat(
                 this.spec.valueSpec("TypeWithProtocol"),
                 is(ValueSpec.valueSpec().name("TypeWithProtocol")
-                        .addConformsTo(Serializable.class.getName())
-                        .addBuilderConformsTo(Serializable.class.getName())
+                        .addConformsTo(Serializable.class.getCanonicalName())
+                        .addBuilderConformsTo(Serializable.class.getCanonicalName())
+                        .addBuilderConformsToParametrized(ParametrizedInterface.class.getCanonicalName())
                         .build()
                 )
         );
@@ -459,6 +460,8 @@ public class TypesTest {
                         .build())
         );
     }
+
+
 
     private Set<String> set(String ... values) {
         return values != null ? new HashSet<String>(Arrays.asList(values)) : new HashSet<>();

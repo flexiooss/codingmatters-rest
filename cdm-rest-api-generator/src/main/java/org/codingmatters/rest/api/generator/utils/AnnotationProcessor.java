@@ -30,6 +30,14 @@ public class AnnotationProcessor {
                     }
                 }
             }
+            if (annotation.name().equalsIgnoreCase("(builder-conforms-to-parametrized)")) {
+                if(annotation.structuredValue().properties().get(0) != null
+                        && annotation.structuredValue().properties().get(0).isArray()) {
+                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
+                        valueSpec.addBuilderConformsToParametrized(typeInstance.value().toString());
+                    }
+                }
+            }
         }
     }
 
@@ -48,6 +56,14 @@ public class AnnotationProcessor {
                         && annotation.structuredValue().properties().get(0).isArray()) {
                     for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
                         valueSpec.addBuilderConformsTo(typeInstance.value().toString());
+                    }
+                }
+            }
+            if (annotation.name().equalsIgnoreCase("(builder-conforms-to-parametrized)")) {
+                if(annotation.structuredValue().properties().get(0) != null
+                        && annotation.structuredValue().properties().get(0).isArray()) {
+                    for (TypeInstance typeInstance : annotation.structuredValue().properties().get(0).values()) {
+                        valueSpec.addBuilderConformsToParametrized(typeInstance.value().toString());
                     }
                 }
             }
