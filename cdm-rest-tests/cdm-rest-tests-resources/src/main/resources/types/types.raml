@@ -12,6 +12,8 @@ annotationTypes:
       type: string[]
    builder-conforms-to:
       type: string[]
+   builder-conforms-to-parametrized:
+      type: string[]
    already-defined:
       type: string
    already-defined-enum:
@@ -101,6 +103,7 @@ types:
     TypeWithProtocol:
         (conforms-to): [java.io.Serializable]
         (builder-conforms-to): [java.io.Serializable]
+        (builder-conforms-to-parametrized): [org.codingmatters.rest.api.generator.types.ParametrizedInterface]
         type: object
 
     TypeWithObjectProperty:
