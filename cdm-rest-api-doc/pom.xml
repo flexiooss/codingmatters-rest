@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.138.0-SNAPSHOT</version>
+        <version>1.139.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdm-rest-api-doc</artifactId>
