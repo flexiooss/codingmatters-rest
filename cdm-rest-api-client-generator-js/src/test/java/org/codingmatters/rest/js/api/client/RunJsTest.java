@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Ignore // hbshed not runnable by ci runner
 public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
@@ -49,7 +50,6 @@ public class RunJsTest {
         }
     }
 
-    @Ignore // hbshed not runnable by ci runner
     @Test
     public void runTests() throws Exception {
         String[] ramlLocation = {
