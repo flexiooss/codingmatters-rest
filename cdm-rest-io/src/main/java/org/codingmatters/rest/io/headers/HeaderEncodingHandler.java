@@ -7,10 +7,12 @@ import java.net.URLEncoder;
 public class HeaderEncodingHandler {
 
     public static boolean needEncoding( String value ) {
-        for( int i = 0; i < value.length(); i++ ){
-            char c = value.charAt( i );
-            if( c <= 31 && c != '\t' || c >= 127 ){
-                return true;
+        if (value != null) {
+            for (int i = 0; i < value.length(); i++) {
+                char c = value.charAt(i);
+                if (c <= 31 && c != '\t' || c >= 127) {
+                    return true;
+                }
             }
         }
         return false;
