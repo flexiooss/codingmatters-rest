@@ -117,6 +117,7 @@ public class ApiGenerator {
             for (TypeDeclaration typeDeclaration : response.headers()) {
                 responseSpec.addProperty(PropertySpec.property()
                         .name(this.naming.property(typeDeclaration.name()))
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", typeDeclaration.name()))))
                         .type(this.typeSpecFromDeclaration(typeDeclaration))
                         .build());
             }

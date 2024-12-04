@@ -19,3 +19,13 @@ mediaType: application/json
                     intArrayParam:
                         type: array
                         items: integer
+
+
+/with-dollars:
+    displayName: with dollars
+    get:
+        responses:
+            200:
+                headers:
+                    $headerWithDollar:
+                        type: string
