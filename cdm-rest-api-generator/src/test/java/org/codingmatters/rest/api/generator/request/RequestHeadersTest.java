@@ -106,4 +106,19 @@ public class RequestHeadersTest {
                         .build())
         );
     }
+
+    @Test
+    public void dollarParameters() throws Exception {
+        assertThat(
+                this.spec.valueSpec("WithDollarsGetRequest").propertySpec("headerWithDollar"),
+                is(PropertySpec.property().name("headerWithDollar")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "$headerWithDollar"))))
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
+                        )
+                        .build())
+        );
+    }
 }
