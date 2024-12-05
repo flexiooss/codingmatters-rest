@@ -17,3 +17,9 @@ mediaType: application/json
             intArrayParam:
                 type: array
                 items: integer
+
+/with-dollars:
+    displayName: with dollars
+    get:
+        queryParameters:
+            $headerWithDollar: string

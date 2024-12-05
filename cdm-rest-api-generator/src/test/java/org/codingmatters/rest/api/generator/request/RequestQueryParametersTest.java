@@ -86,4 +86,22 @@ public class RequestQueryParametersTest {
                         .build())
         );
     }
+
+    @Test
+    public void dollarParameters() throws Exception {
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            System.out.println(valueSpec);
+        }
+        assertThat(
+                spec.valueSpec("WithDollarsGetRequest").propertySpec("headerWithDollar"),
+                is(PropertySpec.property().name("headerWithDollar")
+                        .hints(new HashSet<>(Arrays.asList(String.format("property:raw(%s)", "$headerWithDollar"))))
+                        .type(PropertyTypeSpec.type()
+                                .cardinality(PropertyCardinality.SINGLE)
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
+                        )
+                        .build())
+        );
+    }
 }
