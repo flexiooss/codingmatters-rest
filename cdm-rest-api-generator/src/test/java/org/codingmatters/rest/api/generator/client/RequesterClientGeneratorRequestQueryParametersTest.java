@@ -86,4 +86,33 @@ public class RequesterClientGeneratorRequestQueryParametersTest {
         assertThat(requesterFactory.calls().get(0).parameters().get("booleanParam"), is(arrayContaining("true")));
         assertThat(requesterFactory.calls().get(0).parameters().get("booleanArrayParam"), is(arrayContaining("true", "false")));
     }
+
+
+    @Test
+    public void dollars() throws Exception {
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
+        JsonFactory jsonFactory = new JsonFactory();
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        ClassLoaderHelper classes = this.testSetup.compiled().classLoader();
+
+        ObjectHelper client = classes.get(CLIENT_PACK + ".TestAPIRequesterClient")
+                .newInstance(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
+                .with(requesterFactory, jsonFactory, baseUrl);
+
+        ObjectHelper resource = client.call("dollars");
+
+        ObjectHelper request = classes.get(API_PACK + ".DollarsGetRequest").call("builder")
+                .call("queryParameter", String.class).with("val")
+                .call("build");
+
+        resource.call("get", classes.get(API_PACK + ".DollarsGetRequest").get()).with(request.get());
+
+        assertThat(requesterFactory.calls(), hasSize(1));
+        assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
+        assertThat(requesterFactory.calls().get(0).parameters().get("$query-parameter"), is(arrayContaining("val")));
+    }
+
 }

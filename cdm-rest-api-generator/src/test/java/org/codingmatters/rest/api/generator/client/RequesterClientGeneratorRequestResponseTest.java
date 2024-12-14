@@ -17,6 +17,8 @@ import org.junit.rules.TemporaryFolder;
 import org.raml.v2.api.RamlModelBuilder;
 import org.raml.v2.api.RamlModelResult;
 
+import java.io.IOException;
+
 import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.*;
 
 public class RequesterClientGeneratorRequestResponseTest {
@@ -52,6 +54,7 @@ public class RequesterClientGeneratorRequestResponseTest {
     }
 
     @Test
-    public void compilesFine() {
+    public void compilesFine() throws IOException {
+        this.fileHelper.printFile(this.dir.getRoot(), "DollarsClient.java");
     }
 }

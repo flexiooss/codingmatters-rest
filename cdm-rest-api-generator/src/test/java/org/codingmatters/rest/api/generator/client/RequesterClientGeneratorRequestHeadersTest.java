@@ -60,4 +60,34 @@ public class RequesterClientGeneratorRequestHeadersTest {
         assertThat(requesterFactory.calls().get(0).headers().get("stringParam"), is(arrayContaining("val")));
         assertThat(requesterFactory.calls().get(0).headers().get("arrayParam"), is(arrayContaining("v1", "v2")));
     }
+    @Test
+    public void headersWithDollars() throws Exception {
+        UrlProvider baseUrl = () -> "https://path.to/me";
+        TestRequesterFactory requesterFactory = new TestRequesterFactory(baseUrl);
+        JsonFactory jsonFactory = new JsonFactory();
+
+        requesterFactory.nextResponse(TestRequesterFactory.Method.GET, 200);
+
+        Object client = this.testSetup.compiled().getClass(CLIENT_PACK + ".TestAPIRequesterClient")
+                .getConstructor(RequesterFactory.class, JsonFactory.class, UrlProvider.class)
+                .newInstance(requesterFactory, jsonFactory, baseUrl);
+
+        Object resource = this.testSetup.compiled().on(client).invoke("dollars");
+
+        Object requestBuilder = this.testSetup.compiled()
+                .onClass(API_PACK + ".DollarsGetRequest")
+                .invoke("builder");
+
+        this.testSetup.compiled().on(requestBuilder).invoke("header", String.class).with("val");
+
+        Object request = this.testSetup.compiled().on(requestBuilder).invoke("build");
+
+        this.testSetup.compiled().on(resource)
+                .invoke("get", this.testSetup.compiled().getClass(API_PACK + ".DollarsGetRequest"))
+                .with(request);
+
+        assertThat(requesterFactory.calls(), hasSize(1));
+        assertThat(requesterFactory.calls().get(0).method(), is(TestRequesterFactory.Method.GET));
+        assertThat(requesterFactory.calls().get(0).headers().get("$header"), is(arrayContaining("val")));
+    }
 }

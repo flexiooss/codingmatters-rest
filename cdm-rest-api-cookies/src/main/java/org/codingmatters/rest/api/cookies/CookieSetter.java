@@ -31,6 +31,10 @@ public class CookieSetter {
         }
     }
 
+    public String[] cookieValues() {
+        return this.toSet.stream().map(toSetCookie -> toSetCookie.formatted()).toArray(i -> new String[i]);
+    }
+
     private class ToSetCookie {
         public final String name;
         public final String value;

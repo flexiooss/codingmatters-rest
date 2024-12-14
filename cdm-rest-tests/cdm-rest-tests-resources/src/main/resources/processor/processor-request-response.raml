@@ -53,6 +53,16 @@ types:
       type: object
 
 
+/dollars:
+  displayName: Dollars
+  post:
+    body: Req
+    responses:
+      200:
+        headers:
+          $header: string
+        body: Resp
+
 annotationTypes:
    value-object-hint:
       type: string[]

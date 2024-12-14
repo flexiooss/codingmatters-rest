@@ -116,6 +116,16 @@ public class CookieSetterTest {
     }
 
     @Test
+    public void whenCookieSet__thenCookieValuesContainCookie() throws Exception {
+        String[] actual = this.cookieSetter.set("name", "value", CookieAttributes.builder()
+                .httpOnly(false)
+                .build()
+        ).cookieValues();
+
+        assertThat(actual, is(arrayContaining("name=value")));
+    }
+
+    @Test
     public void givenResponseWithoutSetCookie__whenCookieSetWithSameSiteToNone__thenAttributeAppended_andSecureIsActivated() throws Exception {
         this.cookieSetter.set("name", "value", CookieAttributes.builder()
                 .sameSite(CookieAttributes.SameSite.None)

@@ -159,3 +159,14 @@ types:
           properties:
             prop:
               (already-defined-enum): java.time.DayOfWeek
+
+    SpecialChars:
+      type: object
+      properties:
+        $EntityContainer: string
+        '@odata.count': integer
+
+#        .property("$EntityContainer",v->v.stringValue("test.container"))
+#        .property("$Version",v->v.stringValue("4.0"))
+#        .property("@odata.count",v->v.doubleValue(8.0))
+#        .property("@odata.context",v->v.stringValue("url"))
