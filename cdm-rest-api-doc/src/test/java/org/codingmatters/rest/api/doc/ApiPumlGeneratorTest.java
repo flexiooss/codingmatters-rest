@@ -207,6 +207,18 @@ public class ApiPumlGeneratorTest {
                         "<- api: 200: <b>[[#AlreadyDefinedType-type AlreadyDefinedType]][]</b> " ,
                         "deactivate api",
                         "end",
+                        "" ,
+                        "== Dollars ==" ,
+                        "|||" ,
+                        "group '[[#Dollars-post-method Dollars POST]]'" ,
+                        "--> api: <b>POST</b> /dollars " +
+                        "\\n\\t<b>[[#Req-type Req]]</b>" ,
+                        "activate api" ,
+                        "<- api: 200: <b>[[#Resp-type Resp]]</b> " +
+                        "\\n\\t[\\t<b>$header</b>=string" +
+                        "\\n\\t\\t]" ,
+                        "deactivate api" ,
+                        "end",
                         "@enduml"
                 ))
         );
@@ -325,6 +337,17 @@ public class ApiPumlGeneratorTest {
                                 "\\n\\t\\t<b>boolParam</b>=boolean" +
                                 "\\n\\t\\t<b>boolArrayParam</b>=boolean[]" +
                                 "\\n\\t\\t]" ,
+                        "activate api" ,
+                        "deactivate api" ,
+                        "end",
+                        "",
+                        "== dollars ==" ,
+                        "|||" ,
+                        "group '[[#Dollars-get-method dollars GET]]'" ,
+                        "--> api: <b>GET</b> /dollars?" +
+                        "\\n\\t\\t<b>$query-parameter</b>=string " +
+                        "\\n\\t[\\t<b>$header</b>=string" +
+                        "\\n\\t\\t]" ,
                         "activate api" ,
                         "deactivate api" ,
                         "end",
