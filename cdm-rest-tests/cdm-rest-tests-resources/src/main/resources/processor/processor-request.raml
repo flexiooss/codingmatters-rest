@@ -112,7 +112,13 @@ mediaType: application/json
         type: array
         items: boolean
 
-
+/dollars:
+  displayName: dollars
+  get:
+    headers:
+      $header: string
+    queryParameters:
+      $query-parameter: string
 
 types:
   Req:

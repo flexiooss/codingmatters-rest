@@ -34,6 +34,8 @@ public class TypesTest {
         this.spec = new ApiTypesGenerator().generate(new RamlModelBuilder().buildApi(this.fileHelper.fileResource("types/types.raml")));
     }
 
+
+
     @Test
     public void simplePropertyType() throws Exception {
         assertThat(
@@ -457,6 +459,34 @@ public class TypesTest {
                                 .cardinality(PropertyCardinality.LIST)
                         )
                         .hints(new HashSet<String>(){{add("property:raw(props)");}})
+                        .build())
+        );
+    }
+
+    @Test
+    public void specialChars() {
+        assertThat(
+                this.spec.valueSpec("SpecialChars").propertySpec("entityContainer"),
+                is(PropertySpec.property()
+                        .name("entityContainer")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(String.class.getName())
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw($EntityContainer)");}})
+                        .build())
+        );
+        assertThat(
+                this.spec.valueSpec("SpecialChars").propertySpec("odataCount"),
+                is(PropertySpec.property()
+                        .name("odataCount")
+                        .type(PropertyTypeSpec.type()
+                                .typeKind(TypeKind.JAVA_TYPE)
+                                .typeRef(Long.class.getName())
+                                .cardinality(PropertyCardinality.SINGLE)
+                        )
+                        .hints(new HashSet<String>(){{add("property:raw(@odata.count)");}})
                         .build())
         );
     }
