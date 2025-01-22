@@ -3,9 +3,11 @@ package org.codingmatters.rest.api.generator.utils;
 import org.codingmatters.value.objects.spec.AnonymousValueSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
+import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeInstance;
 import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,5 +88,20 @@ public class AnnotationProcessor {
             prop.hints(hints);
         }
 
+    }
+
+    public void appendRawNameAnnotationIfNotAlreadySet(PropertySpec.Builder prop, TypeDeclaration declaration) {
+        Set<String> hints = new HashSet<>();
+        if(prop.build().hints() != null) {
+            hints.addAll(Arrays.asList(prop.build().hints()));
+        }
+        for (String hint : hints) {
+            if(hint.startsWith("property:raw(")) {
+                return;
+            }
+        }
+
+        hints.add(String.format("property:raw(%s)", declaration.name()));
+        prop.hints(hints);
     }
 }
