@@ -298,6 +298,17 @@ public class TypesTest {
                                         .typeKind(TypeKind.JAVA_TYPE)
                                         .typeRef(String.class.getName())
                                 ))
+                        .addProperty(PropertySpec.property()
+                                .name("propertyRawAnnotated")
+                                .hints(set(
+                                    "property:raw(funky-name)"
+                                ))
+                                .type(PropertyTypeSpec.type()
+                                        .cardinality(PropertyCardinality.SINGLE)
+                                        .typeKind(TypeKind.JAVA_TYPE)
+                                        .typeRef(String.class.getName())
+                                )
+                                .build())
                         .build()
                 )
         );

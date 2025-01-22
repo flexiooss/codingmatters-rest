@@ -99,6 +99,10 @@ types:
                 (value-object-hint):
                     - mongo:object-id
                     - mongo:field(_id)
+            propertyRawAnnotated:
+              type: string
+              (value-object-hint):
+                - property:raw(funky-name)
 
     TypeWithProtocol:
         (conforms-to): [java.io.Serializable]

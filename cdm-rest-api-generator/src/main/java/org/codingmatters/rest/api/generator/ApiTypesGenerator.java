@@ -38,9 +38,10 @@ public class ApiTypesGenerator {
                         String pname = declaration.name();
                         PropertySpec.Builder prop = PropertySpec.property()
                                 .name(this.naming.property(declaration.name()))
-                                .hints(this.rawNameHint(declaration))
                                 .type(this.typeSpecFromDeclaration(declaration));
                         this.annotationProcessor.appendValueObjectHints(prop, declaration.annotations());
+                        this.annotationProcessor.appendRawNameAnnotationIfNotAlreadySet(prop, declaration);
+
                         valueSpec.addProperty(prop);
                     }
 
