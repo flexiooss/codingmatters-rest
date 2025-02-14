@@ -110,11 +110,18 @@ public class UndertowRequestDelegate implements RequestDelegate {
             this.headersCache = RequestDelegate.createHeaderMap();
             for (HeaderValues headerValues : this.exchange.getRequestHeaders()) {
                 String headerName = headerValues.getHeaderName().toString();
-                List<String> collect = new ArrayList<>( headerValues );
-                if( headerName.endsWith( "*" )){
-                    headerName = headerName.substring( 0, headerName.length()-1 );
-                    collect = headerValues.stream().map( HeaderEncodingHandler::decodeHeader ).collect( Collectors.toList() );
+                List<String> collect = new ArrayList<>();
+                if (headerName.endsWith("*")) {
+                    headerName = headerName.substring(0, headerName.length() - 1);
                 }
+                for (String headerValue : headerValues) {
+                    if(HeaderEncodingHandler.isEncoded(headerValue)) {
+                        collect.add(HeaderEncodingHandler.decodeHeader(headerValue));
+                    } else {
+                        collect.add(headerValue);
+                    }
+                }
+
                 this.headersCache.putIfAbsent( headerName, new ArrayList<>() );
                 this.headersCache.get( headerName ).addAll( collect );
             }

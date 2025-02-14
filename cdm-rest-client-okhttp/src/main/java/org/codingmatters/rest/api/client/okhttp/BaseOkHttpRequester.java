@@ -242,6 +242,8 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
                     if( HeaderEncodingHandler.needEncoding( value )){
                         String name = headerEntry.getKey() + "*";
                         result.addHeader( name, HeaderEncodingHandler.encodeHeader( value ) );
+//                        RFC 8187
+//                        result.addHeader( headerEntry.getKey(), HeaderEncodingHandler.encodeHeader( value ) );
                     } else {
                         result.addHeader( headerEntry.getKey(), value );
                     }
