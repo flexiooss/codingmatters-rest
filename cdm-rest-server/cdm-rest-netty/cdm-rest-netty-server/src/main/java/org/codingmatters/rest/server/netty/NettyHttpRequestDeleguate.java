@@ -112,11 +112,18 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
             if(this.request.headers() != null) {
                 for (String headerName : this.request.headers().names()) {
                     List<String> headerValues = this.request.headers().getAll(headerName);
-                    List<String> collect = new ArrayList<>(headerValues);
+                    List<String> collect = new ArrayList<>();
                     if (headerName.endsWith("*")) {
                         headerName = headerName.substring(0, headerName.length() - 1);
-                        collect = headerValues.stream().map(HeaderEncodingHandler::decodeHeader).collect(Collectors.toList());
                     }
+                    for (String headerValue : headerValues) {
+                        if(HeaderEncodingHandler.isEncoded(headerValue)) {
+                            collect.add(HeaderEncodingHandler.decodeHeader(headerValue));
+                        } else {
+                            collect.add(headerValue);
+                        }
+                    }
+
                     this.headersCache.putIfAbsent(headerName, new ArrayList<>());
                     this.headersCache.get(headerName).addAll(collect);
                 }

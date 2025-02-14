@@ -160,7 +160,7 @@ public abstract class RequestDelegateAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    public void headers() throws Exception {
+    public void whenHeaderWithAsciiChars__thenValueLeftAsIs() throws Exception {
         AtomicReference<RequestDelegate> req = new AtomicReference<>();
         this.withProcessor((requestDeleguate, responseDeleguate) -> {
             req.set(requestDeleguate);
@@ -168,7 +168,27 @@ public abstract class RequestDelegateAcceptanceTest extends BaseAcceptanceTest {
         this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto", "val1" ).get().build()).execute();
         assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "val1" ) );
 
+    }
+
+    @Test
+    public void whenHeaderEndingWithAStar__thenValueDecodedFromUtf8_thisIsLegacyMode() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
         this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto*", "utf-8''val%C3%A9" ).get().build()).execute();
+        assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "valé" ) );
+    }
+
+    @Test
+    public void whenHeaderEndingWithEncodedUtf8Value__thenValueDecodedFromUtf8_compliantWithRFC8187() throws Exception {
+        AtomicReference<RequestDelegate> req = new AtomicReference<>();
+        this.withProcessor((requestDeleguate, responseDeleguate) -> {
+            req.set(requestDeleguate);
+        });
+
+        this.client.newCall(this.requestBuilder("/request/path").addHeader( "toto", "utf-8''val%C3%A9" ).get().build()).execute();
         assertThat( req.get().headers().get( "toto" ).get( 0 ), is( "valé" ) );
     }
 

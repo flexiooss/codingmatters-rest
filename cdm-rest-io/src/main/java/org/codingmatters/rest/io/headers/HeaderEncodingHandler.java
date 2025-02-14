@@ -18,6 +18,10 @@ public class HeaderEncodingHandler {
         return false;
     }
 
+    public static boolean isEncoded(String value) {
+        return value != null && value.startsWith("utf-8''");
+    }
+
     public static String encodeHeader( String value ) {
         try {
             return "utf-8''" + URLEncoder.encode( value, "utf-8" );
