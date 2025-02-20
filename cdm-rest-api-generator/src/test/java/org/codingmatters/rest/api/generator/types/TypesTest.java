@@ -396,7 +396,6 @@ public class TypesTest {
                         .build())
         );
 
-        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper"));
         assertThat(
                 this.spec.valueSpec("TypeWithAlreadyDefinedProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),
                 is(PropertySpec.property()
@@ -413,7 +412,6 @@ public class TypesTest {
 
     @Test
     public void typeWithAlreadyDefinedEnumProperty() {
-        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty"));
         assertThat(
                 this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("prop"),
                 is(PropertySpec.property()
@@ -427,7 +425,6 @@ public class TypesTest {
                         .build())
         );
 
-        System.out.println(this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("deeper"));
         assertThat(
                 this.spec.valueSpec("TypeWithAlreadyDefinedEnumProperty").propertySpec("deeper").typeSpec().embeddedValueSpec().propertySpec("prop"),
                 is(PropertySpec.property()

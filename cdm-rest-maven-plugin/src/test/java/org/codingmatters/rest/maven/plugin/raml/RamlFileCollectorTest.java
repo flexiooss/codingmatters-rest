@@ -76,9 +76,9 @@ public class RamlFileCollectorTest {
             assertThat(specFile.getAbsolutePath(), startsWith(System.getProperty("java.io.tmpdir")));
 
             RamlModelResult raml = new RamlModelBuilder().buildApi(specFile);
-            for (ValidationResult validationResult : raml.getValidationResults()) {
-                System.out.println(validationResult);
-            }
+//            for (ValidationResult validationResult : raml.getValidationResults()) {
+//                System.out.println(validationResult);
+//            }
 
             assertThat(raml.hasErrors(), is(false));
             assertThat(raml.getApiV10().types().get(0).name(), is("AType"));
@@ -152,9 +152,9 @@ public class RamlFileCollectorTest {
             assertThat(specFile.getAbsolutePath(), startsWith(System.getProperty("java.io.tmpdir")));
 
             RamlModelResult raml = new RamlModelBuilder().buildApi(specFile);
-            for (ValidationResult validationResult : raml.getValidationResults()) {
-                System.out.println(validationResult);
-            }
+//            for (ValidationResult validationResult : raml.getValidationResults()) {
+//                System.out.println(validationResult);
+//            }
 
             assertThat(raml.hasErrors(), is(false));
             assertThat(raml.getApiV10().types().get(0).name(), is("AType"));
@@ -232,9 +232,9 @@ public class RamlFileCollectorTest {
             assertThat(specFile.getAbsolutePath(), startsWith(System.getProperty("java.io.tmpdir")));
 
             RamlModelResult raml = new RamlModelBuilder().buildApi(specFile);
-            for (ValidationResult validationResult : raml.getValidationResults()) {
-                System.out.println(validationResult);
-            }
+//            for (ValidationResult validationResult : raml.getValidationResults()) {
+//                System.out.println(validationResult);
+//            }
 
             assertThat(raml.hasErrors(), is(false));
             assertThat(raml.getApiV10().types().get(0).name(), is("AType"));

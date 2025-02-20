@@ -262,8 +262,8 @@ public class ApiPumlGenerator {
             }
             throw new AssertionError("failed generating svg from puml : " + pumlFile.getAbsolutePath());
         }
-        for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
-            System.out.println("generated : " + generatedImage);
-        }
+//        for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
+//            System.out.println("generated : " + generatedImage);
+//        }
     }
 }

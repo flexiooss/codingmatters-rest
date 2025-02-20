@@ -22,8 +22,6 @@ public class RequestDelegateUriParameterTest {
         RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/blop/blop");
 
-        System.out.println(parameters);
-
         assertThat(parameters.size(), is(0));
     }
 
@@ -31,8 +29,6 @@ public class RequestDelegateUriParameterTest {
     public void noMatch() throws Exception {
         RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/blop/{param-name}");
-
-        System.out.println(parameters);
 
         assertThat(parameters.size(), is(1));
         assertThat(parameters.get("param-name"), is(empty()));
@@ -43,8 +39,6 @@ public class RequestDelegateUriParameterTest {
         RequestDelegate deleguate = this.withPath("/start/param-value");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param-name}");
 
-        System.out.println(parameters);
-
         assertThat(parameters.size(), is(1));
         assertThat(parameters.get("param-name"), contains("param-value"));
     }
@@ -53,8 +47,6 @@ public class RequestDelegateUriParameterTest {
     public void middlePart() throws Exception {
         RequestDelegate deleguate = this.withPath("/start/param-value/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param-name}/end");
-
-        System.out.println(parameters);
 
         assertThat(parameters.size(), is(1));
         assertThat(parameters.get("param-name"), contains("param-value"));
@@ -76,8 +68,6 @@ public class RequestDelegateUriParameterTest {
         RequestDelegate deleguate = this.withPath("/start/param1-value/middle/param2-value/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param1-name}/middle/{param2-name}/end");
 
-        System.out.println(parameters);
-
         assertThat(parameters.size(), is(2));
         assertThat(parameters.get("param1-name"), contains("param1-value"));
         assertThat(parameters.get("param2-name"), contains("param2-value"));
@@ -87,8 +77,6 @@ public class RequestDelegateUriParameterTest {
     public void listParam() throws Exception {
         RequestDelegate deleguate = this.withPath("/start/param-value1/middle/param-value2/end");
         Map<String, List<String>> parameters = deleguate.uriParameters("/start/{param}/middle/{param}/end");
-
-        System.out.println(parameters);
 
         assertThat(parameters.size(), is(1));
         assertThat(parameters.get("param"), contains("param-value1", "param-value2"));

@@ -43,14 +43,12 @@ public class Http2VsHttp1ConnectionOverheadTest {
         return new HttpRequestHandler() {
             @Override
             protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
-                System.out.println("BODY :: " + body);
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
                 byte[] bytes = "Test response : OK.".getBytes(StandardCharsets.UTF_8);
                 response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
                 response.content().writeBytes(bytes);
                 response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-                System.out.println("RESPONSE :: OK");
                 return response;
             }
         };
@@ -91,9 +89,6 @@ public class Http2VsHttp1ConnectionOverheadTest {
             this.h1Client.newCall(new Request.Builder().url(this.url).get().build()).execute();
         }
         long h1Ellapsed = System.currentTimeMillis() - h1Start;
-
-        System.out.println("h1 :: " + h1Ellapsed);
-        System.out.println("h2 :: " + h2Ellapsed);
 
         assertThat(h1Ellapsed, is(greaterThan(h2Ellapsed * 2 / 3)));
     }

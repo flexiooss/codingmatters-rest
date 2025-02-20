@@ -51,14 +51,12 @@ public abstract class AbstractHttpServerTest {
         new HttpRequestHandler() {
             @Override
             protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
-                System.out.println("BODY :: " + body);
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
                 byte[] bytes = "Test response : OK.".getBytes(StandardCharsets.UTF_8);
                 response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
                 response.content().writeBytes(bytes);
                 response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-                System.out.println("RESPONSE :: OK");
                 return response;
             }
         }
@@ -204,7 +202,6 @@ public abstract class AbstractHttpServerTest {
         this.handler.set(new HttpRequestHandler() {
             @Override
             protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
-                System.out.println("request at :: " + System.currentTimeMillis());
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
 
@@ -218,7 +215,6 @@ public abstract class AbstractHttpServerTest {
         Request.Builder request = new Request.Builder()
                 .url(this.url + "/path/to/here").get();
         Response response = this.client.newCall(request.build()).execute();
-        System.out.println(response.body().contentLength());
 
         assertThat(response.body().contentLength(), is(Long.valueOf(content.length)));
         assertThat(response.code(), is(200));
@@ -227,7 +223,6 @@ public abstract class AbstractHttpServerTest {
     @Test
     public void whenReading100MoUpload__thenOK() throws Exception {
         File upload = this.generateFile(100);
-        System.out.println("UPLOAD SIZE :: " + upload.length());
         Request.Builder request = new Request.Builder()
                 .url(this.url + "/path/to/here").post(RequestBody.create(upload, MediaType.parse("text/plain")));
         Response response = this.client.newCall(request.build()).execute();
@@ -237,7 +232,6 @@ public abstract class AbstractHttpServerTest {
     @Test
     public void whenReadingMoreThan100MoUpload__thenKO() throws Exception {
         File upload = this.generateFile(110);
-        System.out.println("UPLOAD SIZE :: " + upload.length());
         Request.Builder request = new Request.Builder()
                 .url(this.url + "/path/to/here").post(RequestBody.create(upload, MediaType.parse("text/plain")));
         Response response = this.client.newCall(request.build()).execute();

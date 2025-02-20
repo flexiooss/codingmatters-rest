@@ -271,7 +271,6 @@ public class RamlParserTypesTest {
     //    @Test
     public void testBiDim() throws Exception {
         ParsedRaml raml = new RamlParser( typesPackage, apiPackage ).parseFile( getRaml( "toto.raml" ) );
-        System.out.println( "end" );
     }
 
     private String getRaml( String ramlFile ) {

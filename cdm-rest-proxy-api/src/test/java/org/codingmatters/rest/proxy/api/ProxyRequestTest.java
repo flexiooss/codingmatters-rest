@@ -144,7 +144,6 @@ public class ProxyRequestTest {
                 .to(requesterFactory.create());
 
         assertThat(this.requesterFactory.calls(), hasSize(1));
-        System.out.println(Arrays.asList(this.requesterFactory.calls().get(0).headers().get("h")));
         assertThat(this.requesterFactory.calls().get(0).headers().get("h"), is(arrayContaining("hv1", "hv2", "hv3", "hv4")));
     }
 

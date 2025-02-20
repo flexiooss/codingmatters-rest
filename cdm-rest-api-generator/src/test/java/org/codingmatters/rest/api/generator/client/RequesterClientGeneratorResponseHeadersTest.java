@@ -67,8 +67,6 @@ public class RequesterClientGeneratorResponseHeadersTest {
                                 .get()
                     );
 
-        System.out.println(response.get());
-
         ObjectHelper status200 = response.as(c(API_PACK + ".HeadersGetResponse"))
                 .call("status200").as(API_PACK + ".headersgetresponse.Status200");
 
