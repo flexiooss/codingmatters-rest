@@ -56,6 +56,9 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+    @Parameter(defaultValue = "true", readonly = true)
+    private boolean generateDescriptor;
+
     private String jsVersion;
     private String typesPackage;
     private String clientPackage;
@@ -176,29 +179,31 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             throw new MojoExecutionException( "error generating handler client implementation from raml model", e );
         }
 
-        try {
-            String descriptor = String.format("""
-                    {
-                      "root-package": "%s",
-                      "api-spec-resource": "%s"
-                    }
-                    """,
-                    this.rootPackage,
-                    this.ramlResource()
-                    );
-            File descriptorFile = new File(this.outputDirectory, "client-descriptors/" + new Naming().apiName(ramlModel.getApiV10().title().value()) + ".json");
+        if(this.generateDescriptor) {
             try {
-                descriptorFile.getParentFile().mkdirs();
-                descriptorFile.createNewFile();
-                try (Writer out = new FileWriter(descriptorFile)) {
-                    out.write(descriptor);
-                    out.flush();
+                String descriptor = String.format("""
+                                {
+                                  "root-package": "%s",
+                                  "api-spec-resource": "%s"
+                                }
+                                """,
+                        this.rootPackage,
+                        this.ramlResource()
+                );
+                File descriptorFile = new File(this.outputDirectory, "client-descriptors/" + new Naming().apiName(ramlModel.getApiV10().title().value()) + ".json");
+                try {
+                    descriptorFile.getParentFile().mkdirs();
+                    descriptorFile.createNewFile();
+                    try (Writer out = new FileWriter(descriptorFile)) {
+                        out.write(descriptor);
+                        out.flush();
+                    }
+                } catch (IOException e) {
+                    throw new MojoExecutionException("error writing descriptor from raml model", e);
                 }
-            }catch (IOException e) {
-                throw new MojoExecutionException( "error writing descriptor from raml model", e );
+            } catch (MojoFailureException e) {
+                throw new MojoExecutionException("error generating descriptor from raml model", e);
             }
-        } catch (MojoFailureException e) {
-            throw new MojoExecutionException( "error generating descriptor from raml model", e );
         }
     }
 
