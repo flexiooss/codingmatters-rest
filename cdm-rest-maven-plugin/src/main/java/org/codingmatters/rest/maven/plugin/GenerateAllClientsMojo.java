@@ -56,7 +56,7 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
-    @Parameter(defaultValue = "true", readonly = true)
+    @Parameter(defaultValue = "true", readonly = true, alias = "generate-descriptor")
     private boolean generateDescriptor;
 
     private String jsVersion;
