@@ -30,6 +30,11 @@ public abstract class AbstractGenerateAPIMojo extends AbstractMojo {
     private String apiSpecResource;
 
     protected RamlModelResult resolveRamlModel() throws MojoFailureException, MojoExecutionException {
+        String resource = this.ramlResource();
+        return parseFile(resource);
+    }
+
+    protected String ramlResource() throws MojoFailureException {
         String resource;
         if(this.apiSpecFile != null) {
             resource = this.apiSpecFile.getAbsolutePath();
@@ -38,8 +43,7 @@ public abstract class AbstractGenerateAPIMojo extends AbstractMojo {
         } else {
             throw new MojoFailureException("must provide path to the RAML spec, either as a file in apiSpecFile property, or as a classpath resource with apiSpecResource property.");
         }
-
-        return parseFile(resource);
+        return resource;
     }
 
     protected RamlModelResult parseFile(String resource) throws MojoFailureException {

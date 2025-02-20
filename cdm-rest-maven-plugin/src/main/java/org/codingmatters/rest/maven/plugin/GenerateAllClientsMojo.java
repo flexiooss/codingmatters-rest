@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.codingmatters.rest.api.generator.ClientHandlerImplementation;
 import org.codingmatters.rest.api.generator.ClientInterfaceGenerator;
 import org.codingmatters.rest.api.generator.ClientRequesterImplementation;
@@ -13,6 +14,7 @@ import org.codingmatters.rest.php.api.client.PhpClientRequesterGenerator;
 import org.codingmatters.rest.php.api.client.generator.ComposerFileGenerator;
 import org.codingmatters.rest.php.api.client.model.ApiGeneratorPhp;
 import org.codingmatters.rest.php.api.client.model.ApiTypesPhpGenerator;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
@@ -50,6 +52,9 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
 
     @Parameter(defaultValue = "${basedir}")
     private String baseDir;
+
+    @Parameter(defaultValue = "${project}", readonly = true)
+    private MavenProject project;
 
     private String jsVersion;
     private String typesPackage;
@@ -169,6 +174,31 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             new ClientHandlerImplementation( clientPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
         } catch( IOException e ) {
             throw new MojoExecutionException( "error generating handler client implementation from raml model", e );
+        }
+
+        try {
+            String descriptor = String.format("""
+                    {
+                      "root-package": "%s",
+                      "api-spec-resource": "%s"
+                    }
+                    """,
+                    this.rootPackage,
+                    this.ramlResource()
+                    );
+            File descriptorFile = new File(this.outputDirectory, "client-descriptors/" + new Naming().apiName(ramlModel.getApiV10().title().value()) + ".json");
+            try {
+                descriptorFile.getParentFile().mkdirs();
+                descriptorFile.createNewFile();
+                try (Writer out = new FileWriter(descriptorFile)) {
+                    out.write(descriptor);
+                    out.flush();
+                }
+            }catch (IOException e) {
+                throw new MojoExecutionException( "error writing descriptor from raml model", e );
+            }
+        } catch (MojoFailureException e) {
+            throw new MojoExecutionException( "error generating descriptor from raml model", e );
         }
     }
 
