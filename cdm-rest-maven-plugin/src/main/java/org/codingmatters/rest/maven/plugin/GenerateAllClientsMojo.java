@@ -74,6 +74,9 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
                 collect.add( ramlModelResult );
                 generateJavaClient( ramlModelResult );
                 generatePhpClient( ramlModelResult );
+                if(this.generateDescriptor) {
+                    this.generateDescriptor(ramlModelResult, ramlFile);
+                }
             }
             generateJSClients( collect.toArray( new RamlModelResult[0] ) );
         } else {
@@ -81,6 +84,16 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             generateJSClient( ramlModel );
             generateJavaClient( ramlModel );
             generatePhpClient( ramlModel );
+
+            if(this.generateDescriptor) {
+                String ramlResource;
+                try {
+                    ramlResource = this.ramlResource();
+                } catch (MojoFailureException e) {
+                    throw new MojoExecutionException("error generating descriptor from raml model", e);
+                }
+                this.generateDescriptor(ramlModel, ramlResource);
+            }
         }
     }
 
@@ -177,22 +190,6 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
             new ClientHandlerImplementation( clientPackage, apiPackage, typesPackage, javaOutputDirectory ).generate( ramlModel );
         } catch( IOException e ) {
             throw new MojoExecutionException( "error generating handler client implementation from raml model", e );
-        }
-
-        if(this.generateDescriptor) {
-            if(this.ramlList != null) {
-                for (String raml : this.ramlList) {
-                    this.generateDescriptor(ramlModel, raml);
-                }
-            } else {
-                String ramlResource;
-                try {
-                    ramlResource = this.ramlResource();
-                } catch (MojoFailureException e) {
-                    throw new MojoExecutionException("error generating descriptor from raml model", e);
-                }
-                this.generateDescriptor(ramlModel, ramlResource);
-            }
         }
     }
 
