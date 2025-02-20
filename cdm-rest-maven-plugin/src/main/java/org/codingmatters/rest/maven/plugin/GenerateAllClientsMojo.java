@@ -180,30 +180,42 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         }
 
         if(this.generateDescriptor) {
-            try {
-                String descriptor = String.format("""
-                                {
-                                  "root-package": "%s",
-                                  "api-spec-resource": "%s"
-                                }
-                                """,
-                        this.rootPackage,
-                        this.ramlResource()
-                );
-                File descriptorFile = new File(this.outputDirectory, "client-descriptors/" + new Naming().apiName(ramlModel.getApiV10().title().value()) + ".json");
-                try {
-                    descriptorFile.getParentFile().mkdirs();
-                    descriptorFile.createNewFile();
-                    try (Writer out = new FileWriter(descriptorFile)) {
-                        out.write(descriptor);
-                        out.flush();
-                    }
-                } catch (IOException e) {
-                    throw new MojoExecutionException("error writing descriptor from raml model", e);
+            if(this.ramlList == null) {
+                for (String raml : this.ramlList) {
+                    this.generateDescriptor(ramlModel, raml);
                 }
-            } catch (MojoFailureException e) {
-                throw new MojoExecutionException("error generating descriptor from raml model", e);
+            } else {
+                String ramlResource;
+                try {
+                    ramlResource = this.ramlResource();
+                } catch (MojoFailureException e) {
+                    throw new MojoExecutionException("error generating descriptor from raml model", e);
+                }
+                this.generateDescriptor(ramlModel, ramlResource);
             }
+        }
+    }
+
+    private void generateDescriptor(RamlModelResult ramlModel, String ramlResource) throws MojoExecutionException {
+        String descriptor = String.format("""
+                        {
+                          "root-package": "%s",
+                          "api-spec-resource": "%s"
+                        }
+                        """,
+                this.rootPackage,
+                ramlResource
+        );
+        File descriptorFile = new File(this.outputDirectory, "client-descriptors/" + new Naming().apiName(ramlModel.getApiV10().title().value()) + ".json");
+        try {
+            descriptorFile.getParentFile().mkdirs();
+            descriptorFile.createNewFile();
+            try (Writer out = new FileWriter(descriptorFile)) {
+                out.write(descriptor);
+                out.flush();
+            }
+        } catch (IOException e) {
+            throw new MojoExecutionException("error writing descriptor from raml model", e);
         }
     }
 
