@@ -180,7 +180,7 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         }
 
         if(this.generateDescriptor) {
-            if(this.ramlList == null) {
+            if(this.ramlList != null) {
                 for (String raml : this.ramlList) {
                     this.generateDescriptor(ramlModel, raml);
                 }
