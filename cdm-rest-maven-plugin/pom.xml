@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.codingmatters.rest</groupId>
 		<artifactId>codingmatters-rest</artifactId>
-		<version>1.160.0</version>
+		<version>1.161.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cdm-rest-maven-plugin</artifactId>
