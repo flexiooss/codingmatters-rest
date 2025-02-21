@@ -33,13 +33,10 @@ public class ProxyNettyTest {
     public void setUp() throws Exception {
         this.service = Http1Server.testServer((host, port) -> new ProcessorRequestHandler(proc.get(), host, port));
         this.service.start();
-        System.out.println("1111111111111111111111111111111111111111111111");
         this.proxy = Http1Server.testServer((host, port) -> new ProcessorRequestHandler((requestDelegate, responseDelegate) -> proxy(requestDelegate, responseDelegate), host, port));
         this.proxy.start();
-        System.out.println("2222222222222222222222222222222222222222222222");
         this.proxyRequester = new OkHttpRequester(OkHttpClientWrapper.build(), this.serviceBaseUrl());
         this.clientRequester = new OkHttpRequester(OkHttpClientWrapper.build(), this.proxyBaseUrl());
-        System.out.println("33333333333333333333333333333333333333333333333");
     }
 
     @After

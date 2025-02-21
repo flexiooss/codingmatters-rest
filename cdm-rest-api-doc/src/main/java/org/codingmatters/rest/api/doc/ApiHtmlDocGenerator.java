@@ -408,7 +408,6 @@ public class ApiHtmlDocGenerator {
             for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
                 result.append(buffer, 0, read);
             }
-            System.out.println("IMPORTING FILE CONTENT : " + file.getAbsolutePath() + "\n" + result.toString() + "#######\n\n");
             return result.toString();
         }
     }

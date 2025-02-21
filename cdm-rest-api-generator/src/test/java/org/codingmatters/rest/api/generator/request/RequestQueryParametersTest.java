@@ -89,9 +89,6 @@ public class RequestQueryParametersTest {
 
     @Test
     public void dollarParameters() throws Exception {
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            System.out.println(valueSpec);
-        }
         assertThat(
                 spec.valueSpec("WithDollarsGetRequest").propertySpec("headerWithDollar"),
                 is(PropertySpec.property().name("headerWithDollar")

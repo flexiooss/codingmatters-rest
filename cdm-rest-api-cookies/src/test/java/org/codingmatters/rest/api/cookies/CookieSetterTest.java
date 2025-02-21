@@ -178,11 +178,6 @@ public class CookieSetterTest {
                 .set("name3", "value3")
                 .to(response);
 
-        for (String s : this.response.headers().get("Set-Cookie")) {
-            System.out.println(s);
-        }
-
-
         assertThat(this.response.headers().get("Set-Cookie"), is(arrayContaining(
                 "name1=value1",
                 "name2=value2",

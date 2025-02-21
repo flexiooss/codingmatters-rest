@@ -47,10 +47,6 @@ public class RequestPayloadTest {
 
     @Test
     public void filePayload() throws Exception {
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            System.out.println(valueSpec);
-        }
-
         assertThat(
                 this.spec.valueSpec("FilePayloadPostRequest"),
                 is(ValueSpec.valueSpec().name("FilePayloadPostRequest")
@@ -67,10 +63,6 @@ public class RequestPayloadTest {
 
     @Test
     public void objectPayload() throws Exception {
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            System.out.println(valueSpec);
-        }
-
         assertThat(
                 this.spec.valueSpec("ArbitraryObjectPostRequest"),
                 is(ValueSpec.valueSpec().name("ArbitraryObjectPostRequest")
@@ -87,10 +79,6 @@ public class RequestPayloadTest {
 
     @Test
     public void objectImplValPayload() throws Exception {
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            System.out.println(valueSpec);
-        }
-
         assertThat(
                 this.spec.valueSpec("ArbitraryObjectImplValPostRequest"),
                 is(ValueSpec.valueSpec().name("ArbitraryObjectImplValPostRequest")
@@ -106,10 +94,6 @@ public class RequestPayloadTest {
     }
     @Test
     public void objectImplObjectValuePayload() throws Exception {
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            System.out.println(valueSpec);
-        }
-
         assertThat(
                 this.spec.valueSpec("ArbitraryObjectImplObjectValuePostRequest"),
                 is(ValueSpec.valueSpec().name("ArbitraryObjectImplObjectValuePostRequest")

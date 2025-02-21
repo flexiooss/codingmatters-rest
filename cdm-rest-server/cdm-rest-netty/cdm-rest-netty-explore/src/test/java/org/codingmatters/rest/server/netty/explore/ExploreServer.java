@@ -15,16 +15,8 @@ import java.net.ServerSocket;
 public class ExploreServer {
     public static void main(String[] args) {
         int port = 38515;
-//        try {
-//            ServerSocket socket = new ServerSocket(0);
-//            port = socket.getLocalPort();
-//            socket.close();
-//        } catch (IOException e) {
-//            throw new RuntimeException("can't find free port", e);
-//        }
         ExploreServer server = new ExploreServer(port);
         try {
-            System.out.println("listening on port " + port);
             server.run();
         } catch (Exception e) {
             throw new RuntimeException("server stopped", e);

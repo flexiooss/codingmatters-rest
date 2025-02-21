@@ -478,9 +478,9 @@ public class ApiPumlGeneratorTest {
 
             throw new AssertionError("failed generating png from puml");
         }
-        for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
-            System.out.println("generated : " + generatedImage);
-        }
+//        for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
+//            System.out.println("generated : " + generatedImage);
+//        }
     }
 
     private String lines(String ... lines) {

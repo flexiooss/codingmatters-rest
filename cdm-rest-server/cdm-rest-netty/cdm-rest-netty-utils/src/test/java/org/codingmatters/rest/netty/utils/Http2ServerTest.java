@@ -54,7 +54,6 @@ public class Http2ServerTest extends AbstractHttpServerTest {
         for (int i = 0; i * LINE.length() < 31512 ; i++) {
             url += "/" + LINE;
         }
-        System.out.println("url size : " + (url.length() / 1024));
         Request.Builder request = new Request.Builder()
                 .url(url).get();
         Response response = this.client.newCall(request.build()).execute();
@@ -68,7 +67,6 @@ public class Http2ServerTest extends AbstractHttpServerTest {
         for (int i = 0; i * LINE.length() < 32000 ; i++) {
             url += "/" + LINE;
         }
-        System.out.println("url size : " + (url.length() / 1024));
         Request.Builder request = new Request.Builder()
                 .url(url).get();
         Response response = this.client.newCall(request.build()).execute();

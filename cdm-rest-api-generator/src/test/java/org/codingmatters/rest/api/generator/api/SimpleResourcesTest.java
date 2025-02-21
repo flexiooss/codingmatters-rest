@@ -296,7 +296,6 @@ public class SimpleResourcesTest {
 
     @Test
     public void conformingResponse() throws Exception {
-        System.out.println(spec.valueSpec("ConformingResponseGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().protocols());
         assertThat(
                 spec.valueSpec("ConformingResponseGetResponse").propertySpec("status200").typeSpec().embeddedValueSpec().protocols(),
                 contains(Serializable.class.getName())

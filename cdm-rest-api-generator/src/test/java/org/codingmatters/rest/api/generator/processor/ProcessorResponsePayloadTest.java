@@ -70,7 +70,6 @@ public class ProcessorResponsePayloadTest extends AbstractProcessorHttpRequestTe
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(response);
         return response;
     }
 
@@ -85,7 +84,6 @@ public class ProcessorResponsePayloadTest extends AbstractProcessorHttpRequestTe
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(response);
         return response;
     }
 
@@ -126,7 +124,6 @@ public class ProcessorResponsePayloadTest extends AbstractProcessorHttpRequestTe
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(response);
         return response;
     }
 

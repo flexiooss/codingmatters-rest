@@ -23,7 +23,6 @@ public class ApiTypesGeneratorTest {
         ValueSpec nested = spec.valueSpecs().get( 1 );
         PropertyTypeSpec propB = nested.propertySpec( "prop-b" ).typeSpec();
         PropertySpec propE = propB.embeddedValueSpec().propertySpec( "prop-d" ).typeSpec().embeddedValueSpec().propertySpec( "prop-e" );
-        System.out.println( nested.name() );
         assertThat( propE.typeSpec().typeRef(), is( "org.generated.nestedobject.propb.propd.PropDPropEList" ) );
     }
 
