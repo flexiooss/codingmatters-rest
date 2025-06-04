@@ -10,6 +10,7 @@ public interface ResponseDelegate extends AutoCloseable {
     ResponseDelegate status(int code);
     ResponseDelegate addHeader(String name, String ... value);
     ResponseDelegate addHeaderIfNot(String name, String ... value);
+    ResponseDelegate clearHeader(String name);
     ResponseDelegate payload(String payload, String charset);
     ResponseDelegate payload(byte[] bytes);
     ResponseDelegate payload(InputStream in);
