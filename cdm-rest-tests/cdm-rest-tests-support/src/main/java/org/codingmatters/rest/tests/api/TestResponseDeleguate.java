@@ -56,6 +56,12 @@ public class TestResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
+    public ResponseDelegate clearHeader(String name) {
+        this.headers.remove(name);
+        return this;
+    }
+
+    @Override
     public ResponseDelegate payload(String payload, String charset) {
         this.charset = charset;
         try {

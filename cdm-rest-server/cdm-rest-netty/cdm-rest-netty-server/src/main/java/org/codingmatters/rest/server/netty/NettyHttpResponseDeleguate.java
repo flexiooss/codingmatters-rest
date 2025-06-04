@@ -69,6 +69,12 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
+    public ResponseDelegate clearHeader(String name) {
+        this.response.headers().remove(name);
+        return this;
+    }
+
+    @Override
     public ResponseDelegate payload(String payload, String charset) {
         try {
             return this.payload(payload.getBytes(charset != null ? charset : "utf-8"));
