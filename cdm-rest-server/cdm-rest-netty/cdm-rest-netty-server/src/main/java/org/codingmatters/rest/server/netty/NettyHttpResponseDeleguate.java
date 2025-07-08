@@ -50,7 +50,7 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
         if(values != null) {
             for (String value : values) {
                 if( HeaderEncodingHandler.needEncoding( value )){
-                    this.response.headers().add(name + "*", HeaderEncodingHandler.encodeHeader( value ));
+                    this.response.headers().add(name , HeaderEncodingHandler.encodeHeader( value ));
                 } else {
                     this.response.headers().add(name, value);
                 }

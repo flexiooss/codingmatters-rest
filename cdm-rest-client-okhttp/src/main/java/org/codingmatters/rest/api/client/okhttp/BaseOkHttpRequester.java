@@ -240,7 +240,7 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
             if(headerEntry.getValue() != null) {
                 for( String value : headerEntry.getValue() ){
                     if( HeaderEncodingHandler.needEncoding( value )){
-                        String name = headerEntry.getKey() + "*";
+                        String name = headerEntry.getKey();
                         result.addHeader( name, HeaderEncodingHandler.encodeHeader( value ) );
 //                        RFC 8187
 //                        result.addHeader( headerEntry.getKey(), HeaderEncodingHandler.encodeHeader( value ) );
