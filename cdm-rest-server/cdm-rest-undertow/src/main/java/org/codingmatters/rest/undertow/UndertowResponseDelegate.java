@@ -42,7 +42,7 @@ public class UndertowResponseDelegate implements ResponseDelegate {
         if(values != null) {
             for (String value : values) {
                 if( HeaderEncodingHandler.needEncoding( value )){
-                    this.exchange.getResponseHeaders().add( HttpString.tryFromString( name + "*" ), HeaderEncodingHandler.encodeHeader( value ));
+                    this.exchange.getResponseHeaders().add( HttpString.tryFromString( name ), HeaderEncodingHandler.encodeHeader( value ));
                 } else {
                     this.exchange.getResponseHeaders().add( HttpString.tryFromString( name ), value );
                 }

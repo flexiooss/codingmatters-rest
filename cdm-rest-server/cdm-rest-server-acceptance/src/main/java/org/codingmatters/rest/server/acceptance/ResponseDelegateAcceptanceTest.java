@@ -37,7 +37,7 @@ public abstract class ResponseDelegateAcceptanceTest extends BaseAcceptanceTest 
         });
 
         assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().header("yip"), is("yop"));
-        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().header("encode*"), is("utf-8''k%C3%A9k%C3%A9"));
+        assertThat(this.client.newCall(this.requestBuilder().get().build()).execute().header("encode"), is("utf-8''k%C3%A9k%C3%A9"));
     }
 
     @Test
