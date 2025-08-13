@@ -17,7 +17,7 @@ public class OkHttpResponseDelegateTest {
         OkHttpResponseDelegate responseDelegate = new OkHttpResponseDelegate(response);
         assertThat(responseDelegate.header("X-Encoded")[0], is("kéké"));
         assertThat(responseDelegate.header("X-No-Need-Encoding")[0], is("toto"));
-        assertThat(responseDelegate.header("X-Encoded-No-Decoded")[0], is("utf-8''k%C3%A9k%C3%A9"));
+        assertThat(responseDelegate.header("X-Encoded-No-Decoded")[0], is("kéké"));
         assertThat(responseDelegate.header("X-Toto")[1], is("plages"));
         assertThat(responseDelegate.header("X-Toto")[0], is("des"));
         assertThat(responseDelegate.header("X-Toto")[2], is("kéké"));
