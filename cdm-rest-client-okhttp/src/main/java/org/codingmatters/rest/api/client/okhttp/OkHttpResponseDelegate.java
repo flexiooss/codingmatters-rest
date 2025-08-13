@@ -4,6 +4,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
+import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -64,7 +65,15 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
         List<String> encodedHeaderValues = this.headers.getOrDefault( name.toLowerCase() + "*", Collections.emptyList() );
         List<String> headerValues = this.headers.getOrDefault( name.toLowerCase(), Collections.emptyList() );
         return headerValues.isEmpty() && encodedHeaderValues.isEmpty() ? null
-                : Stream.concat( headerValues.stream(), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray( String[]::new );
+                : Stream.concat( headerValues.stream().map(this::newDecodeValue), encodedHeaderValues.stream().map( this::decodeValue ) ).toArray( String[]::new );
+    }
+
+    private String newDecodeValue(String header) {
+        if (HeaderEncodingHandler.isEncoded(header)) {
+            return HeaderEncodingHandler.decodeHeader(header);
+        } else {
+            return header;
+        }
     }
 
     private String decodeValue( String value ) {
