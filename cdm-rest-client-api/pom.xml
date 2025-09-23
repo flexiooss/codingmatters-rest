@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.179.0</version>
+        <version>1.180.0</version>
     </parent>
 
     <artifactId>cdm-rest-client-api</artifactId>
@@ -20,6 +20,10 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-jvm</artifactId>
         </dependency>
     </dependencies>
 

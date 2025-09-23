@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.179.0</version>
+        <version>1.180.0</version>
     </parent>
 
     <artifactId>cdm-rest-api-doc</artifactId>
@@ -29,10 +29,9 @@
             <artifactId>cdm-value-objects-doc</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.commonmark</groupId>
+            <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.codingmatters.rest</groupId>
@@ -45,5 +44,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
 </project>

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest.server.netty</groupId>
         <artifactId>cdm-rest-netty</artifactId>
-        <version>1.179.0</version>
+        <version>1.180.0</version>
     </parent>
 
     <artifactId>cdm-rest-netty-utils</artifactId>
@@ -22,6 +22,11 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-jvm</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
