@@ -50,13 +50,13 @@ public class OkHttpClientWrapper implements HttpClientWrapper {
     static private Long envLong(String name, String defaultValue) {
         return Long.parseLong(envString(name, defaultValue));
     }
+
     static private String envString(String name, String defaultValue) {
-        if(System.getenv(name) != null) {
+        if (System.getenv(name) != null) {
             return System.getenv(name);
         }
         return System.getProperty(name.replaceAll("_", ".").toLowerCase(), defaultValue);
     }
-
 
 
     private final OkHttpClient delegate;
@@ -70,7 +70,7 @@ public class OkHttpClientWrapper implements HttpClientWrapper {
         try {
             return this.delegate.newCall(request).execute();
         } catch (SocketTimeoutException e) {
-            if(e.getMessage() != null && e.getMessage().equalsIgnoreCase("connect timed out")) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("connect timed out")) {
                 throw new ConnectionTimeoutException("connection timed out", e);
             } else {
                 throw e;
