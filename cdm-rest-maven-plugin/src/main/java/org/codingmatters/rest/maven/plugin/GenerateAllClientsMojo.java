@@ -59,6 +59,9 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
     @Parameter(defaultValue = "true", readonly = true, alias = "generate-descriptor")
     private boolean generateDescriptor;
 
+    @Parameter(defaultValue = "false", readonly = true, alias = "generate-php")
+    private boolean generatePhp;
+
     private String jsVersion;
     private String typesPackage;
     private String clientPackage;
@@ -131,39 +134,40 @@ public class GenerateAllClientsMojo extends AbstractGenerateAPIMojo {
         }
     }
 
-    private void generatePhpClient( RamlModelResult ramlModel ) throws MojoExecutionException {
-        File phpOutputDirectory = new File( outputDirectory, "php-generated-client" );
-        boolean useTypeHintingReturnValue = false;
-        try{
-            Spec spec = new ApiTypesPhpGenerator( typesPackage ).generate( ramlModel );
-            new SpecPhpGenerator( spec, typesPackage, phpOutputDirectory, useTypeHintingReturnValue ).generate();
-        } catch( RamlSpecException | IOException e ) {
-            throw new MojoExecutionException( "Error generating php client", e );
+    private void generatePhpClient(RamlModelResult ramlModel) throws MojoExecutionException {
+        if (generatePhp) {
+            File phpOutputDirectory = new File(outputDirectory, "php-generated-client");
+            boolean useTypeHintingReturnValue = false;
+            try {
+                Spec spec = new ApiTypesPhpGenerator(typesPackage).generate(ramlModel);
+                new SpecPhpGenerator(spec, typesPackage, phpOutputDirectory, useTypeHintingReturnValue).generate();
+            } catch (RamlSpecException | IOException e) {
+                throw new MojoExecutionException("Error generating php client", e);
+            }
+            try {
+                Spec spec = new ApiGeneratorPhp(typesPackage).generate(ramlModel);
+                new SpecPhpGenerator(spec, apiPackage, phpOutputDirectory, useTypeHintingReturnValue).generate();
+            } catch (RamlSpecException | IOException e) {
+                throw new MojoExecutionException("Error generating php client", e);
+            }
+            try {
+                PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator(clientPackage, apiPackage, typesPackage, phpOutputDirectory, useTypeHintingReturnValue);
+                requesterGenerator.generate(ramlModel);
+            } catch (RamlSpecException | IOException e) {
+                throw new MojoExecutionException("Error generating php client", e);
+            }
+            try {
+                ComposerFileGenerator requesterGenerator = new ComposerFileGenerator(phpOutputDirectory, vendor, artifactId, version);
+                requesterGenerator.generateComposerFile();
+            } catch (Exception e) {
+                throw new MojoExecutionException("Error generating php client", e);
+            }
+            try {
+                zipPhpClient(phpOutputDirectory);
+            } catch (Exception e) {
+                throw new MojoExecutionException("Error generating php client", e);
+            }
         }
-        try{
-            Spec spec = new ApiGeneratorPhp( typesPackage ).generate( ramlModel );
-            new SpecPhpGenerator( spec, apiPackage, phpOutputDirectory, useTypeHintingReturnValue ).generate();
-        } catch( RamlSpecException | IOException e ) {
-            throw new MojoExecutionException( "Error generating php client", e );
-        }
-        try{
-            PhpClientRequesterGenerator requesterGenerator = new PhpClientRequesterGenerator( clientPackage, apiPackage, typesPackage, phpOutputDirectory, useTypeHintingReturnValue );
-            requesterGenerator.generate( ramlModel );
-        } catch( RamlSpecException | IOException e ) {
-            throw new MojoExecutionException( "Error generating php client", e );
-        }
-        try{
-            ComposerFileGenerator requesterGenerator = new ComposerFileGenerator( phpOutputDirectory, vendor, artifactId, version );
-            requesterGenerator.generateComposerFile();
-        } catch( Exception e ) {
-            throw new MojoExecutionException( "Error generating php client", e );
-        }
-        try{
-            zipPhpClient( phpOutputDirectory );
-        } catch( Exception e ) {
-            throw new MojoExecutionException( "Error generating php client", e );
-        }
-
     }
 
     private void zipPhpClient( File fileToZip ) throws IOException {
