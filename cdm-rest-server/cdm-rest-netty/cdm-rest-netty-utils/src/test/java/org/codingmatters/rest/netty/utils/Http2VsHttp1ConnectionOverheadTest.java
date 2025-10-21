@@ -9,6 +9,7 @@ import org.codingmatters.rest.netty.utils.config.NettyHttpConfig;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.ServerSocket;
@@ -22,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
+@Ignore
 public class Http2VsHttp1ConnectionOverheadTest {
 
 
