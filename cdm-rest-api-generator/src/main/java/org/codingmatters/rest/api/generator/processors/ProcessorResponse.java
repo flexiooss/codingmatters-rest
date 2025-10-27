@@ -1,20 +1,14 @@
 package org.codingmatters.rest.api.generator.processors;
 
 import com.squareup.javapoet.MethodSpec;
-import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeException;
 import org.codingmatters.rest.api.generator.processors.responses.ResponseParameter;
 import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
-import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class ProcessorResponse {
     static private final Logger log = LoggerFactory.getLogger(ProcessorResponse.class);
@@ -38,8 +32,8 @@ public class ProcessorResponse {
         //TODO handle response content type
         //method.addStatement("responseDelegate.contenType($S)", "application/json; charset=utf-8");
 
-        method.beginControlFlow("if(response != null)");
-        if(! resourceMethod.responses().isEmpty()) {
+        method.beginControlFlow("if (response != null)");
+        if (!resourceMethod.responses().isEmpty()) {
             for (int i = 0; i < resourceMethod.responses().size(); i++) {
                 Response response = resourceMethod.responses().get(i);
                 if (i == 0) {

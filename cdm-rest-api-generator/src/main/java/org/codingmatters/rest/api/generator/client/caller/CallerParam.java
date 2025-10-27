@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,12 +32,12 @@ public class CallerParam extends Parameter {
 
     public void addStatement(MethodSpec.Builder method, ParameterSource source) {
         if (this.isSupportedType()) {
-            if(source != ParameterSource.URI) {
-                method.beginControlFlow("if(request.$L() != null)", this.property());
+            if (source != ParameterSource.URI) {
+                method.beginControlFlow("if (request.$L() != null)", this.property());
                 if (this.isArray()) {
                     method.addStatement("$T<$T> $L = new $T<>()", List.class, String.class, this.property(), LinkedList.class);
 
-                    method.beginControlFlow("for($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
+                    method.beginControlFlow("for ($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
                     this.addTranstypeToStringStatement(method, this.property() + "RawElement", this.property() + "Element");
                     method.addStatement("$L.add($L)", this.property(), this.property() + "Element");
                     method.endControlFlow();
@@ -51,9 +48,9 @@ public class CallerParam extends Parameter {
                 method.addStatement("requester.$L($S, $L)", source.requesterMethod, this.name(), this.property());
                 method.endControlFlow();
             } else {
-                method.beginControlFlow("if(request.$L() != null)", this.property());
-                if(this.isArray()) {
-                    method.beginControlFlow("for($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
+                method.beginControlFlow("if (request.$L() != null)", this.property());
+                if (this.isArray()) {
+                    method.beginControlFlow("for ($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
                     this.addTranstypeToStringStatement(method, this.property() + "RawElement", this.property() + "Element");
                     method.addStatement("path = path.replaceFirst($S, $L)", "\\{" + this.name() + "\\}", this.property() + "Element");
                     method.endControlFlow();
@@ -64,7 +61,7 @@ public class CallerParam extends Parameter {
                 }
                 method.nextControlFlow("else")
                         .addStatement("throw new $T($S)", Requester.MissingUriParameterException.class, "missing mandatory uri parameter : " + this.property())
-                        ;
+                ;
                 method.endControlFlow();
             }
 
@@ -75,12 +72,12 @@ public class CallerParam extends Parameter {
 
 
     protected void addTranstypeToStringStatement(MethodSpec.Builder method, String from, String to) {
-        if(this.isOfType("string")) {
+        if (this.isOfType("string")) {
             method.addStatement("$T $L = $L", String.class, to, from);
         } else {
             method.addStatement("$T $L = $L != null ? $L.toString() : null", String.class, to, from, from);
         }
-        if(this.encoding.equals(Encoding.URL)) {
+        if (this.encoding.equals(Encoding.URL)) {
             method
                     .beginControlFlow("try")
                     .addStatement("$L = $L != null ? $T.encode($L, $S) : null", to, to, URLEncoder.class, to, "utf-8")

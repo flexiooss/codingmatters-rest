@@ -15,8 +15,7 @@ public enum RamlType {
     DATE_ONLY(TypeToken.DATE.getImplementationType()),
     TIME_ONLY(TypeToken.TIME.getImplementationType()),
     DATETIME_ONLY(TypeToken.DATE_TIME.getImplementationType()),
-    DATETIME(TypeToken.TZ_DATE_TIME.getImplementationType())
-    ;
+    DATETIME(TypeToken.TZ_DATE_TIME.getImplementationType());
 
     private final String javaType;
 
@@ -30,7 +29,7 @@ public enum RamlType {
 
     static public boolean isRamlType(TypeDeclaration declaration) {
         for (RamlType ramlType : RamlType.values()) {
-            if(ramlType.name().equals(ramlTypeName(declaration))) {
+            if (ramlType.name().equals(ramlTypeName(declaration))) {
                 return true;
             }
         }
@@ -40,17 +39,17 @@ public enum RamlType {
     static public RamlType from(TypeDeclaration declaration) throws RamlSpecException {
         try {
             return RamlType.valueOf(ramlTypeName(declaration));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new RamlSpecException("not implemented type : " + declaration.type(), e);
         }
     }
 
     static public String ramlTypeName(TypeDeclaration declaration) {
         String name = declaration.type();
-        if( name == null ){
+        if (name == null) {
             name = declaration.name();
         }
-        while(name.endsWith("[]")) {
+        while (name.endsWith("[]")) {
             name = name.substring(0, name.length() - 2);
         }
         return name.replaceAll("-", "_").toUpperCase();

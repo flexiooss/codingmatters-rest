@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api.generator.utils;
 
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.slf4j.Logger;
@@ -10,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
-import org.codingmatters.value.objects.generation.Naming;
 
 public class Parameter {
     static private final Logger log = LoggerFactory.getLogger(Parameter.class);
@@ -59,15 +59,14 @@ public class Parameter {
     }
 
 
-
     public boolean isSupportedType() {
         return SUPPPORTED_RAML_TYPES.contains(this.ramlType().toLowerCase());
     }
 
     public String ramlType() {
         String t;
-        if(this.isArray()) {
-            t = ((ArrayTypeDeclaration)typeDeclaration).items().type().toLowerCase();
+        if (this.isArray()) {
+            t = ((ArrayTypeDeclaration) typeDeclaration).items().type().toLowerCase();
         } else {
             t = this.typeDeclaration.type();
         }
@@ -87,21 +86,20 @@ public class Parameter {
     }
 
 
-
     public Class javaType() {
-        if(this.isOfType("string")) {
+        if (this.isOfType("string")) {
             return String.class;
-        } else if(this.isOfType("integer")) {
+        } else if (this.isOfType("integer")) {
             return Long.class;
-        } else if(this.isOfType("number")) {
+        } else if (this.isOfType("number")) {
             return Double.class;
-        } else if(this.isOfType("datetime-only")) {
+        } else if (this.isOfType("datetime-only")) {
             return LocalDateTime.class;
-        } else if(this.isOfType("date-only")) {
+        } else if (this.isOfType("date-only")) {
             return LocalDate.class;
-        } else if(this.isOfType("time-only")) {
+        } else if (this.isOfType("time-only")) {
             return LocalTime.class;
-        } else if(this.isOfType("boolean")) {
+        } else if (this.isOfType("boolean")) {
             return Boolean.class;
         } else {
             return Object.class;

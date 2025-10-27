@@ -31,11 +31,11 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
                 ByteArrayOutputStream.class, ByteArrayOutputStream.class, JsonGenerator.class);
 
 
-        if(body instanceof ArrayTypeDeclaration || body.type().endsWith("[]")) {
+        if (body instanceof ArrayTypeDeclaration || body.type().endsWith("[]")) {
             ClassName elementClassName;
             ClassName elementTypeWriter;
 
-            if(body.type().endsWith("[]")) {
+            if (body.type().endsWith("[]")) {
                 String itemsTypeName = body.type().substring(0, body.type().length() - "[]".length());
                 TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
@@ -63,7 +63,7 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
             );
         } else {
             ClassName writerClass;
-            if((! body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
+            if ((!body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
                 writerClass = this.naming.alreadyDefinedWriter(body.parentTypes().get(0));
             } else {
                 writerClass = this.writerClassName(body.type());
@@ -87,7 +87,7 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
 
 
     private ClassName elementClassName(String elementType) {
-        if(elementType.equals("object")) {
+        if (elementType.equals("object")) {
             return ClassName.get(ObjectValue.class);
         } else {
             return ClassName.get(this.typesPackage, this.naming.type(elementType));
@@ -95,7 +95,7 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
     }
 
     private ClassName writerClassName(String type) {
-        if(type.equals("object")) {
+        if (type.equals("object")) {
             return ClassName.get(ObjectValueWriter.class);
         } else {
             return ClassName.get(this.typesPackage + ".json", this.naming.type(type, "Writer"));

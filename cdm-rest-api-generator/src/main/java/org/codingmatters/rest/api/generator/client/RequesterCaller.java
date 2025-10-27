@@ -11,14 +11,12 @@ import org.codingmatters.rest.api.generator.exception.UnsupportedMediaTypeExcept
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.io.Content;
 import org.raml.v2.api.model.v10.bodies.Response;
-import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -71,13 +69,13 @@ public class RequesterCaller {
 
         caller
                 .nextControlFlow("finally")
-                    .beginControlFlow("try")
-                        .beginControlFlow("if(response != null)")
-                            .addStatement("response.close()")
-                        .endControlFlow()
-                    .nextControlFlow( "catch($T e)", Exception.class)
-                        .addStatement("throw new $T($S, e)", IOException.class, "error closing response")
-                    .endControlFlow()
+                .beginControlFlow("try")
+                .beginControlFlow("if (response != null)")
+                .addStatement("response.close()")
+                .endControlFlow()
+                .nextControlFlow("catch($T e)", Exception.class)
+                .addStatement("throw new $T($S, e)", IOException.class, "error closing response")
+                .endControlFlow()
                 .endControlFlow();
 
         return caller;
@@ -91,30 +89,30 @@ public class RequesterCaller {
                 .returns(this.responseType())
                 .addException(IOException.class)
                 .addStatement("$T builder = $T.builder()", this.requestType().nestedClass("Builder"), this.requestType())
-                .beginControlFlow("if(request != null)")
-                    .addStatement("request.accept(builder)")
-                    .endControlFlow()
+                .beginControlFlow("if (request != null)")
+                .addStatement("request.accept(builder)")
+                .endControlFlow()
                 .addStatement("return this.$L(builder.build())", this.callerName())
                 ;
     }
 
     private void makeRequest(MethodSpec.Builder caller) {
-        if(this.method.method().equals("get") || this.method.method().equals("delete")|| this.method.method().equals("head")) {
+        if (this.method.method().equals("get") || this.method.method().equals("delete") || this.method.method().equals("head")) {
             caller.addStatement("response = requester.$L()", this.method.method());
-        } else if(this.method.body().isEmpty()) {
+        } else if (this.method.body().isEmpty()) {
             caller.addStatement("response = requester.$L($S, new byte[0])", this.method.method(), "application/json");
         } else {
             TypeDeclaration body = this.method.body().get(0);
 
             caller.addStatement("$T requestBody = null", Content.class);
-            caller.beginControlFlow("if(request.payload() != null)");
+            caller.beginControlFlow("if (request.payload() != null)");
 
             SupportedMediaType mediaType;
             try {
                 mediaType = SupportedMediaType.from(this.method);
             } catch (UnsupportedMediaTypeException e) {
                 log.error("unsupported request media type : " + this.method.body().get(0).type());
-                return ;
+                return;
             }
 
             ClientRequestBodyWriterStatement writerStatement = mediaType.clientBodyWriterStatement(this.method, this.typesPackage, this.naming);
@@ -130,7 +128,7 @@ public class RequesterCaller {
 
     private void parseResponse(MethodSpec.Builder caller) {
         for (Response response : this.method.responses()) {
-            caller.beginControlFlow("if(response.code() == $L)", response.code().value());
+            caller.beginControlFlow("if (response.code() == $L)", response.code().value());
 
             caller.addStatement("$T.Builder responseBuilder = $T.builder()",
                     this.naming.methodResponseStatusType(this.method, response.code()),
@@ -151,13 +149,13 @@ public class RequesterCaller {
     }
 
     private void parseBody(MethodSpec.Builder caller, Response response) {
-        TypeDeclaration bodyType = ! response.body().isEmpty() ? response.body().get(0) : null;
-        if(bodyType  != null) {
+        TypeDeclaration bodyType = !response.body().isEmpty() ? response.body().get(0) : null;
+        if (bodyType != null) {
             try {
                 SupportedMediaType.from(response).clientBodyReaderStatement(response, this.typesPackage, this.naming).append(caller);
             } catch (UnsupportedMediaTypeException e) {
                 log.error("error while processing response", e);
-                return ;
+                return;
             }
         }
     }

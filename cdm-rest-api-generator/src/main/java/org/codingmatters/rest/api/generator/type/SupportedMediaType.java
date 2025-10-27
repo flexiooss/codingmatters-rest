@@ -81,7 +81,9 @@ public enum SupportedMediaType {
         @Override
         public boolean matches(Response response) {
             return response.body().get(0).name().matches("text/.*");
-        }@Override
+        }
+
+        @Override
 
         public boolean matches(Method method) {
             return method.body().get(0).name().matches("text/.*");
@@ -109,17 +111,20 @@ public enum SupportedMediaType {
     };
 
     public abstract boolean matches(Response response);
+
     protected abstract boolean matches(Method method);
 
     public abstract ProcessorResponseBodyWriterStatement processorResponseBodyWriterStatement(Response response, String typesPackage, Naming naming);
+
     public abstract ProcessorRequestBodyReaderStatement processorBodyReaderStatement(Method method, String typesPackage, Naming naming);
 
     public abstract ClientResponseBodyReaderStatement clientBodyReaderStatement(Response response, String typesPackage, ResourceNaming naming);
+
     public abstract ClientRequestBodyWriterStatement clientBodyWriterStatement(Method method, String typesPackage, ResourceNaming naming);
 
     static public SupportedMediaType from(Response response) throws UnsupportedMediaTypeException {
         for (SupportedMediaType type : SupportedMediaType.values()) {
-            if(type.matches(response)) {
+            if (type.matches(response)) {
                 return type;
             }
         }
@@ -128,7 +133,7 @@ public enum SupportedMediaType {
 
     static public SupportedMediaType from(Method method) throws UnsupportedMediaTypeException {
         for (SupportedMediaType type : SupportedMediaType.values()) {
-            if(type.matches(method)) {
+            if (type.matches(method)) {
                 return type;
             }
         }

@@ -31,8 +31,7 @@ public class Builder {
 
     public TypeSpec type(RamlModelResult ramlModel) {
         TypeSpec.Builder result = TypeSpec.classBuilder("Builder")
-                .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
-                ;
+                .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
 
         for (Resource resource : ramlModel.getApiV10().resources()) {
             this.processResourceForBuilder(result, resource);
@@ -52,10 +51,10 @@ public class Builder {
     }
 
 
-    private String createConstructorCallFormat(Object [] parameters) {
+    private String createConstructorCallFormat(Object[] parameters) {
         StringBuilder builder = new StringBuilder("return new DefaultImpl(");
         for (int i = 0; i < parameters.length; i++) {
-            if(i != 0) {
+            if (i != 0) {
                 builder.append(", ");
             }
             builder.append("this.$L");

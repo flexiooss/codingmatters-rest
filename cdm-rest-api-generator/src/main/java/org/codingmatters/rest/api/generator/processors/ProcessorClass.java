@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.squareup.javapoet.*;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.ResponseDelegate;
@@ -10,9 +11,9 @@ import org.codingmatters.rest.api.generator.handlers.HandlersHelper;
 import org.codingmatters.rest.api.generator.processors.requests.ProcessorParameter;
 import org.codingmatters.rest.api.generator.type.SupportedMediaType;
 import org.codingmatters.rest.api.generator.utils.DeclaredTypeRegistry;
-import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Parameter;
 import org.codingmatters.rest.api.generator.utils.Resolver;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import org.raml.v2.api.model.v10.methods.Method;
@@ -75,7 +76,7 @@ public class ProcessorClass {
                         .addStatement("this.$L = $L", "factory", "factory")
                         .addStatement("this.$L = $L", "handlers", "handlers")
                         .build());
-        if(this.processorResponse.needsSubstitutedMethod()) {
+        if (this.processorResponse.needsSubstitutedMethod()) {
             processorBuilder.addMethod(this.buildSubstitutedMethod());
         }
         return processorBuilder
@@ -92,13 +93,14 @@ public class ProcessorClass {
 
     private MethodSpec buildProcessMethod(RamlModelResult ramlModel) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("process")
+                .addAnnotation(WithSpan.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeName.VOID)
                 .addParameter(ClassName.get(RequestDelegate.class), "requestDelegate")
                 .addParameter(ClassName.get(ResponseDelegate.class), "responseDelegate")
                 .addException(ClassName.get(IOException.class));
 
-        this.addResourcesProcessing( method, ramlModel.getApiV10().resources());
+        this.addResourcesProcessing(method, ramlModel.getApiV10().resources());
 
         return method.build();
     }
@@ -111,26 +113,26 @@ public class ProcessorClass {
     }
 
     private void addResourceProcessing(MethodSpec.Builder method, Resource resource) {
-        if(resource.methods().isEmpty()) return;
+        if (resource.methods().isEmpty()) return;
 
         String resourcePath = resource.resourcePath();
         resourcePath = resourcePath.replaceAll("//", "/");
-        while(resourcePath.endsWith("/")) {
+        while (resourcePath.endsWith("/")) {
             resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
         }
 
-        if(! Resolver.resolvedUriParameters(resource).isEmpty()) {
+        if (!Resolver.resolvedUriParameters(resource).isEmpty()) {
             String pathRegex = resourcePath.replaceAll("\\{[^\\}]*}", "[^/]+");
-            method.beginControlFlow("if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())", pathRegex);
+            method.beginControlFlow("if (requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())", pathRegex);
         } else {
             method.beginControlFlow(
-                    "if(requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
+                    "if (requestDelegate.pathMatcher(this.apiPath + \"$L/?\").matches())",
                     resourcePath
             );
         }
         for (Method resourceMethod : resource.methods()) {
             method.beginControlFlow(
-                    "if(requestDelegate.method().equals(RequestDelegate.Method.$L))",
+                    "if (requestDelegate.method().equals(RequestDelegate.Method.$L))",
                     resourceMethod.method().toUpperCase()
             );
             method.addStatement("this.$L(requestDelegate, responseDelegate)", this.methodProcessingMethodName(resourceMethod));
@@ -141,7 +143,6 @@ public class ProcessorClass {
         method.endControlFlow();
 
     }
-
 
 
     private Iterable<MethodSpec> buildMethodProcessingMethods(RamlModelResult ramlModel) {
@@ -161,6 +162,7 @@ public class ProcessorClass {
 
     private MethodSpec buildMethodProcessingMethod(Method resourceMethod) {
         MethodSpec.Builder method = MethodSpec.methodBuilder(this.methodProcessingMethodName(resourceMethod))
+                .addAnnotation(WithSpan.class)
                 .addModifiers(Modifier.PRIVATE)
                 .returns(TypeName.VOID)
                 .addParameter(ClassName.get(RequestDelegate.class), "requestDelegate")
@@ -177,20 +179,20 @@ public class ProcessorClass {
                 this.resourceMethodRequestClass(resourceMethod),
                 this.resourceMethodRequestClass(resourceMethod)
         );
-        if(! resourceMethod.body().isEmpty()) {
+        if (!resourceMethod.body().isEmpty()) {
             this.addRequestPayloadProcessing(resourceMethod, method);
         }
-        if(! resourceMethod.queryParameters().isEmpty()) {
+        if (!resourceMethod.queryParameters().isEmpty()) {
             this.addRequestQueryParametersProcessing(resourceMethod, method);
         }
-        if(! Resolver.resolvedUriParameters(resourceMethod.resource()).isEmpty()) {
+        if (!Resolver.resolvedUriParameters(resourceMethod.resource()).isEmpty()) {
             this.addRequestUriParametersProcessing(resourceMethod, method);
         }
-        if(! resourceMethod.headers().isEmpty()) {
+        if (!resourceMethod.headers().isEmpty()) {
             this.addRequestHeadersProcessing(resourceMethod, method);
         }
         method
-                .beginControlFlow("if(this.handlers.$L() != null)", this.resourceMethodHandlerMethod(resourceMethod))
+                .beginControlFlow("if (this.handlers.$L() != null)", this.resourceMethodHandlerMethod(resourceMethod))
                 .addStatement(
                         "$T response = this.handlers.$L().apply(requestBuilder.build())",
                         this.resourceMethodResponseClass(resourceMethod),
@@ -214,10 +216,10 @@ public class ProcessorClass {
             mediaType = SupportedMediaType.from(resourceMethod);
         } catch (UnsupportedMediaTypeException e) {
             log.error("error while processing response", e);
-            return ;
+            return;
         }
 
-        method.beginControlFlow("try($T payload = requestDelegate.payload())", InputStream.class);
+        method.beginControlFlow("try ($T payload = requestDelegate.payload())", InputStream.class);
         mediaType.processorBodyReaderStatement(resourceMethod, this.typesPackage, this.naming).append(method);
         method.endControlFlow();
     }
@@ -240,7 +242,7 @@ public class ProcessorClass {
         method.addStatement(
                 "$T<$T, $T<$T>> uriParameters = requestDelegate.uriParameters(this.apiPath + \"$L/?\")",
                 Map.class, String.class, List.class, String.class, resourceMethod.resource().resourcePath().replaceAll("//", "/")
-            );
+        );
         for (TypeDeclaration typeDeclaration : Resolver.resolvedUriParameters(resourceMethod.resource())) {
             ProcessorParameter param = new ProcessorParameter(this.naming, typeDeclaration);
             param.addStatement(method, Parameter.ParameterSource.URI);
@@ -259,7 +261,7 @@ public class ProcessorClass {
                 .addParameter(String.class, "str")
                 .returns(String.class);
 
-        method.beginControlFlow("if(str != null)")
+        method.beginControlFlow("if (str != null)")
                 .addStatement("str = str.replaceAll($S, requestDelegate.absolutePath(this.apiPath))", "%API_PATH%")
                 .endControlFlow();
 

@@ -21,7 +21,7 @@ public class TextProcessorResponseStatement implements ProcessorResponseBodyWrit
 
     @Override
     public MethodSpec.Builder appendTo(MethodSpec.Builder method) {
-        method.beginControlFlow("if(response.status$L().payload() != null)", response.code().value());
+        method.beginControlFlow("if (response.status$L().payload() != null)", response.code().value());
         method.addStatement("responseDelegate.payload(response.status$L().payload(), $S)", response.code().value(), "utf-8");
         method.endControlFlow();
 
