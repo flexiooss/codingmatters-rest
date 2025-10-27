@@ -4,10 +4,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.io.CountedReferenceTemporaryFile;
+import org.codingmatters.rest.io.Encodings;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -80,8 +84,8 @@ public class OkHttpResponseDelegate implements ResponseDelegate {
         String[] parts = value.split( "'" );
         if( parts.length == 3 ){
             try {
-                return URLDecoder.decode( parts[2], parts[0] );
-            } catch( UnsupportedEncodingException e ){
+                return Encodings.Url.decode(parts[2], Encodings.CharSet.from(parts[0]));
+            } catch( Encodings.CharSet.NoSuchCharsetException e ){
                 return value;
             }
         } else {
