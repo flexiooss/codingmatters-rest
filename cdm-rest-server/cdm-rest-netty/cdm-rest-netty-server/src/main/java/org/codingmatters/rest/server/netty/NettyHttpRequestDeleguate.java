@@ -4,6 +4,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.internal.UriParameterProcessor;
+import org.codingmatters.rest.io.Encodings;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 import org.codingmatters.rest.netty.utils.DynamicByteBuffer;
 import org.slf4j.Logger;
@@ -81,16 +82,11 @@ public class NettyHttpRequestDeleguate implements RequestDelegate {
 
                     int idx = pair.indexOf("=");
                     if (idx > 0) {
-                        try {
-                            key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-                            if (pair.length() > idx + 1) {
-                                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
-                            } else {
-                                value = "";
-                            }
-                        } catch (UnsupportedEncodingException e) {
-                            log.error("error reading query parameter : " + pair, e);
-                            break;
+                        key = Encodings.Url.decode(pair.substring(0, idx));
+                        if (pair.length() > idx + 1) {
+                            value = Encodings.Url.decode(pair.substring(idx + 1));
+                        } else {
+                            value = "";
                         }
                     } else {
                         key = pair;

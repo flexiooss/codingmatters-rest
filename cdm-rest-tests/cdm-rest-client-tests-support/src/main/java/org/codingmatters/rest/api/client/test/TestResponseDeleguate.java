@@ -1,12 +1,15 @@
 package org.codingmatters.rest.api.client.test;
 
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.io.Encodings;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,8 +65,8 @@ public class TestResponseDeleguate implements ResponseDelegate {
         String[] parts = value.split("'");
         if (parts.length == 3) {
             try {
-                return URLDecoder.decode(parts[2], parts[0]);
-            } catch (UnsupportedEncodingException e) {
+                return Encodings.Url.decode(parts[2], Encodings.CharSet.from(parts[0]));
+            } catch (Encodings.CharSet.NoSuchCharsetException e) {
                 return value;
             }
         } else {

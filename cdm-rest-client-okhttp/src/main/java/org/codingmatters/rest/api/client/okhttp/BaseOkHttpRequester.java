@@ -6,6 +6,7 @@ import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
 import org.codingmatters.rest.api.client.UrlProvider;
 import org.codingmatters.rest.io.Content;
+import org.codingmatters.rest.io.Encodings;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 
 import java.io.File;
@@ -253,9 +254,9 @@ public class BaseOkHttpRequester implements Requester, MultipartRequester {
         return result;
     }
 
-    private String encode(String str) throws UnsupportedEncodingException {
+    private String encode(String str) {
         if(str == null) return "null";
-        return URLEncoder.encode(str, "UTF-8");
+        return Encodings.Url.encode(str);
     }
 
 

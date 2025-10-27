@@ -1,5 +1,7 @@
 package org.codingmatters.rest.io.headers;
 
+import org.codingmatters.rest.io.Encodings;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -23,11 +25,7 @@ public class HeaderEncodingHandler {
     }
 
     public static String encodeHeader( String value ) {
-        try {
-            return "utf-8''" + URLEncoder.encode( value, "utf-8" );
-        } catch( UnsupportedEncodingException e ){
-            return value;
-        }
+        return "utf-8''" + Encodings.Url.encode(value);
     }
 
     public static String decodeHeader( String value ) {

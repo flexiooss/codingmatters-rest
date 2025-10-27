@@ -4,6 +4,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.codingmatters.rest.api.ResponseDelegate;
+import org.codingmatters.rest.io.Encodings;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,15 @@ public class UndertowResponseDelegate implements ResponseDelegate {
 
     @Override
     public ResponseDelegate payload(String payload, String charset) {
-        return this.payload(payload != null ? payload.getBytes(Charset.forName(charset)) : null);
+        if(payload != null) {
+            try {
+                return this.payload(payload.getBytes(Encodings.CharSet.from(charset)));
+            } catch (Encodings.CharSet.NoSuchCharsetException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return this.payload((byte[]) null);
+        }
     }
 
     @Override
