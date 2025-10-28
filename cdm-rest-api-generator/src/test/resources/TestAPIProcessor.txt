@@ -1,7 +1,6 @@
 package org.generated.server;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import java.io.IOException;
 import java.lang.String;
@@ -75,10 +74,7 @@ public class TestAPIProcessor implements Processor {
       ResponseDelegate responseDelegate) throws IOException {
     RootGetRequest.Builder requestBuilder = RootGetRequest.builder();
     if (this.handlers.rootGetHandler() != null) {
-      Span span = Span.current();
-      span.addEvent("start-apply");
       RootGetResponse response = this.handlers.rootGetHandler().apply(requestBuilder.build());
-      span.addEvent("end-apply");
       if (response != null) {
       }
     } else {
@@ -93,10 +89,7 @@ public class TestAPIProcessor implements Processor {
       ResponseDelegate responseDelegate) throws IOException {
     RootDeleteRequest.Builder requestBuilder = RootDeleteRequest.builder();
     if (this.handlers.rootDeleteHandler() != null) {
-      Span span = Span.current();
-      span.addEvent("start-apply");
       RootDeleteResponse response = this.handlers.rootDeleteHandler().apply(requestBuilder.build());
-      span.addEvent("end-apply");
       if (response != null) {
       }
     } else {
@@ -111,10 +104,7 @@ public class TestAPIProcessor implements Processor {
       ResponseDelegate responseDelegate) throws IOException {
     Child1GetRequest.Builder requestBuilder = Child1GetRequest.builder();
     if (this.handlers.child1GetHandler() != null) {
-      Span span = Span.current();
-      span.addEvent("start-apply");
       Child1GetResponse response = this.handlers.child1GetHandler().apply(requestBuilder.build());
-      span.addEvent("end-apply");
       if (response != null) {
       }
     } else {
@@ -129,10 +119,7 @@ public class TestAPIProcessor implements Processor {
       ResponseDelegate responseDelegate) throws IOException {
     SubchildGetRequest.Builder requestBuilder = SubchildGetRequest.builder();
     if (this.handlers.subchildGetHandler() != null) {
-      Span span = Span.current();
-      span.addEvent("start-apply");
       SubchildGetResponse response = this.handlers.subchildGetHandler().apply(requestBuilder.build());
-      span.addEvent("end-apply");
       if (response != null) {
       }
     } else {
@@ -147,10 +134,7 @@ public class TestAPIProcessor implements Processor {
       ResponseDelegate responseDelegate) throws IOException {
     Child2GetRequest.Builder requestBuilder = Child2GetRequest.builder();
     if (this.handlers.child2GetHandler() != null) {
-      Span span = Span.current();
-      span.addEvent("start-apply");
       Child2GetResponse response = this.handlers.child2GetHandler().apply(requestBuilder.build());
-      span.addEvent("end-apply");
       if (response != null) {
       }
     } else {
