@@ -2,6 +2,7 @@ package org.codingmatters.rest.api.generator.processors;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.squareup.javapoet.*;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.rest.api.RequestDelegate;
@@ -193,11 +194,15 @@ public class ProcessorClass {
         }
         method
                 .beginControlFlow("if (this.handlers.$L() != null)", this.resourceMethodHandlerMethod(resourceMethod))
+                .addStatement("$T span = $T.current()", Span.class, Span.class)
+                .addStatement("span.addEvent(\"start-apply\")")
                 .addStatement(
                         "$T response = this.handlers.$L().apply(requestBuilder.build())",
                         this.resourceMethodResponseClass(resourceMethod),
                         this.resourceMethodHandlerMethod(resourceMethod)
-                );
+                )
+                .addStatement("span.addEvent(\"end-apply\")")
+        ;
         this.addResponseProcessingStatements(resourceMethod, method);
         method
                 .nextControlFlow("else")
