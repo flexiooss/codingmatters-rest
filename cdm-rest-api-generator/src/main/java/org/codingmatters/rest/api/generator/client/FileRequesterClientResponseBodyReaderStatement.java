@@ -21,8 +21,8 @@ public class FileRequesterClientResponseBodyReaderStatement implements ClientRes
     @Override
     public void append(MethodSpec.Builder caller) {
         caller
-                .beginControlFlow("try($T bodyStream = response.bodyStream())", InputStream.class)
-                .addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content($T.from(bodyStream)).build())",File.class, Content.class)
+                .beginControlFlow("try ($T bodyStream = response.bodyStream())", InputStream.class)
+                .addStatement("responseBuilder.payload($T.builder().contentType(response.contentType()).content($T.from(bodyStream)).build())", File.class, Content.class)
                 .endControlFlow()
         ;
     }

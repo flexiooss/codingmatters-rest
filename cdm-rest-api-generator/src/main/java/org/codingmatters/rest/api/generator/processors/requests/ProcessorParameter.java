@@ -85,7 +85,7 @@ public class ProcessorParameter extends Parameter {
                                 this.name(),
                                 "utf-8"
                         )
-                        .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
+                        .nextControlFlow("catch ($T e)", UnsupportedEncodingException.class)
                         .addStatement("throw new $T($S + uriParameters.get($S), e)",
                                 IOException.class,
                                 "error decoding uri parameter : ",

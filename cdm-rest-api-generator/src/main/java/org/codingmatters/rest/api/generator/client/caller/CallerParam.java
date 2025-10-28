@@ -81,7 +81,7 @@ public class CallerParam extends Parameter {
             method
                     .beginControlFlow("try")
                     .addStatement("$L = $L != null ? $T.encode($L, $S) : null", to, to, URLEncoder.class, to, "utf-8")
-                    .nextControlFlow("catch($T e)", UnsupportedEncodingException.class)
+                    .nextControlFlow("catch ($T e)", UnsupportedEncodingException.class)
                     .addStatement("throw new $T($S + $L, e)", IOException.class, "failed encoding uri parameter : ", to)
                     .endControlFlow();
         }

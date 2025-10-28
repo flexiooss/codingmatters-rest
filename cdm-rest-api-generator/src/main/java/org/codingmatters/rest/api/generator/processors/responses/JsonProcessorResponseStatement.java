@@ -40,7 +40,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
     @Override
     public MethodSpec.Builder appendTo(MethodSpec.Builder method) {
         method.beginControlFlow("if (response.status$L().payload() != null)", response.code().value());
-        method.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
+        method.beginControlFlow("try ($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class);
 
         this.applicationJsonResponsePayload(response, method, body);
 
@@ -52,7 +52,7 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
     }
 
     private void applicationJsonResponsePayload(Response response, MethodSpec.Builder method, TypeDeclaration body) {
-        method.beginControlFlow("try($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
+        method.beginControlFlow("try ($T generator = this.factory.createGenerator(out))", JsonGenerator.class);
 
         if (body instanceof ArrayTypeDeclaration || body.type().endsWith("[]")) {
             // TODO replace with list writer

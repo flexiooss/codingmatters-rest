@@ -27,7 +27,7 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
     @Override
     public void append(MethodSpec.Builder caller) {
         TypeDeclaration body = this.method.body().get(0);
-        caller.beginControlFlow("try($T out = new $T() ; $T generator = this.jsonFactory.createGenerator(out))",
+        caller.beginControlFlow("try ($T out = new $T() ; $T generator = this.jsonFactory.createGenerator(out))",
                 ByteArrayOutputStream.class, ByteArrayOutputStream.class, JsonGenerator.class);
 
 
