@@ -82,10 +82,10 @@ public class JsonProcessorResponseStatement implements ProcessorResponseBodyWrit
             }
 
             method.addStatement("generator.writeStartArray()");
-            method.addStatement("$T writer = new $T()");
+            method.addStatement("$T writer = new $T()", elementTypeWriter, elementTypeWriter);
             method.beginControlFlow("for ($T element : response.status$L().payload())", elementClassName, response.code().value())
                     .beginControlFlow("if (element != null)")
-                    .addStatement("mapper.write(generator, element)", elementTypeWriter)
+                    .addStatement("writer.write(generator, element)")
                     .nextControlFlow("else")
                     .addStatement("generator.writeNull()")
                     .endControlFlow()
