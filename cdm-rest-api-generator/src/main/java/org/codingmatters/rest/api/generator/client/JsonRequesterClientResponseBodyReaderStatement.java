@@ -26,28 +26,28 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
     @Override
     public void append(MethodSpec.Builder caller) {
         TypeDeclaration body = this.response.body().get(0);
-        caller.beginControlFlow("try($T bodyStream = response.bodyStream() ; $T parser = this.jsonFactory.createParser(bodyStream))",
+        caller.beginControlFlow("try ($T bodyStream = response.bodyStream() ; $T parser = this.jsonFactory.createParser(bodyStream))",
                 InputStream.class, JsonParser.class
         );
 
-        if(body.type().endsWith("[]")) {
-            String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
+        if (body.type().endsWith("[]")) {
+            String itemsTypeName = body.type().substring(0, body.type().length() - "[]".length());
             TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
             ClassName className;
-            if(itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
+            if (itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
                 className = this.naming.alreadyDefinedReader(itemsType);
             } else {
                 className = this.readerClassName(itemsTypeName);
             }
 
             caller.addStatement("responseBuilder.payload(new $T().readArray(parser))", className);
-        } else if(body instanceof ArrayTypeDeclaration) {
-            String itemsTypeName =  ((ArrayTypeDeclaration)body).items().type();
+        } else if (body instanceof ArrayTypeDeclaration) {
+            String itemsTypeName = ((ArrayTypeDeclaration) body).items().type();
             TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
             ClassName className;
-            if(itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
+            if (itemsType != null && this.naming.isAlreadyDefined(itemsType)) {
                 className = this.naming.alreadyDefinedReader(itemsType);
             } else {
                 className = this.readerClassName(itemsTypeName);
@@ -56,7 +56,7 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
             caller.addStatement("responseBuilder.payload(new $T().readArray(parser))", className);
         } else {
             ClassName className;
-            if((! body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
+            if ((!body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
                 className = this.naming.alreadyDefinedReader(body.parentTypes().get(0));
             } else {
                 className = this.readerClassName(body.type());
@@ -69,7 +69,7 @@ public class JsonRequesterClientResponseBodyReaderStatement implements ClientRes
     }
 
     private ClassName readerClassName(String elementType) {
-        if("object".equals(elementType) || "object[]".equals(elementType)) {
+        if ("object".equals(elementType) || "object[]".equals(elementType)) {
             return ClassName.get(ObjectValueReader.class);
         } else {
             return ClassName.get(

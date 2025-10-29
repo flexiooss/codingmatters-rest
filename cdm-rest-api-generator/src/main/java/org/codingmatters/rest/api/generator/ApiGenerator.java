@@ -4,14 +4,13 @@ import org.codingmatters.rest.api.generator.exception.RamlSpecException;
 import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.rest.api.generator.utils.BodyTypeResolver;
-import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.api.generator.utils.Resolver;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.spec.*;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
-import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
@@ -56,7 +55,7 @@ public class ApiGenerator {
                 .name(this.naming.type(resource.displayName().value(), method.method(), "Request"));
 
         this.annotationProcessor.appendConformsToAnnotations(result, method.annotations());
-        for(Resource res = method.resource() ; res != null ; res = res.parentResource()) {
+        for (Resource res = method.resource(); res != null; res = res.parentResource()) {
             this.annotationProcessor.appendConformsToAnnotations(result, method.resource().annotations());
         }
 
@@ -66,7 +65,7 @@ public class ApiGenerator {
         for (TypeDeclaration typeDeclaration : method.headers()) {
             this.addPropertyFromTypeDeclaration(result, typeDeclaration);
         }
-        if(method.body() != null && ! method.body().isEmpty()) {
+        if (method.body() != null && !method.body().isEmpty()) {
             result.addProperty(PropertySpec.property()
                     .name("payload")
                     .type(this.payloadType(method.body().get(0))
@@ -85,7 +84,7 @@ public class ApiGenerator {
     }
 
     private String alreadyDefined(TypeDeclaration typeDeclaration) {
-        if(this.naming.isAlreadyDefined(typeDeclaration)) {
+        if (this.naming.isAlreadyDefined(typeDeclaration)) {
             return this.naming.alreadyDefined(typeDeclaration);
         }
 
@@ -99,9 +98,9 @@ public class ApiGenerator {
     }
 
     private boolean isAlreadyDefined(TypeDeclaration typeDeclaration) {
-        if(this.naming.isAlreadyDefined(typeDeclaration)) return true;
+        if (this.naming.isAlreadyDefined(typeDeclaration)) return true;
         for (TypeDeclaration parentType : typeDeclaration.parentTypes()) {
-            if(this.naming.isAlreadyDefined(parentType)) {
+            if (this.naming.isAlreadyDefined(parentType)) {
                 return true;
             }
         }
@@ -122,7 +121,7 @@ public class ApiGenerator {
                         .type(this.typeSpecFromDeclaration(typeDeclaration))
                         .build());
             }
-            if(response.body() != null && ! response.body().isEmpty()) {
+            if (response.body() != null && !response.body().isEmpty()) {
                 responseSpec.addProperty(PropertySpec.property()
                         .name("payload")
                         .type(this.payloadType(response.body().get(0)))
@@ -134,8 +133,7 @@ public class ApiGenerator {
                             .typeKind(TypeKind.EMBEDDED)
                             .cardinality(PropertyCardinality.SINGLE)
                             .embeddedValueSpec(responseSpec)
-                    )
-                    ;
+                    );
 
             result.addProperty(responseProp);
         }
@@ -154,10 +152,10 @@ public class ApiGenerator {
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {
         PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
-        if(typeDeclaration.type().equals("array")) {
+        if (typeDeclaration.type().equals("array")) {
             typeSpec.cardinality(PropertyCardinality.LIST)
                     .typeKind(TypeKind.JAVA_TYPE)
-                    .typeRef(RamlType.from(((ArrayTypeDeclaration)typeDeclaration).items()).javaType());
+                    .typeRef(RamlType.from(((ArrayTypeDeclaration) typeDeclaration).items()).javaType());
         } else {
             typeSpec.cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.JAVA_TYPE)

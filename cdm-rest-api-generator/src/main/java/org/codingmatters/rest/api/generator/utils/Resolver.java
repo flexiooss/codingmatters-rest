@@ -12,9 +12,9 @@ public class Resolver {
         LinkedList<TypeDeclaration> result = new LinkedList<>();
         HashSet<String> paramsName = new HashSet<>();
 
-        for(Resource current = resource ; current != null ; current = current.parentResource()) {
+        for (Resource current = resource; current != null; current = current.parentResource()) {
             for (TypeDeclaration typeDeclaration : current.uriParameters()) {
-                if(! paramsName.contains(typeDeclaration.name())) {
+                if (!paramsName.contains(typeDeclaration.name())) {
                     result.add(typeDeclaration);
                     paramsName.add(typeDeclaration.name());
                 }

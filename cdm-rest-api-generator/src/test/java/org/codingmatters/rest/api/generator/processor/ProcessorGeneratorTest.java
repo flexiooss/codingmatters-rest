@@ -1,14 +1,17 @@
 package org.codingmatters.rest.api.generator.processor;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import org.apache.commons.io.FileUtils;
 import org.codingmatters.rest.api.Processor;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
 import java.util.function.Function;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPrivate;
@@ -67,6 +70,10 @@ public class ProcessorGeneratorTest {
                                 .with(aPrivate().field().named("factory").withType(JsonFactory.class))
                                 .with(aPrivate().field().named("handlers").withType(this.compiled.getClass("org.generated.api.TestAPIHandlers")))
                 )
+        );
+        MatcherAssert.assertThat(
+                FileUtils.readFileToString(new File(this.dir.getRoot(), "/org/generated/server/TestAPIProcessor.java"), "utf-8"),
+                is(FileUtils.readFileToString(new File(getClass().getClassLoader().getResource("TestAPIProcessor.txt").getFile()), "utf-8"))
         );
     }
 

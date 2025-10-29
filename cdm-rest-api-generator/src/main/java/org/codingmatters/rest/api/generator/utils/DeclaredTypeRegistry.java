@@ -33,7 +33,9 @@ public class DeclaredTypeRegistry {
     };
 
     static public Map<String, TypeDeclaration> declaredTypes() {
-        if(! typesPerThread.get().initialized()) throw new RuntimeException("DeclaredTypeRegistry is not initialized");
+        if (!typesPerThread.get().initialized()) {
+            throw new RuntimeException("DeclaredTypeRegistry is not initialized");
+        }
         return typesPerThread.get().store();
     }
 

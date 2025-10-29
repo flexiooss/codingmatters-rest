@@ -26,12 +26,12 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
         TypeDeclaration body = this.method.body().get(0);
         caller.addStatement("$T parser = this.factory.createParser(payload)", JsonParser.class);
 
-        if(body.type().endsWith("[]")) {
-            String itemsTypeName =  body.type().substring(0, body.type().length() - "[]".length());
+        if (body.type().endsWith("[]")) {
+            String itemsTypeName = body.type().substring(0, body.type().length() - "[]".length());
             TypeDeclaration itemsType = DeclaredTypeRegistry.declaredTypes().get(itemsTypeName);
 
             ClassName className;
-            if(this.naming.isAlreadyDefined(itemsType)) {
+            if (this.naming.isAlreadyDefined(itemsType)) {
                 className = this.naming.alreadyDefinedReader(itemsType);
             } else {
                 className = this.readerClassName(itemsTypeName);
@@ -40,9 +40,9 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
             caller.addStatement("requestBuilder.payload(new $T().readArray(parser))",
                     className
             );
-        } else if(body instanceof ArrayTypeDeclaration) {
+        } else if (body instanceof ArrayTypeDeclaration) {
             ClassName className;
-            if(! (((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items().parentTypes().get(0))) {
+            if (!(((ArrayTypeDeclaration) body).items().parentTypes().isEmpty()) && this.naming.isAlreadyDefined(((ArrayTypeDeclaration) body).items().parentTypes().get(0))) {
                 className = this.naming.alreadyDefinedReader(((ArrayTypeDeclaration) body).items().parentTypes().get(0));
             } else {
                 className = this.readerClassName(((ArrayTypeDeclaration) body).items().type());
@@ -53,7 +53,7 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
             );
         } else {
             ClassName className;
-            if((! body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
+            if ((!body.parentTypes().isEmpty()) && this.naming.isAlreadyDefined(body.parentTypes().get(0))) {
                 className = this.naming.alreadyDefinedReader(body.parentTypes().get(0));
             } else {
                 className = this.readerClassName(body.type());
@@ -64,7 +64,7 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
             );
         }
 
-        caller.nextControlFlow("catch(IOException e)");
+        caller.nextControlFlow("catch (IOException e)");
         caller
                 .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
                 .addStatement("log.warn($S, e)", "malformed request")
@@ -72,7 +72,7 @@ public class JsonProcessorRequestBodyReaderStatement implements ProcessorRequest
     }
 
     private ClassName readerClassName(String elementType) {
-        if(elementType.equals("object")) {
+        if (elementType.equals("object")) {
             return ClassName.get(ObjectValueReader.class);
         } else {
             return ClassName.get(

@@ -5,7 +5,6 @@ import org.codingmatters.rest.api.generator.type.RamlType;
 import org.codingmatters.rest.api.generator.utils.AnnotationProcessor;
 import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.spec.*;
-import org.codingmatters.value.objects.values.ObjectValue;
 import org.raml.v2.api.RamlModelResult;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
@@ -29,8 +28,8 @@ public class ApiTypesGenerator {
         Spec.Builder result = Spec.spec();
         for (TypeDeclaration typeDeclaration : ramlModel.getApiV10().types()) {
             String name = typeDeclaration.name();
-            if(typeDeclaration.type().equals("object")) {
-                if(!(this.naming.isAlreadyDefined(typeDeclaration) || this.naming.isAlreadyDefinedEnum(typeDeclaration))) {
+            if (typeDeclaration.type().equals("object")) {
+                if (!(this.naming.isAlreadyDefined(typeDeclaration) || this.naming.isAlreadyDefinedEnum(typeDeclaration))) {
                     ValueSpec.Builder valueSpec = ValueSpec.valueSpec().name(this.naming.type(typeDeclaration.name()));
                     this.annotationProcessor.appendConformsToAnnotations(valueSpec, typeDeclaration.annotations());
 
@@ -57,7 +56,7 @@ public class ApiTypesGenerator {
     }
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration declaration) throws RamlSpecException {
-        if(declaration instanceof ArrayTypeDeclaration) {
+        if (declaration instanceof ArrayTypeDeclaration) {
             if (((ArrayTypeDeclaration) declaration).items().type().equals("object")) {
                 if (this.naming.isAlreadyDefined(((ArrayTypeDeclaration) declaration).items())) {
                     return PropertyTypeSpec.type()
@@ -88,22 +87,22 @@ public class ApiTypesGenerator {
             } else {
                 return this.simpleProperty(((ArrayTypeDeclaration) declaration).items(), PropertyCardinality.LIST);
             }
-        } else if(this.naming.isAlreadyDefined(declaration)) {
+        } else if (this.naming.isAlreadyDefined(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                     .typeRef(this.naming.alreadyDefined(declaration));
-        } else if(this.naming.isAlreadyDefinedEnum(declaration)) {
+        } else if (this.naming.isAlreadyDefinedEnum(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.ENUM)
                     .typeRef(this.naming.alreadyDefinedEnum(declaration));
-        } else if(this.naming.isArbitraryObject(declaration)) {
+        } else if (this.naming.isArbitraryObject(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                     .typeRef(this.naming.arbitraryObjectImpl(declaration));
-        } else if(declaration.type().equals("object")) {
+        } else if (declaration.type().equals("object")) {
             return PropertyTypeSpec.type()
                     .cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.EMBEDDED)
@@ -115,13 +114,13 @@ public class ApiTypesGenerator {
     }
 
     private PropertyTypeSpec.Builder simpleProperty(TypeDeclaration declaration, PropertyCardinality withCardinality) throws RamlSpecException {
-        if(this.isEnum(declaration)) {
+        if (this.isEnum(declaration)) {
             List<String> values = ((StringTypeDeclaration) declaration).enumValues();
             return PropertyTypeSpec.type()
                     .cardinality(withCardinality)
                     .typeKind(TypeKind.ENUM)
                     .enumValues(values.toArray(new String[values.size()]));
-        } else if(RamlType.isRamlType(declaration)){
+        } else if (RamlType.isRamlType(declaration)) {
             return PropertyTypeSpec.type()
                     .cardinality(withCardinality)
                     .typeKind(TypeKind.JAVA_TYPE)
@@ -135,7 +134,7 @@ public class ApiTypesGenerator {
     }
 
     private boolean isEnum(TypeDeclaration declaration) {
-        return declaration instanceof StringTypeDeclaration && !((StringTypeDeclaration)declaration).enumValues().isEmpty();
+        return declaration instanceof StringTypeDeclaration && !((StringTypeDeclaration) declaration).enumValues().isEmpty();
     }
 
     private AnonymousValueSpec.Builder nestedType(ObjectTypeDeclaration declaration) throws RamlSpecException {

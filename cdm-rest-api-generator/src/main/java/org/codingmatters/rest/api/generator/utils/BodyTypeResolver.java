@@ -21,16 +21,16 @@ public class BodyTypeResolver {
     }
 
     public PropertyTypeSpec.Builder resolve() throws RamlSpecException {
-        if(RamlType.isRamlType(typeDeclaration)) {
+        if (RamlType.isRamlType(typeDeclaration)) {
             return this.typeSpecFromDeclaration(typeDeclaration);
         } else {
             if (typeDeclaration instanceof ArrayTypeDeclaration) {
-                if(this.isAlreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items())) {
+                if (this.isAlreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items())) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                             .typeRef(this.alreadyDefined(((ArrayTypeDeclaration) typeDeclaration).items()));
-                } else if(this.naming.isArbitraryObjectArray(typeDeclaration)) {
+                } else if (this.naming.isArbitraryObjectArray(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.LIST)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
@@ -49,12 +49,12 @@ public class BodyTypeResolver {
                             .typeRef(typeRef);
                 }
             } else {
-                if(this.isAlreadyDefined(typeDeclaration)) {
+                if (this.isAlreadyDefined(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.SINGLE)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
                             .typeRef(this.alreadyDefined(typeDeclaration));
-                } else if(this.naming.isArbitraryObject(typeDeclaration)) {
+                } else if (this.naming.isArbitraryObject(typeDeclaration)) {
                     return PropertyTypeSpec.type()
                             .cardinality(PropertyCardinality.SINGLE)
                             .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
@@ -76,9 +76,9 @@ public class BodyTypeResolver {
     }
 
     private boolean isAlreadyDefined(TypeDeclaration typeDeclaration) {
-        if(this.naming.isAlreadyDefined(typeDeclaration)) return true;
+        if (this.naming.isAlreadyDefined(typeDeclaration)) return true;
         for (TypeDeclaration parentType : typeDeclaration.parentTypes()) {
-            if(this.naming.isAlreadyDefined(parentType)) {
+            if (this.naming.isAlreadyDefined(parentType)) {
                 return true;
             }
         }
@@ -87,10 +87,10 @@ public class BodyTypeResolver {
 
     private PropertyTypeSpec.Builder typeSpecFromDeclaration(TypeDeclaration typeDeclaration) throws RamlSpecException {
         PropertyTypeSpec.Builder typeSpec = PropertyTypeSpec.type();
-        if(typeDeclaration.type().equals("array")) {
+        if (typeDeclaration.type().equals("array")) {
             typeSpec.cardinality(PropertyCardinality.LIST)
                     .typeKind(TypeKind.JAVA_TYPE)
-                    .typeRef(RamlType.from(((ArrayTypeDeclaration)typeDeclaration).items()).javaType());
+                    .typeRef(RamlType.from(((ArrayTypeDeclaration) typeDeclaration).items()).javaType());
         } else {
             typeSpec.cardinality(PropertyCardinality.SINGLE)
                     .typeKind(TypeKind.JAVA_TYPE)
@@ -100,7 +100,7 @@ public class BodyTypeResolver {
     }
 
     private String alreadyDefined(TypeDeclaration typeDeclaration) {
-        if(this.naming.isAlreadyDefined(typeDeclaration)) {
+        if (this.naming.isAlreadyDefined(typeDeclaration)) {
             return this.naming.alreadyDefined(typeDeclaration);
         }
 

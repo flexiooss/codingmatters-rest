@@ -2,8 +2,8 @@ package org.codingmatters.rest.api.generator.processors.responses;
 
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.rest.api.generator.processors.ProcessorResponseBodyWriterStatement;
-import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.rest.io.Content;
+import org.codingmatters.value.objects.generation.Naming;
 import org.raml.v2.api.model.v10.bodies.Response;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
@@ -33,7 +33,7 @@ public class FileProcessorResponseStatement implements ProcessorResponseBodyWrit
     @Override
     public MethodSpec.Builder appendTo(MethodSpec.Builder method) {
         return method
-                .beginControlFlow("try($T payloadStream = response.status$L().opt().payload().content().orElse($T.from(new byte[0])).asStream())",
+                .beginControlFlow("try ($T payloadStream = response.status$L().opt().payload().content().orElse($T.from(new byte[0])).asStream())",
                         InputStream.class, response.code().value(), Content.class
                 )
                 .addStatement(

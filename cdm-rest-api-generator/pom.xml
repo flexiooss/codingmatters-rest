@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.rest</groupId>
         <artifactId>codingmatters-rest</artifactId>
-        <version>1.183.0</version>
+        <version>1.184.0</version>
     </parent>
 
     <artifactId>cdm-rest-api-generator</artifactId>
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>org.raml</groupId>
             <artifactId>raml-parser-2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-annotations</artifactId>
         </dependency>
 
         <dependency>
@@ -80,5 +84,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
 </project>

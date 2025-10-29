@@ -19,16 +19,16 @@ public class TextProcessorRequestBodyReaderStatement implements ProcessorRequest
 
     @Override
     public void append(MethodSpec.Builder caller) {
-        caller.beginControlFlow("try($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class)
-                    .addStatement("byte[] buffer = new byte[1024]")
-                    .beginControlFlow("for(int read = payload.read(buffer) ; read != -1 ; read = payload.read(buffer))")
-                        .addStatement("out.write(buffer, 0, read)")
-                    .endControlFlow()
-                    .addStatement("requestBuilder.payload(out.toString())")
-                .nextControlFlow("catch(IOException e)")
-                    .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
-                    .addStatement("log.warn($S, e)", "malformed request")
-                    .addStatement("return")
+        caller.beginControlFlow("try ($T out = new $T())", ByteArrayOutputStream.class, ByteArrayOutputStream.class)
+                .addStatement("byte[] buffer = new byte[1024]")
+                .beginControlFlow("for (int read = payload.read(buffer) ; read != -1 ; read = payload.read(buffer))")
+                .addStatement("out.write(buffer, 0, read)")
+                .endControlFlow()
+                .addStatement("requestBuilder.payload(out.toString())")
+                .nextControlFlow("catch (IOException e)")
+                .addStatement("responseDelegate.status($L).payload($S, $S)", 400, "bad request body, see logs", "utf-8")
+                .addStatement("log.warn($S, e)", "malformed request")
+                .addStatement("return")
                 .endControlFlow();
     }
 }
