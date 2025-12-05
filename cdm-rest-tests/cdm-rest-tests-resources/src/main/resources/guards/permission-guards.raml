@@ -1,0 +1,71 @@
+#%RAML 1.0
+title: Permission Guards API
+version: v1
+baseUri: https://api.codingmatters.org/query-parameters
+mediaType: application/json
+
+
+
+annotationTypes:
+  guard:
+    type: string[]
+    allowedTargets: [ Resource, Method ]
+  clear-guards:
+    type: nil
+    allowedTargets: [ Resource, Method ]
+
+/root/{param}:
+  displayName: RootResource
+  uriParameters:
+    param:
+      type: string
+  (guard):
+    - permission::root-perm-1
+    - permission::root-perm-2
+
+  post:
+  get:
+    (guard):
+      - permission::root-get-perm
+  /inheritance:
+    displayName: Inheritance
+    get:
+  /enriched-inheritance:
+    displayName: EnrichedInheritance
+    (guard):
+      - permission::enriched-inheritance-perm
+    get:
+    /enriched-inheritance-at-method:
+      displayName: EnrichedInheritance
+      get:
+        (guard):
+          - permission::enriched-inheritance-at-method-perm
+
+  /stop-inheritance:
+    displayName: StopInheritanceAtResource
+    (clear-guards):
+    get:
+
+    /then-add-some-more:
+      displayName: ThenAddSomeMore
+      (guard):
+        - permissions::added-after-clear-perm
+      get:
+        (guard):
+          - permissions::added-after-clear-method-perm
+
+  /stop-inheritance-and-add:
+    displayName: StopInheritanceAndAddAtResource
+    (clear-guards):
+    (guard):
+      - permissions::added-when-cleared-perm
+    get:
+      (guard):
+        - permissions::added-when-cleared-method-perm
+
+  /stop-inheritance-at-method:
+    displayName: StopInheritanceAtMethod
+    get:
+      (clear-guards):
+    put:
+
