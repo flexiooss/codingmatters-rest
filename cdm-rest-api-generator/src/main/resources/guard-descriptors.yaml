@@ -1,0 +1,6 @@
+---
+Guarded:
+  path: string
+  method: string
+  guards:
+    $list: string

@@ -1,9 +1,11 @@
 package org.codingmatters.rest.maven.plugin;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codingmatters.rest.api.generator.GuardsGenerator;
 import org.codingmatters.rest.api.generator.ProcessorGenerator;
 import org.raml.v2.api.RamlModelResult;
 
@@ -37,6 +39,15 @@ public class GenerateAPIServerSideMojo extends AbstractGenerateAPIMojo {
             ).generate(ramlModel);
         } catch (IOException e) {
             throw new MojoExecutionException("error generating processor from raml model", e);
+        }
+        try {
+            new GuardsGenerator(
+                    this.destinationPackage,
+                    this.outputDirectory,
+                    new JsonFactory()
+            ).generate(ramlModel);
+        } catch (IOException e) {
+            throw new MojoExecutionException("error generating processor guards from raml model", e);
         }
     }
 }
