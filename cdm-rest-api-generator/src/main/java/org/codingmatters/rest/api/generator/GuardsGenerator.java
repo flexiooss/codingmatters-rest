@@ -2,6 +2,9 @@ package org.codingmatters.rest.api.generator;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.rest.api.generator.guards.descriptor.Guarded;
 import org.codingmatters.rest.api.generator.guards.descriptor.json.GuardedWriter;
 import org.codingmatters.value.objects.generation.Naming;
@@ -12,39 +15,66 @@ import org.raml.v2.api.model.v10.declarations.AnnotationRef;
 import org.raml.v2.api.model.v10.methods.Method;
 import org.raml.v2.api.model.v10.resources.Resource;
 
+import javax.lang.model.element.Modifier;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
+import static org.codingmatters.value.objects.generation.GenerationUtils.writeJavaFile;
 
 public class GuardsGenerator {
     private final File destinationDir;
     private final Naming naming;
+    private final String serverPackage;
+    private final File rootDirectory;
     private final JsonFactory jsonFactory;
 
     public GuardsGenerator(String serverPackage, File rootDirectory, JsonFactory jsonFactory) {
+        this.serverPackage = serverPackage;
+        this.rootDirectory = rootDirectory;
         this.jsonFactory = jsonFactory;
         this.destinationDir = new File(rootDirectory, serverPackage.replaceAll("\\.", "/"));
         this.naming = new Naming();
     }
 
     public void generate(RamlModelResult raml) throws IOException {
-        File guardsFile = new File(
-                this.destinationDir,
-                String.format("%s.guards", this.naming.apiName(raml.getApiV10().title().value()))
-        );
-        guardsFile.getParentFile().mkdirs();
-        guardsFile.createNewFile();
+//        File guardsFile = new File(
+//                this.destinationDir,
+//                String.format("%s.guards", this.naming.apiName(raml.getApiV10().title().value()))
+//        );
+//        guardsFile.getParentFile().mkdirs();
+//        guardsFile.createNewFile();
 
         List<Guarded> result = this.appendResourcesGuards(raml.getApiV10().resources());
-        try(FileOutputStream out = new FileOutputStream(guardsFile) ; JsonGenerator generator = this.jsonFactory.createGenerator(out)) {
+        String jsonGuards;
+        try(ByteArrayOutputStream out = new ByteArrayOutputStream(); JsonGenerator generator = this.jsonFactory.createGenerator(out)) {
             new GuardedWriter().writeArray(generator, result.toArray(new Guarded[0]));
+            generator.flush();
+            generator.close();
+            jsonGuards = out.toString();
         }
+        TypeSpec guardsClass = this.guardsClass(
+                this.naming.type(raml.getApiV10().title().value(), "Guards"),
+                jsonGuards
+        );
+        writeJavaFile(
+                packageDir(this.rootDirectory, this.serverPackage),
+                this.serverPackage,
+                guardsClass
+        );
+    }
+
+    private TypeSpec guardsClass(String className, String jsonGuards) {
+        return TypeSpec.classBuilder(className)
+                .addModifiers(Modifier.PUBLIC)
+                .addField(FieldSpec
+                        .builder(ClassName.get(String.class), "GUARD_SPECS", Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL)
+                        .initializer("$S", jsonGuards)
+                        .build())
+                .build();
     }
 
     private List<Guarded> appendResourcesGuards(List<Resource> resources) {
