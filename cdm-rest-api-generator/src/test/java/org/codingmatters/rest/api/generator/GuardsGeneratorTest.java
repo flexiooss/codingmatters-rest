@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import org.codingmatters.rest.api.generator.guards.descriptor.Guarded;
 import org.codingmatters.rest.api.generator.guards.descriptor.json.GuardedReader;
+import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +20,9 @@ import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.codingmatters.rest.api.generator.client.support.ClientGeneratorHelper.CLIENT_PACK;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aStatic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.hamcrest.Matchers.*;
@@ -30,11 +36,19 @@ public class GuardsGeneratorTest {
     public FileHelper fileHelper = new FileHelper();
     private JsonFactory jsonFactory = new JsonFactory();
 
+    private CompiledCode compiled;
+    private ClassLoaderHelper classes;
+
     @Before
     public void setUp() throws Exception {
         RamlModelResult raml = new RamlModelBuilder().buildApi(this.fileHelper.fileResource("guards/permission-guards.raml"));
         new GuardsGenerator("org.generated", this.dir.getRoot(), this.jsonFactory).generate(raml);
         this.printDirContent(this.dir.getRoot(), "");
+        this.fileHelper.printFile(this.dir.getRoot(), "PermissionGuardsAPIGuards.java");
+
+
+        this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
+        this.classes = this.compiled.classLoader();
     }
 
     private void printDirContent(File f, String prefix) {
@@ -47,16 +61,21 @@ public class GuardsGeneratorTest {
     }
 
     @Test
-    public void whileGenerate__thenGuardsFileGenerated() throws Exception {
-        File guardsFile = new File(this.dir.getRoot(), "org/generated/permission-guards-api.guards");
-        assertThat(guardsFile.exists(), is(true));
-        assertThat(guardsFile.isFile(), is(true));
+    public void whileGenerate__thenGuardsClassGenerated() throws Exception {
+        Assert.assertThat(
+                this.classes.get("org.generated.PermissionGuardsAPIGuards").get(),
+                aPublic().class_().with(aStatic().public_().field().final_().named("GUARD_SPECS"))
+        );
     }
 
     @Test
-    public void while__given__when__then() throws Exception {
+    public void whileReadGUARD_SPECSfield__givenGenerated__thenGuargdRead() throws Exception {
+
+        String json = (String) this.classes.get("org.generated.PermissionGuardsAPIGuards").get().getDeclaredField("GUARD_SPECS")
+                .get(this.classes.get("org.generated.PermissionGuardsAPIGuards").get());
+
         List<Guarded> actual;
-        try(JsonParser parser = this.jsonFactory.createParser(new FileReader(new File(this.dir.getRoot(), "org/generated/permission-guards-api.guards")))) {
+        try(JsonParser parser = this.jsonFactory.createParser(json)) {
             actual = Arrays.asList(new GuardedReader().readArray(parser));
         }
 
