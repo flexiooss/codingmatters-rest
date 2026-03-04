@@ -14,7 +14,7 @@ import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessorParameter extends Parameter {
@@ -37,7 +37,7 @@ public class ProcessorParameter extends Parameter {
                 this.addRawArrayGetStatement(method, source);
                 method.addStatement("$T $L = null", List.class, this.property());
                 method.beginControlFlow("if ($L != null)", this.property() + "RawValue")
-                        .addStatement("$L = new $T()", this.property(), LinkedList.class)
+                        .addStatement("$L = new $T()", this.property(), ArrayList.class)
                         .beginControlFlow("for ($T rawElement : $L)", String.class, this.property() + "RawValue");
                 this.addTranstypeFromStringStatement(method, "rawElement", "element");
                 method.addStatement("$L.add(element)", this.property());

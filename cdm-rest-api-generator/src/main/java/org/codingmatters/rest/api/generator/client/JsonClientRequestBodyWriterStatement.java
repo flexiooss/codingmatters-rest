@@ -57,7 +57,7 @@ public class JsonClientRequestBodyWriterStatement implements ClientRequestBodyWr
             }
 
 
-            caller.addStatement("new $T().writeArray(generator, request.payload().toArray(new $T[request.payload().size()]))",
+            caller.addStatement("new $T().writeArray(generator, request.payload().toArray(new $T[0]))",
                     elementTypeWriter,
                     elementClassName
             );
