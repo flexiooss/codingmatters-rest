@@ -7,9 +7,7 @@ import org.codingmatters.rest.io.Content;
 import org.codingmatters.rest.proxy.api.utils.MapOfListAction;
 import org.codingmatters.rest.proxy.api.utils.MapOfListModification;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,7 @@ public class ProxyRequest {
         this.originalRequest = request;
     }
 
-    public ProxyRequest withHeader(String name, String ... values) {
+    public ProxyRequest withHeader(String name, String... values) {
         this.headerModifications.add(new MapOfListModification(MapOfListAction.PUT, name, values));
         return this;
     }
@@ -40,12 +38,12 @@ public class ProxyRequest {
         return this;
     }
 
-    public ProxyRequest withAddedHeader(String name, String ... values) {
+    public ProxyRequest withAddedHeader(String name, String... values) {
         this.headerModifications.add(new MapOfListModification(MapOfListAction.ADD, name, values));
         return this;
     }
 
-    public ProxyRequest withQueryParameters(String name, String ... values) {
+    public ProxyRequest withQueryParameters(String name, String... values) {
         this.parametersModifications.add(new MapOfListModification(MapOfListAction.PUT, name, values));
         return this;
     }
@@ -55,11 +53,10 @@ public class ProxyRequest {
         return this;
     }
 
-    public ProxyRequest withAddedQueryParameters(String name, String ... values) {
+    public ProxyRequest withAddedQueryParameters(String name, String... values) {
         this.parametersModifications.add(new MapOfListModification(MapOfListAction.ADD, name, values));
         return this;
     }
-
 
 
     public ResponseDelegate to(Requester requester) throws IOException {
@@ -79,11 +76,11 @@ public class ProxyRequest {
             case GET:
                 return requester.get();
             case POST:
-                return requester.post(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
+                return requester.post(this.originalRequest.contentType(), this.payloadAsContent());
             case PUT:
-                return requester.put(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
+                return requester.put(this.originalRequest.contentType(), this.payloadAsContent());
             case PATCH:
-                return requester.patch(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
+                return requester.patch(this.originalRequest.contentType(), this.payloadAsContent());
             case DELETE:
                 return requester.delete();
             case HEAD:
@@ -102,5 +99,13 @@ public class ProxyRequest {
         }
 
         return result;
+    }
+
+    private Content payloadAsContent() throws IOException {
+        if (this.originalRequest.payload() == null) {
+            return Content.from(new byte[0]);
+        }
+
+        return Content.from(this.originalRequest.payload());
     }
 }
