@@ -3,6 +3,7 @@ package org.codingmatters.rest.proxy.api;
 import org.codingmatters.rest.api.RequestDelegate;
 import org.codingmatters.rest.api.client.Requester;
 import org.codingmatters.rest.api.client.ResponseDelegate;
+import org.codingmatters.rest.io.Content;
 import org.codingmatters.rest.proxy.api.utils.MapOfListAction;
 import org.codingmatters.rest.proxy.api.utils.MapOfListModification;
 
@@ -78,11 +79,11 @@ public class ProxyRequest {
             case GET:
                 return requester.get();
             case POST:
-                return requester.post(this.originalRequest.contentType(), this.payloadAsBytes());
+                return requester.post(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
             case PUT:
-                return requester.put(this.originalRequest.contentType(), this.payloadAsBytes());
+                return requester.put(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
             case PATCH:
-                return requester.patch(this.originalRequest.contentType(), this.payloadAsBytes());
+                return requester.patch(this.originalRequest.contentType(), Content.from(this.originalRequest.payload()));
             case DELETE:
                 return requester.delete();
             case HEAD:
@@ -102,18 +103,4 @@ public class ProxyRequest {
 
         return result;
     }
-
-    private byte[] payloadAsBytes() throws IOException {
-        try(InputStream in = this.originalRequest.payload() ; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            if(in == null) return new byte[0];
-
-            byte[] buffer = new byte[1024];
-            for(int read = in.read(buffer) ; read != -1 ; read = in.read(buffer)) {
-                out.write(buffer, 0, read);
-            }
-            out.flush();
-            return out.toByteArray();
-        }
-    }
-
 }
