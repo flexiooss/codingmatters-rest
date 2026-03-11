@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CallerParam extends Parameter {
@@ -35,7 +35,7 @@ public class CallerParam extends Parameter {
             if (source != ParameterSource.URI) {
                 method.beginControlFlow("if (request.$L() != null)", this.property());
                 if (this.isArray()) {
-                    method.addStatement("$T<$T> $L = new $T<>()", List.class, String.class, this.property(), LinkedList.class);
+                    method.addStatement("$T<$T> $L = new $T<>()", List.class, String.class, this.property(), ArrayList.class);
 
                     method.beginControlFlow("for ($T $L : request.$L())", this.javaType(), this.property() + "RawElement", this.property());
                     this.addTranstypeToStringStatement(method, this.property() + "RawElement", this.property() + "Element");

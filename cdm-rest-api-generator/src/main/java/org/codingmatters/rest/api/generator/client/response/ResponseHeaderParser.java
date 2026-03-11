@@ -10,7 +10,7 @@ import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ResponseHeaderParser {
@@ -39,7 +39,7 @@ public class ResponseHeaderParser {
         }
 
         caller.beginControlFlow("if (response.header($S) != null)", headerType.name());
-        caller.addStatement("$T<$T> values = new $T<>()", List.class, headerParam.javaType(), LinkedList.class);
+        caller.addStatement("$T<$T> values = new $T<>()", List.class, headerParam.javaType(), ArrayList.class);
         caller.beginControlFlow("for (int i = 0; i < response.header($S).length; i++)", headerType.name());
         caller.addStatement("$T rawValue = response.header($S)[i]", String.class, headerType.name());
         caller.beginControlFlow("if (rawValue != null)");
