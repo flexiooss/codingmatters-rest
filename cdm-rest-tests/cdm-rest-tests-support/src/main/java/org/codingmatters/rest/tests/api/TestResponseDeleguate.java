@@ -120,6 +120,9 @@ public class TestResponseDeleguate implements ResponseDelegate {
 
     @Override
     public SseChannel openSse() {
+        if (this.sseChannel != null) {
+            throw new IllegalStateException("openSse() called more than once");
+        }
         this.sseChannel = new TestSseChannel();
         return this.sseChannel;
     }

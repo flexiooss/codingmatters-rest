@@ -102,4 +102,9 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     @Override
     public void close() throws Exception {
     }
+
+    @Override
+    public org.codingmatters.rest.api.SseChannel openSse() throws java.io.IOException {
+        throw new UnsupportedOperationException("SSE not yet implemented for Undertow");
+    }
 }

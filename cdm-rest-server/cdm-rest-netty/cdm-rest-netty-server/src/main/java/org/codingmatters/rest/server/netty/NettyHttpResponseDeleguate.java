@@ -123,6 +123,11 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
         }
     }
 
+    @Override
+    public org.codingmatters.rest.api.SseChannel openSse() throws java.io.IOException {
+        throw new UnsupportedOperationException("SSE not yet implemented for Netty");
+    }
+
     public HttpResponse response() {
         if(this.body != null) {
             try (InputStream in = this.body.stream()) {
