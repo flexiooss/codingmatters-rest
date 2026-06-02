@@ -1,5 +1,6 @@
 package org.codingmatters.rest.netty.utils;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import okhttp3.*;
 import org.junit.After;
@@ -50,7 +51,7 @@ public abstract class AbstractHttpServerTest {
     private final AtomicReference<HttpRequestHandler> handler = new AtomicReference<>(
         new HttpRequestHandler() {
             @Override
-            protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
+            protected HttpResponse processResponse(ChannelHandlerContext ctx, HttpRequest request, DynamicByteBuffer body) {
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
                 byte[] bytes = "Test response : OK.".getBytes(StandardCharsets.UTF_8);
@@ -201,7 +202,7 @@ public abstract class AbstractHttpServerTest {
 
         this.handler.set(new HttpRequestHandler() {
             @Override
-            protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
+            protected HttpResponse processResponse(ChannelHandlerContext ctx, HttpRequest request, DynamicByteBuffer body) {
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
 

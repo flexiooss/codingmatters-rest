@@ -2,9 +2,11 @@ package org.codingmatters.rest.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.undertow.util.HttpString;
 import org.codingmatters.rest.api.ResponseDelegate;
+import org.codingmatters.rest.api.SseChannel;
 import org.codingmatters.rest.io.headers.HeaderEncodingHandler;
 import org.codingmatters.rest.netty.utils.DynamicByteBuffer;
 
@@ -25,10 +27,18 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
     private final FullHttpResponse response;
     private DynamicByteBuffer body;
     private final int maxInMemoryCapacity = 2 * 1024;
+    private final ChannelHandlerContext ctx;
 
     public NettyHttpResponseDeleguate(boolean keepAlive) {
         this.keepAlive = keepAlive;
         this.response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+        this.ctx = null;
+    }
+
+    public NettyHttpResponseDeleguate(boolean keepAlive, ChannelHandlerContext ctx) {
+        this.keepAlive = keepAlive;
+        this.response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+        this.ctx = ctx;
     }
 
     @Override
@@ -124,8 +134,13 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
     }
 
     @Override
-    public org.codingmatters.rest.api.SseChannel openSse() throws java.io.IOException {
-        throw new UnsupportedOperationException("SSE not yet implemented for Netty");
+    public SseChannel openSse() throws java.io.IOException {
+        HttpResponse sseHeaders = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.OK);
+        sseHeaders.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/event-stream; charset=UTF-8");
+        sseHeaders.headers().set(HttpHeaderNames.CACHE_CONTROL, "no-cache");
+        sseHeaders.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        this.ctx.writeAndFlush(sseHeaders);
+        return new NettySseChannel(this.ctx);
     }
 
     public HttpResponse response() {
