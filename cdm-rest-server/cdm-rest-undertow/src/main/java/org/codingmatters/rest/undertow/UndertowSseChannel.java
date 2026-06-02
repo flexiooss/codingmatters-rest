@@ -47,8 +47,13 @@ public class UndertowSseChannel implements SseChannel {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
+        if (!this.open) return;
         this.open = false;
+        try {
+            out.close();
+        } catch (IOException ignored) {
+        }
         if (this.closeHandler != null) {
             this.closeHandler.run();
         }
@@ -65,8 +70,11 @@ public class UndertowSseChannel implements SseChannel {
         return this.open;
     }
 
-    private void write(String text) throws IOException {
-        this.out.write(text.getBytes(StandardCharsets.UTF_8));
-        this.out.flush();
+    private synchronized void write(String text) throws IOException {
+        if (!this.open) {
+            throw new IOException("SSE channel is closed");
+        }
+        out.write(text.getBytes(StandardCharsets.UTF_8));
+        out.flush();
     }
 }

@@ -28,6 +28,7 @@ public abstract class SseAcceptanceTest extends BaseAcceptanceTest {
                 .build();
         Response response = this.client.newCall(request).execute();
         assertThat(response.header("Content-Type"), containsString("text/event-stream"));
+        response.close();
     }
 
     @Test
@@ -44,8 +45,7 @@ public abstract class SseAcceptanceTest extends BaseAcceptanceTest {
                 .build();
         Response response = this.client.newCall(request).execute();
         String body = response.body().string();
-        assertThat(body, containsString("event: message"));
-        assertThat(body, containsString("data: hello"));
+        assertThat(body, containsString("event: message\ndata: hello\n\n"));
     }
 
     @Test
