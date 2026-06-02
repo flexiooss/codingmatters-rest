@@ -9,11 +9,12 @@ import org.codingmatters.rest.netty.utils.HttpRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ProcessorRequestHandler extends HttpRequestHandler {
+public class ProcessorRequestHandler extends HttpRequestHandler implements Closeable {
     static private final Logger log = LoggerFactory.getLogger(ProcessorRequestHandler.class);
 
     private final Processor processor;
@@ -30,6 +31,11 @@ public class ProcessorRequestHandler extends HttpRequestHandler {
         this.host = host;
         this.port = port;
         this.sseExecutor = sseExecutor;
+    }
+
+    @Override
+    public void close() {
+        this.sseExecutor.shutdown();
     }
 
     @Override

@@ -135,6 +135,9 @@ public class NettyHttpResponseDeleguate implements ResponseDelegate {
 
     @Override
     public SseChannel openSse() throws java.io.IOException {
+        if (this.ctx == null) {
+            throw new IllegalStateException("openSse() requires a ChannelHandlerContext — use the NettyHttpResponseDeleguate(boolean, ChannelHandlerContext) constructor");
+        }
         HttpResponse sseHeaders = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.OK);
         sseHeaders.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/event-stream; charset=UTF-8");
         sseHeaders.headers().set(HttpHeaderNames.CACHE_CONTROL, "no-cache");

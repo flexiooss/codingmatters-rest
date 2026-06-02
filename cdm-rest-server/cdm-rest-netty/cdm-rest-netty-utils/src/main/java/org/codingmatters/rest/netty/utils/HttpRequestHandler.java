@@ -30,10 +30,10 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Ful
         log.debug("starting handling request...");
         if(request.decoderResult().isFailure()) {
             this.decoderError(ctx, request);
+            ctx.flush();
         } else {
             this.nominalResponse(ctx, request);
         }
-        ctx.flush();
         log.debug("finished handling request");
     }
 
@@ -74,6 +74,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Ful
         }
 
         ctx.write(response);
+        ctx.flush();
         if (!HttpUtil.isKeepAlive(request)) {
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         }

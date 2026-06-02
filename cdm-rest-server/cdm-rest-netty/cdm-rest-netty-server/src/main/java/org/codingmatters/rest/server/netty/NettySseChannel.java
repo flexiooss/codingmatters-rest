@@ -12,7 +12,7 @@ public class NettySseChannel implements SseChannel {
 
     private final ChannelHandlerContext ctx;
     private volatile boolean open = true;
-    private Runnable onCloseHandler;
+    private volatile Runnable onCloseHandler;
 
     public NettySseChannel(ChannelHandlerContext ctx) {
         this.ctx = ctx;
