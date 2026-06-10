@@ -102,4 +102,13 @@ public class UndertowResponseDelegate implements ResponseDelegate {
     @Override
     public void close() throws Exception {
     }
+
+    @Override
+    public org.codingmatters.rest.api.SseChannel openSse() throws IOException {
+        this.exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/event-stream; charset=UTF-8");
+        this.exchange.getResponseHeaders().put(Headers.CACHE_CONTROL, "no-cache");
+        this.exchange.getResponseHeaders().put(Headers.CONNECTION, "keep-alive");
+        this.exchange.startBlocking();
+        return new UndertowSseChannel(this.exchange.getOutputStream());
+    }
 }

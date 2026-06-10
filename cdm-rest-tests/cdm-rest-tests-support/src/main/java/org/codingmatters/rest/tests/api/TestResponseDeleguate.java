@@ -1,6 +1,7 @@
 package org.codingmatters.rest.tests.api;
 
 import org.codingmatters.rest.api.ResponseDelegate;
+import org.codingmatters.rest.api.SseChannel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
 public class TestResponseDeleguate implements ResponseDelegate {
     private String contentType;
     private int code;
+    private TestSseChannel sseChannel;
     private Map<String, String[]> headers = new TreeMap<>();
     private String charset;
     private byte[] payload;
@@ -114,6 +116,19 @@ public class TestResponseDeleguate implements ResponseDelegate {
 
     public byte[] payload() {
         return payload;
+    }
+
+    @Override
+    public SseChannel openSse() {
+        if (this.sseChannel != null) {
+            throw new IllegalStateException("openSse() called more than once");
+        }
+        this.sseChannel = new TestSseChannel();
+        return this.sseChannel;
+    }
+
+    public TestSseChannel sseChannel() {
+        return this.sseChannel;
     }
 
     @Override

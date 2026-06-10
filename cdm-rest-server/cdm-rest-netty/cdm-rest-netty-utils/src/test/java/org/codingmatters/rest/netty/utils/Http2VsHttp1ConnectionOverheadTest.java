@@ -1,5 +1,6 @@
 package org.codingmatters.rest.netty.utils;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -44,7 +45,7 @@ public class Http2VsHttp1ConnectionOverheadTest {
     private HttpRequestHandler handler(String host, int port) {
         return new HttpRequestHandler() {
             @Override
-            protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
+            protected HttpResponse processResponse(ChannelHandlerContext ctx, HttpRequest request, DynamicByteBuffer body) {
                 FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                 response.setStatus(OK);
                 byte[] bytes = "Test response : OK.".getBytes(StandardCharsets.UTF_8);

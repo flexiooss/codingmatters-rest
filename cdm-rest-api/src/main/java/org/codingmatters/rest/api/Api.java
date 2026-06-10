@@ -13,6 +13,10 @@ public interface Api {
         return '/' + this.name();
     }
 
+    default SseProcessor sseProcessor() {
+        return null;
+    }
+
     static String versionFrom(Class clazz) {
         String rawVersion = clazz.getPackage().getImplementationVersion();
         if(rawVersion == null) {

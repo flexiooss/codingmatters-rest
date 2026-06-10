@@ -18,17 +18,22 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     static private final Logger log = LoggerFactory.getLogger(HttpRequestHandler.class);
 
-    protected abstract HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body);
+    /**
+     * Process the request and return the response. Return null to indicate the response
+     * was handled asynchronously (e.g., SSE) — in that case HttpRequestHandler will NOT
+     * write any response.
+     */
+    protected abstract HttpResponse processResponse(ChannelHandlerContext ctx, HttpRequest request, DynamicByteBuffer body);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
         log.debug("starting handling request...");
         if(request.decoderResult().isFailure()) {
             this.decoderError(ctx, request);
+            ctx.flush();
         } else {
             this.nominalResponse(ctx, request);
         }
-        ctx.flush();
         log.debug("finished handling request");
     }
 
@@ -50,6 +55,10 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
         HttpResponse response = this.buildResponse(ctx, request);
 
+        if (response == null) {
+            return; // Async (SSE) response — already handled by processResponse()
+        }
+
         if(HttpUtil.isKeepAlive(request)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
@@ -65,6 +74,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Ful
         }
 
         ctx.write(response);
+        ctx.flush();
         if (!HttpUtil.isKeepAlive(request)) {
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         }
@@ -75,7 +85,7 @@ public abstract class HttpRequestHandler extends SimpleChannelInboundHandler<Ful
         try {
             log.trace("building response");
             body.accumulate(request.content());
-            return this.processResponse(request, body);
+            return this.processResponse(ctx, request, body);
         } catch (Throwable t) {
             log.error("[GRAVE] exception thrown by business code, should be caught.", t);
             return this.errorResponse();

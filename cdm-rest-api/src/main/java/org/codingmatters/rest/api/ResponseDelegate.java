@@ -1,5 +1,6 @@
 package org.codingmatters.rest.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -14,4 +15,5 @@ public interface ResponseDelegate extends AutoCloseable {
     ResponseDelegate payload(String payload, String charset);
     ResponseDelegate payload(byte[] bytes);
     ResponseDelegate payload(InputStream in);
+    SseChannel openSse() throws IOException;
 }

@@ -89,8 +89,11 @@ public class Http2Server extends AbstratHttpServer {
     private HttpRequestHandler http2Handler() {
         return new HttpRequestHandler() {
             @Override
-            protected HttpResponse processResponse(HttpRequest request, DynamicByteBuffer body) {
-                HttpResponse response = handlerSupplier().get(config().host(), config().port()).processResponse(request, body);
+            protected HttpResponse processResponse(ChannelHandlerContext ctx, HttpRequest request, DynamicByteBuffer body) {
+                HttpResponse response = handlerSupplier().get(config().host(), config().port()).processResponse(ctx, request, body);
+                if (response == null) {
+                    return null; // Async (SSE) — propagate
+                }
                 response.headers().set(
                         HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(),
                         request.headers().get(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text())
