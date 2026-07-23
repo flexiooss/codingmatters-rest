@@ -193,7 +193,7 @@ public class TestRequester implements Requester, MultipartRequester {
 
     @Override
     public MultipartRequester formDataPart(String contentType, byte[] body, String name) {
-        this.multipartBuilder.addFormDataPart(name, new String(body));
+        this.multipartBuilder.addFormDataPart(name, null, RequestBody.create(body, this.partMediaType(contentType)));
         return this;
     }
 
@@ -202,8 +202,12 @@ public class TestRequester implements Requester, MultipartRequester {
         if (body == null) {
             body = Content.from(new byte[0]);
         }
-        this.multipartBuilder.addFormDataPart(name, body.asString());
+        this.multipartBuilder.addFormDataPart(name, null, RequestBody.create(body.asBytes(), this.partMediaType(contentType)));
         return this;
+    }
+
+    private MediaType partMediaType(String contentType) {
+        return contentType != null ? MediaType.parse(contentType) : null;
     }
 
     @Override
