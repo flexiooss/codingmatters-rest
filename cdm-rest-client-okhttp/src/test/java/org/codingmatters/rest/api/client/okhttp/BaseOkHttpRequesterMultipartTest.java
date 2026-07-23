@@ -94,6 +94,44 @@ public class BaseOkHttpRequesterMultipartTest {
 
 
     @Test
+    public void givenTextFormPartWithContentType_whenPost_thenPartHasContentType() throws IOException {
+        final HttpClientWrapper client = new HttpClientWrapper() {
+            @Override
+            public Response execute(Request request) throws IOException {
+                MultipartBody body = (MultipartBody) request.body();
+                partContentType.set(String.valueOf(body.part(0).body().contentType()));
+                contentDisposition.set(body.part(0).headers().get("Content-Disposition"));
+                return createFakeResponse();
+            }
+        };
+        new BaseOkHttpRequester(client, () -> "http://my_test_url")
+                .multipart(MultipartBody.FORM)
+                .formDataPart("application/json", Content.from("{\"nature\":\"signable_document\"}"), "nature")
+                .postMultiPart();
+        assertThat(partContentType.get(), is("application/json"));
+        assertThat(contentDisposition.get().startsWith("form-data; name=\"nature\""), is(true));
+    }
+
+    @Test
+    public void givenByteArrayFormPartWithContentType_whenPost_thenPartHasContentType() throws IOException {
+        final HttpClientWrapper client = new HttpClientWrapper() {
+            @Override
+            public Response execute(Request request) throws IOException {
+                MultipartBody body = (MultipartBody) request.body();
+                partContentType.set(String.valueOf(body.part(0).body().contentType()));
+                contentDisposition.set(body.part(0).headers().get("Content-Disposition"));
+                return createFakeResponse();
+            }
+        };
+        new BaseOkHttpRequester(client, () -> "http://my_test_url")
+                .multipart(MultipartBody.FORM)
+                .formDataPart("application/json", "{\"nature\":\"signable_document\"}".getBytes(), "nature")
+                .postMultiPart();
+        assertThat(partContentType.get(), is("application/json"));
+        assertThat(contentDisposition.get().startsWith("form-data; name=\"nature\""), is(true));
+    }
+
+    @Test
     public void givenFormPart_whenPost_thenClientPost() throws IOException {
         final HttpClientWrapper client = new HttpClientWrapper() {
             @Override
