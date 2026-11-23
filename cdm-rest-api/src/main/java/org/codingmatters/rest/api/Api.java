@@ -17,16 +17,11 @@ public interface Api {
         return null;
     }
 
+    /**
+     * The release, or, for a SNAPSHOT, the version with the time the class was built (the same for every process
+     * running that build).
+     */
     static String versionFrom(Class clazz) {
-        String rawVersion = clazz.getPackage().getImplementationVersion();
-        if(rawVersion == null) {
-            return "" + System.currentTimeMillis();
-        } else {
-            if(rawVersion.endsWith("-SNAPSHOT")) {
-                return rawVersion.replace("-SNAPSHOT", "." + System.currentTimeMillis());
-            } else {
-                return rawVersion;
-            }
-        }
+        return org.codingmatters.rest.api.internal.ApiVersion.version(clazz.getPackage().getImplementationVersion(), org.codingmatters.rest.api.internal.ApiVersion.built(clazz));
     }
 }
