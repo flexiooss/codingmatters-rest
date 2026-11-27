@@ -26,7 +26,9 @@ public class DynamicByteBuffer {
 
     public InputStream stream() throws FileNotFoundException {
         if(this.currentMode.equals(Mode.IN_MEMORY)) {
-            return new ByteBufInputStream(this.smallBuffer);
+            // a duplicate has its own reader index : each stream reads the whole body, independently of the others
+            // (a request body is typically read twice : by a guard checking a signature, then by the processor)
+            return new ByteBufInputStream(this.smallBuffer.duplicate());
         } else {
             return new FileInputStream(this.temporaryFile);
         }
